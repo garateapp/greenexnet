@@ -2,7 +2,7 @@
 
 //use Illuminate\Routing\Route;
 
-Route::view('/', '/home')->name('home');
+Route::view('/', '/admin');
 Route::get('userVerification/{token}', 'UserVerificationController@approve')->name('userVerification');
 Auth::routes();
 
