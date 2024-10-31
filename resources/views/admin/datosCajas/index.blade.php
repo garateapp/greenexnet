@@ -54,7 +54,7 @@
                     if (response.success) {
                         $("#divQR").show();
                     }
-                    if (response == null) {
+                    if (response.length == 0) {
                         $("#divQR").html('No se encontró la caja :(');
                     }
                     var qrcode = new QRCode('divQR', {
