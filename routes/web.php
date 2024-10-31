@@ -2,7 +2,7 @@
 
 //use Illuminate\Routing\Route;
 
-//Route::view('/', 'welcome');
+Route::view('/', 'login');
 Route::get('userVerification/{token}', 'UserVerificationController@approve')->name('userVerification');
 Auth::routes();
 
