@@ -56,19 +56,21 @@
                     }
                     if (response.length == 0) {
                         $("#divQR").html('No se encontró la caja :(');
+                    } else {
+                        var qrcode = new QRCode('divQR', {
+                            text: response.CodLinea + "-" + response.Turno + "-" + response
+                                .ProductorReal +
+                                "-" + response.VariedadReal + "-" + response.Proceso + "-" + response
+                                .CalibreTimbrado + "-100-" + response.Marca + "-" + response.CAT + "-" +
+                                response.CodConfeccion + "-" + response.PesoTimbrado + "-" + response
+                                .Salida,
+                            width: 128, // Ancho del código QR
+                            height: 128, // Alto del código QR
+                            colorDark: "#000000",
+                            colorLight: "#FFFFFF",
+                            correctLevel: QRCode.CorrectLevel.M
+                        });
                     }
-                    var qrcode = new QRCode('divQR', {
-                        text: response.CodLinea + "-" + response.Turno + "-" + response.ProductorReal +
-                            "-" + response.VariedadReal + "-" + response.Proceso + "-" + response
-                            .CalibreTimbrado + "-100-" + response.Marca + "-" + response.CAT + "-" +
-                            response.CodConfeccion + "-" + response.PesoTimbrado + "-" + response
-                            .Salida,
-                        width: 128, // Ancho del código QR
-                        height: 128, // Alto del código QR
-                        colorDark: "#000000",
-                        colorLight: "#FFFFFF",
-                        correctLevel: QRCode.CorrectLevel.M
-                    });
 
                 })
                 .fail(function(response) {
