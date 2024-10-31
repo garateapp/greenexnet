@@ -19,7 +19,7 @@ class DatosCajaController extends Controller
     use CsvImportTrait;
     public function index(Request $request)
     {
-        abort_if(Gate::denies('datos_caja_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('datos_caja_calidad_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
 
         return view('admin.datosCajas.index');
@@ -59,7 +59,9 @@ class DatosCajaController extends Controller
             ->where('codCaja', '=', $request->codCaja)
             ->first(); //DatosCaja::whereBetween('FechaProduccion', ['2023-11-11', '2023-11-12'])->get(); //dd($request->fecha_inicio)
 
-
+        if (!$datos) {
+            return response()->json([], 200);
+        }
         return response()->json($datos, 200);
     }
 

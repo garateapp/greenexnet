@@ -54,6 +54,9 @@
                     if (response.success) {
                         $("#divQR").show();
                     }
+                    if (response == null) {
+                        $("#divQR").html('No se encontró la caja :(');
+                    }
                     var qrcode = new QRCode('divQR', {
                         text: response.CodLinea + "-" + response.Turno + "-" + response.ProductorReal +
                             "-" + response.VariedadReal + "-" + response.Proceso + "-" + response
