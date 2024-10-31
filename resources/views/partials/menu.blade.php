@@ -99,17 +99,17 @@
                     {{ trans('cruds.datosCajaCalidad.title') }}
                 </a>
                 <ul class="c-sidebar-nav-dropdown-items">
-                    @can('datos_caja_access')
-                        <li class="c-sidebar-nav-item">
-                            <a href="{{ route('admin.datos-cajas.index') }}"
-                                class="c-sidebar-nav-link {{ request()->is('admin/datos-cajas') || request()->is('admin/datos-cajas/*') ? 'c-active' : '' }}">
-                                <i class="fa-fw fas fa-cogs c-sidebar-nav-icon">
 
-                                </i>
-                                {{ trans('cruds.datosCaja.title') }}
-                            </a>
-                        </li>
-                    @endcan
+                    <li class="c-sidebar-nav-item">
+                        <a href="{{ route('admin.datos-cajas.index') }}"
+                            class="c-sidebar-nav-link {{ request()->is('admin/datos-cajas') || request()->is('admin/datos-cajas/*') ? 'c-active' : '' }}">
+                            <i class="fa-fw fas fa-cogs c-sidebar-nav-icon">
+
+                            </i>
+                            {{ trans('cruds.datosCaja.title') }}
+                        </a>
+                    </li>
+
                 </ul>
             </li>
         @endcan
