@@ -19,7 +19,7 @@ class StoreDatosCajaRequest extends FormRequest
         return [
             'proceso' => [
                 'string',
-                'required',
+
             ],
             'fecha_produccion' => [
 

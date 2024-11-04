@@ -19,19 +19,19 @@ class UpdateDatosCajaRequest extends FormRequest
         return [
             'proceso' => [
                 'string',
-                'required',
+
             ],
             'fecha_produccion' => [
-                'required',
+
                 'date_format:' . config('panel.date_format'),
             ],
             'turno' => [
                 'string',
-                'required',
+
             ],
             'cod_linea' => [
                 'string',
-                'required',
+
             ],
             'cat' => [
                 'string',
