@@ -22,16 +22,16 @@ class StoreDatosCajaRequest extends FormRequest
                 'required',
             ],
             'fecha_produccion' => [
-                'required',
+
                 'date_format:' . config('panel.date_format'),
             ],
             'turno' => [
                 'string',
-                'required',
+
             ],
             'cod_linea' => [
                 'string',
-                'required',
+
             ],
             'cat' => [
                 'string',
