@@ -24,6 +24,7 @@ class FrecuenciaTurno extends Model
         'dia',
         'turno_id',
         'nombre',
+        'locacion_id',
         'created_at',
         'updated_at',
         'deleted_at',
@@ -52,5 +53,9 @@ class FrecuenciaTurno extends Model
     public function turno()
     {
         return $this->belongsTo(Turno::class, 'turno_id');
+    }
+    public function locacion()
+    {
+        return $this->belongsTo(Locacion::class, 'locacion_id');
     }
 }

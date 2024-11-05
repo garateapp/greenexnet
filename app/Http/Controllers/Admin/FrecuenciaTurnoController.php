@@ -9,6 +9,7 @@ use App\Http\Requests\StoreFrecuenciaTurnoRequest;
 use App\Http\Requests\UpdateFrecuenciaTurnoRequest;
 use App\Models\FrecuenciaTurno;
 use App\Models\Turno;
+use App\Models\Locacion;
 use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,7 +24,7 @@ class FrecuenciaTurnoController extends Controller
         abort_if(Gate::denies('frecuencia_turno_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         if ($request->ajax()) {
-            $query = FrecuenciaTurno::with(['turno'])->select(sprintf('%s.*', (new FrecuenciaTurno)->table));
+            $query = FrecuenciaTurno::with(['turno', 'locacion'])->select(sprintf('%s.*', (new FrecuenciaTurno)->table));
             $table = Datatables::of($query);
 
             $table->addColumn('placeholder', '&nbsp;');
@@ -50,9 +51,13 @@ class FrecuenciaTurnoController extends Controller
             $table->editColumn('dia', function ($row) {
                 return $row->dia ? FrecuenciaTurno::DIA_SELECT[$row->dia] : '';
             });
+            $table->addColumn('ubicacion', function ($row) {
+                return $row->locacion ? $row->locacion->nombre : '';
+            });
             $table->addColumn('turno_nombre', function ($row) {
                 return $row->turno ? $row->turno->nombre : '';
             });
+
 
             $table->editColumn('nombre', function ($row) {
                 return $row->nombre ? $row->nombre : '';
@@ -71,8 +76,8 @@ class FrecuenciaTurnoController extends Controller
         abort_if(Gate::denies('frecuencia_turno_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $turnos = Turno::pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
-
-        return view('admin.frecuenciaTurnos.create', compact('turnos'));
+        $locacion = Locacion::pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
+        return view('admin.frecuenciaTurnos.create', compact('turnos', 'locacion'));
     }
 
     public function store(StoreFrecuenciaTurnoRequest $request)
@@ -87,10 +92,10 @@ class FrecuenciaTurnoController extends Controller
         abort_if(Gate::denies('frecuencia_turno_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $turnos = Turno::pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $locacion = Locacion::pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $frecuenciaTurno->load('turno', 'locacion');
 
-        $frecuenciaTurno->load('turno');
-
-        return view('admin.frecuenciaTurnos.edit', compact('frecuenciaTurno', 'turnos'));
+        return view('admin.frecuenciaTurnos.edit', compact('frecuenciaTurno', 'turnos', 'locacion'));
     }
 
     public function update(UpdateFrecuenciaTurnoRequest $request, FrecuenciaTurno $frecuenciaTurno)

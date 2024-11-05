@@ -72,6 +72,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('turnos/process-csv-import', 'TurnoController@processCsvImport')->name('turnos.processCsvImport');
     Route::resource('turnos', 'TurnoController');
 
+    Route::get('turnos/getdatoturno', 'TurnoController@getdatoturno')->name('turnos.getdatoturno');
+
+
     // Frecuencia Turno
     Route::delete('frecuencia-turnos/destroy', 'FrecuenciaTurnoController@massDestroy')->name('frecuencia-turnos.massDestroy');
     Route::post('frecuencia-turnos/parse-csv-import', 'FrecuenciaTurnoController@parseCsvImport')->name('frecuencia-turnos.parseCsvImport');

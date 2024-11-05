@@ -13,6 +13,14 @@ use Symfony\Component\HttpFoundation\Response;
 
 class TurnoApiController extends Controller
 {
+    public function getDatoTurno()
+    {
+
+        //Obtengo que día es hoy
+        $dia = date('w');
+        $turnos = Turno::where('dia', $dia)->get();
+        return response()->json($turnos);
+    }
     public function index()
     {
         abort_if(Gate::denies('turno_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');

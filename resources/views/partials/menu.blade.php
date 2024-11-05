@@ -167,6 +167,7 @@
                             </a>
                         </li>
                     @endcan
+
                     @can('frecuencia_turno_access')
                         <li class="c-sidebar-nav-item">
                             <a href="{{ route('admin.frecuencia-turnos.index') }}"
