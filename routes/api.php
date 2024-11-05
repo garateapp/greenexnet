@@ -17,7 +17,7 @@ Route::group(['prefix' => 'v1', 'as' => 'api.', 'namespace' => 'Api\V1\Admin', '
     Route::apiResource('estados', 'EstadosApiController');
 
     // Airline
-
+    Route::apiResource('locacions', 'LocacionApiController');
 
     // Importacion Marcas Manifiesto
 

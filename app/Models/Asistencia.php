@@ -2,29 +2,30 @@
 
 namespace App\Models;
 
+use App\Models\Personal;
+use App\Models\TurnosFrecuencium;
 use App\Traits\Auditable;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models;
 
-class TurnosFrecuencium extends Model
+
+class Asistencia extends Model
 {
-    use SoftDeletes, Auditable, HasFactory;
+    use HasFactory, SoftDeletes, Auditable;
 
-    public $table = 'turnos_frecuencia';
+    public $table = 'asistencia';
 
     protected $dates = [
         'created_at',
         'updated_at',
         'deleted_at',
     ];
-
     protected $fillable = [
-        'frecuencia_id',
-        'locacion_id',
-        'nombre',
-        'aforo',
+        'turnofrecuencia_id',
+        'personal_id',
         'created_at',
         'updated_at',
         'deleted_at',
@@ -35,14 +36,12 @@ class TurnosFrecuencium extends Model
     {
         return $date->format('Y-m-d H:i:s');
     }
-
-    public function frecuencia()
+    protected function turno_has_personal()
     {
-        return $this->belongsTo(FrecuenciaTurno::class, 'frecuencia_id');
+        return $this->belongsTo(TurnosFrecuencium::class, 'turnofrecuencia_id');
     }
-
-    public function locacion()
+    protected function personal()
     {
-        return $this->belongsTo(Locacion::class, 'locacion_id');
+        return $this->belongsTo(Personal::class, 'personal_id');
     }
 }
