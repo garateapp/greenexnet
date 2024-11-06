@@ -28,7 +28,11 @@ class FrecuenciaTurnoApiController extends Controller
             ->response()
             ->setStatusCode(Response::HTTP_CREATED);
     }
-
+    public function obtieneTurno($id)
+    {
+        $turno = FrecuenciaTurno::where('locacion_id', $id)->with('turno')->get();
+        return json_encode($turno);
+    }
     public function show(FrecuenciaTurno $frecuenciaTurno)
     {
         abort_if(Gate::denies('frecuencia_turno_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');

@@ -29,11 +29,11 @@ class TurnosFrecuenciaApiController extends Controller
             ->setStatusCode(Response::HTTP_CREATED);
     }
 
-    public function show(TurnosFrecuencium $turnosFrecuencium)
+    public function show(Request $request)
     {
         abort_if(Gate::denies('turnos_frecuencium_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-
-        return new TurnosFrecuenciumResource($turnosFrecuencium->load(['frecuencia', 'locacion']));
+        $turnosFrec = TurnosFrecuencium::where('locacion_id', $request->id)->with('locacion')->get();
+        return $turnosFrec;
     }
 
     public function update(UpdateTurnosFrecuenciumRequest $request, TurnosFrecuencium $turnosFrecuencium)

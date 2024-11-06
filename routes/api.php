@@ -17,19 +17,31 @@ Route::group(['prefix' => 'v1', 'as' => 'api.', 'namespace' => 'Api\V1\Admin', '
     Route::post('estados/media', 'EstadosApiController@storeMedia')->name('estados.storeMedia');
     Route::apiResource('estados', 'EstadosApiController');
 
-    // Airline
-    Route::apiResource('locacions', 'LocacionApiController');
-
-    // Importacion Marcas Manifiesto
 
 
-    // Tipo
-    Route::apiResource('tipos', 'TipoApiController');
 
-    // Tipoequis
     // Datos Caja
     Route::apiResource('datos-cajas', 'DatosCajaApiController');
     Route::apiResource('turnos', 'TurnoApiController');
+    // Turno
+
+
+    // Frecuencia Turno
+    Route::apiResource('frecuencia-turnos', 'FrecuenciaTurnoApiController');
+    Route::get('/frecuencia-turnos/{id}/obtieneTurno', 'FrecuenciaTurnoApiController@obtieneTurno');
+
+    Route::apiResource('locacions', 'LocacionApiController');
+    Route::get('/locacions/{id}/obtieneUbicacion', 'LocacionApiController@obtieneUbicacion');
+    Route::get('/locacions/{id}/obtienePuesto', 'LocacionApiController@obtienePuesto');
+
+    // Cargo
+    Route::apiResource('cargos', 'CargoApiController');
+
+    // Personal
+    Route::apiResource('personals', 'PersonalApiController');
+
+    // Turnos Frecuencia
+    Route::apiResource('turnos-frecuencia', 'TurnosFrecuenciaApiController');
 });
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
