@@ -30,7 +30,8 @@ class FrecuenciaTurnoApiController extends Controller
     }
     public function obtieneTurno($id)
     {
-        $turno = FrecuenciaTurno::where('locacion_id', $id)->with('turno')->get();
+        $turno = FrecuenciaTurno::where('locacion_id', $id)->where('dia', date('w'))->with('turno')->get();
+
         return json_encode($turno);
     }
     public function show(FrecuenciaTurno $frecuenciaTurno)
