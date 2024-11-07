@@ -99,7 +99,15 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('turnos-frecuencia/process-csv-import', 'TurnosFrecuenciaController@processCsvImport')->name('turnos-frecuencia.processCsvImport');
     Route::resource('turnos-frecuencia', 'TurnosFrecuenciaController');
 
+    // Asistencia
+    Route::delete('asistencia/destroy', 'AsistenciaController@massDestroy')->name('asistencia.massDestroy');
+    Route::post('asistencia/parse-csv-import', 'AsistenciaController@parseCsvImport')->name('asistencia.parseCsvImport');
+    Route::post('asistencia/process-csv-import', 'AsistenciaController@processCsvImport')->name('asistencia.processCsvImport');
+    Route::resource('asistencia', 'AsistenciaController');
+
     Route::get('global-search', 'GlobalSearchController@search')->name('globalSearch');
+
+
     Route::get('messenger', 'MessengerController@index')->name('messenger.index');
     Route::get('messenger/create', 'MessengerController@createTopic')->name('messenger.createTopic');
     Route::post('messenger', 'MessengerController@storeTopic')->name('messenger.storeTopic');

@@ -179,6 +179,17 @@
                             </a>
                         </li>
                     @endcan
+                    @can('asistencium_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.asistencia.index') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/asistencia') || request()->is('admin/asistencia/*') ? 'c-active' : '' }}">
+                                <i class="fa-fw fas fa-cogs c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.asistencium.title') }}
+                            </a>
+                        </li>
+                    @endcan
                     @can('cargo_access')
                         <li class="c-sidebar-nav-item">
                             <a href="{{ route('admin.cargos.index') }}"

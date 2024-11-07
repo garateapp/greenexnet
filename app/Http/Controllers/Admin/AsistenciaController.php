@@ -1,86 +1,146 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
-use App\Models\Asistencia;
-use App\Http\Requests\StoreAsistenciaRequest;
-use App\Http\Requests\UpdateAsistenciaRequest;
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\Traits\CsvImportTrait;
+use App\Http\Requests\MassDestroyAsistenciumRequest;
+use App\Http\Requests\StoreAsistenciumRequest;
+use App\Http\Requests\UpdateAsistenciumRequest;
+use App\Models\Asistencium;
+use App\Models\FrecuenciaTurno;
+use App\Models\Locacion;
+use App\Models\Personal;
+use Gate;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Yajra\DataTables\Facades\DataTables;
 
 class AsistenciaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    use CsvImportTrait;
+
+    public function index(Request $request)
     {
-        //
+        abort_if(Gate::denies('asistencium_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        if ($request->ajax()) {
+            $query = Asistencium::with(['locacion', 'turno', 'personal'])->select(sprintf('%s.*', (new Asistencium)->table));
+            $table = Datatables::of($query);
+
+            $table->addColumn('placeholder', '&nbsp;');
+            $table->addColumn('actions', '&nbsp;');
+
+            $table->editColumn('actions', function ($row) {
+                $viewGate      = 'asistencium_show';
+                $editGate      = 'asistencium_edit';
+                $deleteGate    = 'asistencium_delete';
+                $crudRoutePart = 'asistencia';
+
+                return view('partials.datatablesActions', compact(
+                    'viewGate',
+                    'editGate',
+                    'deleteGate',
+                    'crudRoutePart',
+                    'row'
+                ));
+            });
+
+            $table->editColumn('id', function ($row) {
+                return $row->id ? $row->id : '';
+            });
+            $table->addColumn('locacion_nombre', function ($row) {
+                return $row->locacion ? $row->locacion->nombre : '';
+            });
+
+            $table->addColumn('turno_nombre', function ($row) {
+                return $row->turno ? $row->turno->nombre : '';
+            });
+
+            $table->addColumn('personal_nombre', function ($row) {
+                return $row->personal ? $row->personal->nombre : '';
+            });
+
+            $table->rawColumns(['actions', 'placeholder', 'locacion', 'turno', 'personal']);
+
+            return $table->make(true);
+        }
+
+        $locacions         = Locacion::get();
+        $frecuencia_turnos = FrecuenciaTurno::get();
+        $personals         = Personal::get();
+
+        return view('admin.asistencia.index', compact('locacions', 'frecuencia_turnos', 'personals'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
-        //
+        abort_if(Gate::denies('asistencium_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $locacions = Locacion::pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
+
+        $turnos = FrecuenciaTurno::pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
+
+        $personals = Personal::pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
+
+        return view('admin.asistencia.create', compact('locacions', 'personals', 'turnos'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreAsistenciaRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(StoreAsistenciaRequest $request)
+    public function store(StoreAsistenciumRequest $request)
     {
-        //
+        $asistencium = Asistencium::create($request->all());
+
+        return redirect()->route('admin.asistencia.index');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Asistencia  $asistencia
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Asistencia $asistencia)
+    public function edit(Asistencium $asistencium)
     {
-        //
+        abort_if(Gate::denies('asistencium_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $locacions = Locacion::pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
+
+        $turnos = FrecuenciaTurno::pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
+
+        $personals = Personal::pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
+
+        $asistencium->load('locacion', 'turno', 'personal');
+
+        return view('admin.asistencia.edit', compact('asistencium', 'locacions', 'personals', 'turnos'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Asistencia  $asistencia
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Asistencia $asistencia)
+    public function update(UpdateAsistenciumRequest $request, Asistencium $asistencium)
     {
-        //
+        $asistencium->update($request->all());
+
+        return redirect()->route('admin.asistencia.index');
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateAsistenciaRequest  $request
-     * @param  \App\Models\Asistencia  $asistencia
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdateAsistenciaRequest $request, Asistencia $asistencia)
+    public function show(Asistencium $asistencium)
     {
-        //
+        abort_if(Gate::denies('asistencium_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $asistencium->load('locacion', 'turno', 'personal');
+
+        return view('admin.asistencia.show', compact('asistencium'));
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Asistencia  $asistencia
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Asistencia $asistencia)
+    public function destroy(Asistencium $asistencium)
     {
-        //
+        abort_if(Gate::denies('asistencium_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $asistencium->delete();
+
+        return back();
+    }
+
+    public function massDestroy(MassDestroyAsistenciumRequest $request)
+    {
+        $asistencia = Asistencium::find(request('ids'));
+
+        foreach ($asistencia as $asistencium) {
+            $asistencium->delete();
+        }
+
+        return response(null, Response::HTTP_NO_CONTENT);
     }
 }

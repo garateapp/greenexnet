@@ -9,25 +9,18 @@ use Illuminate\Support\Str;
 class GlobalSearchController extends Controller
 {
     private $models = [
-        'Airline'                     => 'cruds.airline.title',
-        'Vuelo'                       => 'cruds.vuelo.title',
-        'Ciudad'                      => 'cruds.ciudad.title',
-        'Region'                      => 'cruds.region.title',
-        'Comuna'                      => 'cruds.comuna.title',
-        'Status'                      => 'cruds.status.title',
-        'TipoHawb'                    => 'cruds.tipoHawb.title',
-        'Manifiest'                   => 'cruds.manifiest.title',
-        'Guium'                       => 'cruds.guium.title',
-        'ImportacionMarcasManifiesto' => 'cruds.importacionMarcasManifiesto.title',
-        'PreCargaManifiesto'          => 'cruds.preCargaManifiesto.title',
-        'Configuracion'               => 'cruds.configuracion.title',
-        'Traduccione'                 => 'cruds.traduccione.title',
-        'Hawb'                        => 'cruds.hawb.title',
-        'Inhumado'                    => 'cruds.inhumado.title',
-        'Aclaracionguium'             => 'cruds.aclaracionguium.title',
-        'AclaracionMawb'              => 'cruds.aclaracionMawb.title',
-        'Ingreso'                     => 'cruds.ingreso.title',
-        'DatosCaja'                   => 'cruds.datosCaja.title',
+        'Airline'       => 'cruds.airline.title',
+        'Vuelo'         => 'cruds.vuelo.title',
+        'Ciudad'        => 'cruds.ciudad.title',
+        'Region'        => 'cruds.region.title',
+        'Comuna'        => 'cruds.comuna.title',
+        'Status'        => 'cruds.status.title',
+        'TipoHawb'      => 'cruds.tipoHawb.title',
+        'Manifiest'     => 'cruds.manifiest.title',
+        'Configuracion' => 'cruds.configuracion.title',
+        'Traduccione'   => 'cruds.traduccione.title',
+        'DatosCaja'     => 'cruds.datosCaja.title',
+        'Entidad'       => 'cruds.entidad.title',
     ];
 
     public function search(Request $request)

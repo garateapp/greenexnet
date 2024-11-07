@@ -24,7 +24,7 @@ class LocacionApiController extends Controller
     public function obtieneUbicacion()
     {
         //abort_if(Gate::denies('locacion_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-        $locacion_padre = Locacion::where('estado_id', 1)->where('locacion_padre_id', '=', '1')->with('area')->get();
+        $locacion_padre = Locacion::where('estado_id', 1)->where('locacion_padre_id', '=', '1')->where("id", "!=", "1")->with('area')->get();
 
         return json_encode($locacion_padre);
         //return new LocacionResource(Locacion::with(['area', 'estado', 'locacion_padre'])->get());

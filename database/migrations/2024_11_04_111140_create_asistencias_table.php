@@ -13,8 +13,19 @@ class CreateAsistenciasTable extends Migration
      */
     public function up()
     {
-        Schema::create('asistencias', function (Blueprint $table) {
+        Schema::create('asistencia', function (Blueprint $table) {
+            // 'turnofrecuencia_id',
+            // 'personal_id',
+            // 'created_at',
+            // 'updated_at',
+            // 'deleted_at',
+            // 'locacion_id',
+            // 'fecha_hora',
             $table->id();
+            $table->datetime('fecha_hora');
+            $table->foreignId('turnofrecuencia_id')->constrained('turnos_frecuencia');
+            $table->foreignId('personal_id')->constrained('personal');
+            $table->foreignId('locacion_id')->constrained('locacion');
             $table->timestamps();
         });
     }
@@ -26,6 +37,6 @@ class CreateAsistenciasTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('asistencias');
+        Schema::dropIfExists('asistencia');
     }
 }

@@ -2119,5 +2119,26 @@ return [
             'nombre_helper'     => ' ',
         ],
     ],
-
+    'asistencium' => [
+        'title'          => 'Asistencia',
+        'title_singular' => 'Asistencium',
+        'fields'         => [
+            'id'                => 'ID',
+            'id_helper'         => ' ',
+            'locacion'          => 'Ubicación',
+            'locacion_helper'   => ' ',
+            'turno'             => 'Turno',
+            'turno_helper'      => ' ',
+            'personal'          => 'Personal',
+            'personal_helper'   => ' ',
+            'fecha_hora'        => 'Fecha Hora',
+            'fecha_hora_helper' => ' ',
+            'created_at'        => 'Created at',
+            'created_at_helper' => ' ',
+            'updated_at'        => 'Updated at',
+            'updated_at_helper' => ' ',
+            'deleted_at'        => 'Deleted at',
+            'deleted_at_helper' => ' ',
+        ],
+    ],
 ];

@@ -33,7 +33,9 @@ Route::group(['prefix' => 'v1', 'as' => 'api.', 'namespace' => 'Api\V1\Admin', '
     Route::apiResource('locacions', 'LocacionApiController');
     Route::get('/locacions/{id}/obtieneUbicacion', 'LocacionApiController@obtieneUbicacion');
     Route::get('/locacions/{id}/obtienePuesto', 'LocacionApiController@obtienePuesto');
-
+    Route::apiResource('asistencia', 'AsistenciaApiController');
+    Route::get('/asistencia/{id}/obtieneAsistencia', 'AsistenciaApiController@obtieneAsistencia');
+    Route::post('asistencia/guardarAsistencia', 'AsistenciaApiController@guardarAsistencia');
     // Cargo
     Route::apiResource('cargos', 'CargoApiController');
 
