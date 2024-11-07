@@ -32,7 +32,7 @@
         <div class="card-footer">
         </div>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.js"></script>
     <script>
         $(document).on("keypress", "form", function(event) {
             if (event.keyCode === 13) {
