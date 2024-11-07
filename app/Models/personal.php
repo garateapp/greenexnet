@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Personal extends Model
 {
+
     use SoftDeletes, Auditable, HasFactory;
 
     public $table = 'personals';
@@ -35,6 +36,14 @@ class Personal extends Model
         'deleted_at',
     ];
 
+    /*************  ✨ Codeium Command ⭐  *************/
+    /**
+     * Serialize the date into a string format.
+     *
+     * @param DateTimeInterface $date The date to serialize.
+     * @return string The formatted date string.
+     */
+    /******  8e2522cf-52cf-4e1b-91f9-de82a8fbacd9  *******/
     protected function serializeDate(DateTimeInterface $date)
     {
         return $date->format('Y-m-d H:i:s');

@@ -27,6 +27,14 @@ class Cargo extends Model
         'deleted_at',
     ];
 
+    /*************  ✨ Codeium Command ⭐  *************/
+    /**
+     * Serialize the given date into a string format.
+     *
+     * @param DateTimeInterface $date The date to serialize.
+     * @return string The formatted date string.
+     */
+    /******  d2beed54-b323-4cfa-a638-c6ff9a602430  *******/
     protected function serializeDate(DateTimeInterface $date)
     {
         return $date->format('Y-m-d H:i:s');

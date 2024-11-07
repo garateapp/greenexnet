@@ -33,6 +33,13 @@ class Tipo extends Model
         return $date->format('Y-m-d H:i:s');
     }
 
+    /*************  ✨ Codeium Command ⭐  *************/
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     *
+     * @description Relacion con Entidad. Un Tipo puede tener varias Entidades asociadas.
+     */
+    /******  d13c1c91-ab42-4230-a347-006b31f728ed  *******/
     public function tipoEntidads()
     {
         return $this->hasMany(Entidad::class, 'tipo_id', 'id');
