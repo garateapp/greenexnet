@@ -120,7 +120,7 @@
                             height: 128, // Alto del código QR
                             colorDark: "#000000",
                             colorLight: "#FFFFFF",
-                            correctLevel: QRCode.CorrectLevel.M
+                            correctLevel: QRCode.CorrectLevel.L
                         });
                     }
 
