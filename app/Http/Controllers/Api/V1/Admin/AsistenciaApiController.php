@@ -43,7 +43,7 @@ class AsistenciaApiController extends Controller
     {
         //abort_if(Gate::denies('asistencium_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         // dd($request);
-        $fechaDeseada = Carbon::parse(date('Y-m-d'))->format('Y-m-d');
+        $fechaDeseada = date('Y-m-d');
         $asistencia = Asistencium::where("locacion_id", $request->ubicacion)->where("turno_id", $request->turno)
             ->whereBetween('fecha_hora', [$fechaDeseada . " 00:00:00", $fechaDeseada . " 23:59:59"])
             ->with(['locacion', 'turno', 'personal'])->get();
