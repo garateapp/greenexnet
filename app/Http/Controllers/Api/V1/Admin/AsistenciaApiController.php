@@ -38,7 +38,7 @@ class AsistenciaApiController extends Controller
         $asistencium->fecha_hora = $fecha_hora;
         $asistencia = Asistencium::whereBetween('fecha_hora', [$fecha . " 00:00:00", $fecha . " 23:59:59"])
             ->with(['locacion', 'turno', 'personal'])->first();
-        if ($asistencia->count() > 0) {
+        if ($asistencia != null) {
             return response()->json(['message' => 'Ya se ha registrado la asistencia del personal'], 400);
         } else {
             $asistencium->save();
