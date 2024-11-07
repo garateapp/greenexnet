@@ -36,6 +36,8 @@ Route::group(['prefix' => 'v1', 'as' => 'api.', 'namespace' => 'Api\V1\Admin', '
     Route::apiResource('asistencia', 'AsistenciaApiController');
     Route::get('/asistencia/{id}/obtieneAsistencia', 'AsistenciaApiController@obtieneAsistencia');
     Route::post('asistencia/guardarAsistencia', 'AsistenciaApiController@guardarAsistencia');
+    Route::post('asistencia/obtieneAsistenciaActual', 'AsistenciaApiController@obtieneAsistenciaActual');
+
     // Cargo
     Route::apiResource('cargos', 'CargoApiController');
 
