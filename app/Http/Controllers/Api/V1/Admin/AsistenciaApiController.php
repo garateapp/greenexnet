@@ -29,21 +29,28 @@ class AsistenciaApiController extends Controller
         $personal = Personal::where('rut', $request->run)->first();
         $puesto = $request->puesto;
         $turno = $request->turno;
-        $fecha_hora = date('Y-m-d H:i:s');
-
+        $fecha_hora = date('d/m/Y H:i:s');
+        $fecha = date('d/m/Y');
         $asistencium = new Asistencium();
         $asistencium->locacion_id = $puesto;
         $asistencium->turno_id = $turno;
         $asistencium->personal_id = $personal->id;
         $asistencium->fecha_hora = $fecha_hora;
-        $asistencium->save();
-        return response()->json(['message' => 'Asistencia guardada correctamente'], 200);
+        $asistencia = Asistencium::whereBetween('fecha_hora', [$fecha . " 00:00:00", $fecha . " 23:59:59"])
+            ->with(['locacion', 'turno', 'personal'])->first();
+        if ($asistencia->count() > 0) {
+            return response()->json(['message' => 'Ya se ha registrado la asistencia del personal'], 400);
+        } else {
+            $asistencium->save();
+
+            return response()->json(['message' => 'Asistencia guardada correctamente'], 200);
+        }
     }
     public function obtieneAsistenciaActual(Request $request)
     {
         //abort_if(Gate::denies('asistencium_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         // dd($request);
-        $fechaDeseada = date('Y-m-d');
+        $fechaDeseada = Carbon::parse(date('Y-m-d'))->format('Y-m-d');
         $asistencia = Asistencium::where("locacion_id", $request->ubicacion)->where("turno_id", $request->turno)
             ->whereBetween('fecha_hora', [$fechaDeseada . " 00:00:00", $fechaDeseada . " 23:59:59"])
             ->with(['locacion', 'turno', 'personal'])->get();
