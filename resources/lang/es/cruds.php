@@ -1986,12 +1986,12 @@ return [
         ],
     ],
     'greenexNet' => [
-        'title'          => 'Greenex Net',
-        'title_singular' => 'Greenex Net',
+        'title'          => 'Asistencia',
+        'title_singular' => 'Asistencia',
     ],
     'locacion' => [
-        'title'          => 'Locacion',
-        'title_singular' => 'Locacion',
+        'title'          => 'Ubicación',
+        'title_singular' => 'Ubicación',
         'fields'         => [
             'id'                       => 'ID',
             'id_helper'                => ' ',
@@ -2101,7 +2101,7 @@ return [
     ],
     'turnosFrecuencium' => [
         'title'          => 'Turnos Frecuencia',
-        'title_singular' => 'Turnos Frecuencium',
+        'title_singular' => 'Turnos Frecuencia',
         'fields'         => [
             'id'                => 'ID',
             'id_helper'         => ' ',
@@ -2121,7 +2121,7 @@ return [
     ],
     'asistencium' => [
         'title'          => 'Asistencia',
-        'title_singular' => 'Asistencium',
+        'title_singular' => 'Asistencia',
         'fields'         => [
             'id'                => 'ID',
             'id_helper'         => ' ',

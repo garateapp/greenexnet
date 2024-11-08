@@ -12,6 +12,7 @@ use App\Models\FrecuenciaTurno;
 use App\Models\Locacion;
 use App\Models\Personal;
 use Gate;
+use Illuminate\Auth\Access\Gate as AccessGate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Yajra\DataTables\Facades\DataTables;

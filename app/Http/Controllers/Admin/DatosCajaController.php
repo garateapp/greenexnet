@@ -13,6 +13,8 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Yajra\DataTables\Facades\DataTables;
 use DB;
+use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 class DatosCajaController extends Controller
 {
@@ -118,5 +120,151 @@ class DatosCajaController extends Controller
         }
 
         return response(null, Response::HTTP_NO_CONTENT);
+    }
+
+    public function getAttendanceData()
+    {
+        $filename = ('public/attendance_data_october.csv');
+        $data = [];
+
+
+        if (Storage::exists($filename)) {
+
+            $fileContent = Storage::get($filename);
+            $lines = explode("\n", $fileContent);
+
+            foreach ($lines as $line) {
+                $columns = str_getcsv($line);
+                if (count($columns) === 4) {
+                    $data[] = [
+                        'fecha_hora' => $columns[0],
+                        'locacion_id' => $columns[1],
+                        'personal_id' => $columns[2],
+                        'turno_id' => $columns[3],
+                    ];
+                }
+            }
+        }
+
+        return response()->json($data);
+    }
+    public function getDailyAttendanceData()
+    {
+        // Ruta del archivo CSV
+        $filePath = Storage::path('public/attendance_data_october.csv');
+
+        // Verifica que el archivo exista
+        if (!file_exists($filePath)) {
+            return response()->json(['error' => 'Archivo no encontrado'], 404);
+        }
+
+        // Leer el archivo y procesar los datos
+        $attendanceData = [];
+        if (($handle = fopen($filePath, "r")) !== false) {
+            while (($data = fgetcsv($handle, 1000, ",")) !== false) {
+                $date = date('Y-m-d', strtotime($data[0])); //$data[0]
+
+                // Cuenta asistencias por día
+                if (isset($attendanceData[$date])) {
+                    $attendanceData[$date]++;
+                } else {
+                    $attendanceData[$date] = 1;
+                }
+            }
+            fclose($handle);
+        }
+
+        // Ordena los datos por fecha
+        ksort($attendanceData);
+
+        // Prepara los datos para el gráfico
+        $labels = array_keys($attendanceData); // Fechas
+        $data = array_values($attendanceData); // Cantidad de asistencias por día
+
+        return response()->json(['labels' => $labels, 'data' => $data]);
+    }
+    public function getAttendanceByTurn()
+    {
+        $filePath = Storage::path('public/attendance_data_october.csv');
+
+        if (!file_exists($filePath)) {
+            return response()->json(['error' => 'Archivo no encontrado'], 404);
+        }
+
+        $attendanceByTurn = [];
+        if (($handle = fopen($filePath, "r")) !== false) {
+            while (($data = fgetcsv($handle, 1000, ",")) !== false) {
+                $turno_id = $data[3]; // Extrae el turno_id
+
+                if (isset($attendanceByTurn[$turno_id])) {
+                    $attendanceByTurn[$turno_id]++;
+                } else {
+                    $attendanceByTurn[$turno_id] = 1;
+                }
+            }
+            fclose($handle);
+        }
+
+        $labels = array_keys($attendanceByTurn); // IDs de los turnos
+        $data = array_values($attendanceByTurn); // Cantidad de asistencias por turno
+
+        return response()->json(['labels' => $labels, 'data' => $data]);
+    }
+    public function getTurnoLocacionData()
+    {
+        // Leer archivo CSV
+        $filePath = storage_path('app/public/attendance_data_october.csv');
+        $csv = Reader::createFromPath($filePath, 'r');
+        $csv->setHeaderOffset(0);  // Asegura que la primera fila se toma como encabezado
+
+        // Procesar datos
+        $turnoLocacionData = [];
+        foreach ($csv as $record) {
+            $locacionId = $record['locacion_id'];
+            $turnoId = $record['turno_id'];
+
+            // Inicializa si no existe
+            if (!isset($turnoLocacionData[$locacionId])) {
+                $turnoLocacionData[$locacionId] = [];
+            }
+
+            // Incrementar contador para cada turno
+            if (!isset($turnoLocacionData[$locacionId][$turnoId])) {
+                $turnoLocacionData[$locacionId][$turnoId] = 0;
+            }
+            $turnoLocacionData[$locacionId][$turnoId]++;
+        }
+
+        return $turnoLocacionData;
+    }
+    public function showTurnoLocacionChart()
+    {
+        $data = $this->getTurnoLocacionData();
+        return response()->json($data);
+    }
+    public function getScatterPlotData()
+    {
+        $filePath = storage_path('app/public/attendance_data_october.csv');
+
+        // Leer los datos del archivo CSV
+        $data = array_map('str_getcsv', file($filePath));
+
+        // Eliminar la primera fila (cabecera)
+        array_shift($data);
+
+        // Organizar los datos para el gráfico
+        $scatterData = [];
+        foreach ($data as $row) {
+            $personal_id = $row[2]; // personal_id
+            $turno_id = $row[3]; // turno_id
+            $locacion_id = $row[1]; // locacion_id
+
+            $scatterData[] = [
+                'x' => $personal_id,    // Usamos personal_id en el eje X
+                'y' => $locacion_id,    // Usamos locacion_id en el eje Y
+                'turno' => $turno_id,   // Información de turno (podemos usarlo para color o tamaño)
+            ];
+        }
+        return response()->json($scatterData);
     }
 }

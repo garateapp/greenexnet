@@ -215,7 +215,7 @@
                 </ul>
             </li>
         @endcan
-        @can('turnos_frecuencium_access')
+        {{-- @can('turnos_frecuencium_access')
             <li class="c-sidebar-nav-item">
                 <a href="{{ route('admin.turnos-frecuencia.index') }}"
                     class="c-sidebar-nav-link {{ request()->is('admin/turnos-frecuencia') || request()->is('admin/turnos-frecuencia/*') ? 'c-active' : '' }}">
@@ -225,7 +225,7 @@
                     {{ trans('cruds.turnosFrecuencium.title') }}
                 </a>
             </li>
-        @endcan
+        @endcan --}}
         @if (file_exists(app_path('Http/Controllers/Auth/ChangePasswordController.php')))
             @can('profile_password_edit')
                 <li class="c-sidebar-nav-item">

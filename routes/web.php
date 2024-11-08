@@ -8,6 +8,12 @@ Auth::routes();
 
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'middleware' => ['auth', 'admin']], function () {
     Route::get('/', 'HomeController@index')->name('home');
+    Route::get('datos-cajas/getAttendanceData', 'DatosCajaController@getAttendanceData')->name('datos-cajas.getAttendanceData');
+    Route::get('datos-cajas/daily', 'DatosCajaController@getDailyAttendanceData')->name('datos-cajas.getAttendanceData');
+    Route::get('/datos-cajas/by-turn', 'DatosCajaController@getAttendanceByTurn')->name('datos-cajas.getAttendanceByTurn');
+    Route::get('/datos-cajas/getAttendanceData', 'DatosCajaController@getAttendanceData')->name('datos-cajas.getAttendanceData');
+    Route::get('/datos-cajas/getScatterPlotData', 'DatosCajaController@getScatterPlotData')->name('datos-cajas.getScatterPlotData');
+    //Route::get('attendance-data', 'HomeController@getAttendanceData')->name('getAttendanceData');
     // Permissions
     Route::delete('permissions/destroy', 'PermissionsController@massDestroy')->name('permissions.massDestroy');
     Route::resource('permissions', 'PermissionsController');

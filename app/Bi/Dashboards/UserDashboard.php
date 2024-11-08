@@ -19,6 +19,7 @@ class UserDashboard extends Dashboard
     {
         return [
             DateFilter::create('created_at', 'Created at')
+
         ];
     }
 

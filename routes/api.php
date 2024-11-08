@@ -17,8 +17,8 @@ Route::group(['prefix' => 'v1', 'as' => 'api.', 'namespace' => 'Api\V1\Admin', '
     Route::post('estados/media', 'EstadosApiController@storeMedia')->name('estados.storeMedia');
     Route::apiResource('estados', 'EstadosApiController');
 
-
-
+    //reportes
+    Route::get('/asistencia/attendance-data', 'AsistenciaApiController@getAttendanceData');
 
     // Datos Caja
     Route::apiResource('datos-cajas', 'DatosCajaApiController');

@@ -12,6 +12,8 @@ use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
+
 
 class AsistenciaApiController extends Controller
 {
@@ -88,5 +90,29 @@ class AsistenciaApiController extends Controller
         $asistencium->delete();
 
         return response(null, Response::HTTP_NO_CONTENT);
+    }
+    public function getAttendanceData()
+    {
+        $filePath = storage_path('attendance_data.csv');
+        $data = [];
+        dd($filePath);
+        if (Storage::exists($filePath)) {
+            $fileContent = Storage::get($filePath);
+            $lines = explode("\n", $fileContent);
+
+            foreach ($lines as $line) {
+                $columns = str_getcsv($line);
+                if (count($columns) === 4) {
+                    $data[] = [
+                        'fecha_hora' => Carbon::parse($columns[0])->format('Y-m-d H:i:s'),
+                        'locacion_id' => $columns[1],
+                        'personal_id' => $columns[2],
+                        'turno_id' => $columns[3],
+                    ];
+                }
+            }
+        }
+
+        return response()->json($data);
     }
 }
