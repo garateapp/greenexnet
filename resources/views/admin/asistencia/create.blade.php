@@ -73,7 +73,7 @@
                 <div class="form-group">
                     <label for="fecha_hora">{{ trans('cruds.asistencium.fields.fecha_hora') }}</label>
                     <input class="form-control datetime {{ $errors->has('fecha_hora') ? 'is-invalid' : '' }}"
-                        type="text" name="fecha_hora" id="fecha_hora" value="{{ old('fecha_hora') }}">
+                        type="text" name="fecha_hora" id="fecha_hora" value="{{ date('Y-m-d H:i:s') }}">
                     @if ($errors->has('fecha_hora'))
                         <div class="invalid-feedback">
                             {{ $errors->first('fecha_hora') }}
@@ -155,7 +155,12 @@
                  */
                 if (lastMessage !== decodedText) {
                     lastMessage = decodedText;
-                    printScanResultPretty(codeId, decodedText, decodedResult);
+                    // Crear un objeto URL y usar URLSearchParams para acceder a los parámetros
+                    const urlParams = new URL(lastMessage).searchParams;
+
+                    // Obtener el valor del parámetro "RUN"
+                    const runValue = urlParams.get("RUN");
+                    printScanResultPretty(codeId, decodedText, runValue);
                     ++codeId;
                 }
             }
