@@ -59,22 +59,32 @@
                     @endif
                     <span class="help-block">{{ trans('cruds.asistencium.fields.personal_helper') }}</span>
                 </div>
-                <div class="form-group">
-                    <label for="fecha_hora">{{ trans('cruds.asistencium.fields.fecha_hora') }}</label>
-                    <input class="form-control datetime {{ $errors->has('fecha_hora') ? 'is-invalid' : '' }}"
-                        type="text" name="fecha_hora" id="fecha_hora" value="{{ old('fecha_hora') }}">
-                    @if ($errors->has('fecha_hora'))
-                        <div class="invalid-feedback">
-                            {{ $errors->first('fecha_hora') }}
+                <div class='video-wrap'>
+                    <video id='video' playsinline autoplay></video>
+                </div>
+                <!—El elemento canvas -->
+                    <div class='controller'>
+                        <button id='snap'>Capture</button>
+                    </div>
+                    <!—Botón de captura -->
+                        <canvas id='canvas' width='640' height='480'></canvas>
+
+                        <div class="form-group">
+                            <label for="fecha_hora">{{ trans('cruds.asistencium.fields.fecha_hora') }}</label>
+                            <input class="form-control datetime {{ $errors->has('fecha_hora') ? 'is-invalid' : '' }}"
+                                type="text" name="fecha_hora" id="fecha_hora" value="{{ old('fecha_hora') }}">
+                            @if ($errors->has('fecha_hora'))
+                                <div class="invalid-feedback">
+                                    {{ $errors->first('fecha_hora') }}
+                                </div>
+                            @endif
+                            <span class="help-block">{{ trans('cruds.asistencium.fields.fecha_hora_helper') }}</span>
                         </div>
-                    @endif
-                    <span class="help-block">{{ trans('cruds.asistencium.fields.fecha_hora_helper') }}</span>
-                </div>
-                <div class="form-group">
-                    <button class="btn btn-danger" type="submit">
-                        {{ trans('global.save') }}
-                    </button>
-                </div>
+                        <div class="form-group">
+                            <button class="btn btn-danger" type="submit">
+                                {{ trans('global.save') }}
+                            </button>
+                        </div>
             </form>
         </div>
     </div>
