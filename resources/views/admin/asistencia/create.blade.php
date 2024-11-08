@@ -160,6 +160,7 @@
 
                     // Obtener el valor del parámetro "RUN"
                     const runValue = urlParams.get("RUN");
+                    alert(runValue);
                     printScanResultPretty(codeId, decodedText, runValue);
                     ++codeId;
                 }
