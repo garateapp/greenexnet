@@ -59,8 +59,71 @@
                     @endif
                     <span class="help-block">{{ trans('cruds.asistencium.fields.personal_helper') }}</span>
                 </div>
-                <div id="reader" width="600px"></div>
-
+                <div id="reader__scan_region"
+                    style="width: 100%; min-height: 100px; text-align: center; position: relative;"><video muted="true"
+                        playsinline="" style="width: 640px; display: block;"></video><canvas id="qr-canvas" width="360"
+                        height="360" style="width: 360px; height: 360px; display: none;"></canvas>
+                    <div id="qr-shaded-region"
+                        style="position: absolute; border-width: 60px 140px; border-style: solid; border-color: rgba(0, 0, 0, 0.48); box-sizing: border-box; inset: 0px;">
+                        <div
+                            style="position: absolute; background-color: rgb(255, 255, 255); width: 40px; height: 5px; top: -5px; left: 0px;">
+                        </div>
+                        <div
+                            style="position: absolute; background-color: rgb(255, 255, 255); width: 40px; height: 5px; top: -5px; right: 0px;">
+                        </div>
+                        <div
+                            style="position: absolute; background-color: rgb(255, 255, 255); width: 40px; height: 5px; bottom: -5px; left: 0px;">
+                        </div>
+                        <div
+                            style="position: absolute; background-color: rgb(255, 255, 255); width: 40px; height: 5px; bottom: -5px; right: 0px;">
+                        </div>
+                        <div
+                            style="position: absolute; background-color: rgb(255, 255, 255); width: 5px; height: 45px; top: -5px; left: -5px;">
+                        </div>
+                        <div
+                            style="position: absolute; background-color: rgb(255, 255, 255); width: 5px; height: 45px; bottom: -5px; left: -5px;">
+                        </div>
+                        <div
+                            style="position: absolute; background-color: rgb(255, 255, 255); width: 5px; height: 45px; top: -5px; right: -5px;">
+                        </div>
+                        <div
+                            style="position: absolute; background-color: rgb(255, 255, 255); width: 5px; height: 45px; bottom: -5px; right: -5px;">
+                        </div>
+                    </div>
+                    <div
+                        style="display: none; position: absolute; top: 0px; z-index: 1; background: yellow; text-align: center; width: 100%;">
+                        Scanner paused</div>
+                </div>
+                <div id="reader__dashboard" style="width: 100%;">
+                    <div id="reader__dashboard_section" style="width: 100%; padding: 10px 0px; text-align: left;">
+                        <div>
+                            <div id="reader__dashboard_section_csr" style="display: block; text-align: center;"><span
+                                    style="margin-right: 10px;"><select id="html5-qrcode-select-camera"
+                                        class="html5-qrcode-element" disabled="" style="display: none;">
+                                        <option value="2c722bee16d9525d6e7c98c5f54fdf0b0ed93276c27907d47c00ffde9b4ac043">
+                                            Integrated Camera (174f:11a8)</option>
+                                    </select></span><span><button id="html5-qrcode-button-camera-start"
+                                        class="html5-qrcode-element" style="opacity: 1; display: none;">Start
+                                        Scanning</button><button id="html5-qrcode-button-camera-stop"
+                                        class="html5-qrcode-element" style="display: inline-block;">Stop
+                                        Scanning</button><button id="html5-qrcode-button-torch" class="html5-qrcode-element"
+                                        style="display: none; margin-left: 5px;">Switch On Torch</button></span></div>
+                            <div
+                                style="text-align: center; margin: auto auto 10px; width: 80%; max-width: 600px; border: 6px dashed rgb(235, 235, 235); padding: 10px; display: none;">
+                                <label for="html5-qrcode-private-filescan-input" style="display: inline-block;"><button
+                                        id="html5-qrcode-button-file-selection" class="html5-qrcode-element">Choose Image -
+                                        No image choosen</button><input id="html5-qrcode-private-filescan-input"
+                                        class="html5-qrcode-element" type="file" accept="image/*"
+                                        style="display: none;"></label>
+                                <div style="font-weight: 400;">Or drop an image to scan</div>
+                            </div>
+                        </div>
+                        <div style="text-align: center;"><a id="html5-qrcode-anchor-scan-type-change"
+                                class="html5-qrcode-element" style="text-decoration: underline; display: none;">Scan an
+                                Image File</a></div>
+                    </div>
+                </div>
+                <div id="scanned-result"></div>
                 <div class="form-group">
                     <label for="fecha_hora">{{ trans('cruds.asistencium.fields.fecha_hora') }}</label>
                     <input class="form-control datetime {{ $errors->has('fecha_hora') ? 'is-invalid' : '' }}"
