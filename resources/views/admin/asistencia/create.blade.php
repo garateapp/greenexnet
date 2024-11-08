@@ -84,22 +84,20 @@
     <script src="{{ asset('js/qrScript.js') }}"></script>
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script>
-        function onScanSuccess(decodedText, decodedResult) {
-            // Handle on success condition with the decoded text or result.
-            console.log(`Scan result: ${decodedText}`, decodedResult);
-        }
-
-        const html5QrCode = new Html5Qrcode("reader");
-        const qrCodeSuccessCallback = (decodedText, decodedResult) => {
-            /* handle success */
-        };
-        const config = {
-            fps: 10,
-            qrbox: {
-                width: 250,
-                height: 250
-            }
-        };
+        const scanner = new Html5QrcodeScanner('reader', {
+                qrbox: {
+                    width: 200,
+                    height: 200,
+                },
+                fps: 5,
+                videoConstraints: {
+                    facingMode: {
+                        exact: "environment"
+                    },
+                },
+            },
+            false)
+        scanner.render(success, error);
 
         // If you want to prefer front camera
 
