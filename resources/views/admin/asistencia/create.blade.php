@@ -84,31 +84,7 @@
     <script src="{{ asset('js/qrScript.js') }}"></script>
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script>
-        const scanner = new Html5QrcodeScanner('reader', {
-                qrbox: {
-                    width: 200,
-                    height: 200,
-                },
-                fps: 5,
-                videoConstraints: {
-                    facingMode: {
-                        exact: "environment"
-                    },
-                },
-            },
-            false)
-        scanner.render(success, error);
-
-        // If you want to prefer front camera
-
-        // Select front camera or fail with `OverconstrainedError`.
-        // html5QrCode.start({
-        //     facingMode: {
-        //         exact: "environment"
-        //     }
-        // }, config, qrCodeSuccessCallback);
-
-        // Select back camera or fail with `OverconstrainedError`.
+        var html5QrCode = new Html5Qrcode("reader");
         html5QrCode.start({
             facingMode: {
                 exact: "environment"
