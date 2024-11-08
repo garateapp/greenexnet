@@ -160,7 +160,11 @@
 
                     // Obtener el valor del parámetro "RUN"
                     const runValue = urlParams.get("RUN");
-                    $("#personal_id").val(runValue);
+                    try {
+                        $("#personal_id").val(runValue);
+                    } catch (e) {
+                        alert("Error:" + e);
+                    }
                     //printScanResultPretty(codeId, decodedText, runValue);
                     ++codeId;
                 }
