@@ -16,6 +16,7 @@ use Illuminate\Auth\Access\Gate as AccessGate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Yajra\DataTables\Facades\DataTables;
+use DB;
 
 class AsistenciaController extends Controller
 {
@@ -82,7 +83,12 @@ class AsistenciaController extends Controller
 
         $turnos = FrecuenciaTurno::pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        $personals = Personal::pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $personals = Personal::select(
+            DB::raw("CONCAT(rut, ' - ', nombre) AS full_name"),
+            'id',
+            'rut'
+        )
+            ->pluck('full_name', 'rut')->prepend(trans('global.pleaseSelect'), '');
 
         return view('admin.asistencia.create', compact('locacions', 'personals', 'turnos'));
     }
