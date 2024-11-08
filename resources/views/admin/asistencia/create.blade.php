@@ -108,6 +108,7 @@
             hljs.initHighlightingOnLoad();
             var lastMessage;
             var codeId = 0;
+            //$("#personal_id").val("9160225-3");
 
             function onScanSuccess(decodedText, decodedResult) {
                 /**
@@ -123,13 +124,8 @@
 
                     // Obtener el valor del parámetro "RUN"
                     const runValue = urlParams.get("RUN");
-                    try {
-                        alert("RUN: " + runValue);
-                        //$("#personal_id").val(runValue);
-                    } catch (e) {
-                        alert("Error:" + e);
-                    }
-                    //printScanResultPretty(codeId, decodedText, runValue);
+
+                    $("#personal_id").val(runValue);
                     ++codeId;
                 }
             }
