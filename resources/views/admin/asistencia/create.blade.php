@@ -84,11 +84,19 @@
     <script src="{{ asset('js/qrScript.js') }}"></script>
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script>
-        var html5QrCode = new Html5Qrcode("reader");
-        html5QrCode.start({
-            facingMode: {
-                exact: "environment"
-            }
-        }, config, qrCodeSuccessCallback);
+        let html5QrcodeScanner = new Html5QrcodeScanner(
+            "reader", {
+                fps: 10,
+                qrbox: qrboxFunction,
+                // Important notice: this is experimental feature, use it at your
+                // own risk. See documentation in
+                // mebjas@/html5-qrcode/src/experimental-features.ts
+                experimentalFeatures: {
+                    useBarCodeDetectorIfSupported: true
+                },
+                rememberLastUsedCamera: true,
+                showTorchButtonIfSupported: true
+            });
+        html5QrcodeScanner.render(onScanSuccess);
     </script>
 @endsection
