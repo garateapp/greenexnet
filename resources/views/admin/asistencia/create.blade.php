@@ -59,50 +59,70 @@
                     @endif
                     <span class="help-block">{{ trans('cruds.asistencium.fields.personal_helper') }}</span>
                 </div>
-                <div class='video-wrap'>
-                    <video id='video' playsinline autoplay></video>
-                </div>
-                <!—El elemento canvas -->
-                    <div class='controller'>
-                        <button id='snap'>Capture</button>
-                    </div>
-                    <!—Botón de captura -->
-                        <canvas id='canvas' width='640' height='480'></canvas>
+                <div id="reader" width="600px"></div>
 
-                        <div class="form-group">
-                            <label for="fecha_hora">{{ trans('cruds.asistencium.fields.fecha_hora') }}</label>
-                            <input class="form-control datetime {{ $errors->has('fecha_hora') ? 'is-invalid' : '' }}"
-                                type="text" name="fecha_hora" id="fecha_hora" value="{{ old('fecha_hora') }}">
-                            @if ($errors->has('fecha_hora'))
-                                <div class="invalid-feedback">
-                                    {{ $errors->first('fecha_hora') }}
-                                </div>
-                            @endif
-                            <span class="help-block">{{ trans('cruds.asistencium.fields.fecha_hora_helper') }}</span>
+                <div class="form-group">
+                    <label for="fecha_hora">{{ trans('cruds.asistencium.fields.fecha_hora') }}</label>
+                    <input class="form-control datetime {{ $errors->has('fecha_hora') ? 'is-invalid' : '' }}"
+                        type="text" name="fecha_hora" id="fecha_hora" value="{{ old('fecha_hora') }}">
+                    @if ($errors->has('fecha_hora'))
+                        <div class="invalid-feedback">
+                            {{ $errors->first('fecha_hora') }}
                         </div>
-                        <div class="form-group">
-                            <button class="btn btn-danger" type="submit">
-                                {{ trans('global.save') }}
-                            </button>
-                        </div>
+                    @endif
+                    <span class="help-block">{{ trans('cruds.asistencium.fields.fecha_hora_helper') }}</span>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-danger" type="submit">
+                        {{ trans('global.save') }}
+                    </button>
+                </div>
             </form>
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ asset('js/qrScript.js') }}"></script>
-    <script src="{{ asset('js/jsqrcode-combined.min.js') }}"></script>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script>
-        $(document).ready(function() {
-            $('#reader').html5_qrcode(function(data) {
-                    $('#result').html(data);
-                },
-                function(error) {
-                    $('#error').html("Scanning...");
-                },
-                function(videoError) {
-                    $('#error').html("Camera error.");
-                }
-            );
-        });
+        function onScanSuccess(decodedText, decodedResult) {
+            // Handle on success condition with the decoded text or result.
+            console.log(`Scan result: ${decodedText}`, decodedResult);
+        }
+
+        const html5QrCode = new Html5Qrcode("reader");
+        const qrCodeSuccessCallback = (decodedText, decodedResult) => {
+            /* handle success */
+        };
+        const config = {
+            fps: 10,
+            qrbox: {
+                width: 250,
+                height: 250
+            }
+        };
+
+        // If you want to prefer front camera
+        html5QrCode.start({
+            facingMode: "user"
+        }, config, qrCodeSuccessCallback);
+
+        // If you want to prefer back camera
+        html5QrCode.start({
+            facingMode: "environment"
+        }, config, qrCodeSuccessCallback);
+
+        // Select front camera or fail with `OverconstrainedError`.
+        html5QrCode.start({
+            facingMode: {
+                exact: "environment"
+            }
+        }, config, qrCodeSuccessCallback);
+
+        // Select back camera or fail with `OverconstrainedError`.
+        html5QrCode.start({
+            facingMode: {
+                exact: "environment"
+            }
+        }, config, qrCodeSuccessCallback);
     </script>
 @endsection
