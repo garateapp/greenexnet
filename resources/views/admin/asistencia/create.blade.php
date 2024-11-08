@@ -103,44 +103,7 @@
             }
         }
         /** Ugly function to write the results to a table dynamically. */
-        function printScanResultPretty(codeId, decodedText, decodedResult) {
-            let resultSection = document.getElementById('scanned-result');
-            let tableBodyId = "scanned-result-table-body";
-            if (!document.getElementById(tableBodyId)) {
-                let table = document.createElement("table");
-                table.className = "styled-table";
-                table.style.width = "100%";
-                resultSection.appendChild(table);
-                let theader = document.createElement('thead');
-                let trow = document.createElement('tr');
-                let th1 = document.createElement('td');
-                th1.innerText = "Count";
-                let th2 = document.createElement('td');
-                th2.innerText = "Format";
-                let th3 = document.createElement('td');
-                th3.innerText = "Result";
-                trow.appendChild(th1);
-                trow.appendChild(th2);
-                trow.appendChild(th3);
-                theader.appendChild(trow);
-                table.appendChild(theader);
-                let tbody = document.createElement("tbody");
-                tbody.id = tableBodyId;
-                table.appendChild(tbody);
-            }
-            let tbody = document.getElementById(tableBodyId);
-            let trow = document.createElement('tr');
-            let td1 = document.createElement('td');
-            td1.innerText = `${codeId}`;
-            let td2 = document.createElement('td');
-            td2.innerText = `${decodedResult.result.format.formatName}`;
-            let td3 = document.createElement('td');
-            td3.innerText = `${decodedText}`;
-            trow.appendChild(td1);
-            trow.appendChild(td2);
-            trow.appendChild(td3);
-            tbody.appendChild(trow);
-        }
+
         docReady(function() {
             hljs.initHighlightingOnLoad();
             var lastMessage;
@@ -161,7 +124,8 @@
                     // Obtener el valor del parámetro "RUN"
                     const runValue = urlParams.get("RUN");
                     try {
-                        $("#personal_id").val(runValue);
+                        alert("RUN: " + runValue);
+                        //$("#personal_id").val(runValue);
                     } catch (e) {
                         alert("Error:" + e);
                     }
