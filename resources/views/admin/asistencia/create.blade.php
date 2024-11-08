@@ -63,33 +63,7 @@
                     style="width: 100%; min-height: 100px; text-align: center; position: relative;"><video muted="true"
                         playsinline="" style="width: 640px; display: block;"></video><canvas id="qr-canvas" width="360"
                         height="360" style="width: 360px; height: 360px; display: none;"></canvas>
-                    <div id="qr-shaded-region"
-                        style="position: absolute; border-width: 60px 140px; border-style: solid; border-color: rgba(0, 0, 0, 0.48); box-sizing: border-box; inset: 0px;">
-                        <div
-                            style="position: absolute; background-color: rgb(255, 255, 255); width: 40px; height: 5px; top: -5px; left: 0px;">
-                        </div>
-                        <div
-                            style="position: absolute; background-color: rgb(255, 255, 255); width: 40px; height: 5px; top: -5px; right: 0px;">
-                        </div>
-                        <div
-                            style="position: absolute; background-color: rgb(255, 255, 255); width: 40px; height: 5px; bottom: -5px; left: 0px;">
-                        </div>
-                        <div
-                            style="position: absolute; background-color: rgb(255, 255, 255); width: 40px; height: 5px; bottom: -5px; right: 0px;">
-                        </div>
-                        <div
-                            style="position: absolute; background-color: rgb(255, 255, 255); width: 5px; height: 45px; top: -5px; left: -5px;">
-                        </div>
-                        <div
-                            style="position: absolute; background-color: rgb(255, 255, 255); width: 5px; height: 45px; bottom: -5px; left: -5px;">
-                        </div>
-                        <div
-                            style="position: absolute; background-color: rgb(255, 255, 255); width: 5px; height: 45px; top: -5px; right: -5px;">
-                        </div>
-                        <div
-                            style="position: absolute; background-color: rgb(255, 255, 255); width: 5px; height: 45px; bottom: -5px; right: -5px;">
-                        </div>
-                    </div>
+
                     <div
                         style="display: none; position: absolute; top: 0px; z-index: 1; background: yellow; text-align: center; width: 100%;">
                         Scanner paused</div>
