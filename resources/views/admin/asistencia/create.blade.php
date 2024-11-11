@@ -124,7 +124,8 @@
 
                     // Obtener el valor del parámetro "RUN"
                     const runValue = urlParams.get("RUN");
-                    alert(runValue);
+
+                    console.log(runValue);
                     //enviar datos de asistencia
                     try {
                         const response = await fetch(
