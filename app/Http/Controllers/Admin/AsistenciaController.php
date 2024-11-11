@@ -80,7 +80,7 @@ class AsistenciaController extends Controller
     {
         abort_if(Gate::denies('asistencium_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $locacions = Locacion::pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $locacions = Locacion::where("id", "!=", 1)->pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
 
         $turnos = FrecuenciaTurno::pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
 
