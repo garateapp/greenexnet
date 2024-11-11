@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Yajra\DataTables\Facades\DataTables;
 use DB;
+use Faker\Provider\ar_EG\Person;
 
 class AsistenciaController extends Controller
 {
@@ -95,7 +96,14 @@ class AsistenciaController extends Controller
 
     public function store(StoreAsistenciumRequest $request)
     {
-        $asistencium = Asistencium::create($request->all());
+
+        $personal_id = Personal::where('rut', $request->personal_id)->first()->id;
+        $asistencium = new Asistencium();
+        $asistencium->personal_id = $personal_id;
+        $asistencium->locacion_id = $request->locacion_id;
+        $asistencium->turno_id = $request->turno_id;
+        $asistencium->fecha_hora = $request->fecha_hora;
+        $asistencium->save();
 
         return redirect()->route('admin.asistencia.index');
     }

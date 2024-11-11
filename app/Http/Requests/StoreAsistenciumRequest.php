@@ -27,7 +27,7 @@ class StoreAsistenciumRequest extends FormRequest
             ],
             'personal_id' => [
                 'required',
-                'integer',
+
             ],
             'fecha_hora' => [
                 'date_format:' . config('panel.date_format') . ' ' . config('panel.time_format'),
