@@ -137,6 +137,7 @@
             const urlParams = new URL(`${decodedResult.result.format.formatName}`).searchParams;
             const runValue = urlParams.get("RUN");
             console.log(runValue);
+            alert(runValue);
             // let td3 = document.createElement('td');
             // td3.innerText = `${decodedText}`;
             // trow.appendChild(td1);
