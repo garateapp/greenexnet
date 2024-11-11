@@ -127,35 +127,7 @@
 
 
                     //enviar datos de asistencia
-                    try {
-                        const response = await fetch(
-                            'https://net.greenexweb.cl/api/v1/asistencia/guardarAsistencia', {
-                                method: 'POST',
-                                headers: {
-                                    "Content-Type": "application/json",
-                                    "Authorization": `Bearer ${token}`
-                                },
-                                body: JSON.stringify({
-                                    run: runValue,
-                                    turno: $("#turno_id").val(),
-                                    ubicacion: $("#locacion_id").val(),
-                                    puesto: data.find((item) => item.key === selectedId).key,
-                                    // Enviar el valor de RUN al servidor
-                                }),
-                            });
 
-                        const jsonResponse = await response.json();
-                        if (response.ok) {
-
-                            $("#personal_id").val("");
-                        } else {
-                            alert("Error al enviar los datos: " + jsonResponse.message);
-                        }
-                    } catch (error) {
-                        alert("Error al enviar los datos: " + jsonResponse.message);
-                    } finally {
-
-                    }
                 };
             }
         }
