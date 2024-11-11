@@ -73,7 +73,7 @@
                 <div class="form-group">
                     <label for="fecha_hora">{{ trans('cruds.asistencium.fields.fecha_hora') }}</label>
                     <input class="form-control datetime {{ $errors->has('fecha_hora') ? 'is-invalid' : '' }}"
-                        type="text" name="fecha_hora" id="fecha_hora" value="{{ date('Y-m-d H:i:s') }}">
+                        type="text" name="fecha_hora" id="fecha_hora" value="{{ date('d/m/Y H:i:s') }}">
                     @if ($errors->has('fecha_hora'))
                         <div class="invalid-feedback">
                             {{ $errors->first('fecha_hora') }}
