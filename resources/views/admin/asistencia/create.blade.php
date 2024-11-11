@@ -124,50 +124,78 @@
 
                     // Obtener el valor del parámetro "RUN"
                     const runValue = urlParams.get("RUN");
+                    alert(runValue);
+                    //enviar datos de asistencia
+                    try {
+                        const response = await fetch(
+                            'https://net.greenexweb.cl/api/v1/asistencia/guardarAsistencia', {
+                                method: 'POST',
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    "Authorization": `Bearer ${token}`
+                                },
+                                body: JSON.stringify({
+                                    run: runValue,
+                                    turno: $("#turno_id").val(),
+                                    ubicacion: $("#locacion_id").val(),
+                                    puesto: data.find((item) => item.key === selectedId).key,
+                                    // Enviar el valor de RUN al servidor
+                                }),
+                            });
 
-                    $("#personal_id").val(runValue);
-                    ++codeId;
-                }
-            }
-            var qrboxFunction = function(viewfinderWidth, viewfinderHeight) {
-                // Square QR Box, with size = 80% of the min edge.
-                var minEdgeSizeThreshold = 250;
-                var edgeSizePercentage = 0.75;
-                var minEdgeSize = (viewfinderWidth > viewfinderHeight) ?
-                    viewfinderHeight : viewfinderWidth;
-                var qrboxEdgeSize = Math.floor(minEdgeSize * edgeSizePercentage);
-                if (qrboxEdgeSize < minEdgeSizeThreshold) {
-                    if (minEdgeSize < minEdgeSizeThreshold) {
-                        return {
-                            width: minEdgeSize,
-                            height: minEdgeSize
-                        };
-                    } else {
-                        return {
-                            width: minEdgeSizeThreshold,
-                            height: minEdgeSizeThreshold
-                        };
+                        const jsonResponse = await response.json();
+                        if (response.ok) {
+                            //Cargar los datos en el flatList
+                            $("#personal_id").val("");
+                        } else {
+                            alert("Error al enviar los datos: " + jsonResponse.message);
+                        }
+                    } catch (error) {
+                        alert("Error al enviar los datos: " + jsonResponse.message);
+                    } finally {
+
                     }
-                }
-                return {
-                    width: qrboxEdgeSize,
-                    height: qrboxEdgeSize
                 };
             }
-            let html5QrcodeScanner = new Html5QrcodeScanner(
-                "reader", {
-                    fps: 10,
-                    qrbox: qrboxFunction,
-                    // Important notice: this is experimental feature, use it at your
-                    // own risk. See documentation in
-                    // mebjas@/html5-qrcode/src/experimental-features.ts
-                    experimentalFeatures: {
-                        useBarCodeDetectorIfSupported: true
-                    },
-                    rememberLastUsedCamera: true,
-                    showTorchButtonIfSupported: true
-                });
-            html5QrcodeScanner.render(onScanSuccess);
+        }
+        var qrboxFunction = function(viewfinderWidth, viewfinderHeight) {
+            // Square QR Box, with size = 80% of the min edge.
+            var minEdgeSizeThreshold = 250;
+            var edgeSizePercentage = 0.75;
+            var minEdgeSize = (viewfinderWidth > viewfinderHeight) ?
+                viewfinderHeight : viewfinderWidth;
+            var qrboxEdgeSize = Math.floor(minEdgeSize * edgeSizePercentage);
+            if (qrboxEdgeSize < minEdgeSizeThreshold) {
+                if (minEdgeSize < minEdgeSizeThreshold) {
+                    return {
+                        width: minEdgeSize,
+                        height: minEdgeSize
+                    };
+                } else {
+                    return {
+                        width: minEdgeSizeThreshold,
+                        height: minEdgeSizeThreshold
+                    };
+                }
+            }
+            return {
+                width: qrboxEdgeSize,
+                height: qrboxEdgeSize
+            };
+        }
+        let html5QrcodeScanner = new Html5QrcodeScanner(
+            "reader", {
+                fps: 10,
+                qrbox: qrboxFunction,
+                // Important notice: this is experimental feature, use it at your
+                // own risk. See documentation in
+                // mebjas@/html5-qrcode/src/experimental-features.ts
+                experimentalFeatures: {
+                    useBarCodeDetectorIfSupported: true
+                },
+                rememberLastUsedCamera: true,
+                showTorchButtonIfSupported: true
+            }); html5QrcodeScanner.render(onScanSuccess);
         });
     </script>
 @endsection
