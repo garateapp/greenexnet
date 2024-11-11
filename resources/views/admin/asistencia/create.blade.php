@@ -111,7 +111,18 @@
             const runValue = urlParams.get("RUN");
             console.log(runValue);
             $("#personal_id").val(runValue).trigger('change');
-            $("#fecha_hora").val(date('Y-m-d H:i:s'));
+            const now = new Date();
+
+            // Formatear la fecha y hora como "YYYY-MM-DD HH:MM:SS"
+            const formattedDateTime = now.getFullYear() + '-' +
+                String(now.getMonth() + 1).padStart(2, '0') + '-' +
+                String(now.getDate()).padStart(2, '0') + ' ' +
+                String(now.getHours()).padStart(2, '0') + ':' +
+                String(now.getMinutes()).padStart(2, '0') + ':' +
+                String(now.getSeconds()).padStart(2, '0');
+
+            // Asignar el valor formateado al campo de fecha y hora
+            $("#fecha_hora").val(formattedDateTime);
 
         }
         docReady(function() {
