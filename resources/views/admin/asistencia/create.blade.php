@@ -111,6 +111,7 @@
             const runValue = urlParams.get("RUN");
             console.log(runValue);
             $("#personal_id").val(runValue).trigger('change');
+            $("#fecha_hora").val(date('Y-m-d H:i:s'));
 
         }
         docReady(function() {
