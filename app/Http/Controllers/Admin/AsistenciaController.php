@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Yajra\DataTables\Facades\DataTables;
 use DB;
+use Carbon\Carbon;
 use Faker\Provider\ar_EG\Person;
 
 class AsistenciaController extends Controller
@@ -80,7 +81,7 @@ class AsistenciaController extends Controller
     {
         abort_if(Gate::denies('asistencium_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $locacions = Locacion::where("locacion_padre_id", "=", 1)->pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $locacions = Locacion::where("locacion_padre_id", "=", 1)->where("id", "!=", 1)->pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
 
         $turnos = FrecuenciaTurno::pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
 
@@ -93,6 +94,19 @@ class AsistenciaController extends Controller
 
         return view('admin.asistencia.create', compact('locacions', 'personals', 'turnos'));
     }
+    public function cargaDatosTurno(Request $request)
+    {
+        //cant definida de personal
+        $cant_personal = Locacion::where("id", $request->locacion_id)->first()->cantidad_personal;
+        //cant personal guardada
+        $startOfDay = Carbon::now()->startOfDay();
+        $endOfDay = Carbon::now()->endOfDay();
+        $cant_guardada = Asistencium::where("locacion_id", $request->locacion_id)
+            ->where("turno_id", $request->turno_id)
+            ->whereBetween("fecha_hora", [$startOfDay, $endOfDay])
+            ->count();
+        return response()->json(['cant_personal' => $cant_personal, 'cant_guardada' => $cant_guardada], 200);
+    }
     public function cargaUbicaciones(Request $request)
     {
         $ubicacion = Locacion::where("locacion_padre_id", $request->locacion_id)->get();
@@ -104,7 +118,7 @@ class AsistenciaController extends Controller
         $personal_id = Personal::where('rut', $request->personal_id)->first()->id;
         $asistencium = new Asistencium();
         $asistencium->personal_id = $personal_id;
-        $asistencium->locacion_id = $request->locacion_id;
+        $asistencium->locacion_id = $request->ubicacion_id;
         $asistencium->turno_id = $request->turno_id;
         $asistencium->fecha_hora = $request->fecha_hora;
         $asistencium->save();

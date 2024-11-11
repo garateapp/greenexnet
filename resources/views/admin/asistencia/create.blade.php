@@ -3,6 +3,14 @@
     <div class="card">
         <div class="card-header">
             {{ trans('global.create') }} {{ trans('cruds.asistencium.title_singular') }}
+            <div id="divDataTurno" class="" style="float: right;display: none;">Asistencia Solicitada: <button
+                    style="border-radius: 15px; width: 60px;height: 30px; background-color: #8bc34a; color: white;"
+                    type="button" id="btnCantidadSolicitada"></button>&nbsp;&nbsp;
+
+                Asistencia Actual: <button
+                    style="border-radius: 15px; width: 60px;height: 30px; background-color: #ff7313; color: white;"
+                    type="button" id="btnCantidadDefinida"></button>
+            </div>
         </div>
 
         <div class="card-body">
@@ -52,6 +60,8 @@
                         </div>
                     @endif
                     <span class="help-block">{{ trans('cruds.asistencium.fields.turno_helper') }}</span>
+
+
                 </div>
                 <div class="form-group">
                     <label class="required" for="personal_id">{{ trans('cruds.asistencium.fields.personal') }}</label>
@@ -136,6 +146,35 @@
                 },
                 error: function() {
                     alert('Hubo un error al cargar las ubicaciones');
+                }
+            });
+        });
+        //Obtenemos datos del turno selecionado
+        $('#turno_id').change(function() {
+            const turno_id = $(this).val();
+            const locacion_id = $('#locacion_id').val();
+
+            // Llamada AJAX para obtener las ubicaciones
+            $.ajax({
+                url: '/admin/asistencia/cargaDatosTurno', // Asegúrate de ajustar esta URL según tu enrutamiento
+                headers: {
+                    'x-csrf-token': _token
+                },
+                method: 'POST',
+                data: {
+                    locacion_id: locacion_id,
+                    turno_id: turno_id
+                },
+                success: function(response) {
+                    console.log(response.cant_personal);
+                    $("#divDataTurno").attr("style", "float: right;display: inline-grid;");
+                    $("#btnCantidadSolicitada").text(response.cant_personal);
+                    $("#btnCantidadDefinida").text(response.cant_guardada);
+                    // Limpiar las opciones previas de ubicacion_id
+
+                },
+                error: function() {
+                    alert('Hubo un error al cargar los datos del turno');
                 }
             });
         });
