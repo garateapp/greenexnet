@@ -131,7 +131,7 @@
                     // Iterar sobre el resultado y añadir opciones al select
                     $.each(response, function(key, ubicacion) {
                         $('#ubicacion_id').append('<option value="' + ubicacion.id + '">' +
-                            ubicacion.nombre + '</option>');
+                            ubicacion.nombre.toUpperCase() + '</option>');
                     });
                 },
                 error: function() {
