@@ -103,12 +103,48 @@
             }
         }
         /** Ugly function to write the results to a table dynamically. */
-
+        function printScanResultPretty(codeId, decodedText, decodedResult) {
+            let resultSection = document.getElementById('scanned-result');
+            let tableBodyId = "scanned-result-table-body";
+            if (!document.getElementById(tableBodyId)) {
+                let table = document.createElement("table");
+                table.className = "styled-table";
+                table.style.width = "100%";
+                resultSection.appendChild(table);
+                let theader = document.createElement('thead');
+                let trow = document.createElement('tr');
+                let th1 = document.createElement('td');
+                th1.innerText = "Count";
+                let th2 = document.createElement('td');
+                th2.innerText = "Format";
+                let th3 = document.createElement('td');
+                th3.innerText = "Result";
+                trow.appendChild(th1);
+                trow.appendChild(th2);
+                trow.appendChild(th3);
+                theader.appendChild(trow);
+                table.appendChild(theader);
+                let tbody = document.createElement("tbody");
+                tbody.id = tableBodyId;
+                table.appendChild(tbody);
+            }
+            let tbody = document.getElementById(tableBodyId);
+            let trow = document.createElement('tr');
+            let td1 = document.createElement('td');
+            td1.innerText = `${codeId}`;
+            let td2 = document.createElement('td');
+            td2.innerText = `${decodedResult.result.format.formatName}`;
+            let td3 = document.createElement('td');
+            td3.innerText = `${decodedText}`;
+            trow.appendChild(td1);
+            trow.appendChild(td2);
+            trow.appendChild(td3);
+            tbody.appendChild(trow);
+        }
         docReady(function() {
             hljs.initHighlightingOnLoad();
             var lastMessage;
             var codeId = 0;
-            //$("#personal_id").val("9160225-3");
 
             function onScanSuccess(decodedText, decodedResult) {
                 /**
@@ -119,56 +155,49 @@
                  */
                 if (lastMessage !== decodedText) {
                     lastMessage = decodedText;
-                    // Crear un objeto URL y usar URLSearchParams para acceder a los parámetros
-                    const urlParams = new URL(lastMessage).searchParams;
-
-                    // Obtener el valor del parámetro "RUN"
-                    const runValue = urlParams.get("RUN");
-
-
-                    //enviar datos de asistencia
-
-                };
-            }
-        }
-        var qrboxFunction = function(viewfinderWidth, viewfinderHeight) {
-            // Square QR Box, with size = 80% of the min edge.
-            var minEdgeSizeThreshold = 250;
-            var edgeSizePercentage = 0.75;
-            var minEdgeSize = (viewfinderWidth > viewfinderHeight) ?
-                viewfinderHeight : viewfinderWidth;
-            var qrboxEdgeSize = Math.floor(minEdgeSize * edgeSizePercentage);
-            if (qrboxEdgeSize < minEdgeSizeThreshold) {
-                if (minEdgeSize < minEdgeSizeThreshold) {
-                    return {
-                        width: minEdgeSize,
-                        height: minEdgeSize
-                    };
-                } else {
-                    return {
-                        width: minEdgeSizeThreshold,
-                        height: minEdgeSizeThreshold
-                    };
+                    printScanResultPretty(codeId, decodedText, decodedResult);
+                    ++codeId;
                 }
             }
-            return {
-                width: qrboxEdgeSize,
-                height: qrboxEdgeSize
-            };
-        }
-        let html5QrcodeScanner = new Html5QrcodeScanner(
-            "reader", {
-                fps: 10,
-                qrbox: qrboxFunction,
-                // Important notice: this is experimental feature, use it at your
-                // own risk. See documentation in
-                // mebjas@/html5-qrcode/src/experimental-features.ts
-                experimentalFeatures: {
-                    useBarCodeDetectorIfSupported: true
-                },
-                rememberLastUsedCamera: true,
-                showTorchButtonIfSupported: true
-            }); html5QrcodeScanner.render(onScanSuccess);
+            var qrboxFunction = function(viewfinderWidth, viewfinderHeight) {
+                // Square QR Box, with size = 80% of the min edge.
+                var minEdgeSizeThreshold = 250;
+                var edgeSizePercentage = 0.75;
+                var minEdgeSize = (viewfinderWidth > viewfinderHeight) ?
+                    viewfinderHeight : viewfinderWidth;
+                var qrboxEdgeSize = Math.floor(minEdgeSize * edgeSizePercentage);
+                if (qrboxEdgeSize < minEdgeSizeThreshold) {
+                    if (minEdgeSize < minEdgeSizeThreshold) {
+                        return {
+                            width: minEdgeSize,
+                            height: minEdgeSize
+                        };
+                    } else {
+                        return {
+                            width: minEdgeSizeThreshold,
+                            height: minEdgeSizeThreshold
+                        };
+                    }
+                }
+                return {
+                    width: qrboxEdgeSize,
+                    height: qrboxEdgeSize
+                };
+            }
+            let html5QrcodeScanner = new Html5QrcodeScanner(
+                "reader", {
+                    fps: 10,
+                    qrbox: qrboxFunction,
+                    // Important notice: this is experimental feature, use it at your
+                    // own risk. See documentation in
+                    // mebjas@/html5-qrcode/src/experimental-features.ts
+                    experimentalFeatures: {
+                        useBarCodeDetectorIfSupported: true
+                    },
+                    rememberLastUsedCamera: true,
+                    showTorchButtonIfSupported: true
+                });
+            html5QrcodeScanner.render(onScanSuccess);
         });
     </script>
 @endsection
