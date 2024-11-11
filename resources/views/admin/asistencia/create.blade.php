@@ -145,7 +145,7 @@
             // Obtener el valor del parámetro "RUN"
             const runValue = urlParams.get("RUN");
             console.log(runValue);
-            $("#personal_id").val(runValue);
+            $("#personal_id").val(runValue).trigger('change');
         }
         docReady(function() {
             hljs.initHighlightingOnLoad();
