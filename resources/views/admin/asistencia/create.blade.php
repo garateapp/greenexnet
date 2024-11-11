@@ -9,7 +9,7 @@
             <form method="POST" action="{{ route('admin.asistencia.store') }}" enctype="multipart/form-data">
                 @csrf
                 <div class="form-group">
-                    <label class="required" for="locacion_id">{{ trans('cruds.asistencium.fields.locacion') }}</label>
+                    <label class="required" for="locacion_id">Sección</label>
                     <select class="form-control select2 {{ $errors->has('locacion') ? 'is-invalid' : '' }}"
                         name="locacion_id" id="locacion_id" required>
                         @foreach ($locacions as $id => $entry)
@@ -23,6 +23,19 @@
                         </div>
                     @endif
                     <span class="help-block">{{ trans('cruds.asistencium.fields.locacion_helper') }}</span>
+                </div>
+                <div class="form-group">
+                    <label class="required" for="ubicacion_id">Ubicación</label>
+                    <select class="form-control select2" name="ubicacion_id" id="ubicacion_id" required>
+                        @foreach ($locacions as $id => $entry)
+                            <option value="" selected>
+                                Seleccione una Ubicación</option>
+                        @endforeach
+                    </select>
+
+
+                    </select>
+
                 </div>
                 <div class="form-group">
                     <label class="required" for="turno_id">{{ trans('cruds.asistencium.fields.turno') }}</label>
@@ -92,6 +105,41 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/highlight.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
+    <script>
+        $('#locacion_id').change(function() {
+            const locacionId = $(this).val();
+
+            // Llamada AJAX para obtener las ubicaciones
+            $.ajax({
+                url: '/admin/asistencia/cargaUbicaciones', // Asegúrate de ajustar esta URL según tu enrutamiento
+                headers: {
+                    'x-csrf-token': _token
+                },
+                method: 'POST',
+                data: {
+                    locacion_id: locacionId
+                },
+                success: function(response) {
+                    console.log(response);
+                    // Limpiar las opciones previas de ubicacion_id
+                    $('#ubicacion_id').empty();
+
+                    // Agregar la opción por defecto
+                    $('#ubicacion_id').append('<option value="">Seleccione una Ubicación</option>');
+
+                    // Iterar sobre el resultado y añadir opciones al select
+                    $.each(response, function(key, ubicacion) {
+                        $('#ubicacion_id').append('<option value="' + ubicacion.id + '">' +
+                            ubicacion.nombre + '</option>');
+                    });
+                },
+                error: function() {
+                    alert('Hubo un error al cargar las ubicaciones');
+                }
+            });
+        });
+    </script>
     <script>
         function docReady(fn) {
             // see if DOM is already available

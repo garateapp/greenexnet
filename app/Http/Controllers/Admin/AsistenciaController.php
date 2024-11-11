@@ -80,7 +80,7 @@ class AsistenciaController extends Controller
     {
         abort_if(Gate::denies('asistencium_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $locacions = Locacion::where("id", "!=", 1)->pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $locacions = Locacion::where("locacion_padre_id", "=", 1)->pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
 
         $turnos = FrecuenciaTurno::pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
 
@@ -93,7 +93,11 @@ class AsistenciaController extends Controller
 
         return view('admin.asistencia.create', compact('locacions', 'personals', 'turnos'));
     }
-
+    public function cargaUbicaciones(Request $request)
+    {
+        $ubicacion = Locacion::where("locacion_padre_id", $request->locacion_id)->get();
+        return response()->json($ubicacion);
+    }
     public function store(StoreAsistenciumRequest $request)
     {
 
