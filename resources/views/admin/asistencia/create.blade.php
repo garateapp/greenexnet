@@ -125,7 +125,7 @@
                     // Obtener el valor del parámetro "RUN"
                     const runValue = urlParams.get("RUN");
 
-                    console.log(runValue);
+
                     //enviar datos de asistencia
                     try {
                         const response = await fetch(
@@ -146,7 +146,7 @@
 
                         const jsonResponse = await response.json();
                         if (response.ok) {
-                            //Cargar los datos en el flatList
+
                             $("#personal_id").val("");
                         } else {
                             alert("Error al enviar los datos: " + jsonResponse.message);
