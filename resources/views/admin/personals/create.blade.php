@@ -13,7 +13,7 @@
                     <i class="fa-fw fas fa-camera" style="color: white;"></i></button>
                 <video id="video" width="320" height="240" autoplay></video>
                 <button id="click-photo" type="button">Sacar Foto</button>
-                <canvas id="canvas" width="320" height="240"></canvas>
+                <canvas id="canvas" width="240" height="320"></canvas>
                 <input type="hidden" name="foto" id="foto">
                 <div class="form-group">
                     <label class="required" for="nombre">{{ trans('cruds.personal.fields.nombre') }}</label>
@@ -152,8 +152,14 @@
 
         camera_button.addEventListener('click', async function() {
             let stream = await navigator.mediaDevices.getUserMedia({
-                video: true,
-                audio: false
+
+                video: {
+                    facingMode: {
+                        exact: "environment"
+                    }
+                }
+                audio: false,
+
             });
             video.srcObject = stream;
         });
