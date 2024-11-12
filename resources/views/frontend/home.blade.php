@@ -2,6 +2,9 @@
 
 @section('content')
     <div class="container">
+        <form id="logoutform" action="{{ route('logout') }}" method="POST" style="display: none;">
+            {{ csrf_field() }}
+        </form>
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card">
@@ -23,5 +26,7 @@
 @endsection
 
 <script>
-    window.location.href = "https://net.greenexweb.cl/logout";
+    window.onload = function() {
+        document.getElementById("logoutform").submit();
+    };
 </script>
