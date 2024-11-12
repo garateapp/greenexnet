@@ -15,6 +15,7 @@ use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Storage;
 
 class PersonalController extends Controller
 {
@@ -75,6 +76,9 @@ class PersonalController extends Controller
             $table->addColumn('entidad_nombre', function ($row) {
                 return $row->entidad ? $row->entidad->nombre : '';
             });
+            $table->addColumn('foto', function ($row) {
+                return $row->foto ? $row->foto : '';
+            });
 
             $table->rawColumns(['actions', 'placeholder', 'cargo', 'estado', 'entidad']);
 
@@ -99,7 +103,30 @@ class PersonalController extends Controller
 
     public function store(StorePersonalRequest $request)
     {
-        $personal = Personal::create($request->all());
+        $personal = new Personal();
+        $personal->nombre = $request->nombre;
+        $personal->codigo = $request->codigo;
+        $personal->rut = $request->rut;
+        $personal->email = $request->email;
+        $personal->telefono = $request->telefono;
+        $personal->cargo_id = $request->cargo_id;
+        $personal->estado_id = $request->estado_id;
+        $personal->entidad_id = $request->entidad_id;
+        $base64Image = $request->input('foto');
+        $fileData = explode(',', $base64Image);
+        $imageData = base64_decode($fileData[1]);
+        // Generar un nombre único para el archivo
+        $fileName = $request->rut . '.jpg'; // Puedes cambiar la extensión según el tipo de imagen
+
+        // Guardar la imagen en el storage
+        $filePath = 'images/' . $fileName;
+        Storage::disk('public')->put($filePath, $imageData);
+
+        $personal->foto = $filePath;
+
+        $personal->save();
+
+        // $personal = Personal::create($request->all());
 
         return redirect()->route('admin.personals.index');
     }

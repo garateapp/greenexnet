@@ -45,6 +45,10 @@ class StorePersonalRequest extends FormRequest
                 'required',
                 'integer',
             ],
+            'foto' => [
+                'string',
+                'nullable'
+            ],
         ];
     }
 }

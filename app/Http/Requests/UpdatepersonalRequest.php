@@ -46,6 +46,10 @@ class UpdatePersonalRequest extends FormRequest
                 'required',
                 'integer',
             ],
+            'foto' => [
+                'string',
+                'nullable'
+            ],
         ];
     }
 }
