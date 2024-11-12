@@ -24,7 +24,7 @@ class PersonalController extends Controller
     public function index(Request $request)
     {
         abort_if(Gate::denies('personal_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-        dd(Storage::disk('public'));
+
         if ($request->ajax()) {
             $query = Personal::with(['cargo', 'estado', 'entidad'])->select(sprintf('%s.*', (new Personal)->table));
             $table = Datatables::of($query);
