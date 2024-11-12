@@ -8,26 +8,27 @@
         <div class="card-body">
             <form method="POST" action="{{ route('admin.personals.store') }}" enctype="multipart/form-data">
                 @csrf
-                <button id="start-camera" type="button"
-                    style="position: fixed; bottom: 20px; left: 40%; transform: translateX(-50%); padding: 10px 20px; border-radius: 5px; background-color: #4CAF50; color: white; z-index: 2;">
-                    Activar Camara
-                </button>
-                <!-- Botón para tomar la foto, colocado en una posición fija -->
-                <button id="click-photo" type="button"
-                    style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); 
+                <div class="form-group">
+                    <button id="start-camera" type="button"
+                        style="position: fixed; bottom: 20px;left:20%;  padding: 10px 20px; border-radius: 5px; background-color: #4CAF50; color: white; z-index: 2;">
+                        Activar Camara
+                    </button>
+                </div>
+                <div class="form-group">
+                    <!-- Botón para tomar la foto, colocado en una posición fija -->
+                    <button id="click-photo" type="button"
+                        style="position: fixed; bottom: 20px; left: 70%; transform: translateX(-50%);
                     padding: 10px 20px; border-radius: 5px; background-color: #4CAF50; color: white; z-index: 2;">
-                    Sacar Foto
-                </button>
+                        Sacar Foto
+                    </button>
+                </div>
                 <!-- Vista de la cámara -->
                 <video id="video" width="320" height="240" autoplay
                     style="width: 100%; height: auto; display: block; margin-top: 50px;z-index: 1;"></video>
 
 
                 <!-- Botón para tomar la foto, colocado en una posición fija -->
-                <button id="click-photo" type="button"
-                    style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); padding: 10px 20px; border-radius: 5px; background-color: #4CAF50; color: white; z-index: 2;">
-                    Sacar Foto
-                </button>
+
                 <canvas id="canvas" width="240" height="320"></canvas>
                 <input type="hidden" name="foto" id="foto">
                 <div class="form-group">
