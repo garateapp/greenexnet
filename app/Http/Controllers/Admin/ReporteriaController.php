@@ -33,7 +33,7 @@ class ReporteriaController extends Controller
         $cantPersonalActuales = $asistenciaDia;
         $cantPersonasAusentes = $cantPersonalEsperado - $cantPersonalActuales;
 
-        $porcentajeAusencias = $cantPersonalEsperado > 0 ? ($cantPersonasAusentes / $cantPersonalEsperado) * 100 : 0;
+        $porcentajeAusencias = $cantPersonalEsperado > 0 ? round(($cantPersonasAusentes / $cantPersonalEsperado) * 100, 2) : 0;
 
 
 
