@@ -28,7 +28,15 @@
     <link href="{{ asset('css/custom.css') }}" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <style>
+        .bg-info {
+            background-color: #8bc34a !important;
+        }
 
+        .bg-danger {
+            background-color: #ff7313 !important;
+        }
+    </style>
     @yield('styles')
 </head>
 

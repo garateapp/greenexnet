@@ -1,6 +1,7 @@
 <?php
 
 //use Illuminate\Routing\Route;
+use App\Http\Controllers\Admin\ReporteriaController;
 
 Route::view('/', '/welcome');
 Route::get('userVerification/{token}', 'UserVerificationController@approve')->name('userVerification');
@@ -115,6 +116,11 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
 
     Route::get('global-search', 'GlobalSearchController@search')->name('globalSearch');
 
+    //Reportería
+    //getDatosgenerales
+
+    Route::get('reporteria/getDatosgenerales', 'ReporteriaController@getDatosgenerales')->name('reporteria.getDatosgenerales');
+    //Route::get('/reporteria', [ReporteriaController::class, 'getDatosgenerales']);
 
     Route::get('messenger', 'MessengerController@index')->name('messenger.index');
     Route::get('messenger/create', 'MessengerController@createTopic')->name('messenger.createTopic');
