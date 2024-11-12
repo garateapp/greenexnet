@@ -12,7 +12,9 @@
                     style="border-radius: 15px; width: 30px;height: 30px; background-color: #ff7313; border: none;">
                     <i class="fa-fw fas fa-camera" style="color: white;"></i></button>
                 <video id="video" width="320" height="240" autoplay></video>
-                <button id="click-photo" type="button">Sacar Foto</button>
+                <button id="click-photo" type="button"
+                    style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); padding: 10px 20px; border-radius: 5px; background-color: #4CAF50; color: white; z-index: 2;">
+                    Sacar Foto</button>
                 <canvas id="canvas" width="240" height="320"></canvas>
                 <input type="hidden" name="foto" id="foto">
                 <div class="form-group">
