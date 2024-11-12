@@ -11,19 +11,21 @@
                 @csrf
                 <!-- Botón para activar la cámara -->
                 <button id="start-camera" type="button"
-                    style="position: fixed; top: 10px; left: 10px; border-radius: 15px; width: 30px; height: 30px; background-color: #ff7313; border: none; z-index: 2;">
-                    <i class="fa-fw fas fa-camera" style="color: white;"></i>
+                    style="position: fixed; bottom: 20px; left: 40%; transform: translateX(-50%); padding: 10px 20px; border-radius: 5px; background-color: #4CAF50; color: white; z-index: 2;">
+                    Activar Camara
                 </button>
-
-                <!-- Vista de la cámara -->
-                <video id="video" width="320" height="240" autoplay
-                    style="width: 100%; height: auto; display: block; margin-top: 50px;"></video>
-
                 <!-- Botón para tomar la foto, colocado en una posición fija -->
                 <button id="click-photo" type="button"
-                    style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); padding: 10px 20px; border-radius: 5px; background-color: #4CAF50; color: white; z-index: 2;">
+                    style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); 
+                    padding: 10px 20px; border-radius: 5px; background-color: #4CAF50; color: white; z-index: 2;">
                     Sacar Foto
                 </button>
+                <!-- Vista de la cámara -->
+                <video id="video" width="320" height="240" autoplay
+                    style="width: 100%; height: auto; display: block; margin-top: 50px;z-index: 1;"></video>
+
+
+
                 <canvas id="canvas" width="240" height="320"></canvas>
                 <input type="hidden" name="foto" id="foto">
                 <div class="form-group">
