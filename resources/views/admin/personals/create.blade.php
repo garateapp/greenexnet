@@ -157,7 +157,7 @@
                     facingMode: {
                         exact: "environment"
                     }
-                }
+                },
                 audio: false,
 
             });
