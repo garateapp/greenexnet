@@ -148,7 +148,33 @@ class PersonalController extends Controller
 
     public function update(UpdatePersonalRequest $request, Personal $personal)
     {
-        $personal->update($request->all());
+
+        $nPersonal = Personal::find($personal->id);
+        $nPersonal->nombre = $request->nombre;
+        $nPersonal->codigo = $request->codigo;
+        $nPersonal->rut = $request->rut;
+        $nPersonal->email = $request->email;
+        $nPersonal->telefono = $request->telefono;
+        $nPersonal->cargo_id = $request->cargo_id;
+        $nPersonal->estado_id = $request->estado_id;
+        $nPersonal->entidad_id = $request->entidad_id;
+        //dd($request->foto);
+        if ($request->foto != null) {
+            $base64Image = $request->input('foto');
+            $fileData = explode(',', $base64Image);
+            $imageData = base64_decode($fileData[1]);
+            // Generar un nombre único para el archivo
+            $fileName = $request->rut . '.jpg'; // Puedes cambiar la extensión según el tipo de imagen
+
+            // Guardar la imagen en el storage
+            $filePath = 'images/' . $fileName;
+            Storage::disk('public')->put($filePath, $imageData);
+            $nPersonal->foto = $filePath;
+        }
+
+
+        $nPersonal->save();
+        //$personal->update($request->all());
 
         return redirect()->route('admin.personals.index');
     }
