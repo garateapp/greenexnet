@@ -60,7 +60,7 @@
                                                 <div class="progress progress-thin ">
                                                     <div class="progress-bar bg-info" role="progressbar" style="width: 34%"
                                                         aria-valuenow="34" aria-valuemin="0" aria-valuemax="100">
-                                                        <span class="progress-value"
+                                                        <span class="progress-value" id="cantPersonasLunes"
                                                             style="color: white; padding-left: 5px;">34%</span>
                                                     </div>
                                                 </div>
@@ -82,7 +82,8 @@
                                                     <div class="progress-bar bg-info" role="progressbar" style="width: 56%"
                                                         aria-valuenow="56" aria-valuemin="0" aria-valuemax="100">
                                                         <span class="progress-value"
-                                                            style="color: white; padding-left: 5px;">56%</span>
+                                                            style="color: white; padding-left: 5px;"
+                                                            id="cantPersonasMartes"></span>
                                                     </div>
                                                 </div>
                                                 <div class="progress progress-thin">
@@ -101,7 +102,11 @@
                                             <div class="progress-group-bars">
                                                 <div class="progress progress-thin">
                                                     <div class="progress-bar bg-info" role="progressbar" style="width: 12%"
-                                                        aria-valuenow="12" aria-valuemin="0" aria-valuemax="100"></div>
+                                                        aria-valuenow="12" aria-valuemin="0" aria-valuemax="100">
+                                                        <span class="progress-value"
+                                                            style="color: white; padding-left: 5px;"
+                                                            id="cantPersonasMiercoles"></span>
+                                                    </div>
                                                 </div>
                                                 <div class="progress progress-thin">
                                                     <div class="progress-bar bg-danger" role="progressbar"
@@ -117,7 +122,11 @@
                                                 <div class="progress progress-thin">
                                                     <div class="progress-bar bg-info" role="progressbar"
                                                         style="width: 43%" aria-valuenow="43" aria-valuemin="0"
-                                                        aria-valuemax="100"></div>
+                                                        aria-valuemax="100">
+                                                        <span class="progress-value"
+                                                            style="color: white; padding-left: 5px;"
+                                                            id="cantPersonasJueves"></span>
+                                                    </div>
                                                 </div>
                                                 <div class="progress progress-thin">
                                                     <div class="progress-bar bg-danger" role="progressbar"
@@ -133,7 +142,11 @@
                                                 <div class="progress progress-thin">
                                                     <div class="progress-bar bg-info" role="progressbar"
                                                         style="width: 22%" aria-valuenow="22" aria-valuemin="0"
-                                                        aria-valuemax="100"></div>
+                                                        aria-valuemax="100">
+                                                        <span class="progress-value"
+                                                            style="color: white; padding-left: 5px;"
+                                                            id="cantPersonasViernes"></span>
+                                                    </div>
                                                 </div>
                                                 <div class="progress progress-thin">
                                                     <div class="progress-bar bg-danger" role="progressbar"
@@ -149,7 +162,11 @@
                                                 <div class="progress progress-thin">
                                                     <div class="progress-bar bg-info" role="progressbar"
                                                         style="width: 53%" aria-valuenow="53" aria-valuemin="0"
-                                                        aria-valuemax="100"></div>
+                                                        aria-valuemax="100">
+                                                        <span class="progress-value"
+                                                            style="color: white; padding-left: 5px;"
+                                                            id="cantPersonasSabado"></span>
+                                                    </div>
                                                 </div>
                                                 <div class="progress progress-thin">
                                                     <div class="progress-bar bg-danger" role="progressbar"
@@ -165,7 +182,9 @@
                                                 <div class="progress progress-thin">
                                                     <div class="progress-bar bg-info" role="progressbar"
                                                         style="width: 9%" aria-valuenow="9" aria-valuemin="0"
-                                                        aria-valuemax="100"></div>
+                                                        aria-valuemax="100"><span class="progress-value"
+                                                            style="color: white; padding-left: 5px;"
+                                                            id="cantPersonasDomingo"></span></div>
                                                 </div>
                                                 <div class="progress progress-thin">
                                                     <div class="progress-bar bg-danger" role="progressbar"
@@ -217,6 +236,9 @@
                                             </div>
                                             <div class="col-1"></div>
                                             <!-- /.col-->
+                                        </div>
+                                        <div class="col-6">
+
                                         </div>
                                         <!-- /.row-->
 
@@ -581,7 +603,8 @@
             @endsection
             @section('scripts')
                 @parent
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js"></script>
+
                 <script>
                     $.ajax({
                             headers: {

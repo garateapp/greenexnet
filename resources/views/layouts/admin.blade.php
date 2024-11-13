@@ -36,6 +36,78 @@
         .bg-danger {
             background-color: #ff7313 !important;
         }
+
+        .c-app {
+            color: #42b345;
+            background-color: #ebedef;
+            --color: #2eb85c;
+            display: -ms-flexbox;
+            display: flex;
+            -ms-flex-direction: row;
+            flex-direction: row;
+            min-height: 100vh;
+        }
+
+        .c-sidebar .c-active.c-sidebar-nav-dropdown-toggle .c-sidebar-nav-icon,
+        .c-sidebar .c-sidebar-nav-link.c-active .c-sidebar-nav-icon {
+            color: #495057;
+        }
+
+        .c-sidebar {
+            position: relative;
+            display: -ms-flexbox;
+            display: flex;
+            -ms-flex: 0 0 256px;
+            flex: 0 0 256px;
+            -ms-flex-direction: column;
+            flex-direction: column;
+
+            -ms-flex-order: -1;
+            order: -1;
+            width: 256px;
+            padding: 0;
+            box-shadow: none;
+            color: #fff;
+            background: #a9dd94;
+            transition: box-shadow .3s .15s, margin-left .3s, margin-right .3s, width .3s, z-index 0s ease .3s, -webkit-transform .3s;
+            transition: box-shadow .3s .15s, transform .3s, margin-left .3s, margin-right .3s, width .3s, z-index 0s ease .3s;
+            transition: box-shadow .3s .15s, transform .3s, margin-left .3s, margin-right .3s, width .3s, z-index 0s ease .3s, -webkit-transform .3s;
+        }
+
+        .c-sidebar .c-sidebar-nav-dropdown-toggle,
+        .c-sidebar .c-sidebar-nav-link {
+            color: #212529;
+            background: 0 0;
+        }
+
+        .c-sidebar .c-active.c-sidebar-nav-dropdown-toggle,
+        .c-sidebar .c-sidebar-nav-link.c-active {
+            color: #212529;
+            background: rgba(255, 255, 255, .05);
+        }
+
+        .c-sidebar .c-sidebar-nav-dropdown-toggle .c-sidebar-nav-icon,
+        .c-sidebar .c-sidebar-nav-link .c-sidebar-nav-icon {
+            color: #212529;
+        }
+
+        .btn-primary {
+            color: #fff;
+            background-color: #a9dd94;
+            border-color: #a9dd94;
+        }
+
+        .c-app,
+        :root {
+            --primary: #a9dd94;
+            --secondary: #cf9450;
+            --success: #2eb85c;
+            --info: #39f;
+            --warning: #f9b115;
+            --danger: #e55353;
+            --light: #ebedef;
+            --dark: #636f83;
+        }
     </style>
     @yield('styles')
 </head>

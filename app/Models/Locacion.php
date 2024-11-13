@@ -55,4 +55,8 @@ class Locacion extends Model
     {
         return $this->belongsTo(self::class, 'locacion_padre_id');
     }
+    public function asistencias()
+    {
+        return $this->hasMany(Asistencium::class, 'locacion_id', 'id');
+    }
 }
