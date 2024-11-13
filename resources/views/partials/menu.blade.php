@@ -2,7 +2,7 @@
 
     <div class="c-sidebar-brand d-md-down-none">
         <a class="c-sidebar-brand-full h4" href="#">
-            {{ trans('panel.site_title') }}
+            <img src="{{ asset('img/logo.webp') }}" style="width: 170px !important;height: 60px !important;" />
         </a>
     </div>
 

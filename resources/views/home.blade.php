@@ -12,14 +12,18 @@
                             <div class="card-header">Resumen Asistencia</div>
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-12">
                                         <div class="row">
-                                            <div class="col-5"
-                                                style="border: 2px;border-color: #ff7313; border-radius: 6px; border-style: double;padding-top:10px; ">
-                                                <div class="border-start border-start-4 border-start-info px-3 mb-3">
+
+                                            <div class="col-1"></div>
+                                            <div class="col-start-2 col-2"
+                                                style="max-width: 90% !important;border: 2px;border-color: #ff7313; border-radius: 6px;
+                                                border-style: double;padding-top:10px;padding-bottom: 10px;padding-left: 10px;margin-right: 5px;">
+                                                <div class="border-start border-start-4 border-start-info px-3 mb-3"
+                                                    style="">
                                                     <div class="text-center text-6xl"
-                                                        style="font-weight: 600;font-size: 20px;">
-                                                        Asistencias
+                                                        style="font-weight: 600;font-size: 18px;">
+                                                        Asistencia
                                                         Mes</div>
 
                                                     <div class=" text-center font-weight-bold">
@@ -31,12 +35,12 @@
                                                 </div>
                                             </div>
                                             <!-- /.col-->
-                                            <div class="col-1"></div>
-                                            <div class="col-5"
-                                                style="border: 2px;border-color: #ff7313; border-radius: 6px; border-style: double;padding-top:10px; ">
+
+                                            <div class="col-2"
+                                                style="border: 2px;border-color: #ff7313; border-radius: 6px; border-style: double;padding-top:10px; margin-right: 5px;padding-bottom: 10px;padding-left: 10px;">
                                                 <div class="border-start border-start-4 border-start-danger px-3 mb-3">
                                                     <div class="text-center text-6xl"
-                                                        style="font-weight: 600;font-size: 20px;">Asistencia
+                                                        style="font-weight: 600;font-size: 18px;">Asistencia
                                                         Día
                                                     </div>
                                                     <div class=" text-center font-weight-bold">
@@ -47,9 +51,64 @@
                                                         </span>
                                                     </div>
                                                 </div>
-                                                <div class="col-1"></div>
+
                                                 <!-- /.col-->
                                             </div>
+                                            <div class="col-2"
+                                                style="border: 2px;border-color: #ff7313; border-radius: 6px; border-style: double;padding-top:10px;margin-right: 5px;padding-bottom: 10px;padding-left: 10px; ">
+                                                <div class="border-start border-start-4 border-start-warning px-3 mb-3">
+                                                    <div class="small text-body-secondary text-truncate"
+                                                        style="font-weight: 600;font-size: 20px;">
+                                                        Asist.
+                                                        Anual</div>
+
+                                                    <div class=" text-center font-weight-bold">
+                                                        <i class="fas fa-calendar-alt"
+                                                            style="color: #8bc34a;font-size:xx-large;"></i>
+                                                        <span style="color: #8bc34a;font-size:xx-large;"
+                                                            id="divAsistenciaAnual">
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- /.col-->
+                                            <div class="col-end-2 col-2"
+                                                style="border: 2px;border-color: #ff7313;margin-right: 5px; border-radius: 6px; border-style: double;padding-top:10px;padding-top:10px;padding-bottom: 10px;padding-left: 10px;">
+                                                <div class="border-start border-start-4 border-start-success px-3 mb-3">
+                                                    <div class="small text-body-secondary text-truncate"
+                                                        style="font-weight: 600;font-size: 20px;">% Ausencia
+                                                        Dia
+                                                    </div>
+
+                                                    <div class=" text-center font-weight-bold">
+                                                        <i class="fas fa-chart-bar"
+                                                            style="color: #8bc34a;font-size:xx-large;"></i>
+                                                        <span style="color: #8bc34a;font-size:xx-large;"
+                                                            id="divPorcentajeAusencia">
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <div class="col-2"
+                                                style="border: 2px;border-color: #ff7313; border-radius: 6px; border-style: double;padding-top:10px;margin-right: 5px;padding-bottom: 10px;padding-left: 10px; ">
+                                                <div class="border-start border-start-4 border-start-warning px-3 mb-3">
+                                                    <div class="small text-body-secondary text-truncate"
+                                                        style="font-weight: 600;font-size: 20px;">
+                                                        Asist.
+                                                        Anual</div>
+
+                                                    <div class=" text-center font-weight-bold">
+                                                        <i class="fas fa-calendar-alt"
+                                                            style="color: #8bc34a;font-size:xx-large;"></i>
+                                                        <span style="color: #8bc34a;font-size:xx-large;"
+                                                            id="divAsistenciaAnual">
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                         </div>
                                         <!-- /.row-->
                                         <hr class="mt-0">
@@ -101,8 +160,9 @@
                                                     class="text-body-secondary small">Miércoles</span></div>
                                             <div class="progress-group-bars">
                                                 <div class="progress progress-thin">
-                                                    <div class="progress-bar bg-info" role="progressbar" style="width: 12%"
-                                                        aria-valuenow="12" aria-valuemin="0" aria-valuemax="100">
+                                                    <div class="progress-bar bg-info" role="progressbar"
+                                                        style="width: 12%" aria-valuenow="12" aria-valuemin="0"
+                                                        aria-valuemax="100">
                                                         <span class="progress-value"
                                                             style="color: white; padding-left: 5px;"
                                                             id="cantPersonasMiercoles"></span>
@@ -197,44 +257,7 @@
                                     <!-- /.col-->
                                     <div class="col-sm-6">
                                         <div class="row">
-                                            <div class="col-5"
-                                                style="border: 2px;border-color: #ff7313; border-radius: 6px; border-style: double;padding-top:10px; ">
-                                                <div class="border-start border-start-4 border-start-warning px-3 mb-3">
-                                                    <div class="small text-body-secondary text-truncate"
-                                                        style="font-weight: 600;font-size: 20px;">
-                                                        Asistencia
-                                                        Anual</div>
 
-                                                    <div class=" text-center font-weight-bold">
-                                                        <i class="fas fa-calendar-alt"
-                                                            style="color: #8bc34a;font-size:xx-large;"></i>
-                                                        <span style="color: #8bc34a;font-size:xx-large;"
-                                                            id="divAsistenciaAnual">
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-1"></div>
-                                            <!-- /.col-->
-                                            <div class="col-5"
-                                                style="border: 2px;border-color: #ff7313; border-radius: 6px; border-style: double;padding-top:10px;padding-top:10px;">
-                                                <div class="border-start border-start-4 border-start-success px-3 mb-3">
-                                                    <div class="small text-body-secondary text-truncate"
-                                                        style="font-weight: 600;font-size: 20px;">% de Ausencia
-                                                        Dia
-                                                    </div>
-
-                                                    <div class=" text-center font-weight-bold">
-                                                        <i class="fas fa-chart-bar"
-                                                            style="color: #8bc34a;font-size:xx-large;"></i>
-                                                        <span style="color: #8bc34a;font-size:xx-large;"
-                                                            id="divPorcentajeAusencia">
-                                                        </span>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                            <div class="col-1"></div>
                                             <!-- /.col-->
                                         </div>
                                         <div class="col-6">
