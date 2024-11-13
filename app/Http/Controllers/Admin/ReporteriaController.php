@@ -82,6 +82,47 @@ class ReporteriaController extends Controller
         $totalUbicaciones = Locacion::where('locacion_padre_id', '!=', 1)->count();
         $porcentajeCobertura = $totalUbicaciones > 0 ? round(($ubicacionesConCobertura / $totalUbicaciones) * 100, 2) : 0;
 
+
+        //Gráficos
+        $asistenciasPieChart = Asistencium::selectRaw('DAYNAME(fecha_hora) as dia, COUNT(*) as total')
+            ->whereBetween('fecha_hora', [$lunesSemanaActual, $viernesSemanaActual]) // Filtrar por fechas de la semana
+            ->orderBy('fecha_hora')
+            ->groupBy('dia')
+            ->get();
+        $asistenciasxUbicacion = Asistencium::selectRaw('COUNT(*) as total,locacions.nombre as locacion')
+            ->join('locacions', 'asistencia.locacion_id', '=', 'locacions.id')
+            ->whereBetween('fecha_hora', [$lunesSemanaActual, $viernesSemanaActual]) // Filtrar por fechas de la semana
+            ->orderBy('fecha_hora')
+            ->groupBy('locacion')
+            ->get();
+        //asistencia x turno
+        $asistenciasPorTurno = Asistencium::selectRaw('frecuencia_turnos.nombre as turno, COUNT(*) as total')
+            ->join('frecuencia_turnos', 'asistencia.turno_id', '=', 'frecuencia_turnos.id')
+            ->whereBetween('fecha_hora', [$lunesSemanaActual, $viernesSemanaActual])
+            ->groupBy('turno')
+            ->orderBy('turno')
+            ->get();
+
+        // Ahora obtienes la cantidad esperada para cada turno
+        $turnosEsperados = [
+            1 => 50,  // Turno 1: 50 personas esperadas
+            2 => 40,  // Turno 2: 40 personas esperadas
+            3 => 30   // Turno 3: 30 personas esperadas
+        ];
+
+        // Puedes calcular el porcentaje de cumplimiento para cada turno
+
+        $asistenciasConCumplimiento = $asistenciasPorTurno->map(function ($asistencia) use ($turnosEsperados) {
+            $totalEsperado = $turnosEsperados[$asistencia->turno] ?? 0;
+            $porcentajeCumplimiento = $totalEsperado > 0 ? ($asistencia->total / 593) * 100 : 0;
+            return [
+                'turno' => $asistencia->turno,
+                'total' => $asistencia->total,
+                'cumplimiento' => $porcentajeCumplimiento
+            ];
+        });
+
+
         //$asistenciaMes=Asistencium::where
         return response()->json([
             'mesEnCurso' => $mesEnCurso,
@@ -104,7 +145,9 @@ class ReporteriaController extends Controller
             'asistenciasPorDia' => $asistenciasPorDia,
             'porcentajeCobertura' => $porcentajeCobertura,
             'totalUbicaciones' => $totalUbicaciones,
-
+            'asistenciaPieChart' => $asistenciasPieChart,
+            'asistenciasxUbicacion' => $asistenciasxUbicacion,
+            'asistenciasConCumplimiento' => $asistenciasConCumplimiento,
         ], 200);
     }
 }
