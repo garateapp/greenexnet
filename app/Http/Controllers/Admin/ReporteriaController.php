@@ -68,7 +68,7 @@ class ReporteriaController extends Controller
 
         $asistenciasPorDia = Asistencium::selectRaw('DAYNAME(fecha_hora) as dia, COUNT(*) as total')
             ->whereBetween('fecha_hora', [$lunesSemanaActual, $domingoSemanaActual])
-            ->orderBy('fecha_hora')
+
             ->groupBy('dia')
             ->get();
 
