@@ -63,8 +63,12 @@ class ReporteriaController extends Controller
         $date->modify('this week sunday');
         $domingoSemanaActual = $date->format('Y-m-d'); // Formatear la fecha al formato 'Y-m-d'
         $cantPersonasDomingo = Asistencium::whereDate('fecha_hora', $domingoSemanaActual)->count();
+        $lunesSemanaActual = now()->startOfWeek()->format('Y-m-d');
+        $domingoSemanaActual = now()->startOfWeek()->addDays(7)->format('Y-m-d');
 
         $asistenciasPorDia = Asistencium::selectRaw('DAYNAME(fecha_hora) as dia, COUNT(*) as total')
+            ->whereBetween('fecha_hora', [$lunesSemanaActual, $domingoSemanaActual])
+            ->orderBy('fecha_hora')
             ->groupBy('dia')
             ->get();
 

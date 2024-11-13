@@ -15,112 +15,108 @@
                                     <div class="col-sm-12">
                                         <div class="row text-center">
 
-                                            <div class="col-1"></div>
-                                            <div class="col-start-2 col-2"
-                                                style="max-width: 90% !important;border: 2px;border-color: #ff7313; border-radius: 6px;
-                                                border-style: double;padding-top:10px;padding-bottom: 10px;padding-left: 10px;margin-right: 10px;">
-                                                <div class="border-start border-start-4 border-start-info px-3 mb-3"
-                                                    style="">
-                                                    <div class="text-center text-6xl"
-                                                        style="font-weight: 600;font-size: 18px;">
-                                                        Asistencia
-                                                        Mes</div>
+                                            <!-- Columna vacía para espacio -->
+                                            <div class="col-1 d-none d-md-block"></div>
 
-                                                    <div class=" text-center font-weight-bold">
+                                            <!-- Asistencia Mes -->
+                                            <div class="col-12 col-md-2 mb-3">
+                                                <div class="border rounded p-3"
+                                                    style="border-color: #ff7313; border-style: double;">
+                                                    <div class="text-center text-6xl"
+                                                        style="font-weight: 600; font-size: 18px;">
+                                                        Asistencia Mes
+                                                    </div>
+                                                    <div class="text-center font-weight-bold">
                                                         <i class="fas fa-user"
-                                                            style="color: #8bc34a;font-size:xx-large;"></i>
-                                                        <span style="color: #8bc34a;font-size:xx-large;"
-                                                            id="divAsistenciaMes"></span>
+                                                            style="color: #8bc34a; font-size: xx-large;"></i>
+                                                        <span id="divAsistenciaMes"
+                                                            style="color: #8bc34a; font-size: xx-large;"></span>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <!-- /.col-->
 
-                                            <div class="col-2"
-                                                style="border: 2px;border-color: #ff7313; border-radius: 6px; border-style: double;padding-top:10px; margin-right: 10px;padding-bottom: 10px;padding-left: 10px;">
-                                                <div class="border-start border-start-4 border-start-danger px-3 mb-3">
+                                            <!-- Asistencia Día -->
+                                            <div class="col-12 col-md-2 mb-3">
+                                                <div class="border rounded p-3"
+                                                    style="border-color: #ff7313; border-style: double;">
                                                     <div class="text-center text-6xl"
-                                                        style="font-weight: 600;font-size: 18px;">Asistencia
-                                                        Día
+                                                        style="font-weight: 600; font-size: 18px;">
+                                                        Asistencia Día
                                                     </div>
-                                                    <div class=" text-center font-weight-bold">
+                                                    <div class="text-center font-weight-bold">
                                                         <i class="fas fa-sun"
-                                                            style="color: #8bc34a;font-size:xx-large;"></i>
-                                                        <span style="color: #8bc34a;font-size:xx-large;"
-                                                            id="divAsistenciaDia">
-                                                        </span>
+                                                            style="color: #8bc34a; font-size: xx-large;"></i>
+                                                        <span id="divAsistenciaDia"
+                                                            style="color: #8bc34a; font-size: xx-large;"></span>
                                                     </div>
                                                 </div>
-
-                                                <!-- /.col-->
                                             </div>
-                                            <div class="col-2"
-                                                style="border: 2px;border-color: #ff7313; border-radius: 6px; border-style: double;padding-top:10px;margin-right: 10px;padding-bottom: 10px;padding-left: 10px; ">
-                                                <div class="border-start border-start-4 border-start-warning px-3 mb-3">
-                                                    <div class="small text-body-secondary text-truncate"
-                                                        style="font-weight: 600;font-size: 20px;">
-                                                        Asist.
-                                                        Anual</div>
 
-                                                    <div class=" text-center font-weight-bold">
+                                            <!-- Asistencia Anual -->
+                                            <div class="col-12 col-md-2 mb-3">
+                                                <div class="border rounded p-3"
+                                                    style="border-color: #ff7313; border-style: double;">
+                                                    <div class="text-center" style="font-weight: 600; font-size: 18px;">
+                                                        Asist. Anual
+                                                    </div>
+                                                    <div class="text-center font-weight-bold">
                                                         <i class="fas fa-calendar-alt"
-                                                            style="color: #8bc34a;font-size:xx-large;"></i>
-                                                        <span style="color: #8bc34a;font-size:xx-large;"
-                                                            id="divAsistenciaAnual">
-                                                        </span>
+                                                            style="color: #8bc34a; font-size: xx-large;"></i>
+                                                        <span id="divAsistenciaAnual"
+                                                            style="color: #8bc34a; font-size: xx-large;"></span>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <!-- /.col-->
-                                            <div class="col-end-2 col-2"
-                                                style="border: 2px;border-color: #ff7313;margin-right: 10px; border-radius: 6px; border-style: double;padding-top:10px;padding-top:10px;padding-bottom: 10px;padding-left: 10px;">
-                                                <div class="border-start border-start-4 border-start-success px-3 mb-3">
-                                                    <div class="small text-body-secondary text-truncate"
-                                                        style="font-weight: 600;font-size: 20px;">% Ausencia
-                                                        Dia
+                                            <!-- % Ausencia Día -->
+                                            <div class="col-12 col-md-2 mb-3">
+                                                <div class="border rounded p-3"
+                                                    style="border-color: #ff7313; border-style: double;">
+                                                    <div class="text-center" style="font-weight: 600; font-size: 18px;">
+                                                        % Ausencia Día
                                                     </div>
-
-                                                    <div class=" text-center font-weight-bold">
+                                                    <div class="text-center font-weight-bold">
                                                         <i class="fas fa-chart-bar"
-                                                            style="color: #8bc34a;font-size:xx-large;"></i>
-                                                        <span style="color: #8bc34a;font-size:xx-large;"
-                                                            id="divPorcentajeAusencia">
-                                                        </span>
+                                                            style="color: #8bc34a; font-size: xx-large;"></i>
+                                                        <span id="divPorcentajeAusencia"
+                                                            style="color: #8bc34a; font-size: xx-large;"></span>
                                                     </div>
                                                 </div>
-
                                             </div>
-                                            <div class="col-2"
-                                                style="border: 2px;border-color: #ff7313; border-radius: 6px; border-style: double;padding-top:10px;margin-right: 5px;padding-bottom: 10px;padding-left: 10px; ">
-                                                <div class="border-start border-start-4 border-start-warning px-3 mb-3">
-                                                    <div class="small text-body-secondary text-truncate"
-                                                        style="font-weight: 600;font-size: 20px;">
-                                                        % Cobertura</div>
 
-                                                    <div class=" text-center font-weight-bold">
+                                            <!-- % Cobertura -->
+                                            <div class="col-12 col-md-2 mb-3">
+                                                <div class="border rounded p-3"
+                                                    style="border-color: #ff7313; border-style: double;">
+                                                    <div class="text-center" style="font-weight: 600; font-size: 18px;">
+                                                        % Cobertura
+                                                    </div>
+                                                    <div class="text-center font-weight-bold">
                                                         <i class="fas fa-calendar-alt"
-                                                            style="color: #8bc34a;font-size:xx-large;"></i>
-                                                        <span style="color: #8bc34a;font-size:xx-large;"
-                                                            id="divPorcCobertura">
-                                                        </span>
+                                                            style="color: #8bc34a; font-size: xx-large;"></i>
+                                                        <span id="divPorcCobertura"
+                                                            style="color: #8bc34a; font-size: xx-large;"></span>
                                                     </div>
                                                 </div>
                                             </div>
+
 
                                         </div>
                                     </div>
                                 </div>
                                 <!-- /.row-->
+                                <hr />
                                 <div class="row">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            Cumplimiento semanal por Día
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="col-12" id="progressContainer">
+                                    <div class="col-sm-12">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                Cumplimiento semanal por Día
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="col-12" id="progressContainer">
 
 
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -536,7 +532,7 @@
                             // Genera el HTML dinámicamente
                             asistenciasPorDia.forEach((asistencia) => {
                                 console.log(asistencia);
-                                const porcentaje = (asistencia.total / totalEsperado) * 100;
+                                const porcentaje = parseFloat((asistencia.total / totalEsperado) * 100).toFixed(2);
 
                                 const progressGroup = document.createElement('div');
                                 progressGroup.className = 'progress-group mb-4';
@@ -564,7 +560,7 @@
 
                                 const progressValueInfo = document.createElement('span');
                                 progressValueInfo.className = 'progress-value';
-                                progressValueInfo.style.color = 'white';
+                                progressValueInfo.style.color = '#000000';
                                 progressValueInfo.style.paddingLeft = '5px';
                                 progressValueInfo.innerText = `${Math.round(porcentaje)}%`;
 
