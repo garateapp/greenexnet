@@ -13,12 +13,12 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-sm-12">
-                                        <div class="row">
+                                        <div class="row text-center">
 
                                             <div class="col-1"></div>
                                             <div class="col-start-2 col-2"
                                                 style="max-width: 90% !important;border: 2px;border-color: #ff7313; border-radius: 6px;
-                                                border-style: double;padding-top:10px;padding-bottom: 10px;padding-left: 10px;margin-right: 5px;">
+                                                border-style: double;padding-top:10px;padding-bottom: 10px;padding-left: 10px;margin-right: 10px;">
                                                 <div class="border-start border-start-4 border-start-info px-3 mb-3"
                                                     style="">
                                                     <div class="text-center text-6xl"
@@ -37,7 +37,7 @@
                                             <!-- /.col-->
 
                                             <div class="col-2"
-                                                style="border: 2px;border-color: #ff7313; border-radius: 6px; border-style: double;padding-top:10px; margin-right: 5px;padding-bottom: 10px;padding-left: 10px;">
+                                                style="border: 2px;border-color: #ff7313; border-radius: 6px; border-style: double;padding-top:10px; margin-right: 10px;padding-bottom: 10px;padding-left: 10px;">
                                                 <div class="border-start border-start-4 border-start-danger px-3 mb-3">
                                                     <div class="text-center text-6xl"
                                                         style="font-weight: 600;font-size: 18px;">Asistencia
@@ -55,7 +55,7 @@
                                                 <!-- /.col-->
                                             </div>
                                             <div class="col-2"
-                                                style="border: 2px;border-color: #ff7313; border-radius: 6px; border-style: double;padding-top:10px;margin-right: 5px;padding-bottom: 10px;padding-left: 10px; ">
+                                                style="border: 2px;border-color: #ff7313; border-radius: 6px; border-style: double;padding-top:10px;margin-right: 10px;padding-bottom: 10px;padding-left: 10px; ">
                                                 <div class="border-start border-start-4 border-start-warning px-3 mb-3">
                                                     <div class="small text-body-secondary text-truncate"
                                                         style="font-weight: 600;font-size: 20px;">
@@ -74,7 +74,7 @@
 
                                             <!-- /.col-->
                                             <div class="col-end-2 col-2"
-                                                style="border: 2px;border-color: #ff7313;margin-right: 5px; border-radius: 6px; border-style: double;padding-top:10px;padding-top:10px;padding-bottom: 10px;padding-left: 10px;">
+                                                style="border: 2px;border-color: #ff7313;margin-right: 10px; border-radius: 6px; border-style: double;padding-top:10px;padding-top:10px;padding-bottom: 10px;padding-left: 10px;">
                                                 <div class="border-start border-start-4 border-start-success px-3 mb-3">
                                                     <div class="small text-body-secondary text-truncate"
                                                         style="font-weight: 600;font-size: 20px;">% Ausencia
@@ -96,14 +96,13 @@
                                                 <div class="border-start border-start-4 border-start-warning px-3 mb-3">
                                                     <div class="small text-body-secondary text-truncate"
                                                         style="font-weight: 600;font-size: 20px;">
-                                                        Asist.
-                                                        Anual</div>
+                                                        % Cobertura</div>
 
                                                     <div class=" text-center font-weight-bold">
                                                         <i class="fas fa-calendar-alt"
                                                             style="color: #8bc34a;font-size:xx-large;"></i>
                                                         <span style="color: #8bc34a;font-size:xx-large;"
-                                                            id="divAsistenciaAnual">
+                                                            id="divPorcCobertura">
                                                         </span>
                                                     </div>
                                                 </div>
@@ -645,7 +644,7 @@
                                 $("#divAsistenciaDia").html(response.asistenciaDia);
                                 $("#divAsistenciaAnual").html(response.asistenciaYear)
                                 $("#divPorcentajeAusencia").html(response.porcentajeAusencias)
-
+                                $("#divPorcCobertura").html(response.porcentajeCobertura)
                             } else {
 
                             }

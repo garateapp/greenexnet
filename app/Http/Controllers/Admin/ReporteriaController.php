@@ -19,7 +19,7 @@ class ReporteriaController extends Controller
 
     public function getDatosgenerales()
     {
-        //Manejo de fechas 
+        //Manejo de fechas
 
         $mesEnCurso = date('m');
         $diaActual = date('d');
@@ -76,7 +76,7 @@ class ReporteriaController extends Controller
             })->count();
 
         $totalUbicaciones = Locacion::where('locacion_padre_id', '!=', 1)->count();
-        $porcentajeCobertura = $totalUbicaciones > 0 ? ($ubicacionesConCobertura / $totalUbicaciones) * 100 : 0;
+        $porcentajeCobertura = $totalUbicaciones > 0 ? round(($ubicacionesConCobertura / $totalUbicaciones) * 100, 2) : 0;
 
         //$asistenciaMes=Asistencium::where
         return response()->json([
