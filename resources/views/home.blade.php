@@ -535,6 +535,7 @@
                             const asistenciasPorDia = response.asistenciasPorDia;
                             // Genera el HTML dinámicamente
                             asistenciasPorDia.forEach((asistencia) => {
+                                console.log(asistencia);
                                 const porcentaje = (asistencia.total / totalEsperado) * 100;
 
                                 const progressGroup = document.createElement('div');
