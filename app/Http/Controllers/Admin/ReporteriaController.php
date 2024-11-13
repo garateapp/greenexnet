@@ -66,7 +66,7 @@ class ReporteriaController extends Controller
         $lunesSemanaActual = now()->startOfWeek()->format('Y-m-d');
         $domingoSemanaActual = now()->startOfWeek()->addDays(7)->format('Y-m-d');
 
-        $asistenciasPorDia = Asistencium::selectRaw('DAYNAME(fecha_hora) as dia, COUNT(*) as total')
+        $asistenciasPorDia = Asistencium::selectRaw('DAYNAME(fecha_hora) as dia, COUNT(*) as total,fecha_hora')
             ->whereBetween('fecha_hora', [$lunesSemanaActual, $domingoSemanaActual])
             ->orderBy('fecha_hora')
             ->groupBy('dia')
