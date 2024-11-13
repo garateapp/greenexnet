@@ -87,7 +87,7 @@ class ReporteriaController extends Controller
         $asistenciasPieChart = Asistencium::selectRaw('DAYNAME(fecha_hora) as dia, COUNT(*) as total')
             ->whereBetween('fecha_hora', [$lunesSemanaActual, $viernesSemanaActual]) // Filtrar por fechas de la semana
             ->orderBy('fecha_hora')
-            ->groupBy('dia')
+            ->groupBy('dia', 'fecha_hora')
             ->get();
         $asistenciasxUbicacion = Asistencium::selectRaw('COUNT(*) as total,locacions.nombre as locacion')
             ->join('locacions', 'asistencia.locacion_id', '=', 'locacions.id')
