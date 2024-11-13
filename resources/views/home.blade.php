@@ -525,9 +525,9 @@
                             // Función para traducir días al español (opcional)
                             const translateDay = {
                                 Monday: 'Lunes',
-                                Thursday: 'Martes',
+                                Tuesday: 'Martes',
                                 Wednesday: 'Miércoles',
-                                Tuesday: 'Jueves',
+                                Thursday: 'Jueves',
                                 Friday: 'Viernes',
                                 Saturday: 'Sábado',
                                 Sunday: 'Domingo'
