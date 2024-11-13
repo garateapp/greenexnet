@@ -92,7 +92,6 @@ class ReporteriaController extends Controller
         $asistenciasxUbicacion = Asistencium::selectRaw('COUNT(*) as total,locacions.nombre as locacion')
             ->join('locacions', 'asistencia.locacion_id', '=', 'locacions.id')
             ->whereBetween('fecha_hora', [$lunesSemanaActual, $viernesSemanaActual]) // Filtrar por fechas de la semana
-            ->orderBy('fecha_hora')
             ->groupBy('locacion')
             ->get();
         //asistencia x turno
