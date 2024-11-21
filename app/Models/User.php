@@ -103,15 +103,7 @@ class User extends Authenticatable implements HasMedia
         $this->addMediaConversion('preview')->fit('crop', 120, 120);
     }
 
-    public function usuarioAclaracionguia()
-    {
-        return $this->hasMany(Aclaracionguium::class, 'usuario_id', 'id');
-    }
 
-    public function usuarioAclaracionMawbs()
-    {
-        return $this->hasMany(AclaracionMawb::class, 'usuario_id', 'id');
-    }
 
     public function userUserAlerts()
     {
