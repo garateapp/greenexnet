@@ -114,12 +114,29 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('asistencia/cargaUbicaciones', 'AsistenciaController@cargaUbicaciones')->name('asistencia.cargaUbicaciones');
     Route::post('asistencia/cargaDatosTurno', 'AsistenciaController@cargaDatosTurno')->name('asistencia.cargaDatosTurno');
 
+
+    // Recibe Master
+    Route::delete('recibe-masters/destroy', 'RecibeMasterController@massDestroy')->name('recibe-masters.massDestroy');
+    Route::post('recibe-masters/parse-csv-import', 'RecibeMasterController@parseCsvImport')->name('recibe-masters.parseCsvImport');
+    Route::post('recibe-masters/process-csv-import', 'RecibeMasterController@processCsvImport')->name('recibe-masters.processCsvImport');
+    Route::get('recibe-masters/AccesoSis', 'RecibeMasterController@AccesoSis')->name('recibe-masters.AccesoSis');
+    Route::get('recibe-masters/ObtieneLotes', 'RecibeMasterController@ObtieneLotes')->name('recibe-masters.ObtieneLotes');
+    Route::get('recibe-masters/CapturarLote', 'RecibeMasterController@CapturarLote')->name('recibe-masters.CapturarLote');
+    Route::resource('recibe-masters', 'RecibeMasterController');
+    Route::post('recibe-masters/ObtieneDatosRecepcion', 'RecibeMasterController@ObtieneDatosRecepcion')->name('recibe-masters.ObtieneDatosRecepcion');
+
     Route::get('global-search', 'GlobalSearchController@search')->name('globalSearch');
 
     //Reportería
+    Route::get('reporteria/obtieneDatosStockInventario', "ReporteriaController@obtieneDatosStockInventario")->name("reporteria.obtieneDatosStockInventario");
+    Route::get('reporteria/obtenerDatosReporte', "ReporteriaController@obtenerDatosReporte")->name("reporteria.obtenerDatosReporte");
+    Route::get('reporteria/obtieneRecepcionDatosRecepcion', "ReporteriaController@obtieneRecepcionDatosRecepcion")->name("reporteria.obtieneRecepcionDatosRecepcion");
+
+
     //getDatosgenerales
 
     Route::get('reporteria/getDatosgenerales', 'ReporteriaController@getDatosgenerales')->name('reporteria.getDatosgenerales');
+    Route::get('reporteria/getSabana', 'ReporteriaController@getSabana')->name('reporteria.getSabana');
     //Route::get('/reporteria', [ReporteriaController::class, 'getDatosgenerales']);
 
     Route::get('messenger', 'MessengerController@index')->name('messenger.index');

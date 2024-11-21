@@ -23,8 +23,10 @@ Route::group(['prefix' => 'v1', 'as' => 'api.', 'namespace' => 'Api\V1\Admin', '
     // Datos Caja
     Route::apiResource('datos-cajas', 'DatosCajaApiController');
     Route::apiResource('turnos', 'TurnoApiController');
-    // Turno
 
+    //  RecibeMaster
+
+    Route::apiResource('recibe-masters', 'RecibeMasterApiController');
 
     // Frecuencia Turno
     Route::apiResource('frecuencia-turnos', 'FrecuenciaTurnoApiController');

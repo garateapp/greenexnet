@@ -24,7 +24,7 @@
             <li
                 class="c-sidebar-nav-dropdown {{ request()->is('admin/permissions*') ? 'c-show' : '' }} {{ request()->is('admin/roles*') ? 'c-show' : '' }} {{ request()->is('admin/users*') ? 'c-show' : '' }} {{ request()->is('admin/estados*') ? 'c-show' : '' }} {{ request()->is('admin/audit-logs*') ? 'c-show' : '' }} {{ request()->is('admin/configuracions*') ? 'c-show' : '' }}">
                 <a class="c-sidebar-nav-dropdown-toggle" href="#">
-                    <i class="fa-fw fas fa-users c-sidebar-nav-icon">
+                    <i class="fa-fw fas fa-user-shield c-sidebar-nav-icon">
 
                     </i>
                     {{ trans('cruds.userManagement.title') }}
@@ -96,20 +96,28 @@
                     <i class="fa-fw fas fa-box-open c-sidebar-nav-icon">
 
                     </i>
-                    {{ trans('cruds.datosCajaCalidad.title') }}
+                    Calidad
                 </a>
                 <ul class="c-sidebar-nav-dropdown-items">
 
                     <li class="c-sidebar-nav-item">
                         <a href="{{ route('admin.datos-cajas.index') }}"
                             class="c-sidebar-nav-link {{ request()->is('admin/datos-cajas') || request()->is('admin/datos-cajas/*') ? 'c-active' : '' }}">
-                            <i class="fa-fw fas fa-cogs c-sidebar-nav-icon">
+                            <i class="fa-fw fas fa-qrcode c-sidebar-nav-icon">
 
                             </i>
                             {{ trans('cruds.datosCaja.title') }}
                         </a>
                     </li>
+                    <li class="c-sidebar-nav-item">
+                        <a href="{{ route('admin.recibe-masters.index') }}"
+                            class="c-sidebar-nav-link {{ request()->is('admin/recibe-masters') || request()->is('admin/recibe-masters/*') ? 'c-active' : '' }}">
+                            <i class="fa-fw fas fa-flask c-sidebar-nav-icon">
 
+                            </i>
+                            PT&I
+                        </a>
+                    </li>
                 </ul>
             </li>
         @endcan
@@ -117,7 +125,7 @@
             <li
                 class="c-sidebar-nav-dropdown {{ request()->is('admin/entidads*') ? 'c-show' : '' }} {{ request()->is('admin/areas*') ? 'c-show' : '' }} {{ request()->is('admin/locacions*') ? 'c-show' : '' }} {{ request()->is('admin/turnos*') ? 'c-show' : '' }} {{ request()->is('admin/frecuencia-turnos*') ? 'c-show' : '' }} {{ request()->is('admin/cargos*') ? 'c-show' : '' }} {{ request()->is('admin/personals*') ? 'c-show' : '' }}">
                 <a class="c-sidebar-nav-dropdown-toggle" href="#">
-                    <i class="fa-fw fas fa-cogs c-sidebar-nav-icon">
+                    <i class="fa-fw fas fa-users c-sidebar-nav-icon">
 
                     </i>
                     {{ trans('cruds.greenexNet.title') }}
@@ -238,6 +246,27 @@
                 </li>
             @endcan
         @endif
+        <li class="c-sidebar-nav-dropdown {{ request()->is('admin/reporteria*') ? 'c-show' : '' }}">
+            <a class="c-sidebar-nav-dropdown-toggle" href="#">
+                <i class="fa-fw fas fa-chart-bar c-sidebar-nav-icon">
+
+                </i>
+                Reportería
+            </a>
+            <ul class="c-sidebar-nav-dropdown-items">
+
+                <li class="c-sidebar-nav-item">
+                    <a href="{{ route('admin.reporteria.obtenerDatosReporte') }}"
+                        class="c-sidebar-nav-link {{ request()->is('admin/reporteria') || request()->is('admin/reporteria/*') ? 'c-active' : '' }}">
+                        <i class="fa-fw fas fa-chart-pie c-sidebar-nav-icon">
+
+                        </i>
+                        Stock Inventario
+                    </a>
+                </li>
+
+            </ul>
+        </li>
         <li class="c-sidebar-nav-item">
             <a href="#" class="c-sidebar-nav-link"
                 onclick="event.preventDefault(); document.getElementById('logoutform').submit();">

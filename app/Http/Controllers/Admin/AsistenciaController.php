@@ -83,7 +83,7 @@ class AsistenciaController extends Controller
 
         $locacions = Locacion::where("locacion_padre_id", "=", 1)->where("id", "!=", 1)->pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        $turnos = FrecuenciaTurno::pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $turnos = FrecuenciaTurno::where("dia", "=", date('w'))->pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
 
         $personals = Personal::select(
             DB::raw("CONCAT(rut, ' - ', nombre) AS full_name"),
@@ -105,12 +105,14 @@ class AsistenciaController extends Controller
             ->where("turno_id", $request->turno_id)
             ->whereBetween("fecha_hora", [$startOfDay, $endOfDay])
             ->count();
+
         return response()->json(['cant_personal' => $cant_personal, 'cant_guardada' => $cant_guardada], 200);
     }
     public function cargaUbicaciones(Request $request)
     {
         $ubicacion = Locacion::where("locacion_padre_id", $request->locacion_id)->get();
-        return response()->json($ubicacion);
+        $turnos = FrecuenciaTurno::where("dia", "=", date('w'))->where("locacion_id", $request->locacion_id)->get();
+        return response()->json(["ubicacion" => $ubicacion, "turnos" => $turnos], 200);
     }
     public function store(StoreAsistenciumRequest $request)
     {

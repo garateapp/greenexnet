@@ -9,6 +9,7 @@
     "license": "MIT",
     "require": {
         "php": "^7.3|^8.0",
+        "artisaninweb/laravel-soap": "^0.3.0",
         "doctrine/dbal": "^3.0",
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^2.0",
@@ -24,6 +25,7 @@
         "league/csv": "9.18.0",
         "maatwebsite/excel": "^3.1",
         "nuovo/spreadsheet-reader": "^0.5.11",
+        "pusher/pusher-php-server": "^7.2",
         "spatie/laravel-medialibrary": "^9.11.2",
         "yajra/laravel-datatables-oracle": "^9.18"
     },

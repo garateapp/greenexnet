@@ -117,65 +117,87 @@
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
     <script>
-        $('#locacion_id').change(function() {
-            const locacionId = $(this).val();
+        $(document).ready(function() {
 
-            // Llamada AJAX para obtener las ubicaciones
-            $.ajax({
-                url: '/admin/asistencia/cargaUbicaciones', // Asegúrate de ajustar esta URL según tu enrutamiento
-                headers: {
-                    'x-csrf-token': _token
-                },
-                method: 'POST',
-                data: {
-                    locacion_id: locacionId
-                },
-                success: function(response) {
-                    console.log(response);
-                    // Limpiar las opciones previas de ubicacion_id
-                    $('#ubicacion_id').empty();
+            $('#locacion_id').change(function() {
+                const locacionId = $(this).val();
 
-                    // Agregar la opción por defecto
-                    $('#ubicacion_id').append('<option value="">Seleccione una Ubicación</option>');
+                // Llamada AJAX para obtener las ubicaciones
+                $.ajax({
+                    url: '/admin/asistencia/cargaUbicaciones', // Asegúrate de ajustar esta URL según tu enrutamiento
+                    headers: {
+                        'x-csrf-token': _token
+                    },
+                    method: 'POST',
+                    data: {
+                        locacion_id: locacionId
+                    },
+                    success: function(response) {
+                        console.log(response);
+                        // Limpiar las opciones previas de ubicacion_id
+                        $('#ubicacion_id').empty();
+                        $('#turno_id').empty();
 
-                    // Iterar sobre el resultado y añadir opciones al select
-                    $.each(response, function(key, ubicacion) {
-                        $('#ubicacion_id').append('<option value="' + ubicacion.id + '">' +
-                            ubicacion.nombre.toUpperCase() + '</option>');
-                    });
-                },
-                error: function() {
-                    alert('Hubo un error al cargar las ubicaciones');
-                }
+                        // Agregar opción por defecto
+                        $('#ubicacion_id').append(
+                            '<option value="">Seleccione una Ubicación</option>');
+                        $('#turno_id').append('<option value="">Seleccione un Turno</option>');
+                        // Iterar sobre el resultado y añadir opciones al select
+                        if (response.ubicacion && response.ubicacion.length) {
+                            response.ubicacion.forEach(function(ubicacion) {
+                                $('#ubicacion_id').append(
+                                    `<option value="${ubicacion.id}">${ubicacion.nombre.toUpperCase()}</option>`
+                                );
+                            });
+                        } else {
+                            console.warn("No hay ubicaciones disponibles.");
+                        }
+
+                        // Llenar select turno_id
+                        if (response.turnos && response.turnos.length) {
+                            response.turnos.forEach(function(turno) {
+                                $('#turno_id').append(
+                                    `<option value="${turno.id}">${turno.nombre}</option>`
+                                );
+                            });
+                        } else {
+                            console.warn("No hay turnos disponibles.");
+                        }
+                    },
+
+                    error: function() {
+                        alert('Hubo un error al cargar los turnos');
+                    }
+                });
             });
-        });
-        //Obtenemos datos del turno selecionado
-        $('#turno_id').change(function() {
-            const turno_id = $(this).val();
-            const locacion_id = $('#locacion_id').val();
+            //Obtenemos datos del turno selecionado
+            $('#turno_id').change(function() {
+                const turno_id = $(this).val();
+                const locacion_id = $('#locacion_id').val();
 
-            // Llamada AJAX para obtener las ubicaciones
-            $.ajax({
-                url: '/admin/asistencia/cargaDatosTurno', // Asegúrate de ajustar esta URL según tu enrutamiento
-                headers: {
-                    'x-csrf-token': _token
-                },
-                method: 'POST',
-                data: {
-                    locacion_id: locacion_id,
-                    turno_id: turno_id
-                },
-                success: function(response) {
-                    console.log(response.cant_personal);
-                    $("#divDataTurno").attr("style", "float: right;display: inline-grid;");
-                    $("#btnCantidadSolicitada").text(response.cant_personal);
-                    $("#btnCantidadDefinida").text(response.cant_guardada);
-                    // Limpiar las opciones previas de ubicacion_id
+                // Llamada AJAX para obtener las ubicaciones
+                $.ajax({
+                    url: '/admin/asistencia/cargaDatosTurno', // Asegúrate de ajustar esta URL según tu enrutamiento
+                    headers: {
+                        'x-csrf-token': _token
+                    },
+                    method: 'POST',
+                    data: {
+                        locacion_id: locacion_id,
+                        turno_id: turno_id
+                    },
+                    success: function(response) {
+                        console.log(response.cant_personal);
+                        $("#divDataTurno").attr("style", "float: right;display: inline-grid;");
+                        $("#btnCantidadSolicitada").text(response.cant_personal);
+                        $("#btnCantidadDefinida").text(response.cant_guardada);
+                        // Limpiar las opciones previas de ubicacion_id
 
-                },
-                error: function() {
-                    alert('Hubo un error al cargar los datos del turno');
-                }
+                    },
+                    error: function() {
+                        alert('Hubo un error al cargar los datos del turno');
+                    }
+                });
             });
         });
     </script>
