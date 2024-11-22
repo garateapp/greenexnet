@@ -331,11 +331,15 @@ class ReporteriaController extends Controller
         // Aquí debes implementar la lógica para obtener los datos
         // basándote en los parámetros de búsqueda, ordenamiento y paginación
 
+        // Aplicar filtros
+
 
         $totalRecords = $datos->count(); // Obtén el total de registros
         $filteredRecords = 0; // Obtén el total de registros filtrados
         // Opcional: Agrupar por lote en el backend (si el frontend no lo hace)
-
+        foreach ($datos as $item) {
+            $item->reporte = $this->obtieneInformeCalidad($item->numero_g_recepcion);
+        }
         //$table = DataTables::of($groupedData);
         return response()->json([
             'draw' => $draw,
@@ -343,5 +347,16 @@ class ReporteriaController extends Controller
             'recordsFiltered' => $filteredRecords,
             'data' => $datos
         ], 200);
+    }
+    public function obtieneInformeCalidad($numero_g_recepcion)
+    {
+        $informe = DB::connection("mysqlAppGreenex")->table('recepcions')
+            ->select(
+                'id'
+            )
+            ->where('numero_g_recepcion', '=', $numero_g_recepcion)
+            ->first();
+        $url = "https://appgreenex.cl/download/recepcion/" . $informe->id . "pdf";
+        return $url;
     }
 }
