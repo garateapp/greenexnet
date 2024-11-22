@@ -337,9 +337,9 @@ class ReporteriaController extends Controller
         $totalRecords = $datos->count(); // Obtén el total de registros
         $filteredRecords = 0; // Obtén el total de registros filtrados
         // Opcional: Agrupar por lote en el backend (si el frontend no lo hace)
-        foreach ($datos as $item) {
-            $item->reporte = $this->obtieneInformeCalidad($item->numero_g_recepcion);
-        }
+        // foreach ($datos as $item) {
+        //     $item->reporte = $this->obtieneInformeCalidad($item->numero_g_recepcion);
+        // }
         //$table = DataTables::of($groupedData);
         return response()->json([
             'draw' => $draw,
