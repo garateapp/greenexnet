@@ -227,7 +227,7 @@ class ReporteriaController extends Controller
                 'n_variedad',
             )
             ->where('destruccion_tipo', '=', '')
-            ->where('')
+            ->where('id_especie', '=', '7')
             ->groupBy('destruccion_tipo', 'n_variedad')
             ->get();
         return response()->json([
