@@ -14,6 +14,7 @@ use Gate;
 use Symfony\Component\HttpFoundation\Response;
 use DateTime;
 use DB;
+use Yajra\DataTables\Facades\DataTables;
 
 class ReporteriaController extends Controller
 {
@@ -202,209 +203,152 @@ class ReporteriaController extends Controller
                 DB::RAW("SUM(peso_neto) as peso_neto"),
                 'nota_calidad',
                 'destruccion_tipo',
+                'id_especie',
             )
-            ->where('destruccion_tipo', '=', 'PRN')
-            ->groupBy('nota_calidad', 'destruccion_tipo')
+            ->where('destruccion_tipo', '=', '')
+            ->groupBy('nota_calidad', 'destruccion_tipo', 'id_especie')
             ->get();
 
         $pesoxFecha = DB::connection("sqlsrv")->table('dbo.V_PKG_Recepcion_FG')
             ->select(
                 DB::RAW("SUM(cantidad) AS cantidad"),
                 DB::RAW("SUM(peso_neto) as peso_neto"),
-                'fecha_g_recepcion_sh',
-
+                'destruccion_tipo',
             )
             ->where('destruccion_tipo', '=', 'PRN')
-            ->groupBy('fecha_g_recepcion_sh', 'destruccion_tipo')
+            ->groupBy('destruccion_tipo')
             ->get();
         // Consulta principal
-
-
+        $variedadxCereza = DB::connection("sqlsrv")->table('dbo.V_PKG_Recepcion_FG')
+            ->select(
+                DB::RAW("SUM(cantidad) AS cantidad"),
+                DB::RAW("SUM(peso_neto) as peso_neto"),
+                'destruccion_tipo',
+                'n_variedad',
+            )
+            ->where('destruccion_tipo', '=', '')
+            ->where('')
+            ->groupBy('destruccion_tipo', 'n_variedad')
+            ->get();
         return response()->json([
             "datosSinProcesar" => $datosSinProcesar,
             "datosProcesados" => $datosProcesados,
             "maximaEsperaHoras" => $maximaEsperaHoras,
             "nota_calidad" => $nota_calidad,
-            "pesoxFecha" => $pesoxFecha
+            "pesoxFecha" => $pesoxFecha,
+            'variedadxCereza' => $variedadxCereza,
         ], 200);
     }
-
+    public function obtieneDatosRecepcionProductor(Request $request)
+    {
+        $datos = DB::connection("sqlsrv")->table('dbo.V_PKG_Recepcion_FG')
+            ->select(
+                DB::RAW("SUM(cantidad) AS cantidad"),
+                DB::RAW("SUM(peso_neto) as peso_neto"),
+                'lote_recepcion',
+                'n_empresa',
+                'fecha_g_recepcion_sh',
+                'Hora_g_Recepcion',
+                'n_exportadora',
+                'fecha_cosecha_sf',
+                'NS_Productor',
+                'n_productor',
+                'n_predio',
+                'n_especie',
+                'n_variedad',
+                'n_categoria',
+                't_categoria',
+                'id_categoria_st',
+                'n_categoria_st',
+                'n_calibre',
+                'destruccion_tipo',
+                'nota_calidad'
+            )
+            ->where('destruccion_tipo', '=', '')
+            ->where('nota_calidad', '=', str_replace("Calidad ", "", $request->nota_calidad))
+            ->groupBy(
+                'lote_recepcion',
+                'n_empresa',
+                'fecha_g_recepcion_sh',
+                'Hora_g_Recepcion',
+                'n_exportadora',
+                'fecha_cosecha_sf',
+                'NS_Productor',
+                'n_productor',
+                'n_predio',
+                'n_especie',
+                'n_variedad',
+                'n_categoria',
+                't_categoria',
+                'id_categoria_st',
+                'n_categoria_st',
+                'n_calibre',
+                'destruccion_tipo',
+                'nota_calidad'
+            )
+            ->orderByDesc('fecha_g_recepcion_sh')
+            ->get();
+        return response()->json($datos, 200);
+    }
     public function obtieneDatosStockInventario(Request $request)
     {
 
         $datos = DB::connection("sqlsrv")->table('dbo.V_PKG_Recepcion_FG')
             ->select(
-                'id_empresa',
+
                 DB::RAW("SUM(cantidad) AS cantidad"),
                 DB::RAW("SUM(peso_neto) as peso_neto"),
                 'lote_recepcion',
                 'n_empresa',
-                'c_empresa',
-                'codigo_sag_empresa',
-                'CSG',
-                'id_g_recepcion',
-                'tipo_g_recepcion',
-                'numero_g_recepcion',
-                'fecha_g_recepcion_sh',
-                'Hora_g_Recepcion',
-                'id_emisor',
-                'r_emisor',
-                'c_emisor',
-                'n_emisor',
-                'Codigo_Sag_emisor',
-                'id_exportadora',
-                'r_exportadora',
-                'c_exportadora',
                 'n_exportadora',
-                'tipo_documento_recepcion',
-                'numero_documento_recepcion',
-                'fecha_cosecha_sf',
-                'id_grupo',
-                'r_grupo',
-                'n_grupo',
-                'id_productor',
-                'r_productor',
-                'c_productor',
-                'NS_Productor',
                 'n_productor',
-                'id_predio',
-                'c_predio',
-                'n_predio',
-                'id_centrocosto',
-                'c_centrocosto',
-                'n_centrocosto',
-                'id_familia',
-                'c_familia',
-                'n_familia',
-                'id_especie',
-                'c_especie',
                 'n_especie',
-                'id_variedad',
-                'c_variedad',
-                'n_variedad',
-                'id_categoria',
-                'c_categoria',
-                'n_categoria',
-                't_categoria',
-                'id_categoria_st',
-                'n_categoria_st',
-                'id_calibre',
-                'c_calibre',
-                'n_calibre',
-                'id_serie',
-                'c_serie',
-                'n_serie',
-                'liquidada',
-                'control_calidad',
-                'id_bodega',
-                'c_bodega',
-                'n_bodega',
-                'destruccion_tipo',
-                'destruccion_id',
-                'creacion_tipo',
-                'creacion_id',
-                'numero',
-                'c_turno',
-                'n_turno',
                 'nota_calidad',
-                'n_estado',
-                'id_tratamiento',
-                'C_Tratamiento',
-                'N_tratamiento',
-                'fecha_hora_destruccion',
-                'Estadia',
-                'cuenta_pallets',
-                'Id_productor_rotulado',
-                'n_productor_rotulado',
-                'csg_productor_rotulado'
+                'n_variedad',
+                'fecha_g_recepcion',
+                DB::RAW("DATEDIFF(HOUR, fecha_g_recepcion, GETDATE()) AS horas_en_espera")
             )
+            ->where('destruccion_tipo', '=', '')
             ->groupBy(
                 'lote_recepcion',
-                'id_empresa',
                 'n_empresa',
-                'c_empresa',
-                'codigo_sag_empresa',
-                'CSG',
-                'id_g_recepcion',
-                'tipo_g_recepcion',
-                'numero_g_recepcion',
-                'fecha_g_recepcion_sh',
-                'Hora_g_Recepcion',
-                'id_emisor',
-                'r_emisor',
-                'c_emisor',
-                'n_emisor',
-                'Codigo_Sag_emisor',
-                'id_exportadora',
-                'r_exportadora',
-                'c_exportadora',
                 'n_exportadora',
-                'tipo_documento_recepcion',
-                'numero_documento_recepcion',
-                'fecha_cosecha_sf',
-                'id_grupo',
-                'r_grupo',
-                'n_grupo',
-                'id_productor',
-                'r_productor',
-                'c_productor',
-                'NS_Productor',
                 'n_productor',
-                'id_predio',
-                'c_predio',
-                'n_predio',
-                'id_centrocosto',
-                'c_centrocosto',
-                'n_centrocosto',
-                'id_familia',
-                'c_familia',
-                'n_familia',
-                'id_especie',
-                'c_especie',
                 'n_especie',
-                'id_variedad',
-                'c_variedad',
-                'n_variedad',
-                'id_categoria',
-                'c_categoria',
-                'n_categoria',
-                't_categoria',
-                'id_categoria_st',
-                'n_categoria_st',
-                'id_calibre',
-                'c_calibre',
-                'n_calibre',
-                'id_serie',
-                'c_serie',
-                'n_serie',
-                'liquidada',
-                'control_calidad',
-                'id_bodega',
-                'c_bodega',
-                'n_bodega',
-                'destruccion_tipo',
-                'destruccion_id',
-                'creacion_tipo',
-                'creacion_id',
-                'numero',
-                'c_turno',
-                'n_turno',
                 'nota_calidad',
-                'n_estado',
-                'id_tratamiento',
-                'C_Tratamiento',
-                'N_tratamiento',
-                'fecha_hora_destruccion',
-                'Estadia',
-                'cuenta_pallets',
-                'Id_productor_rotulado',
-                'n_productor_rotulado',
-                'csg_productor_rotulado'
+                'n_variedad',
+                'fecha_g_recepcion'
             )
-            ->orderByDesc('fecha_g_recepcion_sh')
-            ->get(); //DatosCaja::whereBetween('FechaProduccion', ['2023-11-11', '2023-11-12'])->get(); //dd($request->fecha_inicio)
+            ->orderByDesc('fecha_g_recepcion')
+            ->get();
+        $draw = $request->get('draw');
+        $start = $request->get('start');
+        $length = $request->get('length');
+        $search = $request->get('search');
+        $order = $request->get('order');
+        $columns = $request->get('columns');
+
+        // Aquí debes implementar la lógica para obtener los datos
+        // basándote en los parámetros de búsqueda, ordenamiento y paginación
 
 
-        return response()->json($datos, 200);
+        $totalRecords = $datos->count(); // Obtén el total de registros
+        $filteredRecords = 0; // Obtén el total de registros filtrados
+        // Opcional: Agrupar por lote en el backend (si el frontend no lo hace)
+        $groupedData = $datos->groupBy('lote_recepcion')->map(function ($items, $lote) {
+            return [
+                'lote_recepcion' => $lote,
+                'cantidad_total' => $items->sum('cantidad'),
+                'peso_neto_total' => $items->sum('peso_neto'),
+                'detalles' => $items,
+            ];
+        });
+        //$table = DataTables::of($groupedData);
+        return response()->json([
+            'draw' => $draw,
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $filteredRecords,
+            'data' => $datos
+        ], 200);
     }
 }
