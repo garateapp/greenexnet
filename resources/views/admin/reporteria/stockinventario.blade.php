@@ -235,29 +235,63 @@
                     var api = this.api();
                     api.columns().every(function() {
                         var column = this;
-                        console.log(column);
-                        if (column[0] < 7) {
-                            if (column[0] == 4) {
-                                var input = $(
-                                        '<input type="text" placeholder="Filtrar..." style="width: 100%; box-sizing: border-box;" id="filtroNota"/>'
+                        if (column.index() < 6) {
+                            if (column.index == 4) {
+                                var select = $(
+                                        '<select style="width: 100%;" id="filtroNota"><option value="">Todos</option></select>'
                                     )
                                     .appendTo($(column.header()).empty())
-                                    .on('keyup change clear', function() {
-                                        if (column.search() !== this.value) {
-                                            column.search(this.value).draw();
-                                        }
+                                    .on('change', function() {
+                                        var val = $.fn.dataTable.util.escapeRegex($(this)
+                                            .val());
+                                        column.search(val ? '^' + val + '$' : '', true,
+                                                false)
+                                            .draw();
+                                    });
+
+                                // Extrae valores únicos de la columna y los agrega al <select>
+                                column
+                                    .data()
+                                    .unique()
+                                    .sort()
+                                    .each(function(d) {
+                                        select.append('<option value="' + d + '">' + d +
+                                            '</option>');
                                     });
                             } else {
-                                var input = $(
-                                        '<input type="text" placeholder="Filtrar..." style="width: 100%; box-sizing: border-box;"/>'
+                                var select = $(
+                                        '<select style="width: 100%;"><option value="">Todos</option></select>'
                                     )
                                     .appendTo($(column.header()).empty())
-                                    .on('keyup change clear', function() {
-                                        if (column.search() !== this.value) {
-                                            column.search(this.value).draw();
-                                        }
+                                    .on('change', function() {
+                                        var val = $.fn.dataTable.util.escapeRegex($(this)
+                                            .val());
+                                        column.search(val ? '^' + val + '$' : '', true,
+                                                false)
+                                            .draw();
+                                    });
+
+                                // Extrae valores únicos de la columna y los agrega al <select>
+                                column
+                                    .data()
+                                    .unique()
+                                    .sort()
+                                    .each(function(d) {
+                                        select.append('<option value="' + d + '">' + d +
+                                            '</option>');
                                     });
                             }
+                        } else {
+                            // Para las demás columnas, mantenemos el filtro de texto
+                            var input = $(
+                                    '<input type="text" placeholder="Filtrar..." style="width: 100%; box-sizing: border-box;"/>'
+                                )
+                                .appendTo($(column.header()).empty())
+                                .on('keyup change clear', function() {
+                                    if (column.search() !== this.value) {
+                                        column.search(this.value).draw();
+                                    }
+                                });
                         }
                     });
                     api.columns.adjust();
@@ -290,8 +324,8 @@
                         title: 'Variedad'
                     },
                     {
-                        data: 'lote_recepcion',
-                        title: 'Lote Recepción'
+                        data: 'numero_g_recepcion',
+                        title: 'N° Recepción'
                     },
                     {
                         data: 'horas_en_espera',

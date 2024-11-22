@@ -298,7 +298,7 @@ class ReporteriaController extends Controller
 
                 DB::RAW("SUM(cantidad) AS cantidad"),
                 DB::RAW("SUM(peso_neto) as peso_neto"),
-                'lote_recepcion',
+                'numero_g_recepcion',
                 'n_empresa',
                 'n_exportadora',
                 'n_productor',
@@ -310,7 +310,7 @@ class ReporteriaController extends Controller
             )
             ->where('destruccion_tipo', '=', '')
             ->groupBy(
-                'lote_recepcion',
+                'numero_g_recepcion',
                 'n_empresa',
                 'n_exportadora',
                 'n_productor',
@@ -335,14 +335,7 @@ class ReporteriaController extends Controller
         $totalRecords = $datos->count(); // Obtén el total de registros
         $filteredRecords = 0; // Obtén el total de registros filtrados
         // Opcional: Agrupar por lote en el backend (si el frontend no lo hace)
-        $groupedData = $datos->groupBy('lote_recepcion')->map(function ($items, $lote) {
-            return [
-                'lote_recepcion' => $lote,
-                'cantidad_total' => $items->sum('cantidad'),
-                'peso_neto_total' => $items->sum('peso_neto'),
-                'detalles' => $items,
-            ];
-        });
+
         //$table = DataTables::of($groupedData);
         return response()->json([
             'draw' => $draw,
