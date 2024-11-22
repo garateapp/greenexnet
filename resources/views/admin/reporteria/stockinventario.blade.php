@@ -166,7 +166,7 @@
                                     <th>Productor</th>
                                     <th>Nota Calidad</th>
                                     <th>Variedad</th>
-                                    <th>Lote Recepción</th>
+                                    <th>N° Recepción</th>
                                     <th>Horas en Espera</th>
                                     <th>Cajas</th>
                                     <th>Peso Neto</th>
