@@ -77,9 +77,9 @@ class ReporteriaController extends Controller
         $lunesSemanaActual = now()->startOfWeek()->format('Y-m-d');
         $domingoSemanaActual = now()->startOfWeek()->addDays(7)->format('Y-m-d');
 
-        $asistenciasPorDia = Asistencium::selectRaw('DAYNAME(fecha_hora) as dia, COUNT(*) as total')
-            ->whereBetween('fecha_hora', [$lunesSemanaActual, $domingoSemanaActual])
-            ->orderBy('fecha_hora')
+        $asistenciasPorDia = Asistencium::selectRaw('DAYNAME(fecha_hora) as dia,COUNT(*) as total')
+            //->whereBetween('fecha_hora', [$lunesSemanaActual, $domingoSemanaActual])
+            ->orderBy('dia')
             ->groupBy('dia')
             ->get();
 
@@ -96,19 +96,19 @@ class ReporteriaController extends Controller
 
         //Gráficos
         $asistenciasPieChart = Asistencium::selectRaw('DAYNAME(fecha_hora) as dia, COUNT(*) as total,fecha_hora')
-            ->whereBetween('fecha_hora', [$lunesSemanaActual, $viernesSemanaActual]) // Filtrar por fechas de la semana
+            //->whereBetween('fecha_hora', [$lunesSemanaActual, $viernesSemanaActual]) // Filtrar por fechas de la semana
             ->orderBy('fecha_hora')
-
+            ->groupBy('dia', 'fecha_hora')
             ->get();
         $asistenciasxUbicacion = Asistencium::selectRaw('COUNT(*) as total,locacions.nombre as locacion')
             ->join('locacions', 'asistencia.locacion_id', '=', 'locacions.id')
-            ->whereBetween('fecha_hora', [$lunesSemanaActual, $viernesSemanaActual]) // Filtrar por fechas de la semana
+            //->whereBetween('fecha_hora', [$lunesSemanaActual, $viernesSemanaActual]) // Filtrar por fechas de la semana
             ->groupBy('locacion')
             ->get();
         //asistencia x turno
         $asistenciasPorTurno = Asistencium::selectRaw('frecuencia_turnos.nombre as turno, COUNT(*) as total')
             ->join('frecuencia_turnos', 'asistencia.turno_id', '=', 'frecuencia_turnos.id')
-            ->whereBetween('fecha_hora', [$lunesSemanaActual, $viernesSemanaActual])
+            //->whereBetween('fecha_hora', [$lunesSemanaActual, $viernesSemanaActual])
             ->groupBy('turno')
             ->orderBy('turno')
             ->get();

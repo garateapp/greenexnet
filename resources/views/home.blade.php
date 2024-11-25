@@ -372,18 +372,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="card">
-                                            <div class="card-header">
-                                                PlayGround
-                                            </div>
-                                            <div class="card-body">
-                                                <div id="output" class="col-12" style="min-width: 1000px;"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+
                                 <div class="col-md-12">
 
                                     <div class="card">
@@ -434,7 +423,7 @@
         @endsection
         @section('scripts')
             @parent
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js"></script>
+
 
             <script>
                 $.ajax({
@@ -471,8 +460,14 @@
                                 Sunday: 'Domingo'
                             };
                             const asistenciasPorDia = response.asistenciasPorDia;
+                            const weekOrder = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+                            // Ordenar según el índice del día en weekOrder
+                            const sortedData = asistenciasPorDia.sort((a, b) => weekOrder.indexOf(a.dia) - weekOrder.indexOf(b
+                                .dia));
+                            console.log(sortedData);
                             // Genera el HTML dinámicamente
-                            asistenciasPorDia.forEach((asistencia) => {
+                            sortedData.forEach((asistencia) => {
                                 console.log(asistencia);
                                 const porcentaje = parseFloat((asistencia.total / totalEsperado) * 100).toFixed(2);
 
@@ -641,58 +636,24 @@
                     .fail(function(response) {
                         console.log(response);
                     });
-                $.ajax({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        method: 'GET',
-                        url: '/admin/reporteria/getSabana',
+                // $.ajax({
+                //         headers: {
+                //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                //         },
+                //         method: 'GET',
+                //         url: '/admin/reporteria/getSabana',
 
-                    })
-                    .done(function(response) {
-                        //data = response;
-                        const transformedData = response.map(item => ({
-                            locacion: item.locacion.nombre,
-                            turno: item.turno.nombre,
-                            personal: item.personal.nombre,
-                            fecha_hora: item.fecha_hora
-                        }));
+                //     })
+                //     .done(function(response) {
+                //         //data = response;
+                //         const transformedData = response.map(item => ({
+                //             locacion: item.locacion.nombre,
+                //             turno: item.turno.nombre,
+                //             personal: item.personal.nombre,
+                //             fecha_hora: item.fecha_hora
+                //         }));
 
-                        console.log(transformedData);
-
-
-
-                        $.pivotUtilities.locales.es = {
-                            localeStrings: {
-                                renderError: "Ocurrió un error al mostrar los resultados.",
-                                computeError: "Ocurrió un error al calcular los resultados.",
-                                uiRenderError: "Ocurrió un error al renderizar la interfaz.",
-                                selectAll: "Seleccionar todo",
-                                selectNone: "Deseleccionar todo",
-                                tooMany: "(demasiados valores para mostrar)",
-                                filterResults: "Filtrar valores",
-                                totals: "Totales",
-                                vs: "vs",
-                                by: "por",
-                            },
-                            aggregators: $.pivotUtilities.aggregators,
-                            renderers: $.pivotUtilities.renderers,
-                        };
-                        // Cargar la tabla dinámica
-                        $("#output").pivotUI(transformedData, {
-                            rows: ["locacion"], // Agrupa por ubicación
-                            cols: ["turno"], // Columna con los turnos
-                            aggregatorName: "Count", // Conteo de registros
-                            rendererName: "Table", // Representación como tabla
-                            renderers: $.pivotUtilities.renderers,
-                            rendererOptions: {
-                                table: {
-                                    rowTotals: true,
-                                    colTotals: true,
-                                },
-                            },
-                        }, true, "es");
-
-                    });
+                //         console.log(transformedData);
+                //     });
             </script>
         @endsection
