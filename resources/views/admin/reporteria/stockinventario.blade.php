@@ -223,7 +223,7 @@
             var table = $('#lotesTable').DataTable({
                 fixedColumns: true,
                 fixedHeader: true,
-
+                responsive: true,
                 ajax: {
                     url: "{{ route('admin.reporteria.obtieneDatosStockInventario') }}",
                     method: "GET",
