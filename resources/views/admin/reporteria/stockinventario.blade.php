@@ -43,6 +43,22 @@
         #cerrarFiltros {
             cursor: pointer;
         }
+
+        #chart-container {
+            position: relative;
+            width: 90%;
+            /* Ajusta el ancho del gráfico */
+            margin: auto;
+            /* Centra el contenedor */
+        }
+
+        canvas {
+            display: block;
+            max-width: 100%;
+            /* Asegura que el canvas no se desborde */
+            height: auto !important;
+            /* Mantiene la proporción del gráfico */
+        }
     </style>
     <div class="content">
         <div class="container-lg px-4">
@@ -129,7 +145,7 @@
                 <!-- Primera columna -->
                 <div class="col-md-6">
                     <div class="card">
-                        <div class="card-body">
+                        <div class="card-body" id="chart-container">
                             <h5 class="card-title text-center">Gráfico de Variedades</h5>
                             <canvas id="variedadesChart"></canvas>
                         </div>
@@ -139,7 +155,7 @@
                 <!-- Segunda columna -->
                 <div class="col-md-6">
                     <div class="card">
-                        <div class="card-body">
+                        <div class="card-body" id="chart-container">
                             <h5 class="card-title text-center">Gráfico de Nota de Calidad</h5>
                             <canvas id="notaCalidadChart" style="max-height: 300px;"></canvas>
                         </div>
@@ -147,7 +163,7 @@
                 </div>
                 <div class="col-md-12">
                     <div class="card">
-                        <div class="card-body">
+                        <div class="card-body" id="chart-container">
                             <h5 class="card-title text-center">Kilos Recibido por Día</h5>
                             <canvas id="kilosPorDia" style="max-height: 400px;"></canvas>
                         </div>
@@ -757,6 +773,7 @@
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         title: {
                             display: true,
