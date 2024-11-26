@@ -309,7 +309,7 @@ class ReporteriaController extends Controller
                 DB::RAW("MAX(DATEDIFF(HOUR, fecha_g_recepcion, GETDATE())) AS max_horas_en_espera")
             )
             ->where('destruccion_tipo', '=', '')
-            ->where('n_categoria', '=', 'A Proceso')
+
             ->groupBy(
 
                 'n_empresa',
@@ -352,20 +352,19 @@ class ReporteriaController extends Controller
             }
 
             // Nivel 2: Agregar directamente todos los registros
-            $nivel2Entry = [
-                'n_variedad' => $item->n_variedad,
-                'nota_calidad' => $item->nota_calidad,
-                'peso_neto' => $item->peso_neto,
-                'n_empresa' => $item->n_empresa,
-                'n_exportadora' => $item->n_exportadora,
-                'n_productor' => $item->n_productor,
-                'n_especie' => $item->n_especie,
-                'horas_en_espera' => $item->horas_en_espera,
-                'numero_g_recepcion' => $item->numero_g_recepcion,
-            ];
+            $nivel2Entry = [];
             if ($numero_g_rececpcionanterior != $item->numero_g_recepcion) {
-                $nivel2Entry['numero_g_recepcion'] = $item->numero_g_recepcion;
-
+                $nivel2Entry = [
+                    'n_variedad' => $item->n_variedad,
+                    'nota_calidad' => $item->nota_calidad,
+                    'peso_neto' => $item->peso_neto,
+                    'n_empresa' => $item->n_empresa,
+                    'n_exportadora' => $item->n_exportadora,
+                    'n_productor' => $item->n_productor,
+                    'n_especie' => $item->n_especie,
+                    'horas_en_espera' => $item->horas_en_espera,
+                    'numero_g_recepcion' => $item->numero_g_recepcion,
+                ];
                 $result[$nivel1Key]['nivel_2'][] = $nivel2Entry;
             } else {
                 $nivel2Entry['peso_neto'] += (float) $item->peso_neto;

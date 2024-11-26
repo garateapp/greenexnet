@@ -451,6 +451,80 @@
                     });
 
                     // Función para aplicar los filtros
+                    // function applyFilters() {
+                    //     let filters = {
+                    //         n_empresa: $('#filtroEmpresa').val() || [],
+                    //         n_exportadora: $('#filtroExportadora').val() || [],
+                    //         n_productor: $('#filtroProductor').val() || [],
+                    //         n_especie: $('#filtroEspecie').val() || [],
+                    //         n_variedad: $('#filtroVariedad').val() || [],
+                    //         nota_calidad: $('#filtroNotaCalidad').val() || [],
+                    //     };
+
+                    //     // Obtener los datos actuales de la tabla
+                    //     let allData = api.ajax.json().data;
+
+                    //     // Filtrar los datos localmente
+                    //     let filteredData = allData.filter(function(row) {
+                    //         let matchesFilter = false;
+
+                    //         if (Array.isArray(row.nivel_2)) {
+                    //             // Iterar sobre los elementos de nivel_2
+                    //             row.nivel_2.forEach(function(item) {
+                    //                 let matchesCurrentItem = true;
+
+                    //                 // Comprobar si los filtros coinciden
+                    //                 if (filters.n_empresa.length && !filters.n_empresa
+                    //                     .includes(item.n_empresa)) {
+                    //                     matchesCurrentItem = false;
+                    //                 }
+                    //                 if (filters.n_exportadora.length && !filters
+                    //                     .n_exportadora.includes(item.n_exportadora)) {
+                    //                     matchesCurrentItem = false;
+                    //                 }
+                    //                 if (filters.n_productor.length && !filters
+                    //                     .n_productor.includes(item.n_productor)) {
+                    //                     matchesCurrentItem = false;
+                    //                 }
+                    //                 if (filters.n_especie.length && !filters.n_especie
+                    //                     .includes(item.n_especie)) {
+                    //                     matchesCurrentItem = false;
+                    //                 }
+                    //                 if (filters.n_variedad.length && !filters.n_variedad
+                    //                     .includes(item.n_variedad)) {
+                    //                     matchesCurrentItem = false;
+                    //                 }
+                    //                 if (filters.nota_calidad.length && !filters
+                    //                     .nota_calidad
+                    //                     .includes(item.nota_calidad)) {
+                    //                     matchesCurrentItem = false;
+                    //                 }
+                    //                 // Si algún elemento de nivel_2 coincide, consideramos que la fila cumple
+                    //                 if (matchesCurrentItem) {
+                    //                     matchesFilter = true;
+                    //                 }
+                    //             });
+                    //         }
+
+                    //         return matchesFilter;
+                    //     });
+
+
+                    //     console.log('datofiltrado', filteredData);
+                    //     // Redibujar la tabla con los datos filtrados
+                    //     table.clear(); // Eliminar filas actuales
+                    //     table.rows.add(filteredData); // Agregar las filas filtradas
+                    //     table.draw(); // Redibujar la tabla
+                    //     if (filteredData.length == 0) {
+                    //         $("#horaEspera").html("0")
+                    //     } else {
+                    //         const max_horas_en_espera = filteredData.reduce((max, item) => Math.max(max,
+                    //             item.max_horas_en_espera), 0);
+
+
+                    //         $("#horaEspera").html(formatNumber(max_horas_en_espera));
+                    //     }
+                    // }
                     function applyFilters() {
                         let filters = {
                             n_empresa: $('#filtroEmpresa').val() || [],
@@ -465,64 +539,78 @@
                         let allData = api.ajax.json().data;
 
                         // Filtrar los datos localmente
-                        let filteredData = allData.filter(function(row) {
-                            let matchesFilter = false;
+                        let filteredData = allData.map(function(row) {
+                            // Filtrar los elementos de nivel_2
+                            let filteredNivel2 = row.nivel_2.filter(function(item) {
+                                let matchesCurrentItem = true;
 
-                            if (Array.isArray(row.nivel_2)) {
-                                // Iterar sobre los elementos de nivel_2
-                                row.nivel_2.forEach(function(item) {
-                                    let matchesCurrentItem = true;
+                                // Comprobar si los filtros coinciden
+                                if (filters.n_empresa.length && !filters.n_empresa
+                                    .includes(item.n_empresa)) {
+                                    matchesCurrentItem = false;
+                                }
+                                if (filters.n_exportadora.length && !filters
+                                    .n_exportadora.includes(item.n_exportadora)) {
+                                    matchesCurrentItem = false;
+                                }
+                                if (filters.n_productor.length && !filters.n_productor
+                                    .includes(item.n_productor)) {
+                                    matchesCurrentItem = false;
+                                }
+                                if (filters.n_especie.length && !filters.n_especie
+                                    .includes(item.n_especie)) {
+                                    matchesCurrentItem = false;
+                                }
+                                if (filters.n_variedad.length && !filters.n_variedad
+                                    .includes(item.n_variedad)) {
+                                    matchesCurrentItem = false;
+                                }
+                                if (filters.nota_calidad.length && !filters.nota_calidad
+                                    .includes(item.nota_calidad)) {
+                                    matchesCurrentItem = false;
+                                }
 
-                                    // Comprobar si los filtros coinciden
-                                    if (filters.n_empresa.length && !filters.n_empresa
-                                        .includes(item.n_empresa)) {
-                                        matchesCurrentItem = false;
-                                    }
-                                    if (filters.n_exportadora.length && !filters
-                                        .n_exportadora.includes(item.n_exportadora)) {
-                                        matchesCurrentItem = false;
-                                    }
-                                    if (filters.n_productor.length && !filters
-                                        .n_productor.includes(item.n_productor)) {
-                                        matchesCurrentItem = false;
-                                    }
-                                    if (filters.n_especie.length && !filters.n_especie
-                                        .includes(item.n_especie)) {
-                                        matchesCurrentItem = false;
-                                    }
-                                    if (filters.n_variedad.length && !filters.n_variedad
-                                        .includes(item.n_variedad)) {
-                                        matchesCurrentItem = false;
-                                    }
-                                    if (filters.nota_calidad.length && !filters
-                                        .nota_calidad
-                                        .includes(item.nota_calidad)) {
-                                        matchesCurrentItem = false;
-                                    }
-                                    // Si algún elemento de nivel_2 coincide, consideramos que la fila cumple
-                                    if (matchesCurrentItem) {
-                                        matchesFilter = true;
-                                    }
-                                });
+                                return matchesCurrentItem;
+                            });
+
+                            // Recalcular peso_neto y max_horas_en_espera para la fila principal
+                            if (filteredNivel2.length > 0) {
+                                // Sumar peso_neto de todos los registros en nivel_2 filtrado
+                                const totalPesoNeto = filteredNivel2.reduce((sum, item) => {
+                                    return sum + parseFloat(item.peso_neto ||
+                                    0); // Aseguramos la conversión a número
+                                }, 0);
+                                console.log('totalPesoNeto', totalPesoNeto);
+                                // Calcular el máximo de horas_en_espera en nivel_2 filtrado
+                                const maxHorasEspera = filteredNivel2.reduce((max, item) => Math
+                                    .max(max, item.horas_en_espera || 0), 0);
+
+                                // Actualizar los valores en la fila principal
+                                return {
+                                    ...row,
+                                    nivel_2: filteredNivel2,
+                                    peso_neto: totalPesoNeto,
+                                    max_horas_en_espera: maxHorasEspera,
+                                };
                             }
 
-                            return matchesFilter;
-                        });
+                            return null; // Excluir filas sin datos en nivel_2 filtrado
+                        }).filter(Boolean); // Remover filas nulas
 
-
+                        console.log('datofiltrado', filteredData);
 
                         // Redibujar la tabla con los datos filtrados
                         table.clear(); // Eliminar filas actuales
                         table.rows.add(filteredData); // Agregar las filas filtradas
                         table.draw(); // Redibujar la tabla
-                        if (filteredData.length == 0) {
-                            $("#horaEspera").html("0")
+
+                        // Calcular el máximo de max_horas_en_espera global
+                        if (filteredData.length === 0) {
+                            $("#horaEspera").html("0");
                         } else {
-                            const max_horas_en_espera = filteredData.reduce((max, item) => Math.max(max,
-                                item.max_horas_en_espera), 0);
-
-
-                            $("#horaEspera").html(formatNumber(max_horas_en_espera));
+                            const maxHorasGlobal = filteredData.reduce((max, item) => Math.max(max, item
+                                .max_horas_en_espera), 0);
+                            $("#horaEspera").html(formatNumber(maxHorasGlobal));
                         }
                     }
 
