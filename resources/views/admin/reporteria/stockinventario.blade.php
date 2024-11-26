@@ -562,6 +562,7 @@
 
 
                 footerCallback: function(row, data, start, end, display) {
+
                     let api = this.api();
 
                     // Función para convertir a número
@@ -576,6 +577,7 @@
                         .reduce(function(a, b) {
                             return intVal(a) + intVal(b);
                         }, 0);
+
                     let subtotalPesoNeto = api
                         .column(3, {
                             page: 'current'
