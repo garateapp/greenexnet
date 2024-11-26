@@ -552,7 +552,11 @@
                         if (filteredData.length == 0) {
                             $("#horaEspera").html("0")
                         } else {
-                            $("#horaEspera").html(formatNumber(filteredData[0].max_horas_en_espera));
+                            const max_horas_en_espera = filteredData.reduce((max, item) => Math.max(max,
+                                item.max_horas_en_espera), 0);
+
+
+                            $("#horaEspera").html(formatNumber(max_horas_en_espera));
                         }
                     }
 
@@ -749,14 +753,7 @@
             dataType: "json",
             success: function(data) {
 
-                // $("#proIniciado").html(formatNumber(data.datosProcesados[0].peso_neto));
 
-                // $("#proSinIniciar").html(formatNumber(data.datosSinProcesar[0].peso_neto));
-                // $("#horaEspera").html(data.maximaEsperaHoras.horas_en_espera);
-
-                $("#cajasProcesadas").html(formatNumber(data.pesoxFecha[0].cantidad));
-                console.log(data.variedadxCereza);
-                //cargaPesoCantidadxFecha(data);
                 cargaNotaCalidad(data);
                 const variedades = data.variedadxCereza.map(item => item.n_variedad);
                 const cantidades = data.variedadxCereza.map(item => parseFloat(item.cantidad));
