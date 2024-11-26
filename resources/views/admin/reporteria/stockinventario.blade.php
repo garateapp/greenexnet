@@ -65,7 +65,24 @@
                         </div>
                     </div>
                 </div>
+                {{-- <div class="col-sm-6 col-xl-3">
+                    <div class="card text-white bg-info">
+                        <div class="card-body pb-0 d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="text-center">Kilos Procesado a la Fecha</div>
+                                <div class="fs-4 fw-bold text-center">
+                                    <i class="fas fa-cogs" style="color: #FFFFFF; font-size: x-large;"></i>
+                                    <span class="fs-6 fw-normal text-right" id="proIniciado"
+                                        style="font-size: x-large;"></span>
 
+
+                                </div>
+                                <div class="text-center"><br /></div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div> --}}
 
 
                 <div class="col-sm-6 col-xl-3">
@@ -85,6 +102,27 @@
 
                 </div>
 
+
+
+                {{-- <div class="col-sm-6 col-xl-3">
+                    <div class="card text-white bg-info">
+                        <div class="card-body pb-0 d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="text-center">Cajas Procesadas</div>
+                                <div class="fs-4 fw-semibold">
+                                    <i class="fas fa-box" style="color: #FFFFFF; font-size: x-large;"></i>
+                                    <span class="fs-6 fw-normal text-center" id="cajasProcesadas"
+                                        style="font-size: x-large;">
+                                    </span>
+
+                                </div>
+                                <div class="text-center"><br /></div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div> --}}
             </div>
 
             <div class="row" id="graficosContainer" style="display: none;">
@@ -145,11 +183,21 @@
                                 style="width:100%">
                                 <thead>
                                     <tr>
+                                        {{-- <th>Especie</th>
+                                    <th>Empresa</th>
+                                    <th>Exportadora</th>
+                                    <th>Productor</th>
+                                     --}}
                                         <th></th>
                                         <th>Variedad</th>
                                         <th>Nota Calidad</th>
                                         <th>Peso Neto</th>
                                         <th>Horas en Espera</th>
+
+                                        {{-- <th>N° Recepción</th>
+                                    <th>Cajas</th> --}}
+
+
                                     </tr>
 
                                 </thead>
@@ -161,7 +209,12 @@
                                         <th></th>
                                         <th></th>
                                         <th></th>
-
+                                        {{-- <th></th> --}}
+                                        {{-- <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th> --}}
                                     </tr>
 
                                 </tfoot>
@@ -594,12 +647,177 @@
         });
 
 
+        function groupBy(data, keys) {
+            return data.reduce((result, currentValue) => {
+                // Crea un identificador único basado en las claves para agrupar
+                var groupKey = keys.map(key => currentValue[key]).join('-');
+                if (!result[groupKey]) {
+                    result[groupKey] = {
+                        n_variedad: currentValue.n_variedad,
+                        nota_calidad: currentValue.nota_calidad,
+                        peso_neto_sum: 0, // Inicializamos la suma
+                        items: []
+                    };
+                }
+                result[groupKey].peso_neto_sum += parseFloat(currentValue
+                    .peso_neto); // Sumar peso_neto
+                result[groupKey].items.push(currentValue);
+                return result;
+            }, {});
+        }
+
+        // Función para generar el contenido del child row (Nivel 2)
+        function formatChildRow(group) {
+            var childContent = '<table class="table table-bordered">';
+            group.items.forEach(item => {
+                childContent += `
+                <tr>
+                    <th>Empresa</th>
+                    <td>${item.n_empresa}</td>
+                </tr>
+                <tr>
+                    <th>Exportadora</th>
+                    <td>${item.n_exportadora}</td>
+                </tr>
+                <tr>
+                    <th>Productor</th>
+                    <td>${item.n_productor}</td>
+                </tr>
+                <tr>
+                    <th>Horas En Espera</th>
+                    <td>${item.horas_en_espera}</td>
+                </tr>
+                <tr>
+                    <th>Peso Neto</th>
+                    <td>${new Intl.NumberFormat('es-CL', { minimumFractionDigits: 0, maximumFractionDigits: 0
+                        }).format(item.peso_neto)}</td>
+                </tr>
+                `;
+            });
+            childContent += '</table>';
+            return childContent;
+        }
+
+        function applyChildRowFilters() {
+            let filters = {
+                n_empresa: $('#filtroEmpresa').val() || [],
+                n_exportadora: $('#filtroExportadora').val() || [],
+                n_productor: $('#filtroProductor').val() || [],
+                n_especie: $('#filtroEspecie').val() || [],
+            };
+            $('#lotesTable tbody tr.shown').each(function() {
+                let rowData = table.row(this).data();
+                let matchesFilter = true;
+
+                // Filtrar según los valores seleccionados
+                if (filters.n_empresa.length && !filters.n_empresa.includes(rowData.n_empresa)) {
+                    matchesFilter = false;
+                }
+                if (filters.n_exportadora.length && !filters.n_exportadora.includes(rowData
+                        .n_exportadora)) {
+                    matchesFilter = false;
+                }
+                if (filters.n_productor.length && !filters.n_productor.includes(rowData
+                        .n_productor)) {
+                    matchesFilter = false;
+                }
+                if (filters.n_especie.length && !filters.n_especie.includes(rowData.n_especie)) {
+                    matchesFilter = false;
+                }
+
+                // Si no coincide con el filtro, ocultar el child row
+                if (matchesFilter) {
+                    $(this).find('td.dt-control').trigger(
+                        'click'); // Mostrar child row si pasa el filtro
+                } else {
+                    if ($(this).hasClass('shown')) {
+                        $(this).find('td.dt-control').trigger(
+                            'click'); // Ocultar child row si no pasa el filtro
+                    }
+                }
+                console.log("rowData", rowData);
+            });
+        }
 
 
 
 
 
+        $.ajax({
+            url: "{{ route('admin.reporteria.obtieneRecepcionDatosRecepcion') }}",
+            type: "GET",
+            dataType: "json",
+            success: function(data) {
 
+                // $("#proIniciado").html(formatNumber(data.datosProcesados[0].peso_neto));
+
+                // $("#proSinIniciar").html(formatNumber(data.datosSinProcesar[0].peso_neto));
+                // $("#horaEspera").html(data.maximaEsperaHoras.horas_en_espera);
+
+                $("#cajasProcesadas").html(formatNumber(data.pesoxFecha[0].cantidad));
+                console.log(data.variedadxCereza);
+                //cargaPesoCantidadxFecha(data);
+                cargaNotaCalidad(data);
+                const variedades = data.variedadxCereza.map(item => item.n_variedad);
+                const cantidades = data.variedadxCereza.map(item => parseFloat(item.cantidad));
+                const pesosNetos = data.variedadxCereza.map(item => parseFloat(item.peso_neto));
+
+                // Configurar el gráfico
+                const ctx = document.getElementById('variedadesChart').getContext('2d');
+                const chart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: variedades, // Etiquetas (variedades)
+                        datasets: [{
+                                label: 'Cantidad',
+                                data: cantidades,
+                                backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Peso Neto',
+                                data: pesosNetos,
+                                backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Cantidad y Peso Neto por Variedad'
+                            }
+                        },
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Variedad'
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Valores'
+                                }
+                            }
+                        }
+                    }
+                });
+
+            }
+        });
+
+        // function cargaDataTable() {
+        // $.ajax({
+        // url: "{{ route('admin.reporteria.obtieneDatosStockInventario') }}",
+        // })
+        // }
 
         function cargaNotaCalidad(data) {
             const labels = data.nota_calidad.map(item => `Calidad ${item.nota_calidad}`);
