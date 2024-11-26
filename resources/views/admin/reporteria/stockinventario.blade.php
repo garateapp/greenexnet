@@ -564,7 +564,7 @@
                 footerCallback: function(row, data, start, end, display) {
 
                     let api = this.api();
-
+                    console.log(api.column(3));
                     // Función para convertir a número
                     let intVal = function(i) {
                         return typeof i === 'string' ? i.replace(/[\$,]/g, '') * 1 :
@@ -617,14 +617,6 @@
             });
 
         });
-
-
-
-
-
-
-
-
         $.ajax({
             url: "{{ route('admin.reporteria.obtieneRecepcionDatosRecepcion') }}",
             type: "GET",
