@@ -897,7 +897,10 @@
 
 
         function formatNumber(number) {
-            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            return new Intl.NumberFormat('es-CL', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(number);
         }
     </script>
 @endsection
