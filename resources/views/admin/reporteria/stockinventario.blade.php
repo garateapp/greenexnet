@@ -743,75 +743,75 @@
 
 
 
-        $.ajax({
-            url: "{{ route('admin.reporteria.obtieneRecepcionDatosRecepcion') }}",
-            type: "GET",
-            dataType: "json",
-            success: function(data) {
+        // $.ajax({
+        //     url: "{{ route('admin.reporteria.obtieneRecepcionDatosRecepcion') }}",
+        //     type: "GET",
+        //     dataType: "json",
+        //     success: function(data) {
 
-                $("#proIniciado").html(formatNumber(data.datosProcesados[0].peso_neto));
+        //         // $("#proIniciado").html(formatNumber(data.datosProcesados[0].peso_neto));
 
-                $("#proSinIniciar").html(formatNumber(data.datosSinProcesar[0].peso_neto));
-                $("#horaEspera").html(data.maximaEsperaHoras.horas_en_espera);
+        //         // $("#proSinIniciar").html(formatNumber(data.datosSinProcesar[0].peso_neto));
+        //         // $("#horaEspera").html(data.maximaEsperaHoras.horas_en_espera);
 
-                $("#cajasProcesadas").html(formatNumber(data.pesoxFecha[0].cantidad));
-                console.log(data.variedadxCereza);
-                //cargaPesoCantidadxFecha(data);
-                cargaNotaCalidad(data);
-                const variedades = data.variedadxCereza.map(item => item.n_variedad);
-                const cantidades = data.variedadxCereza.map(item => parseFloat(item.cantidad));
-                const pesosNetos = data.variedadxCereza.map(item => parseFloat(item.peso_neto));
+        //         $("#cajasProcesadas").html(formatNumber(data.pesoxFecha[0].cantidad));
+        //         console.log(data.variedadxCereza);
+        //         //cargaPesoCantidadxFecha(data);
+        //         cargaNotaCalidad(data);
+        //         const variedades = data.variedadxCereza.map(item => item.n_variedad);
+        //         const cantidades = data.variedadxCereza.map(item => parseFloat(item.cantidad));
+        //         const pesosNetos = data.variedadxCereza.map(item => parseFloat(item.peso_neto));
 
-                // Configurar el gráfico
-                const ctx = document.getElementById('variedadesChart').getContext('2d');
-                const chart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: variedades, // Etiquetas (variedades)
-                        datasets: [{
-                                label: 'Cantidad',
-                                data: cantidades,
-                                backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                                borderColor: 'rgba(75, 192, 192, 1)',
-                                borderWidth: 1
-                            },
-                            {
-                                label: 'Peso Neto',
-                                data: pesosNetos,
-                                backgroundColor: 'rgba(255, 99, 132, 0.6)',
-                                borderColor: 'rgba(255, 99, 132, 1)',
-                                borderWidth: 1
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            title: {
-                                display: true,
-                                text: 'Cantidad y Peso Neto por Variedad'
-                            }
-                        },
-                        scales: {
-                            x: {
-                                title: {
-                                    display: true,
-                                    text: 'Variedad'
-                                }
-                            },
-                            y: {
-                                beginAtZero: true,
-                                title: {
-                                    display: true,
-                                    text: 'Valores'
-                                }
-                            }
-                        }
-                    }
-                });
+        //         // Configurar el gráfico
+        //         const ctx = document.getElementById('variedadesChart').getContext('2d');
+        //         const chart = new Chart(ctx, {
+        //             type: 'bar',
+        //             data: {
+        //                 labels: variedades, // Etiquetas (variedades)
+        //                 datasets: [{
+        //                         label: 'Cantidad',
+        //                         data: cantidades,
+        //                         backgroundColor: 'rgba(75, 192, 192, 0.6)',
+        //                         borderColor: 'rgba(75, 192, 192, 1)',
+        //                         borderWidth: 1
+        //                     },
+        //                     {
+        //                         label: 'Peso Neto',
+        //                         data: pesosNetos,
+        //                         backgroundColor: 'rgba(255, 99, 132, 0.6)',
+        //                         borderColor: 'rgba(255, 99, 132, 1)',
+        //                         borderWidth: 1
+        //                     }
+        //                 ]
+        //             },
+        //             options: {
+        //                 responsive: true,
+        //                 plugins: {
+        //                     title: {
+        //                         display: true,
+        //                         text: 'Cantidad y Peso Neto por Variedad'
+        //                     }
+        //                 },
+        //                 scales: {
+        //                     x: {
+        //                         title: {
+        //                             display: true,
+        //                             text: 'Variedad'
+        //                         }
+        //                     },
+        //                     y: {
+        //                         beginAtZero: true,
+        //                         title: {
+        //                             display: true,
+        //                             text: 'Valores'
+        //                         }
+        //                     }
+        //                 }
+        //             }
+        //         });
 
-            }
-        });
+        //     }
+        // });
 
         // function cargaDataTable() {
         // $.ajax({
