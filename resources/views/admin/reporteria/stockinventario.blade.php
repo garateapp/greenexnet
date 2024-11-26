@@ -278,7 +278,7 @@
                 <td class="dt-control sorting_2"></td>
                 <td>${item.n_variedad}</td>
                 <td>${item.nota_calidad} </td>
-                <td> ${item.peso_neto} </td>
+                <td> ${formatNumber(item.peso_neto)} </td>
                 <td> ${item.horas_en_espera} </td>
                 <td> ${item.numero_g_recepcion} </td>
             </tr>
@@ -311,18 +311,6 @@
 
                 return tablaN2;
             }
-
-
-
-
-
-            // Paso 1: Agrupar la data por n_variedad y nota_calidad
-
-
-            // Convertimos el objeto agrupado en un array para usarlo como datasource del DataTable
-
-
-
             $('#lotesTable thead tr')
                 .clone(true)
                 .addClass('filters')
