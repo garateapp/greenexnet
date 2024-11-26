@@ -246,27 +246,29 @@
                 </li>
             @endcan
         @endif
-        <li class="c-sidebar-nav-dropdown {{ request()->is('admin/reporteria*') ? 'c-show' : '' }}">
-            <a class="c-sidebar-nav-dropdown-toggle" href="#">
-                <i class="fa-fw fas fa-chart-bar c-sidebar-nav-icon">
+        @can('access_reporteria')
+            <li class="c-sidebar-nav-dropdown {{ request()->is('admin/reporteria*') ? 'c-show' : '' }}">
+                <a class="c-sidebar-nav-dropdown-toggle" href="#">
+                    <i class="fa-fw fas fa-chart-bar c-sidebar-nav-icon">
 
-                </i>
-                Reportería
-            </a>
-            <ul class="c-sidebar-nav-dropdown-items">
+                    </i>
+                    Reportería
+                </a>
+                <ul class="c-sidebar-nav-dropdown-items">
 
-                <li class="c-sidebar-nav-item">
-                    <a href="{{ route('admin.reporteria.obtenerDatosReporte') }}"
-                        class="c-sidebar-nav-link {{ request()->is('admin/reporteria') || request()->is('admin/reporteria/*') ? 'c-active' : '' }}">
-                        <i class="fa-fw fas fa-chart-pie c-sidebar-nav-icon">
+                    <li class="c-sidebar-nav-item">
+                        <a href="{{ route('admin.reporteria.obtenerDatosReporte') }}"
+                            class="c-sidebar-nav-link {{ request()->is('admin/reporteria') || request()->is('admin/reporteria/*') ? 'c-active' : '' }}">
+                            <i class="fa-fw fas fa-chart-pie c-sidebar-nav-icon">
 
-                        </i>
-                        Stock Inventario
-                    </a>
-                </li>
+                            </i>
+                            Stock Inventario
+                        </a>
+                    </li>
 
-            </ul>
-        </li>
+                </ul>
+            </li>
+        @endcan
         <li class="c-sidebar-nav-item">
             <a href="#" class="c-sidebar-nav-link"
                 onclick="event.preventDefault(); document.getElementById('logoutform').submit();">

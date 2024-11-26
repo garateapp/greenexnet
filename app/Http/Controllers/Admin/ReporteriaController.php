@@ -309,6 +309,7 @@ class ReporteriaController extends Controller
                 DB::RAW("MAX(DATEDIFF(HOUR, fecha_g_recepcion, GETDATE())) AS max_horas_en_espera")
             )
             ->where('destruccion_tipo', '=', '')
+            ->where('n_categoria', '=', 'A Proceso')
             ->groupBy(
 
                 'n_empresa',
