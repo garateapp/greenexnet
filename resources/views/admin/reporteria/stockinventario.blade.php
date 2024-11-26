@@ -39,6 +39,10 @@
         .bg-danger {
             background-color: #ff7313 !important;
         }
+
+        #cerrarFiltros {
+            cursor: pointer;
+        }
     </style>
     <div class="content">
         <div class="container-lg px-4">
@@ -151,6 +155,8 @@
 
                 <div id="filtrosSlide" class="filtros-slide">
                     <h5>Filtros</h5>
+                    <button id="cerrar" class="btn btn-danger" style="float: right;margin-top: -30px;"><i
+                            class="fas fa-close"></i></button>
                     <div id="filtros">
                         <label for="filtroEmpresa">Empresa</label>
                         <select id="filtroEmpresa" class="form-control select2" multiple="multiple"></select>
@@ -223,10 +229,13 @@
     </div>
     <script>
         $(document).ready(function() {
+
             $('#toggleFiltros').on('click', function() {
                 $('#filtrosSlide').toggleClass('active');
             });
-
+            $('#cerrar').on('click', function() {
+                $('#filtrosSlide').toggleClass('active');
+            });
             $('#toggleButton').on('click', function() {
                 $('#graficosContainer').slideToggle('fast', function() {
                     // Cambiar el texto del botón según el estado del div
