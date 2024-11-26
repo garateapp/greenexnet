@@ -89,7 +89,7 @@
                     <div class="card text-white bg-info">
                         <div class="card-body pb-0 d-flex justify-content-between align-items-start">
                             <div>
-                                <div class="text-center">Horas de Espera</div>
+                                <div class="text-center">Máximo Horas de Espera</div>
                                 <div class="fs-4 fw-semibold text-center">
                                     <i class="fas fa-clock" style="color: #FFFFFF; font-size: x-large;"></i>
                                     <span class="fs-6 fw-normal text-center" id="horaEspera"
@@ -546,6 +546,11 @@
                         table.clear(); // Eliminar filas actuales
                         table.rows.add(filteredData); // Agregar las filas filtradas
                         table.draw(); // Redibujar la tabla
+                        if (filteredData.length == 0) {
+                            $("#horaEspera").html("0")
+                        } else {
+                            $("#horaEspera").html(formatNumber(filteredData[0].max_horas_en_espera));
+                        }
                     }
 
                 },
@@ -634,6 +639,7 @@
                     $(api.column(3).footer()).html(
                         ` ${formatNumber(subtotalPesoNeto.toFixed(0))}<br> ${formatNumber(totalPesoNeto.toFixed(0))}`
                     );
+                    $("#proSinIniciar").html(`${formatNumber(totalPesoNeto.toFixed(0))}`)
                 }
             });
             table.on('click', 'td.sorting_1', function(e) {
