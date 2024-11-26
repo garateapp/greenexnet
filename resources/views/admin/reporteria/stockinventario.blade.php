@@ -170,6 +170,14 @@
 
                         <label for="filtroEspecie">Especie</label>
                         <select id="filtroEspecie" class="form-control select2" multiple="multiple"></select>
+                        <label for="filtroVariedad">Variedad</label>
+                        <select id="filtroVariedad" class="form-control select2" multiple="multiple"></select>
+
+                        <label for="filtroNotaCalidad">Nota Calidad</label>
+                        <select id="filtroNotaCalidad" class="form-control select2" multiple="multiple"></select>
+
+
+
                     </div>
                 </div>
                 <div class="card">
@@ -314,10 +322,6 @@
 
                 return tablaN2;
             }
-            $('#lotesTable thead tr')
-                .clone(true)
-                .addClass('filters')
-                .appendTo('#lotesTable thead');
 
             let table = $('#lotesTable').DataTable({
                 fixedColumns: true,
@@ -341,72 +345,11 @@
                         n_empresa: [],
                         n_exportadora: [],
                         n_productor: [],
-                        n_especie: []
+                        n_especie: [],
+                        n_variedad: [],
+                        nota_calidad: [],
                     };
-                    api.columns().every(function() {
-                        let column = this;
-                        if (column.index() < 3) {
-                            if (column.index == 2) {
-                                var
-                                    select = $(
-                                        '<select style="width: 100%;" id="filtroNota"><option value="">Todos</option></select>'
-                                    )
-                                    .appendTo($(column.header()).empty()).on('change',
-                                        function() {
-                                            var val = $.fn.dataTable.util
-                                                .escapeRegex($(this).val());
-                                            column.search(val ? '^' + val + '$' : '', true,
-                                                false).draw();
-                                        }
-                                    ); // Extraevalores únicos de la columna y los agrega al < select >
-                                column
-                                    .data()
-                                    .unique()
-                                    .sort()
-                                    .each(function(d) {
-                                        select.append('<option value="' +
-                                            d + '">' + d +
-                                            '</option>');
-                                    });
-                            } else {
-                                var select = $(
-                                        '<select style="width: 100%;"><option value = "">Todos</option> </select>'
-                                    )
-                                    .appendTo($(column.header()).empty())
-                                    .on('change', function() {
-                                        var val = $.fn.dataTable.util
-                                            .escapeRegex($(this)
-                                                .val());
-                                        column.search(val ? '^' + val +
-                                                '$' : '', true,
-                                                false)
-                                            .draw();
-                                    });
 
-                                // Extrae valores únicos de la columna y los agrega al <select>
-                                column
-                                    .data()
-                                    .unique()
-                                    .sort()
-                                    .each(function(d) {
-                                        select.append('<option value="' +
-                                            d + '">' + d +
-                                            '</option>');
-                                    });
-                            }
-                        } else {
-                            // Para las demás columnas, mantenemos el filtro de texto
-                            var input = $(
-                                    '<input type="text" placeholder="Filtrar..." style="width: 100%; box-sizing: border-box;" />'
-                                )
-                                .appendTo($(column.header()).empty())
-                                .on('keyup change clear', function() {
-                                    if (column.search() !== this.value) {
-                                        column.search(this.value).draw();
-                                    }
-                                });
-                        }
-                    });
                     api.columns.adjust();
 
                     api.rows().every(function() {
@@ -430,6 +373,15 @@
                                     data
                                     .n_especie)) uniqueValues.n_especie.push(data
                                 .n_especie);
+                            if (data.n_variedad && !uniqueValues.n_variedad.includes(
+                                    data
+                                    .n_variedad)) uniqueValues.n_variedad.push(data
+                                .n_variedad);
+                            if (data.nota_calidad && !uniqueValues.nota_calidad
+                                .includes(
+                                    data
+                                    .nota_calidad)) uniqueValues.nota_calidad.push(data
+                                .nota_calidad);
                         });
 
                     });
@@ -440,7 +392,9 @@
                         .sort();
                     uniqueValues.n_productor.sort();
                     uniqueValues.n_especie.sort();
-
+                    uniqueValues.n_variedad.sort();
+                    uniqueValues.nota_calidad.sort();
+                    console.log(uniqueValues.nota_calidad.sort());
                     // Llenar los filtros con los valores únicos obtenidos
 
                     uniqueValues.n_empresa.forEach(
@@ -459,12 +413,21 @@
                             $('#filtroProductor').append(new Option(value, value));
                         });
                     let specieHasCherries =
-                        false; // Bandera para verificar si 'Cherries' está presente
+                        false;
+                    // Bandera para verificar si 'Cherries' está presente
                     uniqueValues.n_especie.forEach(function(value) {
                         $('#filtroEspecie').append(new Option(value, value));
                         if (value === "Cherries") {
                             specieHasCherries = true;
                         }
+                        uniqueValues.n_variedad.forEach(
+                            function(value) {
+                                $('#filtroVariedad').append(new Option(value, value));
+                            });
+                        uniqueValues.nota_calidad.forEach(
+                            function(value) {
+                                $('#filtroNotaCalidad').append(new Option(value, value));
+                            });
                     });
 
                     // Pre-seleccionar 'Cherries' si está presente
@@ -494,6 +457,8 @@
                             n_exportadora: $('#filtroExportadora').val() || [],
                             n_productor: $('#filtroProductor').val() || [],
                             n_especie: $('#filtroEspecie').val() || [],
+                            n_variedad: $('#filtroVariedad').val() || [],
+                            nota_calidad: $('#filtroNotaCalidad').val() || [],
                         };
 
                         // Obtener los datos actuales de la tabla
@@ -525,7 +490,15 @@
                                         .includes(item.n_especie)) {
                                         matchesCurrentItem = false;
                                     }
-
+                                    if (filters.n_variedad.length && !filters.n_variedad
+                                        .includes(item.n_variedad)) {
+                                        matchesCurrentItem = false;
+                                    }
+                                    if (filters.nota_calidad.length && !filters
+                                        .nota_calidad
+                                        .includes(item.nota_calidad)) {
+                                        matchesCurrentItem = false;
+                                    }
                                     // Si algún elemento de nivel_2 coincide, consideramos que la fila cumple
                                     if (matchesCurrentItem) {
                                         matchesFilter = true;
@@ -536,7 +509,7 @@
                             return matchesFilter;
                         });
 
-                        console.log("filteredData", filteredData);
+
 
                         // Redibujar la tabla con los datos filtrados
                         table.clear(); // Eliminar filas actuales
@@ -644,97 +617,7 @@
         });
 
 
-        function groupBy(data, keys) {
-            return data.reduce((result, currentValue) => {
-                // Crea un identificador único basado en las claves para agrupar
-                var groupKey = keys.map(key => currentValue[key]).join('-');
-                if (!result[groupKey]) {
-                    result[groupKey] = {
-                        n_variedad: currentValue.n_variedad,
-                        nota_calidad: currentValue.nota_calidad,
-                        peso_neto_sum: 0, // Inicializamos la suma
-                        items: []
-                    };
-                }
-                result[groupKey].peso_neto_sum += parseFloat(currentValue
-                    .peso_neto); // Sumar peso_neto
-                result[groupKey].items.push(currentValue);
-                return result;
-            }, {});
-        }
 
-        // Función para generar el contenido del child row (Nivel 2)
-        function formatChildRow(group) {
-            var childContent = '<table class="table table-bordered">';
-            group.items.forEach(item => {
-                childContent += `
-                <tr>
-                    <th>Empresa</th>
-                    <td>${item.n_empresa}</td>
-                </tr>
-                <tr>
-                    <th>Exportadora</th>
-                    <td>${item.n_exportadora}</td>
-                </tr>
-                <tr>
-                    <th>Productor</th>
-                    <td>${item.n_productor}</td>
-                </tr>
-                <tr>
-                    <th>Horas En Espera</th>
-                    <td>${item.horas_en_espera}</td>
-                </tr>
-                <tr>
-                    <th>Peso Neto</th>
-                    <td>${new Intl.NumberFormat('es-CL', { minimumFractionDigits: 0, maximumFractionDigits: 0
-                        }).format(item.peso_neto)}</td>
-                </tr>
-                `;
-            });
-            childContent += '</table>';
-            return childContent;
-        }
-
-        function applyChildRowFilters() {
-            let filters = {
-                n_empresa: $('#filtroEmpresa').val() || [],
-                n_exportadora: $('#filtroExportadora').val() || [],
-                n_productor: $('#filtroProductor').val() || [],
-                n_especie: $('#filtroEspecie').val() || [],
-            };
-            $('#lotesTable tbody tr.shown').each(function() {
-                let rowData = table.row(this).data();
-                let matchesFilter = true;
-
-                // Filtrar según los valores seleccionados
-                if (filters.n_empresa.length && !filters.n_empresa.includes(rowData.n_empresa)) {
-                    matchesFilter = false;
-                }
-                if (filters.n_exportadora.length && !filters.n_exportadora.includes(rowData
-                        .n_exportadora)) {
-                    matchesFilter = false;
-                }
-                if (filters.n_productor.length && !filters.n_productor.includes(rowData
-                        .n_productor)) {
-                    matchesFilter = false;
-                }
-                if (filters.n_especie.length && !filters.n_especie.includes(rowData.n_especie)) {
-                    matchesFilter = false;
-                }
-
-                // Si no coincide con el filtro, ocultar el child row
-                if (matchesFilter) {
-                    $(this).find('td.dt-control').trigger(
-                        'click'); // Mostrar child row si pasa el filtro
-                } else {
-                    if ($(this).hasClass('shown')) {
-                        $(this).find('td.dt-control').trigger(
-                            'click'); // Ocultar child row si no pasa el filtro
-                    }
-                }
-                console.log("rowData", rowData);
-            });
-        }
 
 
 
