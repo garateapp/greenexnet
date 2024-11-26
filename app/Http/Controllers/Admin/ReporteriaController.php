@@ -430,6 +430,7 @@ class ReporteriaController extends Controller
                 'fecha_g_recepcion_sh'
             )
             ->where('destruccion_tipo', '=', '')
+
             ->groupBy(
                 'fecha_g_recepcion_sh',
                 'n_empresa',
