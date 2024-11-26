@@ -442,29 +442,22 @@
                     uniqueValues.n_especie.sort();
 
                     // Llenar los filtros con los valores únicos obtenidos
-                    $('#filtroEmpresa').empty().append(
-                        '<option value="">Todos</option>');
+
                     uniqueValues.n_empresa.forEach(
                         function(value) {
                             $('#filtroEmpresa').append(new Option(value, value));
                         });
 
-                    $('#filtroExportadora').empty().append(
-                        '<option value="">Todos</option>');
                     uniqueValues.n_exportadora.forEach(
                         function(value) {
                             $('#filtroExportadora').append(new Option(value,
                                 value));
                         });
 
-                    $('#filtroProductor').empty().append(
-                        '<option value="">Todos</option>');
                     uniqueValues.n_productor.forEach(
                         function(value) {
                             $('#filtroProductor').append(new Option(value, value));
                         });
-                    $('#filtroEspecie').empty().append(
-                        '<option value="">Todos</option>');
                     let specieHasCherries =
                         false; // Bandera para verificar si 'Cherries' está presente
                     uniqueValues.n_especie.forEach(function(value) {
