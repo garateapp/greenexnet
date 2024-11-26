@@ -152,6 +152,7 @@
 
                 </button>
                 <button id="toggleFiltros" class="btn btn-primary mb-3"><i class="fas fa-filter"></i></button>
+                <button id="btnRecargar" class="btn btn-secondary mb-3"><i class="fas fa-reload"></i></button>
 
                 <div id="filtrosSlide" class="filtros-slide">
                     <h5>Filtros</h5>
@@ -229,7 +230,9 @@
     </div>
     <script>
         $(document).ready(function() {
-
+            $("#btnRecargar").on('click', function() {
+                location.reload();
+            });
             $('#toggleFiltros').on('click', function() {
                 $('#filtrosSlide').toggleClass('active');
             });
@@ -597,32 +600,12 @@
                             typeof i ===
                             'number' ? i : 0;
                     };
-
-                    // // Total general para todas las páginas
-                    // var totalCantidad = api
-                    // .column(8)
-                    // .data()
-                    // .reduce(function(a, b) {
-                    // return intVal(a) + intVal(b);
-                    // }, 0);
-
                     let totalPesoNeto = api
                         .column(3)
                         .data()
                         .reduce(function(a, b) {
                             return intVal(a) + intVal(b);
                         }, 0);
-
-                    // Subtotal para filas visibles (filtradas)
-                    // var subtotalCantidad = api
-                    // .column(2, {
-                    // page: 'current'
-                    // })
-                    // .data()
-                    // .reduce(function(a, b) {
-                    // return intVal(a) + intVal(b);
-                    // }, 0);
-
                     let subtotalPesoNeto = api
                         .column(3, {
                             page: 'current'
@@ -632,16 +615,15 @@
                             return intVal(a) + intVal(b);
                         }, 0);
 
-                    // Actualizar el pie de tabla con subtotales y totales
-                    // $(api.column(8).footer()).html(
-                    // ` ${subtotalCantidad.toFixed(2)}<br> ${totalCantidad.toFixed(2)}`
-                    // );
                     $(api.column(3).footer()).html(
                         ` ${formatNumber(subtotalPesoNeto.toFixed(0))}<br> ${formatNumber(totalPesoNeto.toFixed(0))}`
                     );
                     $("#proSinIniciar").html(`${formatNumber(totalPesoNeto.toFixed(0))}`)
                 }
             });
+            setInterval(function() {
+                location.reload();
+            }, 600000);
             table.on('click', 'td.sorting_1', function(e) {
                 var tr = $(this).closest('tr');
                 var row = table.row(tr);
@@ -663,6 +645,7 @@
             });
 
         });
+
 
         function groupBy(data, keys) {
             return data.reduce((result, currentValue) => {
