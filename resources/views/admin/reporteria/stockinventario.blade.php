@@ -503,47 +503,54 @@
                             n_especie: $('#filtroEspecie').val() || [],
                         };
 
+                        // Obtener los datos actuales de la tabla
+                        let allData = api.ajax.json().data;
+
                         // Filtrar los datos localmente
+                        let filteredData = allData.filter(function(row) {
+                            let matchesFilter = false;
 
-                        let filteredData = api.ajax.json().data.filter(function(nivel_2) {
-                            let matchesFilter = true;
-                            nivel_2.nivel_2.forEach(function(item) {
-                                console.log('tem', item);
-                                // Comprobar si los filtros coinciden
-                                if (filters.n_empresa.length && !filters.n_empresa
-                                    .includes(item.n_empresa)) {
-                                    matchesFilter = false;
-                                }
-                                if (filters.n_exportadora.length && !filters
-                                    .n_exportadora.includes(
-                                        item.n_exportadora)) {
-                                    console.log("n_exportadora", item.n_exportadora);
-                                    console.log("filters.n_exportadora", filters
-                                        .n_exportadora);
+                            if (Array.isArray(row.nivel_2)) {
+                                // Iterar sobre los elementos de nivel_2
+                                row.nivel_2.forEach(function(item) {
+                                    let matchesCurrentItem = true;
 
-                                    matchesFilter = false;
-                                }
-                                if (filters.n_productor.length && !filters
-                                    .n_productor.includes(item
-                                        .n_productor)) {
-                                    matchesFilter = false;
-                                }
-                                if (filters.n_especie.length && !filters.n_especie
-                                    .includes(item
-                                        .n_especie)) {
-                                    matchesFilter = false;
-                                }
+                                    // Comprobar si los filtros coinciden
+                                    if (filters.n_empresa.length && !filters.n_empresa
+                                        .includes(item.n_empresa)) {
+                                        matchesCurrentItem = false;
+                                    }
+                                    if (filters.n_exportadora.length && !filters
+                                        .n_exportadora.includes(item.n_exportadora)) {
+                                        matchesCurrentItem = false;
+                                    }
+                                    if (filters.n_productor.length && !filters
+                                        .n_productor.includes(item.n_productor)) {
+                                        matchesCurrentItem = false;
+                                    }
+                                    if (filters.n_especie.length && !filters.n_especie
+                                        .includes(item.n_especie)) {
+                                        matchesCurrentItem = false;
+                                    }
 
-                            });
-                            console.log("matchesFilter", matchesFilter);
+                                    // Si algún elemento de nivel_2 coincide, consideramos que la fila cumple
+                                    if (matchesCurrentItem) {
+                                        matchesFilter = true;
+                                    }
+                                });
+                            }
+
                             return matchesFilter;
                         });
+
                         console.log("filteredData", filteredData);
+
                         // Redibujar la tabla con los datos filtrados
                         table.clear(); // Eliminar filas actuales
                         table.rows.add(filteredData); // Agregar las filas filtradas
                         table.draw(); // Redibujar la tabla
                     }
+
                 },
                 columns: [ // Aquí accedemos a los detalles
                     {
