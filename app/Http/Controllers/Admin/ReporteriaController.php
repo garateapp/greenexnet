@@ -296,7 +296,7 @@ class ReporteriaController extends Controller
         $datos = DB::connection("sqlsrv")->table('dbo.V_PKG_Recepcion_FG')
             ->select(
 
-                DB::RAW("SUM(cantidad) AS cantidad"),
+                // DB::RAW("SUM(cantidad) AS cantidad"),
                 DB::RAW("SUM(peso_neto) as peso_neto"),
                 'numero_g_recepcion',
                 'n_empresa',
@@ -305,22 +305,93 @@ class ReporteriaController extends Controller
                 'n_especie',
                 'nota_calidad',
                 'n_variedad',
-                'fecha_g_recepcion',
-                DB::RAW("DATEDIFF(HOUR, fecha_g_recepcion, GETDATE()) AS horas_en_espera")
+                DB::RAW("DATEDIFF(HOUR, fecha_g_recepcion, GETDATE()) AS horas_en_espera"),
+                DB::RAW("MAX(DATEDIFF(HOUR, fecha_g_recepcion, GETDATE())) AS max_horas_en_espera")
             )
             ->where('destruccion_tipo', '=', '')
             ->groupBy(
-                'numero_g_recepcion',
+
                 'n_empresa',
                 'n_exportadora',
                 'n_productor',
                 'n_especie',
                 'nota_calidad',
                 'n_variedad',
-                'fecha_g_recepcion'
+                'numero_g_recepcion',
+                'fecha_g_recepcion',
+
+
             )
-            ->orderByDesc('fecha_g_recepcion')
+            ->orderBy('n_variedad')
+            ->orderBy('nota_calidad')
             ->get();
+        $data = $datos;
+        $result = [];
+        $numero_g_rececpcionanterior = 0;
+        $hora_espera_max = 0;
+        foreach ($data as $item) {
+            $nivel1Key = $item->n_variedad . '|' . $item->nota_calidad;
+
+            // Nivel 1: Agrupación por n_variedad y nota_calidad
+            if (!isset($result[$nivel1Key])) {
+                $result[$nivel1Key] = [
+                    'n_variedad' => $item->n_variedad,
+                    'nota_calidad' => $item->nota_calidad,
+                    'peso_neto' => 0,
+                    'max_horas_en_espera' => $item->max_horas_en_espera,
+                    'nivel_2' => [],
+                ];
+            }
+
+            // Incrementar el peso total
+            $result[$nivel1Key]['peso_neto'] += (float) $item->peso_neto;
+            if ($item->horas_en_espera > $hora_espera_max) {
+                $hora_espera_max = $item->horas_en_espera;
+                $result[$nivel1Key]['horas_en_espera'] = $item->horas_en_espera;
+            }
+
+            // Nivel 2: Agregar directamente todos los registros
+            $nivel2Entry = [
+                'n_variedad' => $item->n_variedad,
+                'nota_calidad' => $item->nota_calidad,
+                'peso_neto' => $item->peso_neto,
+                'n_empresa' => $item->n_empresa,
+                'n_exportadora' => $item->n_exportadora,
+                'n_productor' => $item->n_productor,
+                'n_especie' => $item->n_especie,
+                'horas_en_espera' => $item->horas_en_espera,
+                'numero_g_recepcion' => $item->numero_g_recepcion,
+            ];
+            if ($numero_g_rececpcionanterior != $item->numero_g_recepcion) {
+                $nivel2Entry['numero_g_recepcion'] = $item->numero_g_recepcion;
+
+                $result[$nivel1Key]['nivel_2'][] = $nivel2Entry;
+            } else {
+                $nivel2Entry['peso_neto'] += (float) $item->peso_neto;
+            }
+        }
+
+        // Formatear resultado para JSON
+        $finalResult = [];
+
+        foreach ($result as $key => $group) {
+            // Nivel 3: Datos adicionales por cada entrada de nivel 2
+            foreach ($group['nivel_2'] as &$nivel2Entry) {
+                $nivel2Entry['nivel_3'] = [
+                    'n_empresa' => $nivel2Entry['n_empresa'],
+                    'n_exportadora' => $nivel2Entry['n_exportadora'],
+                    'n_productor' => $nivel2Entry['n_productor'],
+                    'n_especie' => $nivel2Entry['n_especie'],
+                    'horas_en_espera' => $nivel2Entry['horas_en_espera'],
+                    'numero_g_recepcion' => $nivel2Entry['numero_g_recepcion'],
+                ];
+            }
+            $finalResult[] = $group;
+        }
+        //dd($finalResult);
+
+
+
         $draw = $request->get('draw');
         $start = $request->get('start');
         $length = $request->get('length');
@@ -345,7 +416,7 @@ class ReporteriaController extends Controller
             'draw' => $draw,
             'recordsTotal' => $totalRecords,
             'recordsFiltered' => $filteredRecords,
-            'data' => $datos
+            'data' => $finalResult
         ], 200);
     }
     public function obtieneInformeCalidad($numero_g_recepcion)

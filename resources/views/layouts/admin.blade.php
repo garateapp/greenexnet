@@ -30,10 +30,91 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 
     <script src="https://cdn.datatables.net/rowgroup/1.1.6/js/dataTables.rowGroup.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
     </script>
 
 
     <style>
+        table.dataTable td.dt-control {
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .filtros-slide {
+            position: fixed;
+            top: 20;
+            right: -300px;
+            /* Escondido fuera de la pantalla */
+            width: 300px;
+            height: 100%;
+            background: #f8f9fa;
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            padding: 20px;
+            z-index: 1000;
+            transition: right 0.3s ease;
+            /* Efecto deslizante */
+        }
+
+        .filtros-slide.active {
+            right: 0;
+            /* Visible en pantalla */
+        }
+
+        #toggleFiltros {
+            position: relative;
+            z-index: 1100;
+            /* Asegura que el botón esté sobre el slide */
+        }
+
+        table.dataTable td.dt-control:before {
+            display: inline-block;
+            box-sizing: border-box;
+            content: "";
+            border-top: 5px solid transparent;
+            border-left: 10px solid rgba(0, 0, 0, 0.5);
+            border-bottom: 5px solid transparent;
+            border-right: 0px solid transparent;
+        }
+
+        table.dataTable tr.dt-hasChild td.dt-control:before {
+            border-top: 10px solid rgba(0, 0, 0, 0.5);
+            border-left: 5px solid transparent;
+            border-bottom: 0px solid transparent;
+            border-right: 5px solid transparent;
+        }
+
+        html.dark table.dataTable td.dt-control:before,
+        :root[data-bs-theme=dark] table.dataTable td.dt-control:before,
+        :root[data-theme=dark] table.dataTable td.dt-control:before {
+            border-left-color: rgba(255, 255, 255, 0.5);
+        }
+
+        html.dark table.dataTable tr.dt-hasChild td.dt-control:before,
+        :root[data-bs-theme=dark] table.dataTable tr.dt-hasChild td.dt-control:before,
+        :root[data-theme=dark] table.dataTable tr.dt-hasChild td.dt-control:before {
+            border-top-color: rgba(255, 255, 255, 0.5);
+            border-left-color: transparent;
+        }
+
+        @media (max-width: 768px) {
+            #lotesTable {
+                font-size: 12px;
+                /* Ajusta según necesites */
+            }
+
+            #lotesTable th,
+            #lotesTable td {
+                padding: 5px;
+                /* Reduce el padding para que se ajuste mejor */
+            }
+        }
+
+        .table {
+            width: 100%;
+            overflow-x: auto;
+        }
+
         .bg-info {
             background-color: #81b940 !important;
         }

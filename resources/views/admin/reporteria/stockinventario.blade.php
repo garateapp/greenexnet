@@ -61,7 +61,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-6 col-xl-3">
+                {{-- <div class="col-sm-6 col-xl-3">
                     <div class="card text-white bg-info">
                         <div class="card-body pb-0 d-flex justify-content-between align-items-start">
                             <div>
@@ -78,7 +78,7 @@
 
                         </div>
                     </div>
-                </div>
+                </div> --}}
 
 
                 <div class="col-sm-6 col-xl-3">
@@ -100,7 +100,7 @@
 
 
 
-                <div class="col-sm-6 col-xl-3">
+                {{-- <div class="col-sm-6 col-xl-3">
                     <div class="card text-white bg-info">
                         <div class="card-body pb-0 d-flex justify-content-between align-items-start">
                             <div>
@@ -118,16 +118,10 @@
 
                         </div>
                     </div>
-                </div>
+                </div> --}}
             </div>
-            <div class="row">
-                <button class="btn bg-danger rounded-full" id="toggleButton" style="margin-left:-40px;"
-                    title="Ocultar/Mostrar">
-                    <i class="fa fa-chart-bar text-white"></i>
-                    <br />
-                </button>
-            </div>
-            <div class="row" id="graficosContainer">
+
+            <div class="row" id="graficosContainer" style="display: none;">
                 <!-- Primera columna -->
                 <div class="col-md-6">
                     <div class="card">
@@ -148,53 +142,80 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-12 col-xl-12">
+            <div class="col-sm-6 col-xl-12 table-responsive">
+                <button class="btn bg-danger mb-3" id="toggleButton" title="Ocultar/Mostrar">
+                    <i class="fa fa-chart-bar text-white"></i>
+
+                </button>
+                <button id="toggleFiltros" class="btn btn-primary mb-3"><i class="fas fa-filter"></i></button>
+
+                <div id="filtrosSlide" class="filtros-slide">
+                    <h5>Filtros</h5>
+                    <div id="filtros">
+                        <label for="filtroEmpresa">Empresa</label>
+                        <select id="filtroEmpresa" class="form-control select2" multiple="multiple"></select>
+
+                        <label for="filtroExportadora">Exportadora</label>
+                        <select id="filtroExportadora" class="form-control select2" multiple="multiple"></select>
+
+                        <label for="filtroProductor">Productor</label>
+                        <select id="filtroProductor" class="form-control select2" multiple="multiple"></select>
+
+                        <label for="filtroEspecie">Especie</label>
+                        <select id="filtroEspecie" class="form-control select2" multiple="multiple"></select>
+                    </div>
+                </div>
                 <div class="card">
                     <div class="card-header">
                         Recepciones
                     </div>
                     <div class="card-body">
-
-                        <table id="lotesTable"
-                            class="display table table-bordered table-striped table-hover ajaxTable datatable datatable-existencias"
-                            style="width:100%">
-                            <thead>
-                                <tr>
-                                    <th>Especie</th>
+                        <div class="table-responsive">
+                            <table id="lotesTable"
+                                class="display table table-bordered table-striped table-hover ajaxTable datatable datatable-existencias"
+                                style="width:100%">
+                                <thead>
+                                    <tr>
+                                        {{-- <th>Especie</th>
                                     <th>Empresa</th>
                                     <th>Exportadora</th>
                                     <th>Productor</th>
-                                    <th>Nota Calidad</th>
-                                    <th>Variedad</th>
-                                    <th>N° Recepción</th>
-                                    <th>Horas en Espera</th>
-                                    <th>Cajas</th>
-                                    <th>Peso Neto</th>
+                                     --}}
+                                        <th></th>
+                                        <th>Variedad</th>
+                                        <th>Nota Calidad</th>
+                                        <th>Peso Neto</th>
+                                        <th>Horas en Espera</th>
 
-                                </tr>
+                                        {{-- <th>N° Recepción</th>
+                                    <th>Cajas</th> --}}
 
-                            </thead>
-                            <tbody></tbody>
-                            <tfoot>
-                                <tr>
-                                    <th colspan="1">Subtotal<br />Totales</th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                </tr>
 
-                            </tfoot>
-                            <tbody>
-                                <!-- Los datos se cargarán aquí -->
-                            </tbody>
-                        </table>
+                                    </tr>
 
+                                </thead>
+                                <tbody></tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th></th>
+                                        <th colspan="1">Subtotal<br />Totales</th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        {{-- <th></th> --}}
+                                        {{-- <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th> --}}
+                                    </tr>
+
+                                </tfoot>
+                                <tbody>
+                                    <!-- Los datos se cargarán aquí -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -202,6 +223,10 @@
     </div>
     <script>
         $(document).ready(function() {
+            $('#toggleFiltros').on('click', function() {
+                $('#filtrosSlide').toggleClass('active');
+            });
+
             $('#toggleButton').on('click', function() {
                 $('#graficosContainer').slideToggle('fast', function() {
                     // Cambiar el texto del botón según el estado del div
@@ -216,57 +241,144 @@
                     }
                 });
             });
+
+            function format(d) {
+                // `d` is the original data object for the row
+
+                var tablaN2 =
+                    `<table class="table table-bordered table-striped table-hover ajaxTable datatable table-responsive" id="tblNivel2">
+                        <tr>
+                            <td></td>
+                            <td>Variedad</td>
+                            <td>Nota Calidad </td>
+                            <td> Peso Neto </td>
+                            <td> Horas en Espera</td>
+                            <td> Lote </td>
+
+                            </tr>
+                        <tbody>`;
+                if (Array.isArray(d.nivel_2) && d.nivel_2.length > 0) {
+                    // Construir las filas de la tabla dinámicamente
+                    let rows = '';
+                    d.nivel_2.forEach(item => {
+
+                        rows = `
+
+
+            <tr data-id="${item.numero_g_recepcion}">
+                <td class="dt-control sorting_2"></td>
+                <td>${item.n_variedad}</td>
+                <td>${item.nota_calidad} </td>
+                <td> ${item.peso_neto} </td>
+                <td> ${item.horas_en_espera} </td>
+                <td> ${item.numero_g_recepcion} </td>
+            </tr>
+            <tr class="detalle" data-id="${item.numero_g_recepcion}" style="display: none;">
+                  <td colspan="4">
+                 <dl>
+                    <dt>Empresa:</dt>
+                    <dd>
+                    ${item.n_empresa}
+                    </dd>
+                    <dt>Exportadora:</dt>
+                    <dd>
+                    ${item.n_exportadora}
+                    </dd>
+                    <dt>Productor:</dt>
+                    <dd>${item.n_productor}  </dd>
+                    <dt>Horas En Espera:</dt>
+                    <dd> ${item.horas_en_espera} </dd>'
+                    </dl>
+                    </td>
+                </tr>
+            `;
+                        tablaN2 += rows;
+                        $rows = '';
+
+
+                    });
+                    tablaN2 += `</tbody></table>`;
+                }
+
+                return tablaN2;
+            }
+
+
+
+
+
+            // Paso 1: Agrupar la data por n_variedad y nota_calidad
+
+
+            // Convertimos el objeto agrupado en un array para usarlo como datasource del DataTable
+
+
+
             $('#lotesTable thead tr')
                 .clone(true)
                 .addClass('filters')
                 .appendTo('#lotesTable thead');
-            var table = $('#lotesTable').DataTable({
+
+            let table = $('#lotesTable').DataTable({
                 fixedColumns: true,
                 fixedHeader: true,
                 responsive: true,
+                language: {
+
+                    url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-CL.json'
+                },
                 ajax: {
                     url: "{{ route('admin.reporteria.obtieneDatosStockInventario') }}",
                     method: "GET",
                     dataSrc: 'data', // Asegúrate de que los datos provienen de la propiedad 'data'
+
                 },
 
                 displayLength: 10,
                 initComplete: function() {
-                    var api = this.api();
+                    let api = this.api();
+                    let uniqueValues = {
+                        n_empresa: [],
+                        n_exportadora: [],
+                        n_productor: [],
+                        n_especie: []
+                    };
                     api.columns().every(function() {
-                        var column = this;
-                        if (column.index() < 6) {
-                            if (column.index == 4) {
-                                var select = $(
+                        let column = this;
+                        if (column.index() < 3) {
+                            if (column.index == 2) {
+                                var
+                                    select = $(
                                         '<select style="width: 100%;" id="filtroNota"><option value="">Todos</option></select>'
                                     )
-                                    .appendTo($(column.header()).empty())
-                                    .on('change', function() {
-                                        var val = $.fn.dataTable.util.escapeRegex($(this)
-                                            .val());
-                                        column.search(val ? '^' + val + '$' : '', true,
-                                                false)
-                                            .draw();
-                                    });
-
-                                // Extrae valores únicos de la columna y los agrega al <select>
+                                    .appendTo($(column.header()).empty()).on('change',
+                                        function() {
+                                            var val = $.fn.dataTable.util
+                                                .escapeRegex($(this).val());
+                                            column.search(val ? '^' + val + '$' : '', true,
+                                                false).draw();
+                                        }
+                                    ); // Extraevalores únicos de la columna y los agrega al < select >
                                 column
                                     .data()
                                     .unique()
                                     .sort()
                                     .each(function(d) {
-                                        select.append('<option value="' + d + '">' + d +
+                                        select.append('<option value="' +
+                                            d + '">' + d +
                                             '</option>');
                                     });
                             } else {
                                 var select = $(
-                                        '<select style="width: 100%;"><option value="">Todos</option></select>'
+                                        '<select style="width: 100%;"><option value = "">Todos</option> </select>'
                                     )
                                     .appendTo($(column.header()).empty())
                                     .on('change', function() {
-                                        var val = $.fn.dataTable.util.escapeRegex($(this)
-                                            .val());
-                                        column.search(val ? '^' + val + '$' : '', true,
+                                        var val = $.fn.dataTable.util
+                                            .escapeRegex($(this)
+                                                .val());
+                                        column.search(val ? '^' + val +
+                                                '$' : '', true,
                                                 false)
                                             .draw();
                                     });
@@ -277,14 +389,15 @@
                                     .unique()
                                     .sort()
                                     .each(function(d) {
-                                        select.append('<option value="' + d + '">' + d +
+                                        select.append('<option value="' +
+                                            d + '">' + d +
                                             '</option>');
                                     });
                             }
                         } else {
                             // Para las demás columnas, mantenemos el filtro de texto
                             var input = $(
-                                    '<input type="text" placeholder="Filtrar..." style="width: 100%; box-sizing: border-box;"/>'
+                                    '<input type="text" placeholder="Filtrar..." style="width: 100%; box-sizing: border-box;" />'
                                 )
                                 .appendTo($(column.header()).empty())
                                 .on('keyup change clear', function() {
@@ -295,24 +408,153 @@
                         }
                     });
                     api.columns.adjust();
+
+                    api.rows().every(function() {
+                        var dataDisgregada = this.data().nivel_2;
+                        dataDisgregada.forEach((data) => {
+
+                            console.log(data);
+                            if (data.n_empresa && !uniqueValues.n_empresa.includes(
+                                    data
+                                    .n_empresa)) uniqueValues.n_empresa.push(data
+                                .n_empresa);
+                            if (data.n_exportadora && !uniqueValues.n_exportadora
+                                .includes(data.n_exportadora)) uniqueValues
+                                .n_exportadora.push(data.n_exportadora);
+                            if (data.n_productor && !uniqueValues.n_productor
+                                .includes(
+                                    data.n_productor)) uniqueValues.n_productor
+                                .push(
+                                    data.n_productor);
+                            if (data.n_especie && !uniqueValues.n_especie.includes(
+                                    data
+                                    .n_especie)) uniqueValues.n_especie.push(data
+                                .n_especie);
+                        });
+
+                    });
+
+                    // Ordenar los valores para tener una mejor presentación
+                    uniqueValues.n_empresa.sort();
+                    uniqueValues.n_exportadora
+                        .sort();
+                    uniqueValues.n_productor.sort();
+                    uniqueValues.n_especie.sort();
+
+                    // Llenar los filtros con los valores únicos obtenidos
+                    $('#filtroEmpresa').empty().append(
+                        '<option value="">Todos</option>');
+                    uniqueValues.n_empresa.forEach(
+                        function(value) {
+                            $('#filtroEmpresa').append(new Option(value, value));
+                        });
+
+                    $('#filtroExportadora').empty().append(
+                        '<option value="">Todos</option>');
+                    uniqueValues.n_exportadora.forEach(
+                        function(value) {
+                            $('#filtroExportadora').append(new Option(value,
+                                value));
+                        });
+
+                    $('#filtroProductor').empty().append(
+                        '<option value="">Todos</option>');
+                    uniqueValues.n_productor.forEach(
+                        function(value) {
+                            $('#filtroProductor').append(new Option(value, value));
+                        });
+                    $('#filtroEspecie').empty().append(
+                        '<option value="">Todos</option>');
+                    let specieHasCherries =
+                        false; // Bandera para verificar si 'Cherries' está presente
+                    uniqueValues.n_especie.forEach(function(value) {
+                        $('#filtroEspecie').append(new Option(value, value));
+                        if (value === "Cherries") {
+                            specieHasCherries = true;
+                        }
+                    });
+
+                    // Pre-seleccionar 'Cherries' si está presente
+                    if (specieHasCherries) {
+                        $('#filtroEspecie').val("Cherries");
+                        // Aplicar el filtro automáticamente
+                        // table.column(3).search('^Cherries$', true, false).draw();
+                        applyFilters();
+                    }
+
+
+                    // Configurar Select2
+                    $('.select2').select2();
+
+                    // Evento de filtro
+                    // Evento de cambio en los filtros
+                    $('.select2').on('change', function() {
+                        // Redibujar la tabla
+                        applyFilters();
+                        //applyChildRowFilters();
+                    });
+
+                    // Función para aplicar los filtros
+                    function applyFilters() {
+                        let filters = {
+                            n_empresa: $('#filtroEmpresa').val() || [],
+                            n_exportadora: $('#filtroExportadora').val() || [],
+                            n_productor: $('#filtroProductor').val() || [],
+                            n_especie: $('#filtroEspecie').val() || [],
+                        };
+
+                        // Filtrar los datos localmente
+
+                        let filteredData = api.ajax.json().data.filter(function(nivel_2) {
+                            let matchesFilter = true;
+                            nivel_2.nivel_2.forEach(function(item) {
+                                console.log('tem', item);
+                                // Comprobar si los filtros coinciden
+                                if (filters.n_empresa.length && !filters.n_empresa
+                                    .includes(item.n_empresa)) {
+                                    matchesFilter = false;
+                                }
+                                if (filters.n_exportadora.length && !filters
+                                    .n_exportadora.includes(
+                                        item.n_exportadora)) {
+                                    console.log("n_exportadora", item.n_exportadora);
+                                    console.log("filters.n_exportadora", filters
+                                        .n_exportadora);
+
+                                    matchesFilter = false;
+                                }
+                                if (filters.n_productor.length && !filters
+                                    .n_productor.includes(item
+                                        .n_productor)) {
+                                    matchesFilter = false;
+                                }
+                                if (filters.n_especie.length && !filters.n_especie
+                                    .includes(item
+                                        .n_especie)) {
+                                    matchesFilter = false;
+                                }
+
+                            });
+                            console.log("matchesFilter", matchesFilter);
+                            return matchesFilter;
+                        });
+                        console.log("filteredData", filteredData);
+                        // Redibujar la tabla con los datos filtrados
+                        table.clear(); // Eliminar filas actuales
+                        table.rows.add(filteredData); // Agregar las filas filtradas
+                        table.draw(); // Redibujar la tabla
+                    }
                 },
-                columns: [{
-                        data: 'n_especie',
-                        title: 'Especie'
-                    },
-
-
+                columns: [ // Aquí accedemos a los detalles
                     {
-                        data: 'n_empresa',
-                        title: 'Empresa'
-                    }, // Aquí accedemos a los detalles
-                    {
-                        data: 'n_exportadora',
-                        title: 'Exportadora'
+                        className: 'dt-control',
+                        orderable: false,
+                        data: null,
+                        defaultContent: ''
                     },
                     {
-                        data: 'n_productor',
-                        title: 'Productor'
+                        data: 'n_variedad',
+                        title: 'Variedad'
                     },
 
                     {
@@ -320,62 +562,60 @@
                         title: 'Nota Calidad'
                     },
                     {
-                        data: 'n_variedad',
-                        title: 'Variedad'
-                    },
-                    {
-                        data: 'numero_g_recepcion',
-                        title: 'N° Recepción'
-                    },
-                    {
-                        data: 'horas_en_espera',
-                        title: 'Horas en Espera'
-                    },
-                    {
-                        data: 'cantidad',
-                        title: 'Cajas'
-                    },
-                    {
                         data: 'peso_neto',
-                        title: 'Peso Neto'
+                        title: 'Peso Neto',
+                        render: function(data, type, row) {
+                            // Formateamos el número con separador de miles y sin decimales
+                            return new Intl.NumberFormat('es-CL', {
+                                minimumFractionDigits: 0,
+                                maximumFractionDigits: 0
+                            }).format(data);
+                        },
+                    },
+                    {
+                        data: 'max_horas_en_espera',
+                        title: 'Hora Espera',
                     }
                 ],
+
+
                 footerCallback: function(row, data, start, end, display) {
-                    var api = this.api();
+                    let api = this.api();
 
                     // Función para convertir a número
-                    var intVal = function(i) {
-                        return typeof i === 'string' ? i.replace(/[\$,]/g, '') * 1 : typeof i ===
+                    let intVal = function(i) {
+                        return typeof i === 'string' ? i.replace(/[\$,]/g, '') * 1 :
+                            typeof i ===
                             'number' ? i : 0;
                     };
 
-                    // Total general para todas las páginas
-                    var totalCantidad = api
-                        .column(8)
-                        .data()
-                        .reduce(function(a, b) {
-                            return intVal(a) + intVal(b);
-                        }, 0);
+                    // // Total general para todas las páginas
+                    // var totalCantidad = api
+                    // .column(8)
+                    // .data()
+                    // .reduce(function(a, b) {
+                    // return intVal(a) + intVal(b);
+                    // }, 0);
 
-                    var totalPesoNeto = api
-                        .column(9)
+                    let totalPesoNeto = api
+                        .column(3)
                         .data()
                         .reduce(function(a, b) {
                             return intVal(a) + intVal(b);
                         }, 0);
 
                     // Subtotal para filas visibles (filtradas)
-                    var subtotalCantidad = api
-                        .column(8, {
-                            page: 'current'
-                        })
-                        .data()
-                        .reduce(function(a, b) {
-                            return intVal(a) + intVal(b);
-                        }, 0);
+                    // var subtotalCantidad = api
+                    // .column(2, {
+                    // page: 'current'
+                    // })
+                    // .data()
+                    // .reduce(function(a, b) {
+                    // return intVal(a) + intVal(b);
+                    // }, 0);
 
-                    var subtotalPesoNeto = api
-                        .column(9, {
+                    let subtotalPesoNeto = api
+                        .column(3, {
                             page: 'current'
                         })
                         .data()
@@ -384,17 +624,127 @@
                         }, 0);
 
                     // Actualizar el pie de tabla con subtotales y totales
-                    $(api.column(8).footer()).html(
-                        ` ${subtotalCantidad.toFixed(2)}<br> ${totalCantidad.toFixed(2)}`
-                    );
-                    $(api.column(9).footer()).html(
-                        ` ${subtotalPesoNeto.toFixed(2)}<br> ${totalPesoNeto.toFixed(2)}`
+                    // $(api.column(8).footer()).html(
+                    // ` ${subtotalCantidad.toFixed(2)}<br> ${totalCantidad.toFixed(2)}`
+                    // );
+                    $(api.column(3).footer()).html(
+                        ` ${formatNumber(subtotalPesoNeto.toFixed(0))}<br> ${formatNumber(totalPesoNeto.toFixed(0))}`
                     );
                 }
             });
+            table.on('click', 'td.sorting_1', function(e) {
+                var tr = $(this).closest('tr');
+                var row = table.row(tr);
+                if (row.child.isShown()) {
+                    // Si ya está mostrado, ocultarlo
+                    row.child.hide();
+                    tr.removeClass('shown');
+                } else {
+                    // Si no está mostrado, mostrarlo
+                    row.child(format(row.data())).show();
+                    tr.addClass('shown');
+                }
+            });
+            table.on('click', 'td.sorting_2', function(e) {
+                const id = $(this).closest('tr').data('id');
+
+                // Alternar la visibilidad de la fila detalle
+                $(`tr.detalle[data-id="${id}"]`).toggle();
+            });
+
         });
 
+        function groupBy(data, keys) {
+            return data.reduce((result, currentValue) => {
+                // Crea un identificador único basado en las claves para agrupar
+                var groupKey = keys.map(key => currentValue[key]).join('-');
+                if (!result[groupKey]) {
+                    result[groupKey] = {
+                        n_variedad: currentValue.n_variedad,
+                        nota_calidad: currentValue.nota_calidad,
+                        peso_neto_sum: 0, // Inicializamos la suma
+                        items: []
+                    };
+                }
+                result[groupKey].peso_neto_sum += parseFloat(currentValue
+                    .peso_neto); // Sumar peso_neto
+                result[groupKey].items.push(currentValue);
+                return result;
+            }, {});
+        }
 
+        // Función para generar el contenido del child row (Nivel 2)
+        function formatChildRow(group) {
+            var childContent = '<table class="table table-bordered">';
+            group.items.forEach(item => {
+                childContent += `
+                <tr>
+                    <th>Empresa</th>
+                    <td>${item.n_empresa}</td>
+                </tr>
+                <tr>
+                    <th>Exportadora</th>
+                    <td>${item.n_exportadora}</td>
+                </tr>
+                <tr>
+                    <th>Productor</th>
+                    <td>${item.n_productor}</td>
+                </tr>
+                <tr>
+                    <th>Horas En Espera</th>
+                    <td>${item.horas_en_espera}</td>
+                </tr>
+                <tr>
+                    <th>Peso Neto</th>
+                    <td>${new Intl.NumberFormat('es-CL', { minimumFractionDigits: 0, maximumFractionDigits: 0
+                        }).format(item.peso_neto)}</td>
+                </tr>
+                `;
+            });
+            childContent += '</table>';
+            return childContent;
+        }
+
+        function applyChildRowFilters() {
+            let filters = {
+                n_empresa: $('#filtroEmpresa').val() || [],
+                n_exportadora: $('#filtroExportadora').val() || [],
+                n_productor: $('#filtroProductor').val() || [],
+                n_especie: $('#filtroEspecie').val() || [],
+            };
+            $('#lotesTable tbody tr.shown').each(function() {
+                let rowData = table.row(this).data();
+                let matchesFilter = true;
+
+                // Filtrar según los valores seleccionados
+                if (filters.n_empresa.length && !filters.n_empresa.includes(rowData.n_empresa)) {
+                    matchesFilter = false;
+                }
+                if (filters.n_exportadora.length && !filters.n_exportadora.includes(rowData
+                        .n_exportadora)) {
+                    matchesFilter = false;
+                }
+                if (filters.n_productor.length && !filters.n_productor.includes(rowData
+                        .n_productor)) {
+                    matchesFilter = false;
+                }
+                if (filters.n_especie.length && !filters.n_especie.includes(rowData.n_especie)) {
+                    matchesFilter = false;
+                }
+
+                // Si no coincide con el filtro, ocultar el child row
+                if (matchesFilter) {
+                    $(this).find('td.dt-control').trigger(
+                        'click'); // Mostrar child row si pasa el filtro
+                } else {
+                    if ($(this).hasClass('shown')) {
+                        $(this).find('td.dt-control').trigger(
+                            'click'); // Ocultar child row si no pasa el filtro
+                    }
+                }
+                console.log("rowData", rowData);
+            });
+        }
 
 
 
@@ -471,9 +821,9 @@
         });
 
         // function cargaDataTable() {
-        //     $.ajax({
-        //         url: "{{ route('admin.reporteria.obtieneDatosStockInventario') }}",
-        //     })
+        // $.ajax({
+        // url: "{{ route('admin.reporteria.obtieneDatosStockInventario') }}",
+        // })
         // }
 
         function cargaNotaCalidad(data) {
@@ -540,68 +890,7 @@
             // Extraer los datos necesarios
 
         });
-        // function cargaPesoCantidadxFecha(data) {
-        //     const labels2 = data.pesoxFecha.map(item => new Date(item.fecha_g_recepcion_sh)
-        //         .toLocaleDateString()); // Fechas
-        //     const cantidadData = data.pesoxFecha.map(item => formatNumber(parseFloat(item
-        //         .cantidad))); // Cantidades
-        //     const pesoNetoData = data.pesoxFecha.map(item => formatNumber(parseFloat(item
-        //         .peso_neto))); // Pesos netos
 
-        //     // Crear el gráfico de líneas
-        //     const ctx2 = document.getElementById('pesoNetoProcesadoChart').getContext('2d');
-        //     const myLineChart = new Chart(ctx2, {
-        //         type: 'line',
-        //         data: {
-        //             labels: labels2, // Las fechas como etiquetas en el eje X
-        //             datasets: [{
-        //                     label: 'Cantidad',
-        //                     data: cantidadData,
-        //                     borderColor: '#aadd94', // Color de la línea de cantidad
-        //                     backgroundColor: '#aadd94', // Color de fondo de la línea
-        //                     fill: false, // Sin relleno bajo la línea
-        //                     tension: 0.1 // Suavizar la línea
-        //                 },
-        //                 {
-        //                     label: 'Peso Neto',
-        //                     data: pesoNetoData,
-        //                     borderColor: '#ff7314', // Color de la línea de peso neto
-        //                     backgroundColor: '#ff7314', // Color de fondo de la línea
-        //                     fill: false, // Sin relleno bajo la línea
-        //                     tension: 0.1 // Suavizar la línea
-        //                 }
-        //             ]
-        //         },
-        //         options: {
-        //             responsive: true,
-        //             scales: {
-        //                 x: {
-        //                     title: {
-        //                         display: true,
-        //                         text: 'Fecha'
-        //                     },
-        //                     ticks: {
-        //                         autoSkip: true,
-        //                         maxRotation: 90, // Para evitar que las fechas se sobrepongan
-        //                         minRotation: 45
-        //                     }
-        //                 },
-        //                 y: {
-        //                     title: {
-        //                         display: true,
-        //                         text: 'Valor'
-        //                     }
-        //                 }
-        //             },
-        //             plugins: {
-        //                 legend: {
-        //                     position: 'top'
-        //                 }
-        //             }
-        //         }
-        //     });
-
-        // }
 
         function formatNumber(number) {
             return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
