@@ -42,11 +42,11 @@
 
         .filtros-slide {
             position: fixed;
-            top: -10;
+
             right: -300px;
             /* Escondido fuera de la pantalla */
             width: 300px;
-            height: 100%;
+            height: 120%;
             background: #f8f9fa;
             box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
             overflow-y: auto;
@@ -58,6 +58,7 @@
 
         .filtros-slide.active {
             right: 0;
+
             /* Visible en pantalla */
         }
 
