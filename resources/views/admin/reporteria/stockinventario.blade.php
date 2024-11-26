@@ -152,7 +152,7 @@
 
                 </button>
                 <button id="toggleFiltros" class="btn btn-primary mb-3"><i class="fas fa-filter"></i></button>
-                <button id="btnRecargar" class="btn btn-secondary mb-3"><i class="fas fa-reload"></i></button>
+                <button id="btnRecargar" class="btn btn-secondary mb-3"><i class="fas fa-sync"></i></button>
 
                 <div id="filtrosSlide" class="filtros-slide">
                     <h5>Filtros</h5>
