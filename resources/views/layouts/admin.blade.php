@@ -42,7 +42,7 @@
 
         .filtros-slide {
             position: fixed;
-            top: 20;
+            top: 5;
             right: -300px;
             /* Escondido fuera de la pantalla */
             width: 300px;
