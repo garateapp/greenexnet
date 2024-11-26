@@ -145,6 +145,14 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">Kilos Recibido por Día</h5>
+                            <canvas id="kilosPorDia" style="max-height: 400px;"></canvas>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="col-sm-6 col-xl-12 table-responsive">
                 <button class="btn bg-danger mb-3" id="toggleButton" title="Ocultar/Mostrar">
@@ -450,81 +458,7 @@
                         //applyChildRowFilters();
                     });
 
-                    // Función para aplicar los filtros
-                    // function applyFilters() {
-                    //     let filters = {
-                    //         n_empresa: $('#filtroEmpresa').val() || [],
-                    //         n_exportadora: $('#filtroExportadora').val() || [],
-                    //         n_productor: $('#filtroProductor').val() || [],
-                    //         n_especie: $('#filtroEspecie').val() || [],
-                    //         n_variedad: $('#filtroVariedad').val() || [],
-                    //         nota_calidad: $('#filtroNotaCalidad').val() || [],
-                    //     };
 
-                    //     // Obtener los datos actuales de la tabla
-                    //     let allData = api.ajax.json().data;
-
-                    //     // Filtrar los datos localmente
-                    //     let filteredData = allData.filter(function(row) {
-                    //         let matchesFilter = false;
-
-                    //         if (Array.isArray(row.nivel_2)) {
-                    //             // Iterar sobre los elementos de nivel_2
-                    //             row.nivel_2.forEach(function(item) {
-                    //                 let matchesCurrentItem = true;
-
-                    //                 // Comprobar si los filtros coinciden
-                    //                 if (filters.n_empresa.length && !filters.n_empresa
-                    //                     .includes(item.n_empresa)) {
-                    //                     matchesCurrentItem = false;
-                    //                 }
-                    //                 if (filters.n_exportadora.length && !filters
-                    //                     .n_exportadora.includes(item.n_exportadora)) {
-                    //                     matchesCurrentItem = false;
-                    //                 }
-                    //                 if (filters.n_productor.length && !filters
-                    //                     .n_productor.includes(item.n_productor)) {
-                    //                     matchesCurrentItem = false;
-                    //                 }
-                    //                 if (filters.n_especie.length && !filters.n_especie
-                    //                     .includes(item.n_especie)) {
-                    //                     matchesCurrentItem = false;
-                    //                 }
-                    //                 if (filters.n_variedad.length && !filters.n_variedad
-                    //                     .includes(item.n_variedad)) {
-                    //                     matchesCurrentItem = false;
-                    //                 }
-                    //                 if (filters.nota_calidad.length && !filters
-                    //                     .nota_calidad
-                    //                     .includes(item.nota_calidad)) {
-                    //                     matchesCurrentItem = false;
-                    //                 }
-                    //                 // Si algún elemento de nivel_2 coincide, consideramos que la fila cumple
-                    //                 if (matchesCurrentItem) {
-                    //                     matchesFilter = true;
-                    //                 }
-                    //             });
-                    //         }
-
-                    //         return matchesFilter;
-                    //     });
-
-
-                    //     console.log('datofiltrado', filteredData);
-                    //     // Redibujar la tabla con los datos filtrados
-                    //     table.clear(); // Eliminar filas actuales
-                    //     table.rows.add(filteredData); // Agregar las filas filtradas
-                    //     table.draw(); // Redibujar la tabla
-                    //     if (filteredData.length == 0) {
-                    //         $("#horaEspera").html("0")
-                    //     } else {
-                    //         const max_horas_en_espera = filteredData.reduce((max, item) => Math.max(max,
-                    //             item.max_horas_en_espera), 0);
-
-
-                    //         $("#horaEspera").html(formatNumber(max_horas_en_espera));
-                    //     }
-                    // }
                     function applyFilters() {
                         let filters = {
                             n_empresa: $('#filtroEmpresa').val() || [],
@@ -578,7 +512,7 @@
                                 // Sumar peso_neto de todos los registros en nivel_2 filtrado
                                 const totalPesoNeto = filteredNivel2.reduce((sum, item) => {
                                     return sum + parseFloat(item.peso_neto ||
-                                    0); // Aseguramos la conversión a número
+                                        0); // Aseguramos la conversión a número
                                 }, 0);
                                 console.log('totalPesoNeto', totalPesoNeto);
                                 // Calcular el máximo de horas_en_espera en nivel_2 filtrado
@@ -767,6 +701,87 @@
 
             }
         });
+        $.ajax({
+            url: "{{ route('admin.reporteria.obtienePesoxDia') }}",
+            type: "GET",
+            dataType: "json",
+            success: function(data) {
+                cargaPesoxDiaChart(data);
+            }
+        });
+
+        function cargaPesoxDiaChart(data) {
+
+
+            // Procesar los datos
+            const groupedData = {};
+            data.forEach(item => {
+                const date = item.fecha_g_recepcion_sh.split(" ")[0]; // Extraer la fecha
+                const exportadora = item.n_exportadora;
+                const peso = parseFloat(item.peso_neto);
+
+                // Inicializar estructuras
+                if (!groupedData[date]) groupedData[date] = {};
+                if (!groupedData[date][exportadora]) groupedData[date][exportadora] = 0;
+
+                // Sumar el peso
+                groupedData[date][exportadora] += peso;
+            });
+
+            // Preparar datos para el gráfico
+            const fechas = Object.keys(groupedData); // Todas las fechas
+            const exportadoras = [...new Set(data.map(item => item.n_exportadora))]; // Lista única de exportadoras
+
+            const datasets = exportadoras.map(exportadora => {
+                return {
+                    label: exportadora,
+                    data: fechas.map(fecha => groupedData[fecha][exportadora] || 0), // Usar 0 si no hay datos
+                    borderWidth: 1,
+                    borderColor: getRandomColor(),
+                    backgroundColor: getRandomColor(0.5)
+                };
+            });
+
+            // Función para generar colores aleatorios
+            function getRandomColor(alpha = 1) {
+                return `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${alpha})`;
+            }
+
+            // Crear el gráfico
+            const ctx = document.getElementById('kilosPorDia').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: fechas, // Fechas en el eje X
+                    datasets: datasets // Datos agrupados
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Kilos por Día de cada Exportadora'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Fecha'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Kilos'
+                            },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+        }
 
         // function cargaDataTable() {
         // $.ajax({

@@ -419,6 +419,32 @@ class ReporteriaController extends Controller
             'data' => $finalResult
         ], 200);
     }
+    public function obtienePesoxDia()
+    {
+        $datos = DB::connection("sqlsrv")->table('dbo.V_PKG_Recepcion_FG')
+            ->select(
+                DB::RAW("SUM(peso_neto) as peso_neto"),
+                'n_exportadora',
+                'n_especie',
+                'n_variedad',
+                'fecha_g_recepcion_sh'
+            )
+            ->where('destruccion_tipo', '=', '')
+            ->groupBy(
+                'fecha_g_recepcion_sh',
+                'n_empresa',
+                'n_exportadora',
+                'n_especie',
+                'n_variedad',
+
+
+            )
+            ->get();
+
+        //...
+
+        return response()->json($datos);
+    }
     public function obtieneInformeCalidad($numero_g_recepcion)
     {
         $informe = DB::connection("mysqlAppGreenex")->table('recepcions')
