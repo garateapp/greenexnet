@@ -425,7 +425,7 @@
                         var dataDisgregada = this.data().nivel_2;
                         dataDisgregada.forEach((data) => {
 
-                            console.log(data);
+
                             if (data.n_empresa && !uniqueValues.n_empresa.includes(
                                     data
                                     .n_empresa)) uniqueValues.n_empresa.push(data
@@ -463,7 +463,7 @@
                     uniqueValues.n_especie.sort();
                     uniqueValues.n_variedad.sort();
                     uniqueValues.nota_calidad.sort();
-                    console.log(uniqueValues.nota_calidad.sort());
+
                     // Llenar los filtros con los valores únicos obtenidos
 
                     uniqueValues.n_empresa.forEach(
@@ -575,7 +575,7 @@
                                     return sum + parseFloat(item.peso_neto ||
                                         0); // Aseguramos la conversión a número
                                 }, 0);
-                                console.log('totalPesoNeto', totalPesoNeto);
+
                                 // Calcular el máximo de horas_en_espera en nivel_2 filtrado
                                 const maxHorasEspera = filteredNivel2.reduce((max, item) => Math
                                     .max(max, item.horas_en_espera || 0), 0);
@@ -592,7 +592,7 @@
                             return null; // Excluir filas sin datos en nivel_2 filtrado
                         }).filter(Boolean); // Remover filas nulas
 
-                        console.log('datofiltrado', filteredData);
+
 
                         // Redibujar la tabla con los datos filtrados
                         table.clear(); // Eliminar filas actuales
@@ -647,7 +647,7 @@
                 footerCallback: function(row, data, start, end, display) {
 
                     let api = this.api();
-                    console.log(api.column(3));
+
                     // Función para convertir a número
                     let intVal = function(i) {
                         return typeof i === 'string' ? i.replace(/[\$,]/g, '') * 1 :
@@ -767,7 +767,7 @@
             type: "GET",
             dataType: "json",
             success: function(data) {
-                console.log('Datos obtenidos:', data); // Verifica que los datos son correctos
+
                 cargaPesoxDiaChart(data);
             },
             error: function(xhr, status, error) {
@@ -780,10 +780,8 @@
 
             // Procesar los datos
             const groupedData = {};
-            const groupedDataTable = {};
-            const totalsPerDayTable = {};
+
             const totalsPerDay = {};
-            const totalsPerDaytable = {};
             data.forEach(item => {
                 const date = item.fecha_g_recepcion_sh.split(" ")[0]; // Extraer la fecha
                 const exportadora = item.n_exportadora;
@@ -803,46 +801,16 @@
                 totalsPerDay[date] += peso;
 
             });
-            data.forEach(item => {
-                const date = item.fecha_g_recepcion_sh.split(" ")[0]; // Extraer la fecha
-                const exportadora = item.n_exportadora;
-
-                const peso = parseFloat(item.peso_neto);
-
-                // Inicializar estructuras
-                if (!groupedDataTable[date]) groupedDataTable[date] = {};
-                if (!groupedDataTable[date][exportadora]) groupedDataTable[date][exportadora] = 0;
-                if (!totalsPerDayTable[date]) totalsPerDayTable[date] = 0;
-                // Sumar el peso
-                groupedDataTable[date][exportadora] += peso;
-
-                if (!totalsPerDayTable[date]) {
-                    totalsPerDayTable[date] = 0;
-                }
-                totalsPerDayTable[date] += peso;
-
-            });
 
             // Preparar datos para el gráfico
             const fechas = Object.keys(groupedData);
-            const fechasTable = Object.keys(groupedDataTable);
 
             const exportadoras = [...new Set(data.map(item => item.n_exportadora))];
-            const exportadorasTable = [...new Set(data.map(item => item.n_exportadora))];
-
             const dataTotals = fechas.map(fecha => totalsPerDay[fecha] || 0);
-            const dataTotalsTable = fechasTable.map(fecha => totalsPerDayTable[fecha] || 0);
 
             const datasets = exportadoras.map(exportadora => ({
                 label: exportadora,
                 data: fechas.map(fecha => groupedData[fecha][exportadora] || 0),
-                borderWidth: 1,
-                borderColor: getRandomColor(),
-                backgroundColor: getRandomColor(0.5)
-            }));
-            const datasetsTable = exportadorasTable.map(exportadora => ({
-                label: exportadora,
-                data: fechasTable.map(fecha => groupedDataTable[fecha][exportadora] || 0),
                 borderWidth: 1,
                 borderColor: getRandomColor(),
                 backgroundColor: getRandomColor(0.5)
@@ -857,23 +825,14 @@
                 backgroundColor: 'transparent',
                 yAxisID: 'y1'
             });
-            datasetsTable.push({
-                label: "Total General",
-                data: fechasTable.map(fecha => totalsPerDayTable[fecha] ||
-                    0), // Verifica si la clave existe, usa 0 si no
-                type: 'line',
-                borderWidth: 2,
-                borderColor: '#FF0000',
-                backgroundColor: 'transparent',
-                yAxisID: 'y1'
-            });
 
+            console.log("datasets", datasets);
 
             function generateTable() {
                 let tableHTML = '<table border="1"><thead><tr><th>Fecha</th>';
 
                 // Agregar encabezados de las exportadoras
-                exportadorasTable.forEach(exportadora => {
+                exportadoras.forEach(exportadora => {
                     tableHTML += `<th>${exportadora}</th>`;
                 });
 
@@ -881,16 +840,16 @@
                 tableHTML += '<th>Total General</th></tr></thead><tbody>';
 
                 // Llenar filas de la tabla con datos
-                fechasTable.forEach(fecha => {
+                fechas.forEach(fecha => {
                     tableHTML += `<tr><td>${fecha}</td>`;
 
                     // Llenar las columnas de cada exportadora
-                    exportadorasTable.forEach(exportadora => {
-                        tableHTML += `<td>${groupedDataTable[fecha][exportadora] || 0}</td>`;
+                    exportadoras.forEach(exportadora => {
+                        tableHTML += `<td>${groupedData[fecha][exportadora] || 0}</td>`;
                     });
 
                     // Llenar columna del total general
-                    tableHTML += `<td>${totalsPerDayTable[fecha]}</td></tr>`;
+                    tableHTML += `<td>${totalsPerDay[fecha]}</td></tr>`;
                 });
 
                 tableHTML += '</tbody></table>';
@@ -898,6 +857,8 @@
                 // Insertar la tabla en el DOM (reemplaza 'tablaKilos' con el id del contenedor de la tabla)
                 document.getElementById('tablaKilos').innerHTML = tableHTML;
             }
+            console.log("datasets", datasets);
+
             //generateTable();
             // Función para generar colores aleatorios
             function getRandomColor(alpha = 1) {
@@ -954,7 +915,7 @@
         function cargaNotaCalidad(data) {
             const labels = data.nota_calidad.map(item => `Calidad ${item.nota_calidad}`);
             const values = data.nota_calidad.map(item => formatNumber(parseFloat(item.peso_neto)));
-            console.log(values);
+
             // Configuración del gráfico
             const ctx = document.getElementById('notaCalidadChart').getContext('2d');
             const myPieChart = new Chart(ctx, {
@@ -975,7 +936,7 @@
                 options: {
                     onClick: function(event, elements) {
                         const clickedElement = elements[0];
-                        console.log(clickedElement._index);
+
                         const datasetIndex = clickedElement._index;
                         const label = labels[datasetIndex];
                         const labelValue = values[datasetIndex];
