@@ -768,110 +768,99 @@
             dataType: "json",
             success: function(data) {
                 console.log('Datos obtenidos:', data); // Verifica que los datos son correctos
-                const groupedData = {};
-                const totalsPerDay = {};
-                data.forEach(item => {
-                    const date = item.fecha_g_recepcion_sh.split(" ")[0]; // Extraer la fecha
-                    const exportadora = item.n_exportadora;
-
-                    const peso = parseFloat(item.peso_neto);
-
-                    // Inicializar estructuras
-                    if (!groupedData[date]) groupedData[date] = {};
-                    if (!groupedData[date][exportadora]) groupedData[date][exportadora] = 0;
-                    if (!totalsPerDay[date]) totalsPerDay[date] = 0;
-                    // Sumar el peso
-                    groupedData[date][exportadora] += peso;
-
-                    if (!totalsPerDay[date]) {
-                        totalsPerDay[date] = 0;
-                    }
-                    totalsPerDay[date] += peso;
-
-                });
-
-                // Preparar datos para el gráfico
-                const fechas = Object.keys(groupedData);
-                console.log("fechas", fechas);
-                const exportadoras = [...new Set(data.map(item => item.n_exportadora))];
-                const dataTotals = fechas.map(fecha => totalsPerDay[fecha] || 0);
-                console.log("mapeofechas", dataTotals);
-                const datasets = exportadoras.map(exportadora => ({
-                    label: exportadora,
-                    data: fechas.map(fecha => groupedData[fecha][exportadora] || 0),
-                    borderWidth: 1,
-                    borderColor: getRandomColor(),
-                    backgroundColor: getRandomColor(0.5)
-                }));
-                console.log("TotalsPerDay", totalsPerDay);
-                datasets.push({
-                    label: "Total General",
-                    data: fechas.map(fecha => totalsPerDay[fecha] ||
-                        0), // Verifica si la clave existe, usa 0 si no
-                    type: 'line',
-                    borderWidth: 2,
-                    borderColor: '#FF0000',
-                    backgroundColor: 'transparent',
-                    yAxisID: 'y1'
-                });
-
-                function getRandomColor(alpha = 1) {
-                    return `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${alpha})`;
-                }
-
-                function generateTable(fechas, exportadoras, groupedData, totalsPerDay) {
-
-
-                    let tableHTML = '<table border="1" class="table-responsive"><thead><tr><th>Fecha</th>';
-
-                    // Agregar encabezados de las exportadoras
-                    exportadoras.forEach(exportadora => {
-                        tableHTML += `<th>${exportadora}</th>`;
-                    });
-
-                    // Agregar columna del total general
-                    tableHTML += '<th>Total General</th></tr></thead><tbody>';
-
-                    // Llenar filas de la tabla con datos
-                    fechas.forEach(fecha => {
-                        tableHTML += `<tr><td>${fecha}</td>`;
-
-                        // Llenar las columnas de cada exportadora
-                        exportadoras.forEach(exportadora => {
-                            tableHTML +=
-                                `<td>${formatNumber(parseFloat(groupedData[fecha][exportadora]))}</td>`;
-                        });
-
-                        // Llenar columna del total general
-                        tableHTML +=
-                            `<td>${formatNumber(parseFloat(totalsPerDay[fecha]))}</td></tr>`;
-                    });
-
-                    tableHTML += '</tbody></table>';
-
-                    // Insertar la tabla en el DOM (reemplaza 'tablaKilos' con el id del contenedor de la tabla)
-                    document.getElementById('tablaKilos').innerHTML = tableHTML;
-                }
-                generateTable(fechas, exportadoras, groupedData, totalsPerDay);
-                console.log("datasets", datasets);
-
-                cargaPesoxDiaChart(datasets, fechas, exportadoras, );
+                cargaPesoxDiaChart(data);
             },
             error: function(xhr, status, error) {
                 console.log("Error en la solicitud AJAX:", error); // Maneja el error
             }
         });
 
-        function cargaPesoxDiaChart(datasets, fechas, exportadoras) {
+        function cargaPesoxDiaChart(data) {
 
 
             // Procesar los datos
+            const groupedData = {};
+            const totalsPerDay = {};
+            data.forEach(item => {
+                const date = item.fecha_g_recepcion_sh.split(" ")[0]; // Extraer la fecha
+                const exportadora = item.n_exportadora;
 
+                const peso = parseFloat(item.peso_neto);
 
+                // Inicializar estructuras
+                if (!groupedData[date]) groupedData[date] = {};
+                if (!groupedData[date][exportadora]) groupedData[date][exportadora] = 0;
+                if (!totalsPerDay[date]) totalsPerDay[date] = 0;
+                // Sumar el peso
+                groupedData[date][exportadora] += peso;
 
+                if (!totalsPerDay[date]) {
+                    totalsPerDay[date] = 0;
+                }
+                totalsPerDay[date] += peso;
+
+            });
+
+            // Preparar datos para el gráfico
+            const fechas = Object.keys(groupedData);
+            console.log("fechas", fechas);
+            const exportadoras = [...new Set(data.map(item => item.n_exportadora))];
+            const dataTotals = fechas.map(fecha => totalsPerDay[fecha] || 0);
+            console.log("mapeofechas", dataTotals);
+            const datasets = exportadoras.map(exportadora => ({
+                label: exportadora,
+                data: fechas.map(fecha => groupedData[fecha][exportadora] || 0),
+                borderWidth: 1,
+                borderColor: getRandomColor(),
+                backgroundColor: getRandomColor(0.5)
+            }));
+            console.log("TotalsPerDay", totalsPerDay);
+            datasets.push({
+                label: "Total General",
+                data: fechas.map(fecha => totalsPerDay[fecha] || 0), // Verifica si la clave existe, usa 0 si no
+                type: 'line',
+                borderWidth: 2,
+                borderColor: '#FF0000',
+                backgroundColor: 'transparent',
+                yAxisID: 'y1'
+            });
+
+            console.log("datasets", datasets);
+
+            function generateTable() {
+                let tableHTML = '<table border="1"><thead><tr><th>Fecha</th>';
+
+                // Agregar encabezados de las exportadoras
+                exportadoras.forEach(exportadora => {
+                    tableHTML += `<th>${exportadora}</th>`;
+                });
+
+                // Agregar columna del total general
+                tableHTML += '<th>Total General</th></tr></thead><tbody>';
+
+                // Llenar filas de la tabla con datos
+                fechas.forEach(fecha => {
+                    tableHTML += `<tr><td>${fecha}</td>`;
+
+                    // Llenar las columnas de cada exportadora
+                    exportadoras.forEach(exportadora => {
+                        tableHTML += `<td>${groupedData[fecha][exportadora] || 0}</td>`;
+                    });
+
+                    // Llenar columna del total general
+                    tableHTML += `<td>${totalsPerDay[fecha]}</td></tr>`;
+                });
+
+                tableHTML += '</tbody></table>';
+
+                // Insertar la tabla en el DOM (reemplaza 'tablaKilos' con el id del contenedor de la tabla)
+                document.getElementById('tablaKilos').innerHTML = tableHTML;
+            }
             //generateTable();
             // Función para generar colores aleatorios
-
+            function getRandomColor(alpha = 1) {
+                return `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${alpha})`;
+            }
 
             // Crear el gráfico
             const ctx = document.getElementById('kilosPorDia').getContext('2d');
