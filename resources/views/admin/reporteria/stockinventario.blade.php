@@ -780,7 +780,10 @@
 
             // Procesar los datos
             const groupedData = {};
+            const groupedDataTable = {};
+            const totalsPerDayTable = {};
             const totalsPerDay = {};
+            const totalsPerDaytable = {};
             data.forEach(item => {
                 const date = item.fecha_g_recepcion_sh.split(" ")[0]; // Extraer la fecha
                 const exportadora = item.n_exportadora;
@@ -800,13 +803,36 @@
                 totalsPerDay[date] += peso;
 
             });
+            data.forEach(item => {
+                const date = item.fecha_g_recepcion_sh.split(" ")[0]; // Extraer la fecha
+                const exportadora = item.n_exportadora;
+
+                const peso = parseFloat(item.peso_neto);
+
+                // Inicializar estructuras
+                if (!groupedDataTable[date]) groupedDataTable[date] = {};
+                if (!groupedDataTable[date][exportadora]) groupedDataTable[date][exportadora] = 0;
+                if (!totalsPerDayTable[date]) totalsPerDayTable[date] = 0;
+                // Sumar el peso
+                groupedDataTable[date][exportadora] += peso;
+
+                if (!totalsPerDayTable[date]) {
+                    totalsPerDayTable[date] = 0;
+                }
+                totalsPerDayTable[date] += peso;
+
+            });
 
             // Preparar datos para el gráfico
             const fechas = Object.keys(groupedData);
-            console.log("fechas", fechas);
+            const fechasTable = Object.keys(groupedDataTable);
+
             const exportadoras = [...new Set(data.map(item => item.n_exportadora))];
+            const exportadorasTable = [...new Set(data.map(item => item.n_exportadora))];
+
             const dataTotals = fechas.map(fecha => totalsPerDay[fecha] || 0);
-            console.log("mapeofechas", dataTotals);
+            const dataTotalsTable = fechasTable.map(fecha => totalsPerDayTable[fecha] || 0);
+
             const datasets = exportadoras.map(exportadora => ({
                 label: exportadora,
                 data: fechas.map(fecha => groupedData[fecha][exportadora] || 0),
@@ -814,7 +840,14 @@
                 borderColor: getRandomColor(),
                 backgroundColor: getRandomColor(0.5)
             }));
-            console.log("TotalsPerDay", totalsPerDay);
+            const datasetsTable = exportadorasTable.map(exportadora => ({
+                label: exportadora,
+                data: fechasTable.map(fecha => groupedDataTable[fecha][exportadora] || 0),
+                borderWidth: 1,
+                borderColor: getRandomColor(),
+                backgroundColor: getRandomColor(0.5)
+            }));
+
             datasets.push({
                 label: "Total General",
                 data: fechas.map(fecha => totalsPerDay[fecha] || 0), // Verifica si la clave existe, usa 0 si no
@@ -824,14 +857,23 @@
                 backgroundColor: 'transparent',
                 yAxisID: 'y1'
             });
+            datasetsTable.push({
+                label: "Total General",
+                data: fechasTable.map(fecha => totalsPerDayTable[fecha] ||
+                    0), // Verifica si la clave existe, usa 0 si no
+                type: 'line',
+                borderWidth: 2,
+                borderColor: '#FF0000',
+                backgroundColor: 'transparent',
+                yAxisID: 'y1'
+            });
 
-            console.log("datasets", datasets);
 
             function generateTable() {
                 let tableHTML = '<table border="1"><thead><tr><th>Fecha</th>';
 
                 // Agregar encabezados de las exportadoras
-                exportadoras.forEach(exportadora => {
+                exportadorasTable.forEach(exportadora => {
                     tableHTML += `<th>${exportadora}</th>`;
                 });
 
@@ -839,16 +881,16 @@
                 tableHTML += '<th>Total General</th></tr></thead><tbody>';
 
                 // Llenar filas de la tabla con datos
-                fechas.forEach(fecha => {
+                fechasTable.forEach(fecha => {
                     tableHTML += `<tr><td>${fecha}</td>`;
 
                     // Llenar las columnas de cada exportadora
-                    exportadoras.forEach(exportadora => {
-                        tableHTML += `<td>${groupedData[fecha][exportadora] || 0}</td>`;
+                    exportadorasTable.forEach(exportadora => {
+                        tableHTML += `<td>${groupedDataTable[fecha][exportadora] || 0}</td>`;
                     });
 
                     // Llenar columna del total general
-                    tableHTML += `<td>${totalsPerDay[fecha]}</td></tr>`;
+                    tableHTML += `<td>${totalsPerDayTable[fecha]}</td></tr>`;
                 });
 
                 tableHTML += '</tbody></table>';
@@ -863,8 +905,8 @@
             }
 
             // Crear el gráfico
-            const ctx = document.getElementById('kilosPorDia').getContext('2d');
-            new Chart(ctx, {
+            const ctx3 = document.getElementById('kilosPorDia').getContext('2d');
+            new Chart(ctx3, {
                 type: 'bar',
                 data: {
                     labels: fechas, // Fechas en el eje X
