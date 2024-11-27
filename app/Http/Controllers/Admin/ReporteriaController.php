@@ -202,11 +202,10 @@ class ReporteriaController extends Controller
                 DB::RAW("SUM(cantidad) AS cantidad"),
                 DB::RAW("SUM(peso_neto) as peso_neto"),
                 'nota_calidad',
-                'destruccion_tipo',
                 'id_especie',
             )
             ->where('destruccion_tipo', '=', '')
-            ->groupBy('nota_calidad', 'destruccion_tipo', 'id_especie')
+            ->where('id_especie', '=', '7')->groupBy('nota_calidad', 'id_especie')
             ->get();
 
         $pesoxFecha = DB::connection("sqlsrv")->table('dbo.V_PKG_Recepcion_FG')
