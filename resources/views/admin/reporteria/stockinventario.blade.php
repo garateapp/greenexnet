@@ -59,6 +59,45 @@
             height: auto !important;
             /* Mantiene la proporción del gráfico */
         }
+
+        /* Estilo para hacer el gráfico responsivo */
+        #chart-container {
+            position: relative;
+            width: 90%;
+            /* Ajusta el ancho del gráfico */
+            margin: auto;
+            /* Centra el contenedor */
+        }
+
+        canvas {
+            display: block;
+            max-width: 100%;
+            /* Asegura que el canvas no se desborde */
+            height: auto !important;
+            /* Mantiene la proporción del gráfico */
+        }
+
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 90%;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            text-align: center;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        .total-row {
+            font-weight: bold;
+            background-color: #e8f0fe;
+        }
     </style>
     <div class="content">
         <div class="container-lg px-4">
@@ -163,10 +202,14 @@
                 </div>
                 <div class="col-md-12">
                     <div class="card">
-                        <div class="card-body" id="chart-container">
-                            <h5 class="card-title text-center">Kilos Recibido por Día</h5>
-                            <canvas id="kilosPorDia" style="max-height: 400px;"></canvas>
+                        <div class="card-body">
+                            <div id="chart-container">
+                                <h5 class="card-title text-center">Kilos Recibido por Día</h5>
+                                <canvas id="kilosPorDia" style="max-height: 400px;"></canvas>
+                            </div>
+                            <div id="tablaKilos"></div>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -260,6 +303,8 @@
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.0.1"></script>
+
     <script>
         $(document).ready(function() {
             $("#btnRecargar").on('click', function() {
@@ -722,46 +767,111 @@
             type: "GET",
             dataType: "json",
             success: function(data) {
-                cargaPesoxDiaChart(data);
-            }
-        });
+                console.log('Datos obtenidos:', data); // Verifica que los datos son correctos
+                const groupedData = {};
+                const totalsPerDay = {};
+                data.forEach(item => {
+                    const date = item.fecha_g_recepcion_sh.split(" ")[0]; // Extraer la fecha
+                    const exportadora = item.n_exportadora;
 
-        function cargaPesoxDiaChart(data) {
+                    const peso = parseFloat(item.peso_neto);
 
+                    // Inicializar estructuras
+                    if (!groupedData[date]) groupedData[date] = {};
+                    if (!groupedData[date][exportadora]) groupedData[date][exportadora] = 0;
+                    if (!totalsPerDay[date]) totalsPerDay[date] = 0;
+                    // Sumar el peso
+                    groupedData[date][exportadora] += peso;
 
-            // Procesar los datos
-            const groupedData = {};
-            data.forEach(item => {
-                const date = item.fecha_g_recepcion_sh.split(" ")[0]; // Extraer la fecha
-                const exportadora = item.n_exportadora;
-                const peso = parseFloat(item.peso_neto);
+                    if (!totalsPerDay[date]) {
+                        totalsPerDay[date] = 0;
+                    }
+                    totalsPerDay[date] += peso;
 
-                // Inicializar estructuras
-                if (!groupedData[date]) groupedData[date] = {};
-                if (!groupedData[date][exportadora]) groupedData[date][exportadora] = 0;
+                });
 
-                // Sumar el peso
-                groupedData[date][exportadora] += peso;
-            });
-
-            // Preparar datos para el gráfico
-            const fechas = Object.keys(groupedData); // Todas las fechas
-            const exportadoras = [...new Set(data.map(item => item.n_exportadora))]; // Lista única de exportadoras
-
-            const datasets = exportadoras.map(exportadora => {
-                return {
+                // Preparar datos para el gráfico
+                const fechas = Object.keys(groupedData);
+                console.log("fechas", fechas);
+                const exportadoras = [...new Set(data.map(item => item.n_exportadora))];
+                const dataTotals = fechas.map(fecha => totalsPerDay[fecha] || 0);
+                console.log("mapeofechas", dataTotals);
+                const datasets = exportadoras.map(exportadora => ({
                     label: exportadora,
-                    data: fechas.map(fecha => groupedData[fecha][exportadora] || 0), // Usar 0 si no hay datos
+                    data: fechas.map(fecha => groupedData[fecha][exportadora] || 0),
                     borderWidth: 1,
                     borderColor: getRandomColor(),
                     backgroundColor: getRandomColor(0.5)
-                };
-            });
+                }));
+                console.log("TotalsPerDay", totalsPerDay);
+                datasets.push({
+                    label: "Total General",
+                    data: fechas.map(fecha => totalsPerDay[fecha] ||
+                        0), // Verifica si la clave existe, usa 0 si no
+                    type: 'line',
+                    borderWidth: 2,
+                    borderColor: '#FF0000',
+                    backgroundColor: 'transparent',
+                    yAxisID: 'y1'
+                });
 
-            // Función para generar colores aleatorios
-            function getRandomColor(alpha = 1) {
-                return `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${alpha})`;
+                function getRandomColor(alpha = 1) {
+                    return `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${alpha})`;
+                }
+
+                function generateTable(fechas, exportadoras, groupedData, totalsPerDay) {
+
+
+                    let tableHTML = '<table border="1" class="table-responsive"><thead><tr><th>Fecha</th>';
+
+                    // Agregar encabezados de las exportadoras
+                    exportadoras.forEach(exportadora => {
+                        tableHTML += `<th>${exportadora}</th>`;
+                    });
+
+                    // Agregar columna del total general
+                    tableHTML += '<th>Total General</th></tr></thead><tbody>';
+
+                    // Llenar filas de la tabla con datos
+                    fechas.forEach(fecha => {
+                        tableHTML += `<tr><td>${fecha}</td>`;
+
+                        // Llenar las columnas de cada exportadora
+                        exportadoras.forEach(exportadora => {
+                            tableHTML +=
+                                `<td>${formatNumber(parseFloat(groupedData[fecha][exportadora]))}</td>`;
+                        });
+
+                        // Llenar columna del total general
+                        tableHTML +=
+                            `<td>${formatNumber(parseFloat(totalsPerDay[fecha]))}</td></tr>`;
+                    });
+
+                    tableHTML += '</tbody></table>';
+
+                    // Insertar la tabla en el DOM (reemplaza 'tablaKilos' con el id del contenedor de la tabla)
+                    document.getElementById('tablaKilos').innerHTML = tableHTML;
+                }
+                generateTable(fechas, exportadoras, groupedData, totalsPerDay);
+                console.log("datasets", datasets);
+
+                cargaPesoxDiaChart(datasets, fechas, exportadoras, );
+            },
+            error: function(xhr, status, error) {
+                console.log("Error en la solicitud AJAX:", error); // Maneja el error
             }
+        });
+
+        function cargaPesoxDiaChart(datasets, fechas, exportadoras) {
+
+
+            // Procesar los datos
+
+
+
+            //generateTable();
+            // Función para generar colores aleatorios
+
 
             // Crear el gráfico
             const ctx = document.getElementById('kilosPorDia').getContext('2d');
@@ -797,8 +907,12 @@
                     }
                 }
             });
+            // Después de que el gráfico se haya generado, crear la tabla.
+
+            // Mostrar tabla de datos
 
         }
+
 
         // function cargaDataTable() {
         // $.ajax({

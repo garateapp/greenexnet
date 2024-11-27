@@ -429,7 +429,7 @@ class ReporteriaController extends Controller
                 'n_variedad',
                 'fecha_g_recepcion_sh'
             )
-            ->where('destruccion_tipo', '=', '')
+            ->where('fecha_g_recepcion_sh', '>=', DB::RAW("DATEADD(DAY, -8, GETDATE())"))
 
             ->groupBy(
                 'fecha_g_recepcion_sh',
