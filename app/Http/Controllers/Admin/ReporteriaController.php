@@ -441,10 +441,28 @@ class ReporteriaController extends Controller
 
             )
             ->get();
+        $datosTotal = DB::connection("sqlsrv")->table('dbo.V_PKG_Recepcion_FG')
+            ->select(
+                DB::RAW("SUM(peso_neto) as peso_neto"),
+                'n_exportadora'
 
+
+
+            )
+            ->where('n_especie', '=', 'Cherries')
+            ->groupBy(
+
+
+                'n_exportadora'
+
+
+
+
+            )
+            ->get();
         //...
 
-        return response()->json($datos);
+        return response()->json(["data" => $datos, "totales" => $datosTotal], 200);
     }
     public function obtieneInformeCalidad($numero_g_recepcion)
     {
