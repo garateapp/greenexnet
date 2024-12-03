@@ -3,6 +3,7 @@
 //use Illuminate\Routing\Route;
 use App\Http\Controllers\Admin\ReporteriaController;
 
+
 Route::view('/', '/welcome');
 Route::get('userVerification/{token}', 'UserVerificationController@approve')->name('userVerification');
 Auth::routes();
@@ -133,6 +134,18 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('reporteria/obtieneRecepcionDatosRecepcion', "ReporteriaController@obtieneRecepcionDatosRecepcion")->name("reporteria.obtieneRecepcionDatosRecepcion");
     Route::post('reporteria/obtieneDatosRecepcionProductor', "ReporteriaController@obtieneDatosRecepcionProductor")->name("reporteria.obtieneDatosRecepcionProductor");
     Route::get('reporteria/obtienePesoxDia', "ReporteriaController@obtienePesoxDia")->name("reporteria.obtienePesoxDia");
+    Route::get('reporteria/obtieneTransito', "ReporteriaController@obtieneTransito")->name("reporteria.obtieneTransito");
+    Route::get('reporteria/Transito', "ReporteriaController@Transito")->name("reporteria.Transito");
+    Route::post('reporteria/obtieneDetallesTransito', "ReporteriaController@obtieneDetallesTransito")->name("reporteria.obtieneDetallesTransito");
+
+
+
+    // Embalajes
+    Route::delete('embalajes/destroy', 'EmbalajesController@massDestroy')->name('embalajes.massDestroy');
+    Route::post('embalajes/parse-csv-import', 'EmbalajesController@parseCsvImport')->name('embalajes.parseCsvImport');
+    Route::post('embalajes/process-csv-import', 'EmbalajesController@processCsvImport')->name('embalajes.processCsvImport');
+    Route::resource('embalajes', 'EmbalajesController');
+
 
     //getDatosgenerales
 

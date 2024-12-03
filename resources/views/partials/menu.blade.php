@@ -265,9 +265,39 @@
                             Stock Inventario
                         </a>
                     </li>
+                    <li class="c-sidebar-nav-item">
+                        <a href="{{ route('admin.reporteria.Transito') }}"
+                            class="c-sidebar-nav-link {{ request()->is('admin/reporteria') || request()->is('admin/reporteria/*') ? 'c-active' : '' }}">
+                            <i class="fa-fw fas fa-chart-pie c-sidebar-nav-icon">
 
+                            </i>
+                           Tránsito
+                        </a>
+                    </li>
                 </ul>
             </li>
+        @endcan
+        @can("maestros_access")
+        <li class="c-sidebar-nav-dropdown {{ request()->is('admin/embalajes*') ? 'c-show' : '' }}">
+            <a class="c-sidebar-nav-dropdown-toggle" href="#">
+                <i class="fa-fw fas fa-cogs c-sidebar-nav-icon">
+
+                </i>
+                Maestros
+            </a>
+            <ul class="c-sidebar-nav-dropdown-items">
+
+                <li class="c-sidebar-nav-item">
+                    <a href="{{ route('admin.embalajes.index') }}"
+                        class="c-sidebar-nav-link {{ request()->is('admin/embalajes') || request()->is('admin/embalajes/*') ? 'c-active' : '' }}">
+                        <i class="fa-fw fas fa-bo c-sidebar-nav-icon">
+
+                        </i>
+                        Embalajes
+                    </a>
+                </li>
+            </ul>
+        </li>
         @endcan
         <li class="c-sidebar-nav-item">
             <a href="#" class="c-sidebar-nav-link"

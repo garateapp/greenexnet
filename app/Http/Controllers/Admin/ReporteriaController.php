@@ -8,6 +8,7 @@ use App\Models\Asistencium;
 use App\Models\Personal;
 use App\Models\Locacion;
 use App\Models\Area;
+use App\Models\Embalaje;
 use App\Models\Turno;
 use App\Models\FrecuenciaTurno;
 use Gate;
@@ -473,5 +474,177 @@ class ReporteriaController extends Controller
             ->first();
         $url = "https://appgreenex.cl/download/recepcion/" . $informe->id . "pdf";
         return $url;
+    }
+    public function Transito()
+    {
+        return view('admin.reporteria.transito');
+    }
+    public function obtieneTransito()
+    {
+        $transito = DB::connection("sqlsrv")->table('dbo.V_PKG_Stock_Inventario')
+            ->select(
+                'n_variedad',
+                'fecha_produccion',
+                'c_embalaje',
+                'peso_std_embalaje',
+                'n_exportadora',
+                'n_envase',
+                'id_contenedor',
+                'Cant_Contenedor',
+                'n_calibre',
+                'n_etiqueta',
+                DB::RAW("SUM(cantidad) as cantidad"),
+                DB::RAW("SUM(peso_neto) as peso_neto"),
+                'n_especie',
+                'n_bodega',
+                'fila',
+                'columna',
+                'altura',
+                'id_altura',
+                'e_inspeccion',
+                'n_variedad_original',
+                'n_categoria',
+                'tipo_embalaje',
+                'cuenta_pallets',
+                'Tratamiento',
+                'antiguedad',
+                'Antiguedad_Cosecha',
+                'Antiguedad_Recepcion',
+                'Antiguedad_Produccion'
+            )
+            ->where('id_altura', '=', 8)
+            ->where('n_categoria', '=', 'Cat 1')
+            ->where('n_exportadora', '=', 'Greenex Spa')
+            ->groupBy(
+                'n_variedad',
+                'fecha_produccion',
+                'c_embalaje',
+                'peso_std_embalaje',
+                'n_bodega',
+                'n_exportadora',
+                'n_envase',
+                'id_contenedor',
+                'Cant_Contenedor',
+                'n_categoria',
+                'n_calibre',
+                'n_etiqueta',
+                'n_especie',
+                'fila',
+                'columna',
+                'altura',
+                'id_altura',
+                'e_inspeccion',
+                'n_variedad_original',
+                'tipo_embalaje',
+                'cuenta_pallets',
+                'Tratamiento',
+                'antiguedad',
+                'Antiguedad_Cosecha',
+                'Antiguedad_Recepcion',
+                'Antiguedad_Produccion'
+            )
+            ->get();
+        $embalajes_detalle = Embalaje::all();
+        // Paso 1: Convertir $embalajes_detalle a un Map con c_embalaje como clave
+        $embalajesMap = Embalaje::all()->keyBy('c_embalaje');
+
+        // Paso 2: Iterar sobre $transito y agregar las columnas de embalajes
+        $transitoConDetalles = $transito->map(function ($item) use ($embalajesMap) {
+            $c_embalaje = $item->c_embalaje; // Clave de coincidencia
+            if ($embalajesMap->has($c_embalaje)) {
+                // Combinar las propiedades de embalajes en el registro actual de tránsito
+                $detalleEmbalaje = $embalajesMap->get($c_embalaje);
+
+                // Agregar las propiedades del embalaje al registro de tránsito
+                $item->caja = $detalleEmbalaje->caja;
+                $item->kgxcaja = $detalleEmbalaje->kgxcaja;
+                $item->cajaxpallet = $detalleEmbalaje->cajaxpallet;
+                $item->altura_pallet = $detalleEmbalaje->altura_pallet;
+                $item->tipo_embarque = $detalleEmbalaje->tipo_embarque;
+            } else {
+                // Si no hay coincidencia, puedes definir valores por defecto o nulos
+                $item->caja = null;
+                $item->kgxcaja = null;
+                $item->cajaxpallet = null;
+                $item->altura_pallet = null;
+                $item->tipo_embarque = null;
+            }
+            return $item;
+        });
+
+
+        $n_variedades = collect($transito)->pluck('n_variedad')->unique()->values();
+        $c_embalajes = collect($transito)->pluck('c_embalaje')->unique()->values();
+        $n_calibres = collect($transito)->pluck('n_calibre')->unique()->values();
+        $n_bodegas = collect($transito)->pluck('n_bodega')->unique()->values();
+
+
+        return response()->json(["data" => $transitoConDetalles, "n_variedades" => $n_variedades, "c_embalajes" => $c_embalajes, "n_calibres" => $n_calibres, "n_bodegas" => $n_bodegas, "embalajes_detalle" => $embalajes_detalle], 200);
+    }
+    public function obtieneDetallesTransito(Request $request)
+    {
+        $transito = DB::connection("sqlsrv")->table('dbo.V_PKG_Stock_Inventario')
+            ->select(
+                'n_variedad',
+                'fecha_produccion',
+                'c_embalaje',
+                'peso_std_embalaje',
+                'n_exportadora',
+                'n_envase',
+                'n_calibre',
+                'n_etiqueta',
+                'folio',
+                'texto_libre_hs',
+                DB::RAW("SUM(cantidad) as cantidad"),
+                DB::RAW("SUM(peso_neto) as peso_neto"),
+                'n_especie',
+                'n_bodega',
+                'fila',
+                'columna',
+                'altura',
+                'id_altura',
+                'e_inspeccion',
+                'n_variedad_original',
+                'n_categoria',
+                'tipo_embalaje',
+                'cuenta_pallets',
+                'Tratamiento'
+            )
+            ->where('id_altura', '=', 8)
+            ->where('n_categoria', '=', 'Cat 1')
+            ->where('n_exportadora', '=', 'Greenex Spa')
+            ->where('c_embalaje', '=', $request->c_embalaje)
+            ->where('n_variedad', '=', $request->n_variedad)
+            ->where('n_etiqueta', '=', $request->n_etiqueta)
+            ->groupBy(
+                'n_variedad',
+                'fecha_produccion',
+                'c_embalaje',
+                'peso_std_embalaje',
+                'n_bodega',
+                'n_exportadora',
+                'n_envase',
+                'id_contenedor',
+                'Cant_Contenedor',
+                'n_categoria',
+                'n_calibre',
+                'n_etiqueta',
+                'folio',
+                'texto_libre_hs',
+                'n_especie',
+                'fila',
+                'columna',
+                'altura',
+                'id_altura',
+                'e_inspeccion',
+                'n_variedad_original',
+                'tipo_embalaje',
+                'cuenta_pallets',
+                'Tratamiento',
+                'antiguedad'
+            )
+            ->orderBy('folio', 'asc')
+            ->get();
+        return response()->json($transito, 200);
     }
 }
