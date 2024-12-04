@@ -219,7 +219,7 @@
                                 {{ trans('cruds.personal.title') }}
                             </a>
                         </li>
-                        <li class="c-sidebar-nav-item">
+                        {{-- <li class="c-sidebar-nav-item">
                             <a href="{{ route('admin.personals.cuadratura') }}"
                                 class="c-sidebar-nav-link {{ request()->is('admin/personals') || request()->is('admin/personals/*') ? 'c-active' : '' }}">
                                 <i class="fa-fw fas fa-clock c-sidebar-nav-icon">
@@ -227,7 +227,7 @@
                                 </i>
                                 Cuadratura de Asistencia
                             </a>
-                        </li>
+                        </li> --}}
                     @endcan
                 </ul>
             </li>
@@ -274,7 +274,7 @@
                             Stock Inventario
                         </a>
                     </li>
-                    {{-- <li class="c-sidebar-nav-item">
+                    <li class="c-sidebar-nav-item">
                         <a href="{{ route('admin.reporteria.Transito') }}"
                             class="c-sidebar-nav-link {{ request()->is('admin/reporteria') || request()->is('admin/reporteria/*') ? 'c-active' : '' }}">
                             <i class="fa-fw fas fa-chart-pie c-sidebar-nav-icon">
@@ -282,7 +282,7 @@
                             </i>
                            Tránsito
                         </a>
-                    </li> --}}
+                    </li>
                 </ul>
             </li>
         @endcan
