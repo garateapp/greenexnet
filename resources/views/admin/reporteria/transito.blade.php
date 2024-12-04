@@ -153,10 +153,10 @@
                     <label for="filtroCalibre">Calibre</label>
                     <select id="filtroCalibre" class="form-control select2" multiple="multiple"></select>
                 </div>
-                <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
+                {{-- <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
                     <label for="filtroBodega">Bodega</label>
                     <select id="filtroBodega" class="form-control select2" multiple="multiple"></select>
-                </div>
+                </div> --}}
             </div>
             <hr />
 
@@ -229,10 +229,10 @@
                             function(value) {
                                 $('#filtroEmbalaje').append(new Option(value, value));
                             });
-                        bodega.forEach(
-                            function(value) {
-                                $('#filtroBodega').append(new Option(value, value));
-                            });
+                        // bodega.forEach(
+                        //     function(value) {
+                        //         $('#filtroBodega').append(new Option(value, value));
+                        //     });
 
                         let calibreData = "";
                         const calibresOrdenados = calibres.sort((a, b) => {
@@ -520,13 +520,14 @@
 
                 function generarHTMLDetalles(data) {
                     let html = '<div class="col-md-4" style="overflow-x: auto;"><table class="display table table-bordered table-striped table-hover ajaxTable datatable" style="white-space: nowrap;"><thead><tr>';
-                    html += '<th>Fecha Producción</th><th>Folio</th><th>Inpección</th><th>Texto Libre</th>'; // Modifica con tus columnas
+                    html += '<th>Fecha Producción</th><th>Folio</th><th>Bodega</th><th>Inpección</th><th>Texto Libre</th>'; // Modifica con tus columnas
                     html += '</tr></thead><tbody>';
 
                     data.forEach(item => {
                         html += `<tr>
                     <td style="text-align: center;width: 6%;">${item.fecha_produccion}</td>
                     <td style="text-align: center;width: 6%;">${item.folio}</td>
+                    <td style="text-align: center;width: 6%;">${item.n_bodega}</td>
                     <td style="text-align: center;width: 6%;">${item.e_inspeccion}</td>
                     <td style="text-align: center;width: 6%;">${item.texto_libre_hs}</td>
                  </tr>`;
