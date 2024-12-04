@@ -155,11 +155,27 @@
                     <select id="filtroEtiqueta" class="form-control select2" multiple="multiple"></select>
                 </div>
                 <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
-                    <button id="btnRecargar" class="btn btn-secondary mb-3" style="margin-top: 30px;" title="Recargar"><i class="fas fa-sync"></i></button>
+                    <button id="btnRecargar" class="btn btn-secondary mb-3" style="margin-top: 30px;" title="Recargar"><i
+                            class="fas fa-sync"></i></button>
                 </div>
 
             </div>
-
+            <div class="modal fade" id="calibreModal" tabindex="-1" aria-labelledby="calibreModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="calibreModalLabel">Detalles del Calibre</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body" id="modalCalibreContent">
+                            <!-- Aquí se insertará dinámicamente la información -->
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             {{-- <button id="btnvistaBodega" class="btn btn-primary">Vista Bodega</button> &nbsp; <button id="btnvistaVariedad"
                 class="btn btn-primary">Vista Variedad</button> &nbsp; <button id="btnvistaCalibre"
                 class="btn btn-primary">Vista Calibre</button> --}}
@@ -236,6 +252,7 @@
                     type: "GET",
                     dataType: "json",
                     success: function(data) {
+                        console.log(data);
                         hideLoading(); // Ocultar la animación de carga
                         variedades = data.n_variedades;
                         calibres = data.n_calibres;
@@ -284,14 +301,13 @@
 
                         const agrupado = data.data.reduce((acc, item) => {
                             const key =
-                                `${item.n_variedad}-${item.n_embalaje}-${item.e_inspeccion}-${item.n_exportadora}`;
+                                `${item.c_embalaje}-${item.n_variedad}-${item.n_etiqueta}`;
 
                             if (!acc[key]) {
                                 acc[key] = {
                                     variedad: item.n_variedad,
                                     embalaje: item.c_embalaje,
                                     etiqueta: item.n_etiqueta,
-                                    exportadora: item.n_exportadora,
                                     totalCajas: 0, // Total de cajas por agrupación
                                     cajasxpallet: {}, // Inicializamos el objeto para los pallets por calibre
                                     cajaxpallet: 0,
@@ -426,6 +442,7 @@
                                     const palletsValue = parseFloat(data.cajasxpallet?.[
                                         calibre
                                     ] || 0);
+                                    console.log(row,data.cajasxpallet?.[calibre]);
                                     if (palletsValue > 1) {
                                         // Encuentra la celda correspondiente al pallet
                                         let palletCell = $(
@@ -433,7 +450,8 @@
                                             row);
                                         palletCell.css({
                                             backgroundColor: "green",
-                                            color: "white"
+                                            color: "white",
+                                            cursor: "pointer"
                                         });
                                     }
                                 });
@@ -444,7 +462,8 @@
                             const filtroEmbalaje = $('#filtroEmbalaje').val() || [];
                             const filtroEtiqueta = $('#filtroEtiqueta').val() || [];
 
-                            const variedad = data[2]; // Ajusta el índice según la posición de la columna en la tabla
+                            const variedad = data[
+                                2]; // Ajusta el índice según la posición de la columna en la tabla
                             const embalaje = data[3]; // Ajusta el índice
                             const etiqueta = data[4]; // Ajusta el índice
 
@@ -458,48 +477,13 @@
                             return coincideVariedad && coincideEmbalaje && coincideEtiqueta;
                         });
                         $("#btnRecargar").on('click', function() {
-                location.reload();
-            });
+                            location.reload();
+                        });
                         // Asigna el evento `change` a los filtros
                         $('#filtroVariedad, #filtroEmbalaje, #filtroEtiqueta').on('change', function() {
                             table.draw(); // Redibuja la tabla aplicando los filtros
                         });
-                        // $('#filtroVariedad, #filtroEmbalaje, #filtroCalibre').on('change', function() {
-                        //     filtrarTabla();
-                        // });
 
-                        // function filtrarTabla() {
-                        //     // Obtén los valores seleccionados de los filtros
-                        //     const variedades = $('#filtroVariedad').val() || [];
-                        //     const embalajes = $('#filtroEmbalaje').val() || [];
-                        //     const calibres = $('#filtroCalibre').val() || [];
-
-                        //     // Aplica filtros personalizados
-                        //     table.draw();
-                        // }
-
-                        // // Filtro personalizado de DataTables
-                        // $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-
-                        //     // Asegúrate de declarar las variables utilizadas en esta función
-                        //     const variedades = $('#filtroVariedad').val() || [];
-                        //     const embalajes = $('#filtroEmbalaje').val() || [];
-                        //     const calibres = $('#filtroCalibre').val() || [];
-
-                        //     const variedad = data[1]; // Columna de variedad
-                        //     const embalaje = data[2]; // Columna de embalaje
-                        //     const calibre = data[3]; // Columna de calibre (puedes ajustar el índice según tu configuración)
-
-                        //     // Verifica los filtros
-                        //     const coincideVariedad = variedades.length === 0 || variedades.includes(
-                        //         variedad);
-                        //     const coincideEmbalaje = embalajes.length === 0 || embalajes.includes(
-                        //         embalaje);
-                        //     const coincideCalibre = calibres.length === 0 || calibres.some(cal =>
-                        //         data.includes(cal));
-
-                        //     return coincideVariedad && coincideEmbalaje && coincideCalibre;
-                        // });
 
                         $("#contenedorCalibres").html('<div class="tab-content rounded-bottom">' +
                             '<div class="tab-pane p-3 active preview" role="tabpanel" id="preview-1011"><div class="row g-4">' +
@@ -566,7 +550,7 @@
                     return [3, calibre]; // Otros calibres tienen menor prioridad
                 }
 
-                $('#TransitoTable').on('click', 'button', function() {
+                $('#TransitoTable').on('click', 'button.interact-btn', function() {
 
                     const tr = $(this).closest('tr'); // Fila actual
                     const row = table.row(tr); // Objeto de la fila en DataTables
@@ -611,6 +595,56 @@
                         });
                     }
                 });
+                // Delegación de eventos para el botón interactivo dentro de las celdas
+                $('#TransitoTable tbody').on('click', 'td', function() {
+                    var table = $('#TransitoTable').DataTable();
+                    var cell = table.cell(this);
+                    const row = $(this).closest('tr');
+                    const rowData = table.row(row).data();
+                    console.log(rowData);
+                    var columnIdx = cell.index().column;
+                    var n_variedad= rowData.variedad;
+                    var n_embalaje= rowData.embalaje;
+                    var n_etiqueta= rowData.etiqueta;
+
+                    // Solo actuar si es una columna de calibres (ajustar el rango según tus columnas)
+                    if (columnIdx >= 5) {
+                        // Obtener el nombre del calibre desde la cabecera
+                        var columnHeader = $('#TransitoTable thead th').eq(columnIdx)
+                        console.log(columnHeader);
+                        console.log('n_variedad:'+n_variedad,'n_embalaje:'+n_embalaje,'n_etiqueta:'+n_etiqueta);
+                        // Mostrar un loader mientras se realiza la solicitud
+                        $('#modalCalibreContent').html('<p class="text-center">Cargando datos...</p>');
+
+                        // Realizar la llamada Ajax para obtener datos específicos
+                        $.ajax({
+                            url: "{{ route('admin.reporteria.obtieneDetallesTransitoCalibre') }}", // Cambiar a tu ruta
+                            type: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                            data: {
+                                calibre: columnHeader, // El calibre (columna seleccionada)
+                                n_variedad: n_variedad,
+                                n_embalaje: n_embalaje,
+                                n_etiqueta: n_etiqueta
+                            },
+                            success: function(response) {
+                                // Suponiendo que `response` contiene HTML o texto
+                                $('#modalCalibreContent').html(response);
+                            },
+                            error: function() {
+                                $('#modalCalibreContent').html(
+                                    '<p class="text-danger">Error al cargar datos.</p>');
+                            }
+                        });
+
+                        // Abrir el modal
+                        $('#calibreModal').modal('show');
+                    }
+                });
+
+
 
                 function generarHTMLDetalles(data) {
                     let html =

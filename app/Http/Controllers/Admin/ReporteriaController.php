@@ -484,64 +484,30 @@ class ReporteriaController extends Controller
         $transito = DB::connection("sqlsrv")->table('dbo.V_PKG_Stock_Inventario')
             ->select(
                 'n_variedad',
-                'fecha_produccion',
+
                 'c_embalaje',
-                'peso_std_embalaje',
-                'n_exportadora',
-                'n_envase',
-                'id_contenedor',
-                'Cant_Contenedor',
+
+
+
                 'n_calibre',
                 'n_etiqueta',
                 DB::RAW("SUM(cantidad) as cantidad"),
                 DB::RAW("SUM(peso_neto) as peso_neto"),
-                'n_especie',
-                'n_bodega',
-                'fila',
-                'columna',
-                'altura',
-                'id_altura',
-                'e_inspeccion',
-                'n_variedad_original',
-                'n_categoria',
-                'tipo_embalaje',
-                'cuenta_pallets',
-                'Tratamiento',
-                'antiguedad',
-                'Antiguedad_Cosecha',
-                'Antiguedad_Recepcion',
-                'Antiguedad_Produccion'
+
+
             )
             ->where('id_altura', '=', 8)
             ->where('n_categoria', '=', 'Cat 1')
             ->where('n_exportadora', '=', 'Greenex Spa')
+            ->where('id_empresa','=','1')
+            ->where('fecha_produccion', '<', DB::RAW("DATEADD(DAY, -2, GETDATE())"))
             ->groupBy(
                 'n_variedad',
-                'fecha_produccion',
                 'c_embalaje',
-                'peso_std_embalaje',
-                'n_bodega',
-                'n_exportadora',
-                'n_envase',
-                'id_contenedor',
-                'Cant_Contenedor',
                 'n_categoria',
                 'n_calibre',
                 'n_etiqueta',
-                'n_especie',
-                'fila',
-                'columna',
-                'altura',
-                'id_altura',
-                'e_inspeccion',
-                'n_variedad_original',
-                'tipo_embalaje',
-                'cuenta_pallets',
-                'Tratamiento',
-                'antiguedad',
-                'Antiguedad_Cosecha',
-                'Antiguedad_Recepcion',
-                'Antiguedad_Produccion'
+
             )
             ->get();
         $embalajes_detalle = Embalaje::all();
@@ -616,6 +582,80 @@ class ReporteriaController extends Controller
             ->where('c_embalaje', '=', $request->n_embalaje)
             ->where('n_variedad', '=', $request->n_variedad)
             ->where('n_etiqueta', '=', $request->n_etiqueta)
+            ->where('id_empresa','=','1')
+            ->where('fecha_produccion', '<', DB::RAW("DATEADD(DAY, -2, GETDATE())"))
+
+            ->groupBy(
+                'n_variedad',
+                'fecha_produccion',
+                'c_embalaje',
+                'peso_std_embalaje',
+                'n_bodega',
+                'n_exportadora',
+                'n_envase',
+                'id_contenedor',
+                'Cant_Contenedor',
+                'n_categoria',
+                'n_calibre',
+                'n_etiqueta',
+                'folio',
+                'texto_libre_hs',
+                'n_especie',
+                'fila',
+                'columna',
+                'altura',
+                'id_altura',
+                'e_inspeccion',
+                'n_variedad_original',
+                'tipo_embalaje',
+                'cuenta_pallets',
+                'Tratamiento',
+                'antiguedad'
+            )
+            ->orderBy('folio', 'asc')
+            ->get();
+        return response()->json($transito, 200);
+    }
+    public function obtieneDetallesTransitoCalibre(Request $request)
+    {
+        $transito = DB::connection("sqlsrv")->table('dbo.V_PKG_Stock_Inventario')
+            ->select(
+                'n_variedad',
+                'fecha_produccion',
+                'c_embalaje',
+                'peso_std_embalaje',
+                'n_exportadora',
+                'n_envase',
+                'n_calibre',
+                'n_etiqueta',
+                'folio',
+                'texto_libre_hs',
+                DB::RAW("SUM(cantidad) as cantidad"),
+                DB::RAW("SUM(peso_neto) as peso_neto"),
+                'n_especie',
+                'n_bodega',
+                'fila',
+                'columna',
+                'altura',
+                'id_altura',
+                'e_inspeccion',
+                'n_variedad_original',
+                'n_categoria',
+                'tipo_embalaje',
+                'cuenta_pallets',
+                'Tratamiento'
+            )
+            ->where('id_altura', '=', 8)
+            ->where('n_categoria', '=', 'Cat 1')
+            ->where('n_exportadora', '=', 'Greenex Spa')
+            // ->where('c_embalaje', '=', $request->n_embalaje)
+            // ->where('n_variedad', '=', $request->n_variedad)
+            // ->where('n_etiqueta', '=', $request->n_etiqueta)
+            ->where('c_embalaje', '=', 'Lapins')
+            ->where('n_variedad', '=', 'CECDCAM5')
+            ->where('n_etiqueta', '=', 'Golden Koi')
+            ->where('id_empresa','=','1')
+            ->where('fecha_produccion', '<', DB::RAW("DATEADD(DAY, -2, GETDATE())"))
             ->groupBy(
                 'n_variedad',
                 'fecha_produccion',
