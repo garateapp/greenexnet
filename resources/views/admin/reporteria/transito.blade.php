@@ -137,7 +137,8 @@
                     Your browser does not support the video tag.
                 </video>
                 <br />
-                <h1>Contando Cajas Espera por favor..... :)</h1>
+                <div class="text-white text-opacity-75 text-end" id="loading-animation-text">Separando y Contando Cajas,
+                    Espera por favor..... :)</div>
             </div>
 
             <div class="row">
@@ -158,13 +159,12 @@
                     <select id="filtroBodega" class="form-control select2" multiple="multiple"></select>
                 </div> --}}
             </div>
-            <hr />
 
-            <button id="btnvistaBodega" class="btn btn-primary">Vista Bodega</button> &nbsp; <button id="btnvistaVariedad"
+            {{-- <button id="btnvistaBodega" class="btn btn-primary">Vista Bodega</button> &nbsp; <button id="btnvistaVariedad"
                 class="btn btn-primary">Vista Variedad</button> &nbsp; <button id="btnvistaCalibre"
-                class="btn btn-primary">Vista Calibre</button>
-            <hr />
-            <div class="row" id="vistaCalibres">
+                class="btn btn-primary">Vista Calibre</button> --}}
+
+            <div class="row" id="vistaCalibres" style="display: none;">
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-header">
@@ -194,15 +194,37 @@
         </div>
         <script>
             function showLoading() {
+
                 $("#loading-animation").fadeIn();
             }
 
             function hideLoading() {
                 $("#loading-animation").fadeOut();
             }
+
+            function showLoadingDetalle() {
+                $("#loading-animation-detalle").fadeIn();
+            }
+
+            function hideLoadingDetalle() {
+                $("#loading-animation-detalle").fadeOut();
+            }
+
+            function cambiarVideo(rutaVideo,texto) {
+                // Seleccionar la etiqueta <source> dentro del <video>
+                const videoSource = document.querySelector('#loading-animation video source');
+                const videoElement = document.querySelector('#loading-animation video');
+                $("#loading-animation-text").text(texto);
+                // Cambiar el atributo src del <source> con la nueva ruta
+                videoSource.setAttribute('src', rutaVideo);
+
+                // Recargar el video para aplicar el cambio
+                videoElement.load();
+            }
             $(document).ready(function() {
                 let table = null;
                 let dtButtons = $.extend(false, [], $.fn.dataTable.defaults.buttons);
+                cambiarVideo('{{ asset('img/transito.webm') }}','Separando y Contando Cajas, Espera por favor..... :)');
                 showLoading(); // Mostrar la animación de carga
                 $.ajax({
                     url: "{{ route('admin.reporteria.obtieneTransito') }}",
@@ -489,6 +511,8 @@
                     } else {
                         // Llamada AJAX para obtener los detalles
                         const data = row.data();
+                        cambiarVideo('{{ asset('img/yegua.webm') }}','Voy Corriendo, Espere por favor..... :)');
+                        showLoading();
                         $.ajax({
                             url: "{{ route('admin.reporteria.obtieneDetallesTransito') }}", // Actualiza con tu URL
                             method: 'POST',
@@ -508,9 +532,11 @@
                             success: function(response) {
                                 // Construir las filas de detalles con la respuesta
                                 const detalleHTML = generarHTMLDetalles(response);
+                                hideLoading();
                                 row.child(detalleHTML).show();
                             },
                             error: function() {
+                                hideLoading();
                                 row.child('<div class="error">Error al cargar detalles</div>')
                                     .show();
                             }
@@ -519,8 +545,10 @@
                 });
 
                 function generarHTMLDetalles(data) {
-                    let html = '<div class="col-md-4" style="overflow-x: auto;"><table class="display table table-bordered table-striped table-hover ajaxTable datatable" style="white-space: nowrap;"><thead><tr>';
-                    html += '<th>Fecha Producción</th><th>Folio</th><th>Bodega</th><th>Inpección</th><th>Texto Libre</th>'; // Modifica con tus columnas
+                    let html =
+                        '<div class="col-md-4" style="overflow-x: auto;"><table class="display table table-bordered table-striped table-hover ajaxTable datatable" style="white-space: nowrap;"><thead><tr>';
+                    html +=
+                        '<th>Fecha Producción</th><th>Folio</th><th>Bodega</th><th>Inpección</th><th>Texto Libre</th>'; // Modifica con tus columnas
                     html += '</tr></thead><tbody>';
 
                     data.forEach(item => {
