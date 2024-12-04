@@ -154,6 +154,9 @@
                     <label for="filtroEtiqueta">Etiqueta</label>
                     <select id="filtroEtiqueta" class="form-control select2" multiple="multiple"></select>
                 </div>
+                <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
+                    <button id="btnRecargar" class="btn btn-secondary mb-3" style="margin-top: 30px;" title="Recargar"><i class="fas fa-sync"></i></button>
+                </div>
 
             </div>
 
@@ -454,7 +457,9 @@
 
                             return coincideVariedad && coincideEmbalaje && coincideEtiqueta;
                         });
-
+                        $("#btnRecargar").on('click', function() {
+                location.reload();
+            });
                         // Asigna el evento `change` a los filtros
                         $('#filtroVariedad, #filtroEmbalaje, #filtroEtiqueta').on('change', function() {
                             table.draw(); // Redibuja la tabla aplicando los filtros
