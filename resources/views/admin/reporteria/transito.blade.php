@@ -519,16 +519,16 @@
                 });
 
                 function generarHTMLDetalles(data) {
-                    let html = '<div class="col-md-6" style="overflow-x: auto;"><table class="display table table-bordered table-striped table-hover ajaxTable datatable" style="white-space: nowrap;"><thead><tr>';
+                    let html = '<div class="col-md-4" style="overflow-x: auto;"><table class="display table table-bordered table-striped table-hover ajaxTable datatable" style="white-space: nowrap;"><thead><tr>';
                     html += '<th>Fecha Producción</th><th>Folio</th><th>Inpección</th><th>Texto Libre</th>'; // Modifica con tus columnas
                     html += '</tr></thead><tbody>';
 
                     data.forEach(item => {
                         html += `<tr>
-                    <td style="text-align: center;">${item.fecha_produccion}</td>
-                    <td style="text-align: center;">${item.folio}</td>
-                    <td style="text-align: center;">${item.e_inspeccion}</td>
-                    <td style="text-align: center;">${item.texto_libre_hs}</td>
+                    <td style="text-align: center;width: 6%;">${item.fecha_produccion}</td>
+                    <td style="text-align: center;width: 6%;">${item.folio}</td>
+                    <td style="text-align: center;width: 6%;">${item.e_inspeccion}</td>
+                    <td style="text-align: center;width: 6%;">${item.texto_libre_hs}</td>
                  </tr>`;
                     });
 
