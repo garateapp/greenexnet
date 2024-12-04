@@ -577,9 +577,9 @@ class ReporteriaController extends Controller
         $c_embalajes = collect($transito)->pluck('c_embalaje')->unique()->values();
         $n_calibres = collect($transito)->pluck('n_calibre')->unique()->values();
         $n_bodegas = collect($transito)->pluck('n_bodega')->unique()->values();
+        $n_etiquetas = collect($transito)->pluck('n_etiqueta')->unique()->values();
 
-
-        return response()->json(["data" => $transitoConDetalles, "n_variedades" => $n_variedades, "c_embalajes" => $c_embalajes, "n_calibres" => $n_calibres, "n_bodegas" => $n_bodegas, "embalajes_detalle" => $embalajes_detalle], 200);
+        return response()->json(["data" => $transitoConDetalles, "n_variedades" => $n_variedades, "c_embalajes" => $c_embalajes, "n_calibres" => $n_calibres, "n_bodegas" => $n_bodegas, "embalajes_detalle" => $embalajes_detalle, "n_etiquetas" => $n_etiquetas], 200);
     }
     public function obtieneDetallesTransito(Request $request)
     {

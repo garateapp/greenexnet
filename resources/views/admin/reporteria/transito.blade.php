@@ -151,13 +151,10 @@
                     <select id="filtroEmbalaje" class="form-control select2" multiple="multiple"></select>
                 </div>
                 <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
-                    <label for="filtroCalibre">Calibre</label>
-                    <select id="filtroCalibre" class="form-control select2" multiple="multiple"></select>
+                    <label for="filtroEtiqueta">Etiqueta</label>
+                    <select id="filtroEtiqueta" class="form-control select2" multiple="multiple"></select>
                 </div>
-                {{-- <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
-                    <label for="filtroBodega">Bodega</label>
-                    <select id="filtroBodega" class="form-control select2" multiple="multiple"></select>
-                </div> --}}
+
             </div>
 
             {{-- <button id="btnvistaBodega" class="btn btn-primary">Vista Bodega</button> &nbsp; <button id="btnvistaVariedad"
@@ -210,7 +207,7 @@
                 $("#loading-animation-detalle").fadeOut();
             }
 
-            function cambiarVideo(rutaVideo,texto) {
+            function cambiarVideo(rutaVideo, texto) {
                 // Seleccionar la etiqueta <source> dentro del <video>
                 const videoSource = document.querySelector('#loading-animation video source');
                 const videoElement = document.querySelector('#loading-animation video');
@@ -224,33 +221,26 @@
             $(document).ready(function() {
                 let table = null;
                 let dtButtons = $.extend(false, [], $.fn.dataTable.defaults.buttons);
-                cambiarVideo('{{ asset('img/transito.webm') }}','Separando y Contando Cajas, Espera por favor..... :)');
+                cambiarVideo('{{ asset('img/transito.webm') }}',
+                    'Separando y Contando Cajas, Espera por favor..... :)');
                 showLoading(); // Mostrar la animación de carga
+                var variedades = [];
+                var calibres = [];
+                var embalaje = [];
+                var etiqueta = [];
                 $.ajax({
                     url: "{{ route('admin.reporteria.obtieneTransito') }}",
                     type: "GET",
                     dataType: "json",
                     success: function(data) {
                         hideLoading(); // Ocultar la animación de carga
-                        var variedades = data.n_variedades;
-                        var calibres = data.n_calibres;
-                        var embalaje = data.c_embalajes;
-                        var bodega = data.n_bodegas;
+                        variedades = data.n_variedades;
+                        calibres = data.n_calibres;
+                        embalaje = data.c_embalajes;
+                        bodega = data.n_bodegas;
+                        etiqueta = data.n_etiquetas;
 
-                        variedades.forEach(
-                            function(value) {
 
-                                $('#filtroVariedad').append(new Option(value, value));
-                            });
-
-                        calibres.forEach(
-                            function(value) {
-                                $('#filtroCalibre').append(new Option(value, value));
-                            });
-                        embalaje.forEach(
-                            function(value) {
-                                $('#filtroEmbalaje').append(new Option(value, value));
-                            });
                         // bodega.forEach(
                         //     function(value) {
                         //         $('#filtroBodega').append(new Option(value, value));
@@ -353,15 +343,29 @@
                                 <tr>
                                     <th></th>
                                     <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
+                                    <th> <select class="search" strict="true" id="filtroVariedad"> <option value>{{ trans('global.all') }}</option></select></th>
+                                    <th> <select class="search" strict="true" id="filtroEmbalaje"> <option value>{{ trans('global.all') }}</option></select></th>
+                                    <th> <select class="search" strict="true" id="filtroEtiqueta"> <option value>{{ trans('global.all') }}</option></select></th>
 
                                     ${calibreSubHeader}
                                 </tr>
                             </thead>
                             <tbody></tbody>`
                         );
+                        variedades.forEach(
+                            function(value) {
+
+                                $('#filtroVariedad').append(new Option(value, value));
+                            });
+
+                        etiqueta.forEach(
+                            function(value) {
+                                $('#filtroEtiqueta').append(new Option(value, value));
+                            });
+                        embalaje.forEach(
+                            function(value) {
+                                $('#filtroEmbalaje').append(new Option(value, value));
+                            });
                         table = $('#TransitoTable').DataTable({
 
                             fixedColumns: true,
@@ -432,7 +436,65 @@
                                 });
                             },
                         });
+                        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                            const filtroVariedad = $('#filtroVariedad').val() || [];
+                            const filtroEmbalaje = $('#filtroEmbalaje').val() || [];
+                            const filtroEtiqueta = $('#filtroEtiqueta').val() || [];
 
+                            const variedad = data[2]; // Ajusta el índice según la posición de la columna en la tabla
+                            const embalaje = data[3]; // Ajusta el índice
+                            const etiqueta = data[4]; // Ajusta el índice
+
+                            const coincideVariedad = filtroVariedad.length === 0 || filtroVariedad
+                                .includes(variedad);
+                            const coincideEmbalaje = filtroEmbalaje.length === 0 || filtroEmbalaje
+                                .includes(embalaje);
+                            const coincideEtiqueta = filtroEtiqueta.length === 0 || filtroEtiqueta
+                                .includes(etiqueta);
+
+                            return coincideVariedad && coincideEmbalaje && coincideEtiqueta;
+                        });
+
+                        // Asigna el evento `change` a los filtros
+                        $('#filtroVariedad, #filtroEmbalaje, #filtroEtiqueta').on('change', function() {
+                            table.draw(); // Redibuja la tabla aplicando los filtros
+                        });
+                        // $('#filtroVariedad, #filtroEmbalaje, #filtroCalibre').on('change', function() {
+                        //     filtrarTabla();
+                        // });
+
+                        // function filtrarTabla() {
+                        //     // Obtén los valores seleccionados de los filtros
+                        //     const variedades = $('#filtroVariedad').val() || [];
+                        //     const embalajes = $('#filtroEmbalaje').val() || [];
+                        //     const calibres = $('#filtroCalibre').val() || [];
+
+                        //     // Aplica filtros personalizados
+                        //     table.draw();
+                        // }
+
+                        // // Filtro personalizado de DataTables
+                        // $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+
+                        //     // Asegúrate de declarar las variables utilizadas en esta función
+                        //     const variedades = $('#filtroVariedad').val() || [];
+                        //     const embalajes = $('#filtroEmbalaje').val() || [];
+                        //     const calibres = $('#filtroCalibre').val() || [];
+
+                        //     const variedad = data[1]; // Columna de variedad
+                        //     const embalaje = data[2]; // Columna de embalaje
+                        //     const calibre = data[3]; // Columna de calibre (puedes ajustar el índice según tu configuración)
+
+                        //     // Verifica los filtros
+                        //     const coincideVariedad = variedades.length === 0 || variedades.includes(
+                        //         variedad);
+                        //     const coincideEmbalaje = embalajes.length === 0 || embalajes.includes(
+                        //         embalaje);
+                        //     const coincideCalibre = calibres.length === 0 || calibres.some(cal =>
+                        //         data.includes(cal));
+
+                        //     return coincideVariedad && coincideEmbalaje && coincideCalibre;
+                        // });
 
                         $("#contenedorCalibres").html('<div class="tab-content rounded-bottom">' +
                             '<div class="tab-pane p-3 active preview" role="tabpanel" id="preview-1011"><div class="row g-4">' +
@@ -511,7 +573,8 @@
                     } else {
                         // Llamada AJAX para obtener los detalles
                         const data = row.data();
-                        cambiarVideo('{{ asset('img/yegua.webm') }}','Voy Corriendo, Espere por favor..... :)');
+                        cambiarVideo('{{ asset('img/yegua.webm') }}',
+                            'Voy Corriendo, Espere por favor..... :)');
                         showLoading();
                         $.ajax({
                             url: "{{ route('admin.reporteria.obtieneDetallesTransito') }}", // Actualiza con tu URL
