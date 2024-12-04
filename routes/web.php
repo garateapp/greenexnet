@@ -99,7 +99,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::delete('personals/destroy', 'PersonalController@massDestroy')->name('personals.massDestroy');
     Route::post('personals/parse-csv-import', 'PersonalController@parseCsvImport')->name('personals.parseCsvImport');
     Route::post('personals/process-csv-import', 'PersonalController@processCsvImport')->name('personals.processCsvImport');
+    Route::get('personals/cuadratura', 'PersonalController@cuadratura')->name('personals.cuadratura');
+    Route::post('personals/ejecutaCuadratura', 'PersonalController@ejecutaCuadratura')->name('personals.ejecutaCuadratura');
     Route::resource('personals', 'PersonalController');
+
 
     // Turnos Frecuencia
     Route::delete('turnos-frecuencia/destroy', 'TurnosFrecuenciaController@massDestroy')->name('turnos-frecuencia.massDestroy');
@@ -137,7 +140,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('reporteria/obtieneTransito', "ReporteriaController@obtieneTransito")->name("reporteria.obtieneTransito");
     Route::get('reporteria/Transito', "ReporteriaController@Transito")->name("reporteria.Transito");
     Route::post('reporteria/obtieneDetallesTransito', "ReporteriaController@obtieneDetallesTransito")->name("reporteria.obtieneDetallesTransito");
-
+    Route::post('reporteria/obtieneDetallesTransitoCalibre', "ReporteriaController@obtieneDetallesTransitoCalibre")->name("reporteria.obtieneDetallesTransitoCalibre");
 
 
     // Embalajes
