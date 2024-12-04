@@ -400,7 +400,7 @@
                                     if (palletsValue > 1) {
                                         // Encuentra la celda correspondiente al pallet
                                         let palletCell = $(
-                                            `td:eq(${calibres.indexOf(calibre) * 2 + 5})`,
+                                            `td:eq(${calibres.indexOf(calibre) * 2 + 6})`,
                                             row);
                                         palletCell.css({
                                             backgroundColor: "green",
@@ -519,20 +519,20 @@
                 });
 
                 function generarHTMLDetalles(data) {
-                    let html = '<table class="table table-bordered table-striped"><thead><tr>';
+                    let html = '<div class="col-md-6" style="overflow-x: auto;"><table class="display table table-bordered table-striped table-hover ajaxTable datatable" style="white-space: nowrap;"><thead><tr>';
                     html += '<th>Fecha Producción</th><th>Folio</th><th>Inpección</th><th>Texto Libre</th>'; // Modifica con tus columnas
                     html += '</tr></thead><tbody>';
 
                     data.forEach(item => {
                         html += `<tr>
-                    <td>${item.fecha_produccion}</td>
-                    <td>${item.folio}</td>
-                    <td>${item.e_inspeccion}</td>
-                    <td>${item.texto_libre_hs}</td>
+                    <td style="text-align: center;">${item.fecha_produccion}</td>
+                    <td style="text-align: center;">${item.folio}</td>
+                    <td style="text-align: center;">${item.e_inspeccion}</td>
+                    <td style="text-align: center;">${item.texto_libre_hs}</td>
                  </tr>`;
                     });
 
-                    html += '</tbody></table>';
+                    html += '</tbody></table></div>';
                     return html;
                 }
 
