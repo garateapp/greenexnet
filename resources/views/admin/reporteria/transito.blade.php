@@ -141,7 +141,7 @@
                     Espera por favor..... :)</div>
             </div>
 
-            <div class="row">
+            <div class="row" style="margin-bottom: 15px;">
                 <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
                     <label for="filtroVariedad">Variedad</label>
                     <select id="filtroVariedad" class="form-control select2" multiple="multiple"></select>
