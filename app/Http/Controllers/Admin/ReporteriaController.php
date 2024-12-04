@@ -483,7 +483,7 @@ class ReporteriaController extends Controller
     {
         $transito = DB::connection("sqlsrv")->table('dbo.V_PKG_Stock_Inventario')
             ->select(
-                'n_variedad_original',
+                'n_variedad_original as n_variedad',
 
                 'c_embalaje',
 
@@ -502,7 +502,7 @@ class ReporteriaController extends Controller
             ->where('id_empresa','=','1')
             ->where('fecha_produccion', '<', DB::RAW("DATEADD(DAY, -2, GETDATE())"))
             ->groupBy(
-                'n_variedad_original',
+                'n_variedad',
                 'c_embalaje',
                 'n_categoria',
                 'n_calibre',
