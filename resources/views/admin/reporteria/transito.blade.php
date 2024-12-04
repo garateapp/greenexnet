@@ -325,7 +325,7 @@
                                 .cajaxpallet) {
                                 // Realizar la división y redondear a un solo decimal
                                 acc[key].cajasxpallet[item.n_calibre] = (acc[key][item.n_calibre] /
-                                    acc[key].cajaxpallet).toFixed(1);
+                                    acc[key].cajaxpallet);
                             }
                             return acc;
                         }, {});
