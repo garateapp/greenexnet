@@ -613,7 +613,7 @@ class ReporteriaController extends Controller
             ->where('id_altura', '=', 8)
             ->where('n_categoria', '=', 'Cat 1')
             ->where('n_exportadora', '=', 'Greenex Spa')
-            ->where('c_embalaje', '=', $request->c_embalaje)
+            ->where('c_embalaje', '=', $request->n_embalaje)
             ->where('n_variedad', '=', $request->n_variedad)
             ->where('n_etiqueta', '=', $request->n_etiqueta)
             ->groupBy(

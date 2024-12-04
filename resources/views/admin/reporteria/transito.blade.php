@@ -201,6 +201,8 @@
                 $("#loading-animation").fadeOut();
             }
             $(document).ready(function() {
+                let table = null;
+                let dtButtons = $.extend(false, [], $.fn.dataTable.defaults.buttons);
                 showLoading(); // Mostrar la animación de carga
                 $.ajax({
                     url: "{{ route('admin.reporteria.obtieneTransito') }}",
@@ -319,6 +321,7 @@
                             `<thead>
                                 <tr>
                                     <th></th>
+                                    <th></th>
                                     <th>Variedad</th>
                                     <th>Embalaje</th>
                                     <th>Etiqueta</th>
@@ -330,13 +333,15 @@
                                     <th></th>
                                     <th></th>
                                     <th></th>
+                                    <th></th>
 
                                     ${calibreSubHeader}
                                 </tr>
                             </thead>
                             <tbody></tbody>`
                         );
-                        let table = $('#TransitoTable').DataTable({
+                        table = $('#TransitoTable').DataTable({
+
                             fixedColumns: true,
                             fixedHeader: true,
                             responsive: true,
@@ -350,6 +355,15 @@
                                     orderable: false,
                                     data: null,
                                     defaultContent: ''
+                                },
+                                {
+
+                                    data: null,
+
+                                    orderable: false,
+                                    render: function(data, type, row, meta) {
+                                        return '<button class="btn btn-primary btn-sm interact-btn"><i class="fas fa-plus interact-btn"></i></button>';
+                                    }
                                 },
                                 {
                                     data: 'variedad',
@@ -463,8 +477,8 @@
                     return [3, calibre]; // Otros calibres tienen menor prioridad
                 }
 
-                $('#TransitoTable tbody').on('click', 'td.dt-control', function() {
-                    alert('Clic detectado');
+                $('#TransitoTable').on('click', 'button', function() {
+
                     const tr = $(this).closest('tr'); // Fila actual
                     const row = table.row(tr); // Objeto de la fila en DataTables
 
@@ -478,6 +492,9 @@
                         $.ajax({
                             url: "{{ route('admin.reporteria.obtieneDetallesTransito') }}", // Actualiza con tu URL
                             method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
                             data: {
                                 n_embalaje: data.embalaje,
                                 n_variedad: data.variedad,
@@ -495,7 +512,7 @@
                             },
                             error: function() {
                                 row.child('<div class="error">Error al cargar detalles</div>')
-                                .show();
+                                    .show();
                             }
                         });
                     }
@@ -503,14 +520,15 @@
 
                 function generarHTMLDetalles(data) {
                     let html = '<table class="table table-bordered table-striped"><thead><tr>';
-                    html += '<th>Propiedad 1</th><th>Propiedad 2</th><th>Propiedad 3</th>'; // Modifica con tus columnas
+                    html += '<th>Fecha Producción</th><th>Folio</th><th>Inpección</th><th>Texto Libre</th>'; // Modifica con tus columnas
                     html += '</tr></thead><tbody>';
 
                     data.forEach(item => {
                         html += `<tr>
-                    <td>${item.propiedad1}</td>
-                    <td>${item.propiedad2}</td>
-                    <td>${item.propiedad3}</td>
+                    <td>${item.fecha_produccion}</td>
+                    <td>${item.folio}</td>
+                    <td>${item.e_inspeccion}</td>
+                    <td>${item.texto_libre_hs}</td>
                  </tr>`;
                     });
 
