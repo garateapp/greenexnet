@@ -460,13 +460,13 @@ class ReporteriaController extends Controller
 
             )
             ->get();
-            $stockSemanal = DB::connection("sqlsrv")->table('dbo.V_PKG_Stock_Inventario')
+            $stockSemanal = DB::connection("sqlsrv")->table('dbo.V_PKG_Recepcion_FG')
             ->select(
-            DB::RAW('DATEPART(WEEK, fecha_g_recepcion_sh) as numero_semana'),
+            DB::RAW('DATEPART(WEEK,  [fecha_g_recepcion_sh]) as numero_semana'),
             DB::RAW('SUM(peso_neto) as peso_neto'),
-            'n_exportadora', 'n_especie', 'n_variedad') // addSelect incluye las columnas
-            ->groupBy('n_exportadora', 'n_especie', 'n_variedad') // Incluye numero_semana en el GROUP BY
-            //->orderBy('numero_semana') // Ahora numero_semana es válida
+            'n_exportadora')
+            ->groupByRaw('DATEPART(WEEK, fecha_g_recepcion_sh), n_exportadora')
+           // ->orderByDesc('numero_semana')
             ->get();
         //...
 

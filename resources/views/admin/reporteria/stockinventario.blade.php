@@ -223,6 +223,9 @@
                             <div id="contenedorKilos" class="table-responsive">
                                 <div id="tablaKilos" class="table-responsive"></div>
                             </div>
+                            <div class="col-md-12" id="stockxsemana" class="table-responsive">
+
+                            </div>
                             <div class="col-md-12" id="tablaConsolidado">
                             </div>
 
@@ -792,12 +795,17 @@
                     const data = response.data;
                     const totales = response.totales;
                     const groupedData = {};
+                    const groupedDataSemanal = {};
                     const totalData = response.data;
                     const totalsPerDay = {};
                     const exportadoraTotals = {};
+                    const stockxSemana=response.stockSemanal;
+                    const totalsPerDaySemanal = {};
+                    const exportadoraTotalsSemanal = {};
+                    const totalDataSemanal = response.StockSemanal;
+
                     data.forEach(item => {
-                        const date = item.fecha_g_recepcion_sh.split(" ")[
-                            0]; // Extraer la fecha
+                        const date = item.fecha_g_recepcion_sh.split(" ")[0]; // Extraer la fecha
 
                         const exportadora = item.n_exportadora;
 
@@ -808,12 +816,12 @@
                         if (!groupedData[date][exportadora]) groupedData[date][exportadora] = 0;
                         if (!totalsPerDay[date]) totalsPerDay[date] = 0;
                         if (!exportadoraTotals[exportadora]) exportadoraTotals[exportadora] = 0;
+
                         // Sumar el peso
                         groupedData[date][exportadora] = peso + Math.round(parseFloat(
                             groupedData[date][
                                 exportadora
                             ]));
-
 
                         if (!totalsPerDay[date]) {
                             totalsPerDay[date] = 0;
@@ -823,14 +831,36 @@
                             exportadoraTotals[exportadora]));
 
                     });
+                    console.log("totalsPerDaySemanal",totalsPerDaySemanal);
+                    console.log("exportadoraTotalsSemanal",exportadoraTotalsSemanal);
+                    stockxSemana.forEach(item => {
+                        const semana = item.numero_semana;
+                        const exportadora = item.n_exportadora;
+                        const peso = Math.round(parseFloat(item.peso_neto), 0);
+                        if (!groupedDataSemanal[semana]) groupedDataSemanal[semana] = {};
+                        if (!groupedDataSemanal[semana][exportadora]) groupedDataSemanal[semana][exportadora] = 0;
+                        if (!totalsPerDaySemanal[semana]) totalsPerDaySemanal[semana] = 0;
+                        if (!exportadoraTotalsSemanal[exportadora]) exportadoraTotalsSemanal[exportadora] = 0;
+                        groupedDataSemanal[semana][exportadora] = peso + Math.round(parseFloat(
+                            groupedDataSemanal[semana][
+                                exportadora
+                            ]));
 
+                            if (!totalsPerDaySemanal[semana]) {
+                                totalsPerDaySemanal[semana] = 0;
+                        }
+                        totalsPerDaySemanal[semana] = peso + Math.round(parseFloat(totalsPerDaySemanal[semana]));
+                        exportadoraTotalsSemanal[exportadora] = peso + Math.round(parseFloat(exportadoraTotalsSemanal[exportadora]));
+                    });
+
+                    console.log("totalsPerDaySemanal", totalsPerDaySemanal);
                     // Calcular totales desde el otro conjunto
                     const extraTotals = {};
                     let grandTotal = 0; // Total general de los datos extra
 
                     totalData.forEach(item => {
                         const fecha = item.fecha;
-                        console.log("extraTotals", item);
+
                         extraTotals[fecha] = Math.round(parseFloat(item.peso_neto),
                             0
                         ); // Aseguramos la conversión a número y redondeamos a 0 decimales extraTotals[fecha] = item.peso_neto;
@@ -838,11 +868,24 @@
                             0
                         ); // Aseguramos la conversión a número y redondeamos a 0 decimales grandTotal += item.peso_neto;
                     });
+                    const extraTotalsSemanal = {};
+                    let grandTotalSemanal = 0; // Total general de los datos extra
 
+                    stockxSemana.forEach(item => {
+                        const semana = item.numero_semana;
+
+                        extraTotalsSemanal[semana] = Math.round(parseFloat(item.peso_neto),
+                            0
+                        ); // Aseguramos la conversión a número y redondeamos a 0 decimales extraTotals[fecha] = item.peso_neto;
+                        grandTotalSemanal += Math.round(parseFloat(item.peso_neto),
+                            0
+                        ); // Aseguramos la conversión a número y redondeamos a 0 decimales grandTotal += item.peso_neto;
+                    });
                     // Preparar datos para el gráfico
                     const fechas = Object.keys(groupedData);
-
+                    const fechasSemanal = Object.keys(groupedDataSemanal);
                     const exportadoras = [...new Set(data.map(item => item.n_exportadora))];
+                    const exportadorasSemanal = [...new Set(stockxSemana.map(item => item.n_exportadora))];
                     const dataTotals = fechas.map(fecha => totalsPerDay[fecha] ||
                         0);
 
@@ -885,6 +928,45 @@
                         document.getElementById('tablaKilos').innerHTML = tableHTML;
                     }
 
+                    function StockSemanal() {
+                        let tableHTML = '<table border="1"><thead><tr><th>Semana</th>';
+                            console.log("fechasSemanal",fechasSemanal);
+                            console.log("exportadorasSemanal",exportadorasSemanal);
+                            //console.log("groupedDataSemanal",groupedDataSemanal);
+                        // Agregar encabezados de las exportadoras
+                        exportadorasSemanal.forEach(exportadora => {
+                            tableHTML += `<th>${exportadora}</th>`;
+                        });
+
+                        // Agregar columna del total general
+                        tableHTML += '<th>Total General</th></tr></thead><tbody>';
+
+                        // Llenar filas de la tabla con datos
+                        fechasSemanal.forEach(semana => {
+                            tableHTML += `<tr><td>${semana}</td>`;
+
+                            // Llenar las columnas de cada exportadora
+                            exportadorasSemanal.forEach(exportadora => {
+                                tableHTML +=
+                                    `<td>${isNaN(formatNumber(groupedDataSemanal[semana][exportadora]))?0:formatNumber(groupedDataSemanal[semana][exportadora])}</td>`;
+                            });
+
+                            // Llenar columna del total general
+                            tableHTML +=
+                                `<td>${(formatNumber(totalsPerDaySemanal[semana]))}</td></tr>`;
+                        });
+                        tableHTML += '<tr><td><strong>Total</strong></td>';
+                            exportadorasSemanal.forEach(exportadora => {
+                            tableHTML +=
+                                `<td><strong>${formatNumber(exportadoraTotalsSemanal[exportadora] || 0)}</strong></td>`;
+                        });
+                        tableHTML += `<td><strong>${formatNumber(grandTotalSemanal)}</strong></td></tr>`;
+                        tableHTML += '</tbody></table>';
+
+                        // Insertar la tabla en el DOM (reemplaza 'tablaKilos' con el id del contenedor de la tabla)
+                        document.getElementById('stockxsemana').innerHTML = tableHTML;
+                    }
+
                     function generaTableKilosRecibidos() {
 
                         let tableHTML =
@@ -908,6 +990,7 @@
                     }
 
                     generateTable();
+                    StockSemanal();
                     generaTableKilosRecibidos();
                 },
                 error: function(xhr, status, error) {
