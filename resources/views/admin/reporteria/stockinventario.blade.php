@@ -220,110 +220,111 @@
                                 <button id="btnCargaDatosPesoxDia" class="btn btn-primary"><i
                                         class="fas fa-table"></i></button>
                             </div>
-                            <div id="contenedorKilos" class="table-responsive">
-                                <div id="tablaKilos" class="table-responsive"></div>
-                            </div>
-                            <div class="col-md-12" id="stockxsemana" class="table-responsive">
+                                    <div id="contenedorKilos" class="table-responsive">
+                                        <div id="tablaKilos" class="table-responsive"></div>
+                                    </div>
+                                    <div class="col-md-12" id="stockxsemana" class="table-responsive">
 
-                            </div>
-                            <div class="col-md-12" id="tablaConsolidado">
-                            </div>
+                                    </div>
 
+                                <div class="col-md-12" id="tablaConsolidado">
+                                </div>
 
-                        </div>
 
                     </div>
+
                 </div>
             </div>
-            <div class="col-sm-6 col-xl-12 table-responsive">
-                <button class="btn bg-danger mb-3" id="toggleButton" title="Ocultar/Mostrar">
-                    <i class="fa fa-chart-bar text-white"></i>
+        </div>
+        <div class="col-sm-6 col-xl-12 table-responsive">
+            <button class="btn bg-danger mb-3" id="toggleButton" title="Ocultar/Mostrar">
+                <i class="fa fa-chart-bar text-white"></i>
 
-                </button>
-                <button id="toggleFiltros" class="btn btn-primary mb-3"><i class="fas fa-filter"></i></button>
-                <button id="btnRecargar" class="btn btn-secondary mb-3"><i class="fas fa-sync"></i></button>
+            </button>
+            <button id="toggleFiltros" class="btn btn-primary mb-3"><i class="fas fa-filter"></i></button>
+            <button id="btnRecargar" class="btn btn-secondary mb-3"><i class="fas fa-sync"></i></button>
 
-                <div id="filtrosSlide" class="filtros-slide">
-                    <h5>Filtros</h5>
-                    <button id="cerrar" class="btn btn-danger" style="float: right;margin-top: -30px;"><i
-                            class="fas fa-close"></i></button>
-                    <div id="filtros">
-                        <label for="filtroEmpresa">Empresa</label>
-                        <select id="filtroEmpresa" class="form-control select2" multiple="multiple"></select>
+            <div id="filtrosSlide" class="filtros-slide">
+                <h5>Filtros</h5>
+                <button id="cerrar" class="btn btn-danger" style="float: right;margin-top: -30px;"><i
+                        class="fas fa-close"></i></button>
+                <div id="filtros">
+                    <label for="filtroEmpresa">Empresa</label>
+                    <select id="filtroEmpresa" class="form-control select2" multiple="multiple"></select>
 
-                        <label for="filtroExportadora">Exportadora</label>
-                        <select id="filtroExportadora" class="form-control select2" multiple="multiple"></select>
+                    <label for="filtroExportadora">Exportadora</label>
+                    <select id="filtroExportadora" class="form-control select2" multiple="multiple"></select>
 
-                        <label for="filtroProductor">Productor</label>
-                        <select id="filtroProductor" class="form-control select2" multiple="multiple"></select>
+                    <label for="filtroProductor">Productor</label>
+                    <select id="filtroProductor" class="form-control select2" multiple="multiple"></select>
 
-                        <label for="filtroEspecie">Especie</label>
-                        <select id="filtroEspecie" class="form-control select2" multiple="multiple"></select>
-                        <label for="filtroVariedad">Variedad</label>
-                        <select id="filtroVariedad" class="form-control select2" multiple="multiple"></select>
+                    <label for="filtroEspecie">Especie</label>
+                    <select id="filtroEspecie" class="form-control select2" multiple="multiple"></select>
+                    <label for="filtroVariedad">Variedad</label>
+                    <select id="filtroVariedad" class="form-control select2" multiple="multiple"></select>
 
-                        <label for="filtroNotaCalidad">Nota Calidad</label>
-                        <select id="filtroNotaCalidad" class="form-control select2" multiple="multiple"></select>
+                    <label for="filtroNotaCalidad">Nota Calidad</label>
+                    <select id="filtroNotaCalidad" class="form-control select2" multiple="multiple"></select>
 
 
 
-                    </div>
                 </div>
-                <div class="card">
-                    <div class="card-header">
-                        Recepciones
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table id="lotesTable"
-                                class="display table table-bordered table-striped table-hover ajaxTable datatable datatable-existencias"
-                                style="width:100%">
-                                <thead>
-                                    <tr>
-                                        {{-- <th>Especie</th>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    Recepciones
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="lotesTable"
+                            class="display table table-bordered table-striped table-hover ajaxTable datatable datatable-existencias"
+                            style="width:100%">
+                            <thead>
+                                <tr>
+                                    {{-- <th>Especie</th>
                                     <th>Empresa</th>
                                     <th>Exportadora</th>
                                     <th>Productor</th>
                                      --}}
-                                        <th></th>
-                                        <th>Variedad</th>
-                                        <th>Nota Calidad</th>
-                                        <th>Peso Neto</th>
-                                        <th>Horas en Espera</th>
+                                    <th></th>
+                                    <th>Variedad</th>
+                                    <th>Nota Calidad</th>
+                                    <th>Peso Neto</th>
+                                    <th>Horas en Espera</th>
 
-                                        {{-- <th>N° Recepción</th>
+                                    {{-- <th>N° Recepción</th>
                                     <th>Cajas</th> --}}
 
 
-                                    </tr>
+                                </tr>
 
-                                </thead>
-                                <tbody></tbody>
-                                <tfoot>
-                                    <tr>
-                                        <th></th>
-                                        <th colspan="1">Subtotal<br />Totales</th>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                        {{-- <th></th> --}}
-                                        {{-- <th></th>
+                            </thead>
+                            <tbody></tbody>
+                            <tfoot>
+                                <tr>
+                                    <th></th>
+                                    <th colspan="1">Subtotal<br />Totales</th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    {{-- <th></th> --}}
+                                    {{-- <th></th>
                                     <th></th>
                                     <th></th>
                                     <th></th>
                                     <th></th> --}}
-                                    </tr>
+                                </tr>
 
-                                </tfoot>
-                                <tbody>
-                                    <!-- Los datos se cargarán aquí -->
-                                </tbody>
-                            </table>
-                        </div>
+                            </tfoot>
+                            <tbody>
+                                <!-- Los datos se cargarán aquí -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.0.1"></script>
 
@@ -799,13 +800,14 @@
                     const totalData = response.data;
                     const totalsPerDay = {};
                     const exportadoraTotals = {};
-                    const stockxSemana=response.stockSemanal;
+                    const stockxSemana = response.stockSemanal;
                     const totalsPerDaySemanal = {};
                     const exportadoraTotalsSemanal = {};
                     const totalDataSemanal = response.StockSemanal;
 
                     data.forEach(item => {
-                        const date = item.fecha_g_recepcion_sh.split(" ")[0]; // Extraer la fecha
+                        const date = item.fecha_g_recepcion_sh.split(" ")[
+                            0]; // Extraer la fecha
 
                         const exportadora = item.n_exportadora;
 
@@ -831,26 +833,30 @@
                             exportadoraTotals[exportadora]));
 
                     });
-                    console.log("totalsPerDaySemanal",totalsPerDaySemanal);
-                    console.log("exportadoraTotalsSemanal",exportadoraTotalsSemanal);
+                    console.log("totalsPerDaySemanal", totalsPerDaySemanal);
+                    console.log("exportadoraTotalsSemanal", exportadoraTotalsSemanal);
                     stockxSemana.forEach(item => {
                         const semana = item.numero_semana;
                         const exportadora = item.n_exportadora;
                         const peso = Math.round(parseFloat(item.peso_neto), 0);
                         if (!groupedDataSemanal[semana]) groupedDataSemanal[semana] = {};
-                        if (!groupedDataSemanal[semana][exportadora]) groupedDataSemanal[semana][exportadora] = 0;
+                        if (!groupedDataSemanal[semana][exportadora]) groupedDataSemanal[semana]
+                            [exportadora] = 0;
                         if (!totalsPerDaySemanal[semana]) totalsPerDaySemanal[semana] = 0;
-                        if (!exportadoraTotalsSemanal[exportadora]) exportadoraTotalsSemanal[exportadora] = 0;
+                        if (!exportadoraTotalsSemanal[exportadora]) exportadoraTotalsSemanal[
+                            exportadora] = 0;
                         groupedDataSemanal[semana][exportadora] = peso + Math.round(parseFloat(
                             groupedDataSemanal[semana][
                                 exportadora
                             ]));
 
-                            if (!totalsPerDaySemanal[semana]) {
-                                totalsPerDaySemanal[semana] = 0;
+                        if (!totalsPerDaySemanal[semana]) {
+                            totalsPerDaySemanal[semana] = 0;
                         }
-                        totalsPerDaySemanal[semana] = peso + Math.round(parseFloat(totalsPerDaySemanal[semana]));
-                        exportadoraTotalsSemanal[exportadora] = peso + Math.round(parseFloat(exportadoraTotalsSemanal[exportadora]));
+                        totalsPerDaySemanal[semana] = peso + Math.round(parseFloat(
+                            totalsPerDaySemanal[semana]));
+                        exportadoraTotalsSemanal[exportadora] = peso + Math.round(parseFloat(
+                            exportadoraTotalsSemanal[exportadora]));
                     });
 
                     console.log("totalsPerDaySemanal", totalsPerDaySemanal);
@@ -885,14 +891,17 @@
                     const fechas = Object.keys(groupedData);
                     const fechasSemanal = Object.keys(groupedDataSemanal);
                     const exportadoras = [...new Set(data.map(item => item.n_exportadora))];
-                    const exportadorasSemanal = [...new Set(stockxSemana.map(item => item.n_exportadora))];
+                    const exportadorasSemanal = [...new Set(stockxSemana.map(item => item
+                        .n_exportadora))];
                     const dataTotals = fechas.map(fecha => totalsPerDay[fecha] ||
                         0);
 
 
 
                     function generateTable() {
-                        let tableHTML = '<table border="1"><thead><tr><th>Fecha</th>';
+                        let tableHTML =
+                            '<div class="card"><div class="card-header">Kilos Recibidos Últimos 7 Días</div><div class="card-body">';
+                        tableHTML += '<table border="1"><thead><tr><th>Fecha</th>';
 
                         // Agregar encabezados de las exportadoras
                         exportadoras.forEach(exportadora => {
@@ -922,17 +931,19 @@
                                 `<td><strong>${formatNumber(exportadoraTotals[exportadora] || 0)}</strong></td>`;
                         });
                         tableHTML += `<td><strong>${formatNumber(grandTotal)}</strong></td></tr>`;
-                        tableHTML += '</tbody></table>';
+                        tableHTML += '</tbody></table></div></div>';
 
                         // Insertar la tabla en el DOM (reemplaza 'tablaKilos' con el id del contenedor de la tabla)
                         document.getElementById('tablaKilos').innerHTML = tableHTML;
                     }
 
                     function StockSemanal() {
-                        let tableHTML = '<table border="1"><thead><tr><th>Semana</th>';
-                            console.log("fechasSemanal",fechasSemanal);
-                            console.log("exportadorasSemanal",exportadorasSemanal);
-                            //console.log("groupedDataSemanal",groupedDataSemanal);
+                        let tableHTML =
+                            '<div class="card"><div class="card-header">Kilos Recibidos por Semana</div><div class="card-body">';
+                        tableHTML += '<table border="1"><thead><tr><th>Semana</th>';
+                        console.log("fechasSemanal", fechasSemanal);
+                        console.log("exportadorasSemanal", exportadorasSemanal);
+                        //console.log("groupedDataSemanal",groupedDataSemanal);
                         // Agregar encabezados de las exportadoras
                         exportadorasSemanal.forEach(exportadora => {
                             tableHTML += `<th>${exportadora}</th>`;
@@ -956,12 +967,13 @@
                                 `<td>${(formatNumber(totalsPerDaySemanal[semana]))}</td></tr>`;
                         });
                         tableHTML += '<tr><td><strong>Total</strong></td>';
-                            exportadorasSemanal.forEach(exportadora => {
+                        exportadorasSemanal.forEach(exportadora => {
                             tableHTML +=
                                 `<td><strong>${formatNumber(exportadoraTotalsSemanal[exportadora] || 0)}</strong></td>`;
                         });
-                        tableHTML += `<td><strong>${formatNumber(grandTotalSemanal)}</strong></td></tr>`;
-                        tableHTML += '</tbody></table>';
+                        tableHTML +=
+                            `<td><strong>${formatNumber(grandTotalSemanal)}</strong></td></tr>`;
+                        tableHTML += '</tbody></table></div></div>';
 
                         // Insertar la tabla en el DOM (reemplaza 'tablaKilos' con el id del contenedor de la tabla)
                         document.getElementById('stockxsemana').innerHTML = tableHTML;
@@ -970,7 +982,7 @@
                     function generaTableKilosRecibidos() {
 
                         let tableHTML =
-                            '<div class="card"><div class="card-header">Consolidado Kilos Recibido Cerezas</div><div class="card-body">';
+                            '<div class="card"><div class="card-header">Consolidado Kilos Recibidos Cerezas</div><div class="card-body">';
                         tableHTML +=
                             '<table border="1"><thead><tr><th>Exportadora</th><th>Total</th></tr></thead><tbody>';
 
