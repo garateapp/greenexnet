@@ -465,6 +465,7 @@ class ReporteriaController extends Controller
             DB::RAW('DATEPART(WEEK,  [fecha_g_recepcion_sh]) as numero_semana'),
             DB::RAW('SUM(peso_neto) as peso_neto'),
             'n_exportadora')
+            ->where ('n_especie', '=', 'Cherries')
             ->groupByRaw('DATEPART(WEEK, fecha_g_recepcion_sh), n_exportadora')
            // ->orderByDesc('numero_semana')
             ->get();
