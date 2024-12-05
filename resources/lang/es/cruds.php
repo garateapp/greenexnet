@@ -1421,5 +1421,25 @@ return [
             'deleted_at_helper'    => ' ',
         ],
     ],
+    'clientesComex' => [
+        'title'          => 'Clientes Comex',
+        'title_singular' => 'Clientes Comex',
+        'fields'         => [
+            'id'                     => 'ID',
+            'id_helper'              => ' ',
+            'codigo_cliente'         => 'Codigo Cliente',
+            'codigo_cliente_helper'  => ' ',
+            'nombre_empresa'         => 'Empresa',
+            'nombre_empresa_helper'  => ' ',
+            'nombre_fantasia'        => 'Nombre',
+            'nombre_fantasia_helper' => ' ',
+            'created_at'             => 'Created at',
+            'created_at_helper'      => ' ',
+            'updated_at'             => 'Updated at',
+            'updated_at_helper'      => ' ',
+            'deleted_at'             => 'Deleted at',
+            'deleted_at_helper'      => ' ',
+        ],
+    ],
 
 ];

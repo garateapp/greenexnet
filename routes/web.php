@@ -137,6 +137,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('reporteria/obtieneRecepcionDatosRecepcion', "ReporteriaController@obtieneRecepcionDatosRecepcion")->name("reporteria.obtieneRecepcionDatosRecepcion");
     Route::post('reporteria/obtieneDatosRecepcionProductor', "ReporteriaController@obtieneDatosRecepcionProductor")->name("reporteria.obtieneDatosRecepcionProductor");
     Route::get('reporteria/obtienePesoxDia', "ReporteriaController@obtienePesoxDia")->name("reporteria.obtienePesoxDia");
+    Route::get('reporteria/StockInventarioxSemana', "ReporteriaController@StockInventarioxSemana")->name("reporteria.StockInventarioxSemana");
     Route::get('reporteria/obtieneTransito', "ReporteriaController@obtieneTransito")->name("reporteria.obtieneTransito");
     Route::get('reporteria/Transito', "ReporteriaController@Transito")->name("reporteria.Transito");
     Route::post('reporteria/obtieneDetallesTransito', "ReporteriaController@obtieneDetallesTransito")->name("reporteria.obtieneDetallesTransito");
@@ -149,6 +150,11 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('embalajes/process-csv-import', 'EmbalajesController@processCsvImport')->name('embalajes.processCsvImport');
     Route::resource('embalajes', 'EmbalajesController');
 
+    // Clientes Comex
+    Route::delete('clientes-comexes/destroy', 'ClientesComexController@massDestroy')->name('clientes-comexes.massDestroy');
+    Route::post('clientes-comexes/parse-csv-import', 'ClientesComexController@parseCsvImport')->name('clientes-comexes.parseCsvImport');
+    Route::post('clientes-comexes/process-csv-import', 'ClientesComexController@processCsvImport')->name('clientes-comexes.processCsvImport');
+    Route::resource('clientes-comexes', 'ClientesComexController');
 
     //getDatosgenerales
 

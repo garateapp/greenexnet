@@ -298,7 +298,16 @@
                 Maestros
             </a>
             <ul class="c-sidebar-nav-dropdown-items">
+                @can('clientes_comex_access')
+                <li class="c-sidebar-nav-item">
+                    <a href="{{ route("admin.clientes-comexes.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/clientes-comexes") || request()->is("admin/clientes-comexes/*") ? "c-active" : "" }}">
+                        <i class="fa-fw fas fa-wallet c-sidebar-nav-icon">
 
+                        </i>
+                        {{ trans('cruds.clientesComex.title') }}
+                    </a>
+                </li>
+                @endcan
                 <li class="c-sidebar-nav-item">
                     <a href="{{ route('admin.embalajes.index') }}"
                         class="c-sidebar-nav-link {{ request()->is('admin/embalajes') || request()->is('admin/embalajes/*') ? 'c-active' : '' }}">
