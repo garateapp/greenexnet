@@ -460,9 +460,17 @@ class ReporteriaController extends Controller
 
             )
             ->get();
+            $stockSemanal = DB::connection("sqlsrv")->table('dbo.V_PKG_Stock_Inventario')
+            ->select(
+            DB::RAW('DATEPART(WEEK, fecha_g_recepcion_sh) as numero_semana'),
+            DB::RAW('SUM(peso_neto) as peso_neto'),
+            'n_exportadora', 'n_especie', 'n_variedad') // addSelect incluye las columnas
+            ->groupBy('n_exportadora', 'n_especie', 'n_variedad') // Incluye numero_semana en el GROUP BY
+            //->orderBy('numero_semana') // Ahora numero_semana es válida
+            ->get();
         //...
 
-        return response()->json(["data" => $datos, "totales" => $datosTotal], 200);
+        return response()->json(["data" => $datos, "totales" => $datosTotal, "stockSemanal" => $stockSemanal], 200);
     }
     public function obtieneInformeCalidad($numero_g_recepcion)
     {
@@ -484,11 +492,7 @@ class ReporteriaController extends Controller
         $transito = DB::connection("sqlsrv")->table('dbo.V_PKG_Stock_Inventario')
             ->select(
                 'n_variedad_original as n_variedad',
-
                 'c_embalaje',
-
-
-
                 'n_calibre',
                 'n_etiqueta',
                 DB::RAW("SUM(cantidad) as cantidad"),
@@ -499,7 +503,7 @@ class ReporteriaController extends Controller
             ->where('id_altura', '=', 8)
             ->where('n_categoria', '=', 'Cat 1')
             ->where('n_exportadora', '=', 'Greenex Spa')
-            ->where('id_empresa','=','1')
+            ->where('id_empresa', '=', '1')
             ->where('fecha_produccion', '<', DB::RAW("DATEADD(DAY, -2, GETDATE())"))
             ->groupBy(
                 'n_variedad_original',
@@ -536,7 +540,6 @@ class ReporteriaController extends Controller
                 $item->tipo_embarque = null;
             }
             return $item;
-
         });
 
 
@@ -583,7 +586,7 @@ class ReporteriaController extends Controller
             ->where('c_embalaje', '=', $request->n_embalaje)
             ->where('n_variedad', '=', $request->n_variedad)
             ->where('n_etiqueta', '=', $request->n_etiqueta)
-            ->where('id_empresa','=','1')
+            ->where('id_empresa', '=', '1')
             ->where('fecha_produccion', '<', DB::RAW("DATEADD(DAY, -2, GETDATE())"))
 
             ->groupBy(
@@ -649,13 +652,11 @@ class ReporteriaController extends Controller
             ->where('id_altura', '=', 8)
             ->where('n_categoria', '=', 'Cat 1')
             ->where('n_exportadora', '=', 'Greenex Spa')
-            // ->where('c_embalaje', '=', $request->n_embalaje)
-            // ->where('n_variedad', '=', $request->n_variedad)
-            // ->where('n_etiqueta', '=', $request->n_etiqueta)
-            ->where('c_embalaje', '=', 'Lapins')
-            ->where('n_variedad', '=', 'CECDCAM5')
-            ->where('n_etiqueta', '=', 'Golden Koi')
-            ->where('id_empresa','=','1')
+             ->where('c_embalaje', '=', $request->c_embalaje)
+             ->where('n_variedad', '=', $request->n_variedad)
+             ->where('n_etiqueta', '=', $request->n_etiqueta)
+            ->where('n_calibre', '=', $request->n_calibre)
+            ->where('id_empresa', '=', '1')
             ->where('fecha_produccion', '<', DB::RAW("DATEADD(DAY, -2, GETDATE())"))
             ->groupBy(
                 'n_variedad',
@@ -686,6 +687,27 @@ class ReporteriaController extends Controller
             )
             ->orderBy('folio', 'asc')
             ->get();
-        return response()->json($transito, 200);
+        return response()->json(['data'=>$transito], 200);
+    }
+
+    public function StockInventarioxSemana()
+    {
+        $stockSemanal = DB::connection("sqlsrv")->table('dbo.V_PKG_Stock_Inventario')
+        ->select(
+            DB::RAW("DATEPART(WEEK, 'fecha_g_recepcion_sh') AS numero_semana"),
+            DB::RAW("SUM(peso_neto) AS peso_neto"),
+            'n_exportadora',
+            'n_especie',
+            'n_variedad')
+        ->groupBy(
+        DB::RAW("DATEPART(WEEK, 'fecha_g_recepcion_sh')"),
+        'n_empresa',
+        'n_exportadora',
+        'n_especie',
+        'n_variedad'
+        )
+        ->orderBy('numero_semana')
+        ->get();
+        return response()->json(['stockSemanal'=>$stockSemanal], 200);
     }
 }

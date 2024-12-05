@@ -161,14 +161,33 @@
 
             </div>
             <div class="modal fade" id="calibreModal" tabindex="-1" aria-labelledby="calibreModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
+                <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="calibreModalLabel">Detalles del Calibre</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <button type="button" id="btnImprimir" class="btn-secondary" data-bs-dismiss="modal"
+                                aria-label="Close"><i class="fas fa-print"></i></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i
+                                    class="fas fa-close"></i></button>
                         </div>
+
                         <div class="modal-body" id="modalCalibreContent">
-                            <!-- Aquí se insertará dinámicamente la información -->
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Folio</th>
+                                        <th>Variedad</th>
+                                        <th>Embalaje</th>
+                                        <th>Etiqueta</th>
+                                        <th>Calibre</th>
+                                        <th>Cantidad</th>
+                                        <th>Peso</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="calibreModalBody">
+                                </tbody>
+                            </table>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -209,6 +228,26 @@
 
         </div>
         <script>
+            document.getElementById("btnImprimir").onclick = function() {
+                printElement(document.getElementById("modalCalibreContent"));
+            };
+
+            function printElement(elem) {
+                var domClone = elem.cloneNode(true);
+
+                var $printSection = document.getElementById("modalCalibreContent");
+
+                if (!$printSection) {
+                    var $printSection = document.createElement("div");
+                    $printSection.id = "modalCalibreContent";
+                    document.body.appendChild($printSection);
+                }
+
+                $printSection.innerHTML = "";
+                $printSection.appendChild(domClone);
+                window.print();
+            }
+
             function showLoading() {
 
                 $("#loading-animation").fadeIn();
@@ -442,7 +481,7 @@
                                     const palletsValue = parseFloat(data.cajasxpallet?.[
                                         calibre
                                     ] || 0);
-                                    console.log(row,data.cajasxpallet?.[calibre]);
+                                    console.log(row, data.cajasxpallet?.[calibre]);
                                     if (palletsValue > 1) {
                                         // Encuentra la celda correspondiente al pallet
                                         let palletCell = $(
@@ -550,7 +589,7 @@
                     return [3, calibre]; // Otros calibres tienen menor prioridad
                 }
 
-                $('#TransitoTable').on('click', 'button.interact-btn', function() {
+                $('#TransitoTable').on('click', 'button', function() {
 
                     const tr = $(this).closest('tr'); // Fila actual
                     const row = table.row(tr); // Objeto de la fila en DataTables
@@ -596,27 +635,31 @@
                     }
                 });
                 // Delegación de eventos para el botón interactivo dentro de las celdas
-                $('#TransitoTable tbody').on('click', 'td', function() {
+                $('#TransitoTable').on('click', 'td', function() {
                     var table = $('#TransitoTable').DataTable();
                     var cell = table.cell(this);
                     const row = $(this).closest('tr');
                     const rowData = table.row(row).data();
                     console.log(rowData);
                     var columnIdx = cell.index().column;
-                    var n_variedad= rowData.variedad;
-                    var n_embalaje= rowData.embalaje;
-                    var n_etiqueta= rowData.etiqueta;
+                    var n_variedad = rowData.variedad;
+                    var n_embalaje = rowData.embalaje;
+                    var n_etiqueta = rowData.etiqueta;
 
                     // Solo actuar si es una columna de calibres (ajustar el rango según tus columnas)
                     if (columnIdx >= 5) {
                         // Obtener el nombre del calibre desde la cabecera
-                        var columnHeader = $('#TransitoTable thead th').eq(columnIdx)
+                        var columnHeader = $('#TransitoTable thead th').eq(columnIdx - 4).text();
                         console.log(columnHeader);
-                        console.log('n_variedad:'+n_variedad,'n_embalaje:'+n_embalaje,'n_etiqueta:'+n_etiqueta);
+                        console.log('n_variedad:' + n_variedad, 'n_embalaje:' + n_embalaje, 'n_etiqueta:' +
+                            n_etiqueta);
                         // Mostrar un loader mientras se realiza la solicitud
-                        $('#modalCalibreContent').html('<p class="text-center">Cargando datos...</p>');
+                        //$('#modalCalibreContent').html('<p class="text-center">Cargando datos...</p>');
 
                         // Realizar la llamada Ajax para obtener datos específicos
+                        cambiarVideo('{{ asset('img/yegua.webm') }}',
+                            'Buscando los detalles, Espere por favor..... :)');
+                        showLoading();
                         $.ajax({
                             url: "{{ route('admin.reporteria.obtieneDetallesTransitoCalibre') }}", // Cambiar a tu ruta
                             type: 'POST',
@@ -624,16 +667,20 @@
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                             },
                             data: {
-                                calibre: columnHeader, // El calibre (columna seleccionada)
+                                n_calibre: columnHeader, // El calibre (columna seleccionada)
                                 n_variedad: n_variedad,
-                                n_embalaje: n_embalaje,
+                                c_embalaje: n_embalaje,
                                 n_etiqueta: n_etiqueta
                             },
                             success: function(response) {
+                                hideLoading();
+                                console.log(response.data);
+                                generarHTMLDetallesModal(response.data);
                                 // Suponiendo que `response` contiene HTML o texto
-                                $('#modalCalibreContent').html(response);
+
                             },
                             error: function() {
+                                hideLoading();
                                 $('#modalCalibreContent').html(
                                     '<p class="text-danger">Error al cargar datos.</p>');
                             }
@@ -644,9 +691,27 @@
                     }
                 });
 
+                function generarHTMLDetallesModal(data) {
 
+                    let bodyModal = "";
+                    data.forEach(item => {
+                        console.log(item);
+                        if (item.e_inspeccion == "Aprobada") {
+                            bodyModal +=
+                                `<tr style="color: green"><td>${item.fecha_produccion}</td><td>${item.folio}</td>
+                                <td>${item.n_variedad_original}</td><td>${item.c_embalaje}</td><td>${item.n_etiqueta}</td><td>${item.n_calibre}</td><td>${item.cantidad}</td><td>${item.peso_neto}</td></tr>`;
+                        } else {
+                            bodyModal +=
+                                `<tr style="color: red"><td>${item.fecha_produccion}</td><td>${item.folio}</td>
+                            <td>${item.n_variedad_original}</td><td>${item.c_embalaje}</td><td>${item.n_etiqueta}</td><td>${item.n_calibre}</td><td>${item.cantidad}</td><td>${item.peso_neto}</td></tr>`;
+                        }
+                    });
+                    $('#calibreModalBody').html(bodyModal);
+
+                }
 
                 function generarHTMLDetalles(data) {
+                    console.log(data);
                     let html =
                         '<div class="col-md-4" style="overflow-x: auto;"><table class="display table table-bordered table-striped table-hover ajaxTable datatable" style="white-space: nowrap;"><thead><tr>';
                     html +=
