@@ -229,8 +229,68 @@
         </div>
         <script>
             document.getElementById("btnImprimir").onclick = function() {
-                printElement(document.getElementById("modalCalibreContent"));
+                printModalContent();
             };
+
+            function printModalContent() {
+                // Obtén el contenido del modal-body
+                const modalBodyContent = document.getElementById('modalCalibreContent').innerHTML;
+
+                // Abre un nuevo documento en una ventana emergente
+                const printWindow = window.open('', '_blank', 'width=800,height=600');
+
+                // Escribe el contenido HTML para la impresión
+                printWindow.document.open();
+                printWindow.document.write(`
+        <html>
+        <head>
+            <title>Folios en Transito</title>
+            <style>
+                         <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    margin: 20px;
+                }
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin: 20px 0;
+                }
+                table, th, td {
+                    border: 1px solid #ddd;
+                    color: #000;
+                }
+                th, td {
+                    padding: 8px;
+                    text-align: left;
+                }
+                th {
+                    background-color: #f4f4f4;
+                }
+                tr:nth-child(even) {
+                    background-color: #f9f9f9;
+                }
+                tr:hover {
+                    background-color: #f1f1f1;
+                }
+            </style>
+            </style>
+        </head>
+        <body>
+            ${modalBodyContent}
+        </body>
+        </html>
+    `);
+                printWindow.document.close();
+
+                // Imprime el contenido
+                printWindow.print();
+
+                // Opcional: Cierra la ventana después de imprimir
+                printWindow.onafterprint = function() {
+                    printWindow.close();
+                };
+            }
 
             function printElement(elem) {
                 var domClone = elem.cloneNode(true);
@@ -645,14 +705,15 @@
                     var n_variedad = rowData.variedad;
                     var n_embalaje = rowData.embalaje;
                     var n_etiqueta = rowData.etiqueta;
-
+                    console.log("columna",columnIdx);
                     // Solo actuar si es una columna de calibres (ajustar el rango según tus columnas)
                     if (columnIdx >= 5) {
                         // Obtener el nombre del calibre desde la cabecera
-                        var columnHeader = $('#TransitoTable thead th').eq(columnIdx - 4).text();
+                        var columnHeader = $('#TransitoTable thead tr:eq(1) th').eq(columnIdx).text().replace(/ Cajas| Pallets/g, '');
                         console.log(columnHeader);
                         console.log('n_variedad:' + n_variedad, 'n_embalaje:' + n_embalaje, 'n_etiqueta:' +
                             n_etiqueta);
+                            console.log("columna",columnHeader.replace(/ Cajas| Pallets/g, ''));
                         // Mostrar un loader mientras se realiza la solicitud
                         //$('#modalCalibreContent').html('<p class="text-center">Cargando datos...</p>');
 
