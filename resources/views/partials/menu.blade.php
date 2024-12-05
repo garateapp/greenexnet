@@ -219,7 +219,7 @@
                                 {{ trans('cruds.personal.title') }}
                             </a>
                         </li>
-                        {{-- <li class="c-sidebar-nav-item">
+                        <li class="c-sidebar-nav-item">
                             <a href="{{ route('admin.personals.cuadratura') }}"
                                 class="c-sidebar-nav-link {{ request()->is('admin/personals') || request()->is('admin/personals/*') ? 'c-active' : '' }}">
                                 <i class="fa-fw fas fa-clock c-sidebar-nav-icon">
@@ -227,7 +227,7 @@
                                 </i>
                                 Cuadratura de Asistencia
                             </a>
-                        </li> --}}
+                        </li>
                     @endcan
                 </ul>
             </li>
@@ -264,7 +264,7 @@
                     Reportería
                 </a>
                 <ul class="c-sidebar-nav-dropdown-items">
-
+                    @can('reporteria_access_stock_inventario')
                     <li class="c-sidebar-nav-item">
                         <a href="{{ route('admin.reporteria.obtenerDatosReporte') }}"
                             class="c-sidebar-nav-link {{ request()->is('admin/reporteria') || request()->is('admin/reporteria/*') ? 'c-active' : '' }}">
@@ -274,6 +274,8 @@
                             Stock Inventario
                         </a>
                     </li>
+                    @endcan
+                    @can('reporteria_access_transito')
                     <li class="c-sidebar-nav-item">
                         <a href="{{ route('admin.reporteria.Transito') }}"
                             class="c-sidebar-nav-link {{ request()->is('admin/reporteria') || request()->is('admin/reporteria/*') ? 'c-active' : '' }}">
@@ -283,6 +285,7 @@
                            Tránsito
                         </a>
                     </li>
+                    @endcan
                 </ul>
             </li>
         @endcan
