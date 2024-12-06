@@ -12,6 +12,7 @@ use App\Models\ClientesComex;
 use App\Models\Embalaje;
 use App\Models\Turno;
 use App\Models\FrecuenciaTurno;
+use App\Models\MetasClienteComex;
 use Gate;
 use Symfony\Component\HttpFoundation\Response;
 use DateTime;
@@ -787,7 +788,16 @@ class ReporteriaController extends Controller
                 try {
 
                     if (ClientesComex::where('codigo_cliente', explode("-", $embarque->c_destinatario)[0])->exists()) {
+                       $CxComex = ClientesComex::where('codigo_cliente', explode("-", $embarque->c_destinatario)[0])->first();
                         $embarque->c_destinatario = ClientesComex::where('codigo_cliente', explode("-", $embarque->c_destinatario)[0])->first()->nombre_fantasia;
+                        $MetaCx = MetasClienteComex::where('clientecomex_id', '=', $CxComex->id)->first();
+                        if ($MetaCx != null) {
+                            $embarque->alsu = $MetaCx->alsu;
+                            $embarque->meta = $MetaCx->cantidad;
+                        } else {
+                            $embarque->alsu = '';
+                             $embarque->meta = 0;
+                        }
                     } else {
                     }
                     $embarque->c_destinatario = ClientesComex::where('codigo_cliente', $embarque->c_destinatario)->first()->nombre_fantasia;
@@ -813,20 +823,31 @@ class ReporteriaController extends Controller
                 'c_destinatario',
 
             )->get();
-            foreach ($chartCatxCliente as $chart) {
-                if ($chart->c_destinatario != null) {
-                    try {
+        foreach ($chartCatxCliente as $chart) {
+            if ($chart->c_destinatario != null) {
+                try {
 
-                        if (ClientesComex::where('codigo_cliente', explode("-", $chart->c_destinatario)[0])->exists()) {
-                            $chart->c_destinatario = ClientesComex::where('codigo_cliente', explode("-", $chart->c_destinatario)[0])->first()->nombre_fantasia;
+                    if (ClientesComex::where('codigo_cliente', explode("-", $chart->c_destinatario)[0])->exists()) {
+
+                        $CxComex = ClientesComex::where('codigo_cliente', explode("-", $chart->c_destinatario)[0])->first();
+                        $chart->c_destinatario = ClientesComex::where('codigo_cliente', explode("-", $chart->c_destinatario)[0])->first()->nombre_fantasia;
+                        $MetaCx = MetasClienteComex::where('clientecomex_id', '=', $CxComex->id)->first();
+                        if ($MetaCx != null) {
+                            $chart->alsu = $MetaCx->alsu;
+                            $chart->meta = $MetaCx->cantidad;
                         } else {
+                            $chart->alsu = '';
+                            $chart->meta = 0;
                         }
-                        $chart->c_destinatario = ClientesComex::where('codigo_cliente', $chart->c_destinatario)->first()->nombre_fantasia;
-                    } catch (\Throwable $th) {
+                    } else {
+                        $chart->alsu = '';
+                            $chart->meta = 0;
                     }
+                    $chart->c_destinatario = ClientesComex::where('codigo_cliente', $chart->c_destinatario)->first()->nombre_fantasia;
+                } catch (\Throwable $th) {
                 }
-
             }
+        }
         $chartCantxSemana = DB::connection("sqlsrv")->table('dbo.V_PKG_Embarques')
             ->select(
                 DB::RAW('DATEPART(WEEK, etd) as Semana'),
@@ -837,11 +858,20 @@ class ReporteriaController extends Controller
             ->groupBy(
                 DB::RAW('DATEPART(WEEK, etd)'),
 
-            ) ->orderBy('Semana')
+            )->orderBy('Semana')
             ->get();
-        return response()->json(['data' => $embarques, 'n_variedades' => $n_variedades,
-        'n_etiqueta' => $n_etiqueta, 'cliente' => $cliente, 'n_exportadora' => $n_exportadora,
-        'total' => $total, 'totalPeso' => $totalPeso, 'transporte' => $transporte, 'chartCatxCliente' => $chartCatxCliente, 'chartCantxSemana' => $chartCantxSemana], 200);
+        return response()->json([
+            'data' => $embarques,
+            'n_variedades' => $n_variedades,
+            'n_etiqueta' => $n_etiqueta,
+            'cliente' => $cliente,
+            'n_exportadora' => $n_exportadora,
+            'total' => $total,
+            'totalPeso' => $totalPeso,
+            'transporte' => $transporte,
+            'chartCatxCliente' => $chartCatxCliente,
+            'chartCantxSemana' => $chartCantxSemana
+        ], 200);
     }
     public function chartCantxSemana()
     {

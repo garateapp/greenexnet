@@ -230,6 +230,15 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body" id="chart-container">
+                            <h5 class="card-title text-center">Cantidad v/s Meta x Cliente</h5>
+                            <canvas id="MetasxClienteChart"></canvas>
+                            <div id="tabla-container-metas"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
             {{-- <div class="modal fade" id="calibreModal" tabindex="-1" aria-labelledby="calibreModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
@@ -600,7 +609,7 @@
                     });
                     // Configuración del gráfico
                     const labels2 = chartData2.map(chartData2 => chartData2.c_destinatario.trim());
-                    const values2= chartData2.map(chartData2 => parseFloat(chartData2.Cantidad));
+                    const values2 = chartData2.map(chartData2 => parseFloat(chartData2.Cantidad));
 
 
                     const ctx2 = document.getElementById('CantidadxClienteChart').getContext('2d');
@@ -628,6 +637,80 @@
                             }
                         }
                     });
+                    const labels3 = chartData2.map(data => data.c_destinatario);
+                    const cantidades3 = chartData2.map(data => parseFloat(data.Cantidad));
+                    const metas = chartData2.map(data => data.meta ||
+                    0); // Asegurar que las metas nulas sean 0
+
+                    // Configuración del gráfico
+                    const ctx3 = document.getElementById('MetasxClienteChart').getContext('2d');
+                    new Chart(ctx3, {
+                        type: 'bar',
+                        data: {
+                            labels: labels3,
+                            datasets: [{
+                                    label: 'Cantidad',
+                                    data: cantidades3,
+                                    backgroundColor: 'rgba(54, 162, 235, 0.5)', // Azul translúcido
+                                    borderColor: 'rgba(54, 162, 235, 1)',
+                                    borderWidth: 1
+                                },
+                                {
+                                    label: 'Meta',
+                                    data: metas,
+                                    backgroundColor: 'rgba(255, 99, 132, 0.5)', // Rojo translúcido
+                                    borderColor: 'rgba(255, 99, 132, 1)',
+                                    borderWidth: 1
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Cantidad'
+                                    }
+                                },
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Clientes'
+                                    }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    position: 'top'
+                                }
+                            }
+                        }
+                    });
+                    const tablaContainer = document.getElementById('tabla-container-metas');
+        const tablaHTML = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>Cliente</th>
+                        <th>Cantidad</th>
+                        <th>Meta</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${chartData2.map(data => `
+                        <tr>
+                            <td>${data.c_destinatario}</td>
+                            <td>${data.Cantidad}</td>
+                            <td>${data.meta || 0}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+        tablaContainer.innerHTML = tablaHTML;
+                    //
                     // Configuración del gráfico CAnt x Cliente
                     hideLoading();
                 },
