@@ -201,8 +201,35 @@
                 <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
                     <button id="btnRecargar" class="btn btn-secondary mb-3" style="margin-top: 30px;" title="Recargar"><i
                             class="fas fa-sync"></i></button>
+                    <button class="btn btn-secondary mb-3" id="toggleButton" style="margin-top: 30px;"
+                        title="Ocultar/Mostrar">
+                        <i class="fa fa-chart-bar text-white"></i>
+
+                    </button>
+
                 </div>
 
+            </div>
+            <div class="row" id="graficosContainer" style="display: none;">
+                <!-- Primera columna -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body" id="chart-container">
+                            <h5 class="card-title text-center">Cantidad Embarcada por Semana</h5>
+                            <canvas id="CantxSemanaChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Segunda columna -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body" id="chart-container">
+                            <h5 class="card-title text-center">Cantidad x Cliente</h5>
+                            <canvas id="CantidadxClienteChart"></canvas>
+                        </div>
+                    </div>
+                </div>
             </div>
             {{-- <div class="modal fade" id="calibreModal" tabindex="-1" aria-labelledby="calibreModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
@@ -277,24 +304,24 @@
                                     <th>Embalaje</th>
                                     <th>Etiqueta</th>
 
-                                    <tfoot>
-                                        <tr>
-                                            <th></th>
-                                            <th>SubTotal<br/>Total</th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                        </tr>
+                            <tfoot>
+                                <tr>
+                                    <th></th>
+                                    <th>SubTotal<br />Total</th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
 
-                                    </tfoot>
+                            </tfoot>
                         </table>
                     </div>
                 </div>
@@ -302,9 +329,24 @@
 
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.0.1"></script>
     <script>
         $(document).ready(function() {
             let table = null;
+            $('#toggleButton').on('click', function() {
+                $('#graficosContainer').slideToggle('fast', function() {
+                    // Cambiar el texto del botón según el estado del div
+                    if ($(this).is(':visible')) {
+                        $('#toggleButton').addClass('bg-info');
+                        $('#toggleButton').removeClass('bg-danger');
+                        $('#toggleButton').html('<i class="fa fa-chart-bar text-white"></i><br />');
+                    } else {
+                        $('#toggleButton').html('<i class="fa fa-chart-bar text-white"></i><br />');
+                        $('#toggleButton').addClass('bg-danger');
+                        $('#toggleButton').removeClass('bg-info');
+                    }
+                });
+            });
 
             function formatNumber2(number) {
                 return new Intl.NumberFormat('es-CL', {
@@ -322,13 +364,16 @@
                 $("#loading-animation").fadeOut();
             }
             showLoading();
+
+
+
             $.ajax({
 
                 url: "{{ route('admin.reporteria.obtieneEmbarques') }}",
                 type: "GET",
                 dataType: "json",
                 success: function(data) {
-
+                    console.log(data);
                     datos = data.data;
                     var variedades = [];
                     var calibres = [];
@@ -340,6 +385,8 @@
                     exportadoras = data.n_exportadora;
                     etiqueta = data.n_etiqueta;
                     transporte = data.transporte;
+                    var chartData = data.chartCantxSemana;
+                    var chartData2 = data.chartCatxCliente;
                     variedades.forEach(
                         function(value) {
 
@@ -468,7 +515,7 @@
                                 .reduce(function(a, b) {
                                     return intVal(a) + intVal(b);
                                 }, 0);
-                                let totalCantidad = api
+                            let totalCantidad = api
                                 .column(2)
                                 .data()
                                 .reduce(function(a, b) {
@@ -522,6 +569,66 @@
                             coincideCliente && coincideTransporte;
                     });
 
+                    const labels = chartData.map(chartData => `Semana ${chartData.Semana}`);
+                    const values = chartData.map(chartData => parseFloat(chartData.Cantidad));
+
+                    // Configuración del gráfico CAnt x Semana
+                    const ctx = document.getElementById('CantxSemanaChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Cantidad por Semana',
+                                data: values,
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        stepSize: 50000
+                                    }
+                                }
+                            }
+                        }
+                    });
+                    // Configuración del gráfico
+                    const labels2 = chartData2.map(chartData2 => chartData2.c_destinatario.trim());
+                    const values2= chartData2.map(chartData2 => parseFloat(chartData2.Cantidad));
+
+
+                    const ctx2 = document.getElementById('CantidadxClienteChart').getContext('2d');
+                    new Chart(ctx2, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Cantidad por Destinatario',
+                                data: values,
+                                backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                                borderColor: 'rgba(153, 102, 255, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        stepSize: 5000
+                                    }
+                                }
+                            }
+                        }
+                    });
+                    // Configuración del gráfico CAnt x Cliente
                     hideLoading();
                 },
                 error: function(xhr, status, error) {

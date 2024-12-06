@@ -761,7 +761,9 @@ class ReporteriaController extends Controller
                 't_embalaje',
                 'n_contenedor',
                 'n_etiqueta'
-            )->groupBy(
+            )
+            ->where('id_especie', '=', '7')
+            ->groupBy(
                 DB::RAW('DATEPART(WEEK, etd)'),
                 'transporte',
                 'c_destinatario',
@@ -800,7 +802,67 @@ class ReporteriaController extends Controller
         $cliente = collect($embarques)->pluck('c_destinatario')->unique()->values();
         $n_exportadora = collect($embarques)->pluck('n_exportadora')->unique()->values();
         $transporte = collect($embarques)->pluck('transporte')->unique()->values();
+        $chartCatxCliente = DB::connection("sqlsrv")->table('dbo.V_PKG_Embarques')
+            ->select(
+                'c_destinatario',
+                DB::RAW('SUM(Cantidad) as Cantidad'),
 
-        return response()->json(['data' => $embarques, 'n_variedades' => $n_variedades, 'n_etiqueta' => $n_etiqueta, 'cliente' => $cliente, 'n_exportadora' => $n_exportadora, 'total' => $total, 'totalPeso' => $totalPeso, 'transporte' => $transporte], 200);
+            )
+            ->where('id_especie', '=', '7')
+            ->groupBy(
+                'c_destinatario',
+
+            )->get();
+            foreach ($chartCatxCliente as $chart) {
+                if ($chart->c_destinatario != null) {
+                    try {
+
+                        if (ClientesComex::where('codigo_cliente', explode("-", $chart->c_destinatario)[0])->exists()) {
+                            $chart->c_destinatario = ClientesComex::where('codigo_cliente', explode("-", $chart->c_destinatario)[0])->first()->nombre_fantasia;
+                        } else {
+                        }
+                        $chart->c_destinatario = ClientesComex::where('codigo_cliente', $chart->c_destinatario)->first()->nombre_fantasia;
+                    } catch (\Throwable $th) {
+                    }
+                }
+
+            }
+        $chartCantxSemana = DB::connection("sqlsrv")->table('dbo.V_PKG_Embarques')
+            ->select(
+                DB::RAW('DATEPART(WEEK, etd) as Semana'),
+                DB::RAW('SUM(Cantidad) as Cantidad'),
+
+            )
+            ->where('id_especie', '=', '7')
+            ->groupBy(
+                DB::RAW('DATEPART(WEEK, etd)'),
+
+            ) ->orderBy('Semana')
+            ->get();
+        return response()->json(['data' => $embarques, 'n_variedades' => $n_variedades,
+        'n_etiqueta' => $n_etiqueta, 'cliente' => $cliente, 'n_exportadora' => $n_exportadora,
+        'total' => $total, 'totalPeso' => $totalPeso, 'transporte' => $transporte, 'chartCatxCliente' => $chartCatxCliente, 'chartCantxSemana' => $chartCantxSemana], 200);
+    }
+    public function chartCantxSemana()
+    {
+        $embarques = DB::connection("sqlsrv")->table('dbo.V_PKG_Embarques')
+            ->select(
+                DB::RAW('DATEPART(WEEK, etd) as Semana'),
+                DB::RAW('SUM(Cantidad) as Cantidad'),
+
+            )
+            ->where('id_especie', '=', '7')
+            ->groupBy(
+                DB::RAW('DATEPART(WEEK, etd)')
+
+            )
+            ->orderBy('Semana')
+            ->get();
+        return response()->json(['chartCantxSemana' => $embarques], 200);
+    }
+    public function chartCantxCliente()
+    {
+
+        return response()->json(['chartCantxCliente' => $embarques], 200);
     }
 }
