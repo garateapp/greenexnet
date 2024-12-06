@@ -230,6 +230,7 @@ class ReporteriaController extends Controller
             ->where('id_especie', '=', '7')
             ->groupBy('destruccion_tipo', 'n_variedad')
             ->get();
+
         return response()->json([
             "datosSinProcesar" => $datosSinProcesar,
             "datosProcesados" => $datosProcesados,
@@ -237,6 +238,7 @@ class ReporteriaController extends Controller
             "nota_calidad" => $nota_calidad,
             "pesoxFecha" => $pesoxFecha,
             'variedadxCereza' => $variedadxCereza,
+
         ], 200);
     }
     public function obtieneDatosRecepcionProductor(Request $request)
@@ -542,7 +544,17 @@ class ReporteriaController extends Controller
             }
             return $item;
         });
-
+        $antiguedad = DB::connection("sqlsrv")->table('dbo.V_PKG_Recepcion_FG')
+        ->select(
+            DB::RAW("SUM(cantidad) AS cantidad"),
+            DB::RAW("SUM(peso_neto) as peso_neto"),
+            DB::RAW("MIN(fecha_g_recepcion_sh) as fecha_minima"),
+            'numero_g_recepcion',
+        )->where('destruccion_tipo', '=', '')
+        ->where('id_especie', '=', '7')
+        ->where('id_empresa', '=', '1')
+        ->groupBy('numero_g_recepcion')
+        ->first();
 
         $n_variedades = collect($transito)->pluck('n_variedad')->unique()->values();
         $c_embalajes = collect($transito)->pluck('c_embalaje')->unique()->values();
@@ -550,7 +562,8 @@ class ReporteriaController extends Controller
         $n_bodegas = collect($transito)->pluck('n_bodega')->unique()->values();
         $n_etiquetas = collect($transito)->pluck('n_etiqueta')->unique()->values();
 
-        return response()->json(["data" => $transitoConDetalles, "n_variedades" => $n_variedades, "c_embalajes" => $c_embalajes, "n_calibres" => $n_calibres, "n_bodegas" => $n_bodegas, "embalajes_detalle" => $embalajes_detalle, "n_etiquetas" => $n_etiquetas], 200);
+        return response()->json(["data" => $transitoConDetalles, "n_variedades" => $n_variedades, "c_embalajes" => $c_embalajes, "n_calibres" => $n_calibres,
+        "n_bodegas" => $n_bodegas, "embalajes_detalle" => $embalajes_detalle, "n_etiquetas" => $n_etiquetas, "antiguedad" => $antiguedad], 200);
     }
     public function obtieneDetallesTransito(Request $request)
     {
