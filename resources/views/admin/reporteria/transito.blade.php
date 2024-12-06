@@ -163,7 +163,7 @@
                         <div class="card text-white bg-info">
                             <div class="card-body pb-0 d-flex justify-content-between align-items-start">
                                 <div>
-                                    <div class="text-center">Antiguedad en Transito </div>
+                                    <div class="text-center">Antigüedad en Transito </div>
                                     <div class="fs-4 fw-semibold text-center">
                                         <i class="fas fa-calendar" style="color: #FFFFFF; font-size: x-large;"></i>
                                         <span class="fs-6 fw-normal text-center" id="antiguedadTransito"
