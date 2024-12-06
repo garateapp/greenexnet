@@ -17,7 +17,6 @@ class GlobalSearchController extends Controller
         'Status'        => 'cruds.status.title',
         'TipoHawb'      => 'cruds.tipoHawb.title',
         'Configuracion' => 'cruds.configuracion.title',
-        'Traduccione'   => 'cruds.traduccione.title',
         'Entidad'       => 'cruds.entidad.title',
         'Embalaje'      => 'cruds.embalaje.title',
     ];

@@ -158,6 +158,12 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('clientes-comexes/process-csv-import', 'ClientesComexController@processCsvImport')->name('clientes-comexes.processCsvImport');
     Route::resource('clientes-comexes', 'ClientesComexController');
 
+     // Metas Cliente Comex
+     Route::delete('metas-cliente-comexes/destroy', 'MetasClienteComexController@massDestroy')->name('metas-cliente-comexes.massDestroy');
+     Route::post('metas-cliente-comexes/parse-csv-import', 'MetasClienteComexController@parseCsvImport')->name('metas-cliente-comexes.parseCsvImport');
+     Route::post('metas-cliente-comexes/process-csv-import', 'MetasClienteComexController@processCsvImport')->name('metas-cliente-comexes.processCsvImport');
+     Route::resource('metas-cliente-comexes', 'MetasClienteComexController');
+
     //getDatosgenerales
 
     Route::get('reporteria/getDatosgenerales', 'ReporteriaController@getDatosgenerales')->name('reporteria.getDatosgenerales');

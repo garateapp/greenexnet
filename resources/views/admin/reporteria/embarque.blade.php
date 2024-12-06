@@ -607,10 +607,10 @@
                     new Chart(ctx2, {
                         type: 'bar',
                         data: {
-                            labels: labels,
+                            labels: labels2,
                             datasets: [{
                                 label: 'Cantidad por Destinatario',
-                                data: values,
+                                data: values2,
                                 backgroundColor: 'rgba(153, 102, 255, 0.2)',
                                 borderColor: 'rgba(153, 102, 255, 1)',
                                 borderWidth: 1

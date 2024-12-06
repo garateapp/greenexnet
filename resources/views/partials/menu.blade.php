@@ -317,10 +317,20 @@
                     </a>
                 </li>
                 @endcan
+                @can('metas_cliente_comex_access')
+                <li class="c-sidebar-nav-item">
+                    <a href="{{ route("admin.metas-cliente-comexes.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/metas-cliente-comexes") || request()->is("admin/metas-cliente-comexes/*") ? "c-active" : "" }}">
+                        <i class="fa-fw fas fa-cogs c-sidebar-nav-icon">
+
+                        </i>
+                        {{ trans('cruds.metasClienteComex.title') }}
+                    </a>
+                </li>
+            @endcan
                 <li class="c-sidebar-nav-item">
                     <a href="{{ route('admin.embalajes.index') }}"
                         class="c-sidebar-nav-link {{ request()->is('admin/embalajes') || request()->is('admin/embalajes/*') ? 'c-active' : '' }}">
-                        <i class="fa-fw fas fa-bo c-sidebar-nav-icon">
+                        <i class="fa-fw fas fa-box c-sidebar-nav-icon">
 
                         </i>
                         Embalajes

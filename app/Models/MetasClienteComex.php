@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ClientesComex extends Model
+class MetasClienteComex extends Model
 {
     use SoftDeletes, Auditable, HasFactory;
 
-    public $table = 'clientes_comexes';
+    public $table = 'metas_cliente_comexes';
 
     protected $dates = [
         'created_at',
@@ -21,9 +21,10 @@ class ClientesComex extends Model
     ];
 
     protected $fillable = [
-        'codigo_cliente',
-        'nombre_empresa',
-        'nombre_fantasia',
+        'clientecomex_id',
+        'anno',
+        'cantidad',
+        'observaciones',
         'created_at',
         'updated_at',
         'deleted_at',
@@ -34,8 +35,8 @@ class ClientesComex extends Model
         return $date->format('Y-m-d H:i:s');
     }
 
-    public function clientecomexMetasClienteComexes()
+    public function clientecomex()
     {
-        return $this->hasMany(MetasClienteComex::class, 'clientecomex_id', 'id');
+        return $this->belongsTo(ClientesComex::class, 'clientecomex_id');
     }
 }
