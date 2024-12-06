@@ -142,6 +142,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('reporteria/Transito', "ReporteriaController@Transito")->name("reporteria.Transito");
     Route::post('reporteria/obtieneDetallesTransito', "ReporteriaController@obtieneDetallesTransito")->name("reporteria.obtieneDetallesTransito");
     Route::post('reporteria/obtieneDetallesTransitoCalibre', "ReporteriaController@obtieneDetallesTransitoCalibre")->name("reporteria.obtieneDetallesTransitoCalibre");
+    Route::get('reporteria/embarques', "ReporteriaController@embarques")->name("reporteria.embarques");
+    Route::get('reporteria/obtieneEmbarques',"ReporteriaController@obtieneEmbarques")->name("reporteria.obtieneEmbarques");
 
 
     // Embalajes

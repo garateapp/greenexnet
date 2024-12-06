@@ -8,6 +8,7 @@ use App\Models\Asistencium;
 use App\Models\Personal;
 use App\Models\Locacion;
 use App\Models\Area;
+use App\Models\ClientesComex;
 use App\Models\Embalaje;
 use App\Models\Turno;
 use App\Models\FrecuenciaTurno;
@@ -462,14 +463,15 @@ class ReporteriaController extends Controller
 
             )
             ->get();
-            $stockSemanal = DB::connection("sqlsrv")->table('dbo.V_PKG_Recepcion_FG')
+        $stockSemanal = DB::connection("sqlsrv")->table('dbo.V_PKG_Recepcion_FG')
             ->select(
-            DB::RAW('DATEPART(WEEK,  [fecha_g_recepcion_sh]) as numero_semana'),
-            DB::RAW('SUM(peso_neto) as peso_neto'),
-            'n_exportadora')
-            ->where ('n_especie', '=', 'Cherries')
+                DB::RAW('DATEPART(WEEK,  [fecha_g_recepcion_sh]) as numero_semana'),
+                DB::RAW('SUM(peso_neto) as peso_neto'),
+                'n_exportadora'
+            )
+            ->where('n_especie', '=', 'Cherries')
             ->groupByRaw('DATEPART(WEEK, fecha_g_recepcion_sh), n_exportadora')
-           // ->orderByDesc('numero_semana')
+            // ->orderByDesc('numero_semana')
             ->get();
         //...
 
@@ -545,16 +547,16 @@ class ReporteriaController extends Controller
             return $item;
         });
         $antiguedad = DB::connection("sqlsrv")->table('dbo.V_PKG_Recepcion_FG')
-        ->select(
-            DB::RAW("SUM(cantidad) AS cantidad"),
-            DB::RAW("SUM(peso_neto) as peso_neto"),
-            DB::RAW("MIN(fecha_g_recepcion_sh) as fecha_minima"),
-            'numero_g_recepcion',
-        )->where('destruccion_tipo', '=', '')
-        ->where('id_especie', '=', '7')
-        ->where('id_empresa', '=', '1')
-        ->groupBy('numero_g_recepcion')
-        ->first();
+            ->select(
+                DB::RAW("SUM(cantidad) AS cantidad"),
+                DB::RAW("SUM(peso_neto) as peso_neto"),
+                DB::RAW("MIN(fecha_g_recepcion_sh) as fecha_minima"),
+                'numero_g_recepcion',
+            )->where('destruccion_tipo', '=', '')
+            ->where('id_especie', '=', '7')
+            ->where('id_empresa', '=', '1')
+            ->groupBy('numero_g_recepcion')
+            ->first();
 
         $n_variedades = collect($transito)->pluck('n_variedad')->unique()->values();
         $c_embalajes = collect($transito)->pluck('c_embalaje')->unique()->values();
@@ -562,8 +564,16 @@ class ReporteriaController extends Controller
         $n_bodegas = collect($transito)->pluck('n_bodega')->unique()->values();
         $n_etiquetas = collect($transito)->pluck('n_etiqueta')->unique()->values();
 
-        return response()->json(["data" => $transitoConDetalles, "n_variedades" => $n_variedades, "c_embalajes" => $c_embalajes, "n_calibres" => $n_calibres,
-        "n_bodegas" => $n_bodegas, "embalajes_detalle" => $embalajes_detalle, "n_etiquetas" => $n_etiquetas, "antiguedad" => $antiguedad], 200);
+        return response()->json([
+            "data" => $transitoConDetalles,
+            "n_variedades" => $n_variedades,
+            "c_embalajes" => $c_embalajes,
+            "n_calibres" => $n_calibres,
+            "n_bodegas" => $n_bodegas,
+            "embalajes_detalle" => $embalajes_detalle,
+            "n_etiquetas" => $n_etiquetas,
+            "antiguedad" => $antiguedad
+        ], 200);
     }
     public function obtieneDetallesTransito(Request $request)
     {
@@ -666,9 +676,9 @@ class ReporteriaController extends Controller
             ->where('id_altura', '=', 8)
             ->where('n_categoria', '=', 'Cat 1')
             ->where('n_exportadora', '=', 'Greenex Spa')
-             ->where('c_embalaje', '=', $request->c_embalaje)
-             ->where('n_variedad', '=', $request->n_variedad)
-             ->where('n_etiqueta', '=', $request->n_etiqueta)
+            ->where('c_embalaje', '=', $request->c_embalaje)
+            ->where('n_variedad', '=', $request->n_variedad)
+            ->where('n_etiqueta', '=', $request->n_etiqueta)
             ->where('n_calibre', '=', $request->n_calibre)
             ->where('id_empresa', '=', '1')
             ->where('fecha_produccion', '<', DB::RAW("DATEADD(DAY, -2, GETDATE())"))
@@ -701,27 +711,96 @@ class ReporteriaController extends Controller
             )
             ->orderBy('folio', 'asc')
             ->get();
-        return response()->json(['data'=>$transito], 200);
+        return response()->json(['data' => $transito], 200);
     }
 
     public function StockInventarioxSemana()
     {
         $stockSemanal = DB::connection("sqlsrv")->table('dbo.V_PKG_Stock_Inventario')
-        ->select(
-            DB::RAW("DATEPART(WEEK, 'fecha_g_recepcion_sh') AS numero_semana"),
-            DB::RAW("SUM(peso_neto) AS peso_neto"),
-            'n_exportadora',
-            'n_especie',
-            'n_variedad')
-        ->groupBy(
-        DB::RAW("DATEPART(WEEK, 'fecha_g_recepcion_sh')"),
-        'n_empresa',
-        'n_exportadora',
-        'n_especie',
-        'n_variedad'
-        )
-        ->orderBy('numero_semana')
-        ->get();
-        return response()->json(['stockSemanal'=>$stockSemanal], 200);
+            ->select(
+                DB::RAW("DATEPART(WEEK, 'fecha_g_recepcion_sh') AS numero_semana"),
+                DB::RAW("SUM(peso_neto) AS peso_neto"),
+                'n_exportadora',
+                'n_especie',
+                'n_variedad'
+            )
+            ->groupBy(
+                DB::RAW("DATEPART(WEEK, 'fecha_g_recepcion_sh')"),
+                'n_empresa',
+                'n_exportadora',
+                'n_especie',
+                'n_variedad'
+            )
+            ->orderBy('numero_semana')
+            ->get();
+        return response()->json(['stockSemanal' => $stockSemanal], 200);
+    }
+    public function embarques()
+    {
+        return view('admin.reporteria.embarque');
+    }
+    public function obtieneEmbarques()
+    {
+        $embarques = DB::connection("sqlsrv")->table('dbo.V_PKG_Embarques')
+            ->select(
+                DB::RAW('DATEPART(WEEK, etd) as Semana'),
+                DB::RAW('SUM(Cantidad) as Cantidad'),
+                DB::RAW('SUM(peso_neto) as Peso_neto'),
+                DB::RAW('SUM(peso_bruto) as peso_bruto'),
+                'transporte',
+                'n_pais_destino',
+                'numero_g_despacho',
+                'c_destinatario',
+                'n_empresa',
+                'n_exportadora',
+                'n_altura',
+                'ns_productor',
+                'N_Especie',
+                'N_Variedad',
+                'n_embalaje',
+                't_embalaje',
+                'n_contenedor',
+                'n_etiqueta'
+            )->groupBy(
+                DB::RAW('DATEPART(WEEK, etd)'),
+                'transporte',
+                'c_destinatario',
+                'numero_g_despacho',
+                'n_pais_destino',
+                'n_empresa',
+                'n_exportadora',
+                'n_altura',
+                'ns_productor',
+                'N_Especie',
+                'N_Variedad',
+                'n_embalaje',
+                't_embalaje',
+                'n_contenedor',
+                'n_etiqueta'
+            )->get();
+        $total = 0;
+        $totalPeso = 0;
+        foreach ($embarques as $embarque) {
+            if ($embarque->c_destinatario != null) {
+                try {
+
+                    if (ClientesComex::where('codigo_cliente', explode("-", $embarque->c_destinatario)[0])->exists()) {
+                        $embarque->c_destinatario = ClientesComex::where('codigo_cliente', explode("-", $embarque->c_destinatario)[0])->first()->nombre_fantasia;
+                    } else {
+                    }
+                    $embarque->c_destinatario = ClientesComex::where('codigo_cliente', $embarque->c_destinatario)->first()->nombre_fantasia;
+                } catch (\Throwable $th) {
+                }
+            }
+            $total += $embarque->Cantidad;
+            $totalPeso += $embarque->Peso_neto;
+        }
+        $n_variedades = collect($embarques)->pluck('N_Variedad')->unique()->values();
+        $n_etiqueta = collect($embarques)->pluck('n_etiqueta')->unique()->values();
+        $cliente = collect($embarques)->pluck('c_destinatario')->unique()->values();
+        $n_exportadora = collect($embarques)->pluck('n_exportadora')->unique()->values();
+        $transporte = collect($embarques)->pluck('transporte')->unique()->values();
+
+        return response()->json(['data' => $embarques, 'n_variedades' => $n_variedades, 'n_etiqueta' => $n_etiqueta, 'cliente' => $cliente, 'n_exportadora' => $n_exportadora, 'total' => $total, 'totalPeso' => $totalPeso, 'transporte' => $transporte], 200);
     }
 }

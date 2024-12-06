@@ -1,0 +1,466 @@
+@extends('layouts.admin')
+
+
+@section('content')
+    <style>
+        tr.group {
+            background-color: #f2f2f2;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        .group-header {
+            font-weight: bold;
+            cursor: pointer;
+            background-color: #f2f2f2;
+        }
+
+        .details-table {
+            margin: 10px 0;
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .details-table th,
+        .details-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        .text-bold {
+            font-weight: bolder;
+        }
+
+
+        .bg-info {
+            background-color: #81b940 !important;
+        }
+
+        .bg-danger {
+            background-color: #ff7313 !important;
+        }
+
+        #cerrarFiltros {
+            cursor: pointer;
+        }
+
+        #chart-container {
+            position: relative;
+            width: 90%;
+            /* Ajusta el ancho del gráfico */
+            margin: auto;
+            /* Centra el contenedor */
+        }
+
+        canvas {
+            display: block;
+            max-width: 100%;
+            /* Asegura que el canvas no se desborde */
+            height: auto !important;
+            /* Mantiene la proporción del gráfico */
+        }
+
+        /* Estilo para hacer el gráfico responsivo */
+        #chart-container {
+            position: relative;
+            width: 90%;
+            /* Ajusta el ancho del gráfico */
+            margin: auto;
+            /* Centra el contenedor */
+        }
+
+        canvas {
+            display: block;
+            max-width: 100%;
+            /* Asegura que el canvas no se desborde */
+            /* height: auto !important; */
+            /* Mantiene la proporción del gráfico */
+        }
+
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 90%;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            text-align: center;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        .total-row {
+            font-weight: bold;
+            background-color: #e8f0fe;
+        }
+
+        #kilosPorDia {
+            width: 100%;
+            /* El tamaño que necesites */
+            height: 400px;
+            /* Establece un tamaño fijo o máximo */
+            max-height: 600px;
+            /* Evita el crecimiento infinito */
+            overflow: auto;
+            /* Permite desplazamiento si el contenido es más grande */
+        }
+
+        .highlight {
+            background-color: green;
+            color: white;
+        }
+
+        #loading-animation {
+            display: flex;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+        }
+
+        video {
+            border-radius: 10px;
+        }
+    </style>
+
+    <div class="content">
+        <div class="container-fluid">
+
+
+            <div id="loading-animation"
+                style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 9999; justify-content: center; align-items: center;">
+                <video autoplay loop muted style="width: auto; height: auto;">
+                    <source src="{{ asset('img/embarque.webm') }}" type="video/webm">
+                    Tu navegador no soporta el video.
+                </video>
+                <br />
+
+            </div>
+            <div class="container-lg px-4">
+                <div class="row g-4 mb-4">
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card text-white bg-info">
+                            <div class="card-body pb-0 d-flex justify-content-between align-items-start">
+                                <div>
+                                    <div class="text-center">Total Kilos Enviados</div>
+                                    <div class="fs-4 fw-semibold text-center">
+                                        <i class="fas fa-weight-hanging" style="color: #FFFFFF; font-size: x-large;"></i>
+                                        <span class="fs-6 fw-normal text-center" id="totalKilosEnviados"
+                                            style="font-size: x-large;"></span>
+                                    </div>
+                                    <div class="text-center"><br /></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card text-white bg-info">
+                            <div class="card-body pb-0 d-flex justify-content-between align-items-start">
+                                <div>
+                                    <div class="text-center">Cantidad Enviada </div>
+                                    <div class="fs-4 fw-semibold text-center">
+                                        <i class="fas fa-shipping-fast" style="color: #FFFFFF; font-size: x-large;"></i>
+                                        <span class="fs-6 fw-normal text-center" id="totalCajasEnviadas"
+                                            style="font-size: x-large;"></span>
+                                    </div>
+                                    <div class="text-center"><br /></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" style="margin-bottom: 15px;">
+                <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
+                    <label for="filtroExportadora">Exportadora</label>
+                    <select id="filtroExportadora" class="form-control select2" multiple="multiple"></select>
+                </div>
+                <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
+                    <label for="filtroVariedad">Variedad</label>
+                    <select id="filtroVariedad" class="form-control select2" multiple="multiple"></select>
+                </div>
+                <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
+                    <label for="filtroCliente">Cliente</label>
+                    <select id="filtroCliente" class="form-control select2" multiple="multiple"></select>
+                </div>
+                <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
+                    <label for="filtroEtiqueta">Etiqueta</label>
+                    <select id="filtroEtiqueta" class="form-control select2" multiple="multiple"></select>
+                </div>
+                <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
+                    <label for="filtroTransporte">Tipo transporte</label>
+                    <select id="filtroTransporte" class="form-control select2" multiple="multiple"></select>
+                </div>
+                <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
+                    <button id="btnRecargar" class="btn btn-secondary mb-3" style="margin-top: 30px;" title="Recargar"><i
+                            class="fas fa-sync"></i></button>
+                </div>
+
+            </div>
+            {{-- <div class="modal fade" id="calibreModal" tabindex="-1" aria-labelledby="calibreModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="calibreModalLabel">Detalles del Calibre</h5>
+                            <button type="button" id="btnImprimir" class="btn-secondary" data-bs-dismiss="modal"
+                                aria-label="Close"><i class="fas fa-print"></i></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i
+                                    class="fas fa-close"></i></button>
+                        </div>
+
+                        <div class="modal-body" id="modalCalibreContent">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Folio</th>
+                                        <th>Variedad</th>
+                                        <th>Embalaje</th>
+                                        <th>Etiqueta</th>
+                                        <th>Calibre</th>
+                                        <th>Cantidad</th>
+                                        <th>Peso</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="calibreModalBody">
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div> --}}
+
+            <div class="row" id="vistaCalibres" style="display: none;">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-header">
+
+                        </div>
+                        <div class="card-body">
+                            <div class="container-lg px-4" id="contenedor"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    Transito
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="EmbarqueTable"
+                            class="display table table-bordered table-striped table-hover ajaxTable datatable datatable-transito"
+                            style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Semana</th>
+                                    <th>Cantidad</th>
+                                    <th>Cliente</th>
+                                    <th>Peso Neto</th>
+                                    <th>Transporte</th>
+                                    <th>Pais Destino</th>
+                                    <th>Despacho</th>
+                                    <th>Altura</th>
+                                    <th>Especie</th>
+                                    <th>Variedad</th>
+                                    <th>Embalaje</th>
+                                    <th>Etiqueta</th>
+                                    <th>Exportadora</th>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script>
+        $(document).ready(function() {
+            let table = null;
+
+            function formatNumber2(number) {
+                return new Intl.NumberFormat('es-CL', {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0
+                }).format(number);
+            }
+
+            function showLoading() {
+
+                $("#loading-animation").fadeIn();
+            }
+
+            function hideLoading() {
+                $("#loading-animation").fadeOut();
+            }
+            showLoading();
+            $.ajax({
+
+                url: "{{ route('admin.reporteria.obtieneEmbarques') }}",
+                type: "GET",
+                dataType: "json",
+                success: function(data) {
+
+                    datos = data.data;
+                    var variedades = [];
+                    var calibres = [];
+                    var exportadoras = [];
+                    var etiqueta = [];
+                    var transporte = [];
+                    variedades = data.n_variedades;
+                    cliente = data.cliente;
+                    exportadoras = data.n_exportadora;
+                    etiqueta = data.n_etiqueta;
+                    transporte = data.transporte;
+                    variedades.forEach(
+                        function(value) {
+
+                            $('#filtroVariedad').append(new Option(value, value));
+                        });
+
+                    etiqueta.forEach(
+                        function(value) {
+                            $('#filtroEtiqueta').append(new Option(value, value));
+                        });
+                    cliente.forEach(
+                        function(value) {
+                            $('#filtroCliente').append(new Option(value, value));
+                        });
+                    exportadoras.forEach(
+                        function(value) {
+                            $('#filtroExportadora').append(new Option(value, value));
+                        });
+                        transporte.forEach(
+                        function(value) {
+                            $('#filtroTransporte').append(new Option(value, value));
+                        });
+
+                    $("#totalKilosEnviados").html(formatNumber2(data.totalPeso));
+                    $("#totalCajasEnviadas").html(formatNumber2(data.total));
+
+                    table = $('#EmbarqueTable').DataTable({
+                        fixedColumns: true,
+                        fixedHeader: true,
+                        responsive: true,
+                        language: {
+
+                            url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-CL.json'
+                        },
+                        displayLength: 10,
+                        data: datos,
+                        columns: [{
+                                className: 'dt-control',
+                                orderable: false,
+                                data: null,
+                                defaultContent: ''
+                            },
+                            {
+                                data: 'Semana',
+                                title: 'Semana'
+                            },
+                            {
+                                data: 'Cantidad',
+                                title: 'Cantidad'
+                            },
+                            {
+                                data: 'c_destinatario',
+                                title: 'Cliente'
+                            },
+                            {
+                                data: 'Peso_neto',
+                                title: 'Peso Neto'
+                            },
+                            {
+                                data: 'transporte',
+                                title: 'Transporte'
+                            },
+                            {
+                                data: 'n_exportadora',
+                                title: 'Exportadora',
+                                visible: false
+
+                            },
+                            {
+                                data: 'n_pais_destino',
+                                title: 'Pais Destino'
+                            },
+                            {
+                                data: 'numero_g_despacho',
+                                title: 'Despacho'
+                            },
+                            {
+                                data: 'n_altura',
+                                title: 'Altura'
+                            },
+                            {
+                                data: 'N_Especie',
+                                title: 'Especie'
+                            },
+                            {
+                                data: 'N_Variedad',
+                                title: 'Variedad'
+                            },
+                            {
+                                data: 'n_embalaje',
+                                title: 'Embalaje'
+                            },
+                            {
+                                data: 'n_etiqueta',
+                                title: 'Etiqueta'
+                            },
+
+                        ]
+                    });
+                    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                        const filtroVariedad = $('#filtroVariedad').val() || [];
+                        const filtroExportadora = $('#filtroExportadora').val() || [];
+                        const filtroEtiqueta = $('#filtroEtiqueta').val() || [];
+                        const filtroCliente = $('#filtroCliente').val() || [];
+                        const filtroTransporte = $('#filtroTransporte').val() || [];
+                        const variedad = data[
+                        10]; // Ajusta el índice según la posición de la columna en la tabla
+                        const Exportadora = data[6]; // Ajusta el índice
+                        const etiqueta = data[12]; // Ajusta el índice
+                        const cliente = data[3]; // Ajusta el índice
+                        const transporte = data[5]; // Ajusta el índice
+                        const coincideVariedad = filtroVariedad.length === 0 || filtroVariedad
+                            .includes(variedad);
+                        const coincideExportadora = filtroExportadora.length === 0 ||
+                            filtroExportadora
+                            .includes(Exportadora);
+                        const coincideEtiqueta = filtroEtiqueta.length === 0 || filtroEtiqueta
+                            .includes(etiqueta);
+                        const coincideCliente = filtroCliente.length === 0 || filtroCliente
+                            .includes(cliente);
+                            const coincideTransporte = filtroTransporte.length === 0 || filtroTransporte
+                            .includes(transporte);
+
+                        return coincideVariedad && coincideExportadora && coincideEtiqueta &&
+                            coincideCliente && coincideTransporte;
+                    });
+
+                    hideLoading();
+                },
+                error: function(xhr, status, error) {
+                    hideLoading();
+                    console.log(xhr.responseText);
+                },
+            });
+            // console.log(data);
+            $('.select2').on('change', function() {
+                table.draw(); // Redibuja la tabla aplicando los filtros
+            });
+        });
+    </script>
+@endsection
