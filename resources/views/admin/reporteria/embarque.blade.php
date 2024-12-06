@@ -269,15 +269,32 @@
                                     <th>Cliente</th>
                                     <th>Peso Neto</th>
                                     <th>Transporte</th>
+                                    <th>Exportadora</th>
                                     <th>Pais Destino</th>
                                     <th>Despacho</th>
                                     <th>Altura</th>
-                                    <th>Especie</th>
                                     <th>Variedad</th>
                                     <th>Embalaje</th>
                                     <th>Etiqueta</th>
-                                    <th>Exportadora</th>
 
+                                    <tfoot>
+                                        <tr>
+                                            <th></th>
+                                            <th>SubTotal<br/>Total</th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+
+                                    </tfoot>
                         </table>
                     </div>
                 </div>
@@ -341,7 +358,7 @@
                         function(value) {
                             $('#filtroExportadora').append(new Option(value, value));
                         });
-                        transporte.forEach(
+                    transporte.forEach(
                         function(value) {
                             $('#filtroTransporte').append(new Option(value, value));
                         });
@@ -379,7 +396,14 @@
                             },
                             {
                                 data: 'Peso_neto',
-                                title: 'Peso Neto'
+                                title: 'Peso Neto',
+                                render: function(data, type, row) {
+                                    // Formateamos el número con separador de miles y sin decimales
+                                    return new Intl.NumberFormat('es-CL', {
+                                        minimumFractionDigits: 0,
+                                        maximumFractionDigits: 0
+                                    }).format(data);
+                                }
                             },
                             {
                                 data: 'transporte',
@@ -403,10 +427,7 @@
                                 data: 'n_altura',
                                 title: 'Altura'
                             },
-                            {
-                                data: 'N_Especie',
-                                title: 'Especie'
-                            },
+
                             {
                                 data: 'N_Variedad',
                                 title: 'Variedad'
@@ -420,7 +441,57 @@
                                 title: 'Etiqueta'
                             },
 
-                        ]
+                        ],
+                        footerCallback: function(row, data, start, end, display) {
+
+                            let api = this.api();
+
+                            // Función para convertir a número
+                            let intVal = function(i) {
+                                return typeof i === 'string' ? i.replace(/[\$,]/g, '') *
+                                    1 :
+                                    typeof i ===
+                                    'number' ? i : 0;
+                            };
+                            let totalPesoNeto = api
+                                .column(4)
+                                .data()
+                                .reduce(function(a, b) {
+                                    return intVal(a) + intVal(b);
+                                }, 0);
+
+                            let subtotalPesoNeto = api
+                                .column(4, {
+                                    page: 'current'
+                                })
+                                .data()
+                                .reduce(function(a, b) {
+                                    return intVal(a) + intVal(b);
+                                }, 0);
+                                let totalCantidad = api
+                                .column(2)
+                                .data()
+                                .reduce(function(a, b) {
+                                    return intVal(a) + intVal(b);
+                                }, 0);
+
+                            let subtotalCantidad = api
+                                .column(2, {
+                                    page: 'current'
+                                })
+                                .data()
+                                .reduce(function(a, b) {
+                                    return intVal(a) + intVal(b);
+                                }, 0);
+                            $(api.column(4).footer()).html(
+                                ` ${formatNumber2(subtotalPesoNeto.toFixed(0))}<br> ${formatNumber2(totalPesoNeto.toFixed(0))}`
+                            );
+                            $(api.column(2).footer()).html(
+                                ` ${formatNumber2(subtotalCantidad.toFixed(0))}<br> ${formatNumber2(totalCantidad.toFixed(0))}`
+                            );
+                            // $("#proSinIniciar").html(
+                            //     `${formatNumber(totalPesoNeto.toFixed(0))}`)
+                        }
                     });
                     $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
                         const filtroVariedad = $('#filtroVariedad').val() || [];
@@ -429,9 +500,9 @@
                         const filtroCliente = $('#filtroCliente').val() || [];
                         const filtroTransporte = $('#filtroTransporte').val() || [];
                         const variedad = data[
-                        10]; // Ajusta el índice según la posición de la columna en la tabla
+                            10]; // Ajusta el índice según la posición de la columna en la tabla
                         const Exportadora = data[6]; // Ajusta el índice
-                        const etiqueta = data[12]; // Ajusta el índice
+                        const etiqueta = data[11]; // Ajusta el índice
                         const cliente = data[3]; // Ajusta el índice
                         const transporte = data[5]; // Ajusta el índice
                         const coincideVariedad = filtroVariedad.length === 0 || filtroVariedad
@@ -443,7 +514,8 @@
                             .includes(etiqueta);
                         const coincideCliente = filtroCliente.length === 0 || filtroCliente
                             .includes(cliente);
-                            const coincideTransporte = filtroTransporte.length === 0 || filtroTransporte
+                        const coincideTransporte = filtroTransporte.length === 0 ||
+                            filtroTransporte
                             .includes(transporte);
 
                         return coincideVariedad && coincideExportadora && coincideEtiqueta &&
