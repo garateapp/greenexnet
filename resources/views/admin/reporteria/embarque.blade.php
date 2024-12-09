@@ -699,7 +699,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    ${chartData2.map(data => `
+                    ${data.dataMetas.map(data => `
                         <tr>
                             <td>${data.c_destinatario}</td>
                             <td>${data.Cantidad}</td>
