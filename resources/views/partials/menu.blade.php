@@ -286,7 +286,7 @@
                         </a>
                     </li>
                     @endcan
-                    <li class="c-sidebar-nav-item">
+                    {{-- <li class="c-sidebar-nav-item">
                         <a href="{{ route('admin.reporteria.embarques') }}"
                             class="c-sidebar-nav-link {{ request()->is('admin/reporteria') || request()->is('admin/reporteria/*') ? 'c-active' : '' }}">
                             <i class="fa-fw fas fa-ship c-sidebar-nav-icon">
@@ -294,7 +294,7 @@
                             </i>
                             Embarques
                         </a>
-                    </li>
+                    </li> --}}
                 </ul>
             </li>
         @endcan
