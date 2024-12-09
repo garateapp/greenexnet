@@ -57,6 +57,9 @@ class MetasClienteComexController extends Controller
             $table->editColumn('cantidad', function ($row) {
                 return $row->cantidad ? $row->cantidad : '';
             });
+            $table->editColumn('semana', function ($row) {
+                return $row->semana ? $row->semana : '';
+            });
             $table->editColumn('anno', function ($row) {
                 return $row->anno ? $row->anno : '';
             });

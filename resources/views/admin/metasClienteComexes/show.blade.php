@@ -41,7 +41,15 @@
                     </tr>
                     <tr>
                         <th>
-
+                            Semana
+                        </th>
+                        <td>
+                            {{ $metasClienteComex->semana ?? '' }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Año
                         </th>
                         <td>
                             {{ $metasClienteComex->anno ?? '' }}

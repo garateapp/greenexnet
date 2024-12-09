@@ -35,6 +35,9 @@
                         {{ trans('cruds.clientesComex.fields.nombre_fantasia') }}
                     </th>
                     <th>
+                        Semana
+                    </th>
+                    <th>
                         Año
                     </th>
                     <th>
@@ -62,6 +65,9 @@
                         </select>
                     </td>
                     <td>
+                    </td>
+                    <td>
+                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                     </td>
                     <td>
                         <input class="search" type="text" placeholder="{{ trans('global.search') }}">
@@ -130,6 +136,7 @@
 { data: 'id', name: 'id' },
 { data: 'clientecomex_nombre_fantasia', name: 'clientecomex.nombre_fantasia' },
 { data: 'clientecomex.nombre_fantasia', name: 'clientecomex.nombre_fantasia' },
+{ data: 'semana', name: 'Semana' },
 { data: 'anno', name: 'anno' },
 { data: 'cantidad', name: 'cantidad' },
 { data: 'observaciones', name: 'observaciones' },

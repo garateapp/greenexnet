@@ -23,6 +23,7 @@ class MetasClienteComex extends Model
     protected $fillable = [
         'clientecomex_id',
         'anno',
+        'semana',
         'cantidad',
         'observaciones',
         'created_at',

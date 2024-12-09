@@ -27,6 +27,12 @@ class StoreMetasClienteComexRequest extends FormRequest
                 'min:-2147483648',
                 'max:2147483647',
             ],
+            'semana' => [
+                'required',
+                'integer',
+                'min:1',
+                'max:53',
+            ],
             'anno' => [
                 'required',
                 'integer',

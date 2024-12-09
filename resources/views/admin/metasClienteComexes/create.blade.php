@@ -34,6 +34,15 @@
                 <span class="help-block">{{ trans('cruds.metasClienteComex.fields.cantidad_helper') }}</span>
             </div>
             <div class="form-group">
+                <label class="required" for="mes">Semana</label>
+                <input class="form-control {{ $errors->has('semana') ? 'is-invalid' : '' }}" type="number" name="semana" id="semana" value="{{ old('semana', 'date("w")') }}" step="1" required>
+                @if($errors->has('semana'))
+                    <div class="invalid-feedback">
+                        {{ $errors->first('semana') }}
+                    </div>
+                @endif
+            </div>
+            <div class="form-group">
                 <label class="required" for="anno">Año</label>
                 <input class="form-control {{ $errors->has('cantidad') ? 'is-invalid' : '' }}" type="number" name="anno" id="anno" value="{{ old('anno', 'date("Y")') }}" step="1" required>
                 @if($errors->has('anno'))
