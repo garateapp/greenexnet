@@ -174,72 +174,27 @@
                         </div>
 
                     </div>
-                </div>
-            </div>
-
-            <div class="row" style="margin-bottom: 15px;">
-                <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
-                    <label for="filtroExportadora">Exportadora</label>
-                    <select id="filtroExportadora" class="form-control select2" multiple="multiple"></select>
-                </div>
-                <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
-                    <label for="filtroVariedad">Variedad</label>
-                    <select id="filtroVariedad" class="form-control select2" multiple="multiple"></select>
-                </div>
-                <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
-                    <label for="filtroCliente">Cliente</label>
-                    <select id="filtroCliente" class="form-control select2" multiple="multiple"></select>
-                </div>
-                <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
-                    <label for="filtroEtiqueta">Etiqueta</label>
-                    <select id="filtroEtiqueta" class="form-control select2" multiple="multiple"></select>
-                </div>
-                <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
-                    <label for="filtroTransporte">Tipo transporte</label>
-                    <select id="filtroTransporte" class="form-control select2" multiple="multiple"></select>
-                </div>
-                <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
-                    <button id="btnRecargar" class="btn btn-secondary mb-3" style="margin-top: 30px;" title="Recargar"><i
-                            class="fas fa-sync"></i></button>
-                    <button class="btn btn-secondary mb-3" id="toggleButton" style="margin-top: 30px;"
-                        title="Ocultar/Mostrar">
-                        <i class="fa fa-chart-bar text-white"></i>
-
-                    </button>
-
-                </div>
-
-            </div>
-            <div class="row" id="graficosContainer" style="display: none;">
-                <!-- Primera columna -->
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-body" id="chart-container">
-                            <h5 class="card-title text-center">Cantidad Embarcada por Semana</h5>
-                            <canvas id="CantxSemanaChart"></canvas>
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card text-white bg-info">
+                            <div class="card-body pb-0 d-flex justify-content-between align-items-start">
+                                <div>
+                                    <div class="text-center">Cont. Embarcados a la Fecha  </div>
+                                    <div class="fs-4 fw-semibold text-center">
+                                        <i class="fas fa-shipping-fast" style="color: #FFFFFF; font-size: x-large;"></i>
+                                        <span class="fs-6 fw-normal text-center" id="totalContenedores"
+                                            style="font-size: x-large;"></span>
+                                    </div>
+                                    <div class="text-center"><br /></div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
-                <!-- Segunda columna -->
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-body" id="chart-container">
-                            <h5 class="card-title text-center">Cantidad x Cliente</h5>
-                            <canvas id="CantidadxClienteChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-12">
-                    <div class="card">
-                        <div class="card-body" id="chart-container">
-                            <h5 class="card-title text-center">Cantidad v/s Meta x Cliente</h5>
-                            <canvas id="MetasxClienteChart"></canvas>
-                            <div id="tabla-container-metas"></div>
-                        </div>
                     </div>
                 </div>
             </div>
+
+
+
             {{-- <div class="modal fade" id="calibreModal" tabindex="-1" aria-labelledby="calibreModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
@@ -275,15 +230,70 @@
                     </div>
                 </div>
             </div> --}}
+            <div id="tabla-container-metas"></div>
+            <div class="row" style="margin-bottom: 15px;">
+                <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
+                    <label for="filtroExportadora">Exportadora</label>
+                    <select id="filtroExportadora" class="form-control select2" multiple="multiple"></select>
+                </div>
+                <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
+                    <label for="filtroVariedad">Variedad</label>
+                    <select id="filtroVariedad" class="form-control select2" multiple="multiple"></select>
+                </div>
+                <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
+                    <label for="filtroCliente">Cliente</label>
+                    <select id="filtroCliente" class="form-control select2" multiple="multiple"></select>
+                </div>
+                <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
+                    <label for="filtroEtiqueta">Etiqueta</label>
+                    <select id="filtroEtiqueta" class="form-control select2" multiple="multiple"></select>
+                </div>
+                <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
+                    <label for="filtroTransporte">Tipo transporte</label>
+                    <select id="filtroTransporte" class="form-control select2" multiple="multiple"></select>
+                </div>
+                <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
+                    <label for="filtroSemana">Semana</label>
+                    <select id="filtroSemana" class="form-control select2" multiple="multiple"></select>
+                </div>
+                <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
+                    <button id="btnRecargar" class="btn btn-secondary mb-3" style="margin-top: 30px;" title="Recargar"><i
+                            class="fas fa-sync"></i></button>
+                    <button class="btn btn-secondary mb-3" id="toggleButton" style="margin-top: 30px;"
+                        title="Ocultar/Mostrar">
+                        <i class="fa fa-chart-bar text-white"></i>
 
-            <div class="row" id="vistaCalibres" style="display: none;">
-                <div class="col-lg-12">
+                    </button>
+
+                </div>
+
+            </div>
+            <div class="row" id="graficosContainer" style="display: none;">
+                <!-- Primera columna -->
+                {{-- <div class="col-md-12">
                     <div class="card">
-                        <div class="card-header">
-
+                        <div class="card-body" id="chart-container">
+                            <h5 class="card-title text-center">Cantidad Embarcada por Semana</h5>
+                            <canvas id="CantxSemanaChart"></canvas>
                         </div>
-                        <div class="card-body">
-                            <div class="container-lg px-4" id="contenedor"></div>
+                    </div>
+                </div> --}}
+
+                <!-- Segunda columna -->
+                {{-- <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body" id="chart-container">
+                            <h5 class="card-title text-center">Cantidad Contenedores x Cliente</h5>
+                            <canvas id="CantidadxClienteChart"></canvas>
+                        </div>
+                    </div>
+                </div> --}}
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body" id="chart-container">
+                            <h5 class="card-title text-center">Contenedores x Cliente</h5>
+                            <canvas id="MetasxClienteChart"></canvas>
+
                         </div>
                     </div>
                 </div>
@@ -393,6 +403,7 @@
                     cliente = data.cliente;
                     exportadoras = data.n_exportadora;
                     etiqueta = data.n_etiqueta;
+                    semana = data.semana;
                     transporte = data.transporte;
                     var chartData = data.chartCantxSemana;
                     var chartData2 = data.chartCatxCliente;
@@ -417,6 +428,10 @@
                     transporte.forEach(
                         function(value) {
                             $('#filtroTransporte').append(new Option(value, value));
+                        });
+                    semana.forEach(
+                        function(value) {
+                            $('#filtroSemana').append(new Option(value, value));
                         });
 
                     $("#totalKilosEnviados").html(formatNumber2(data.totalPeso));
@@ -555,12 +570,14 @@
                         const filtroEtiqueta = $('#filtroEtiqueta').val() || [];
                         const filtroCliente = $('#filtroCliente').val() || [];
                         const filtroTransporte = $('#filtroTransporte').val() || [];
+                        const filtroSemana = $('#filtroSemana').val() || [];
                         const variedad = data[
                             10]; // Ajusta el índice según la posición de la columna en la tabla
                         const Exportadora = data[6]; // Ajusta el índice
                         const etiqueta = data[11]; // Ajusta el índice
                         const cliente = data[3]; // Ajusta el índice
                         const transporte = data[5]; // Ajusta el índice
+                        const semana = data[1]; // Ajusta el índice
                         const coincideVariedad = filtroVariedad.length === 0 || filtroVariedad
                             .includes(variedad);
                         const coincideExportadora = filtroExportadora.length === 0 ||
@@ -573,76 +590,74 @@
                         const coincideTransporte = filtroTransporte.length === 0 ||
                             filtroTransporte
                             .includes(transporte);
+                        const coincideSemana = filtroSemana.length === 0 || filtroSemana
+                            .includes(semana);
 
                         return coincideVariedad && coincideExportadora && coincideEtiqueta &&
-                            coincideCliente && coincideTransporte;
+                            coincideCliente && coincideTransporte && coincideSemana;
                     });
 
-                    const labels = chartData.map(chartData => `Semana ${chartData.Semana}`);
-                    const values = chartData.map(chartData => parseFloat(chartData.Cantidad));
+                    // const labels = chartData.map(chartData => `Semana ${chartData.Semana}`);
+                    // const values = chartData.map(chartData => parseFloat(chartData.Cantidad));
 
-                    // Configuración del gráfico CAnt x Semana
-                    const ctx = document.getElementById('CantxSemanaChart').getContext('2d');
-                    new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: labels,
-                            datasets: [{
-                                label: 'Cantidad por Semana',
-                                data: values,
-                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                                borderColor: 'rgba(75, 192, 192, 1)',
-                                borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    ticks: {
-                                        stepSize: 50000
-                                    }
-                                }
-                            }
-                        }
-                    });
+                    // // Configuración del gráfico CAnt x Semana
+                    // const ctx = document.getElementById('CantxSemanaChart').getContext('2d');
+                    // new Chart(ctx, {
+                    //     type: 'bar',
+                    //     data: {
+                    //         labels: labels,
+                    //         datasets: [{
+                    //             label: 'Cantidad por Semana',
+                    //             data: values,
+                    //             backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    //             borderColor: 'rgba(75, 192, 192, 1)',
+                    //             borderWidth: 1
+                    //         }]
+                    //     },
+                    //     options: {
+                    //         responsive: true,
+                    //         scales: {
+                    //             y: {
+                    //                 beginAtZero: true,
+                    //                 ticks: {
+                    //                     stepSize: 50000
+                    //                 }
+                    //             }
+                    //         }
+                    //     }
+                    // });
                     // Configuración del gráfico
-                    const labels2 = chartData2.map(chartData2 => chartData2.c_destinatario.trim());
-                    const values2 = chartData2.map(chartData2 => parseFloat(chartData2.Cantidad));
 
 
-                    const ctx2 = document.getElementById('CantidadxClienteChart').getContext('2d');
-                    new Chart(ctx2, {
-                        type: 'bar',
-                        data: {
-                            labels: labels2,
-                            datasets: [{
-                                label: 'Cantidad por Destinatario',
-                                data: values2,
-                                backgroundColor: 'rgba(153, 102, 255, 0.2)',
-                                borderColor: 'rgba(153, 102, 255, 1)',
-                                borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    ticks: {
-                                        stepSize: 5000
-                                    }
-                                }
-                            }
-                        }
+                    var contenedoresembarcados = 0;
+                    data.dataMetas.forEach(data => {
+                        contenedoresembarcados = contenedoresembarcados + parseFloat(data
+                            .contenedores);
                     });
-                    const labels3 = chartData2.map(data => data.c_destinatario);
-                    const cantidades3 = chartData2.map(data => parseFloat(data.Cantidad));
-                    const metas = chartData2.map(data => data.meta ||
-                    0); // Asegurar que las metas nulas sean 0
+                    const groupedData = data.dataMetas.reduce((acc, current) => {
+                        const destinatario = current.c_destinatario;
 
+                        if (!acc[destinatario]) {
+                            acc[destinatario] = {
+                                c_destinatario: destinatario,
+                                contenedores: 0,
+                                meta: current.meta
+                            };
+                        }
+
+                        acc[destinatario].contenedores += parseFloat(current.contenedores);
+                        return acc;
+                    }, {});
+
+                    const result = Object.values(groupedData);
+
+
+                    $("#totalContenedores").html(formatNumber2(contenedoresembarcados));
                     // Configuración del gráfico
+                    const labels3 = result.map(data => data.c_destinatario);
+                    const cantidades3 = result.map(data => parseFloat(data.contenedores));
+                    const metas = result.map(data => data.meta ||
+                        0); // Asegurar que las metas nulas sean 0
                     const ctx3 = document.getElementById('MetasxClienteChart').getContext('2d');
                     new Chart(ctx3, {
                         type: 'bar',
@@ -671,7 +686,7 @@
                                     beginAtZero: true,
                                     title: {
                                         display: true,
-                                        text: 'Cantidad'
+                                        text: 'Contenedores'
                                     }
                                 },
                                 x: {
@@ -689,27 +704,38 @@
                         }
                     });
                     const tablaContainer = document.getElementById('tabla-container-metas');
-        const tablaHTML = `
+                    const tablaHTML = `<div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            Cumplimiento de Objetivos
+                            </div>
+                            <div class="card-body">
             <table>
                 <thead>
                     <tr>
                         <th>Cliente</th>
                         <th>Cantidad</th>
-                        <th>Meta</th>
+                        <th>Objetivo</th>
+                        <th>% Cumplimiento</th>
+
                     </tr>
                 </thead>
                 <tbody>
-                    ${data.dataMetas.map(data => `
-                        <tr>
-                            <td>${data.c_destinatario}</td>
-                            <td>${data.Cantidad}</td>
-                            <td>${data.meta || 0}</td>
-                        </tr>
-                    `).join('')}
+                    ${result.map(data => `
+                            <tr>
+                                <td>${data.c_destinatario}</td>
+                                <td>${Math.round(data.contenedores)}</td>
+                                <td>${data.meta}</td>
+                                <td>${parseFloat((Math.round(data.contenedores)/Math.round(data.meta))*100).toFixed(0)}%</td>
+                            </tr>
+                        `).join('')}
                 </tbody>
             </table>
+            </div>
+            </div>
+            </div>
         `;
-        tablaContainer.innerHTML = tablaHTML;
+                    tablaContainer.innerHTML = tablaHTML;
                     //
                     // Configuración del gráfico CAnt x Cliente
                     hideLoading();

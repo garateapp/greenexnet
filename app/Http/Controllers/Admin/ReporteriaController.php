@@ -761,13 +761,15 @@ class ReporteriaController extends Controller
                 'n_embalaje',
                 't_embalaje',
                 'n_contenedor',
-                'n_etiqueta'
+                'n_etiqueta',
+                'n_embarque'
             )
             ->where('id_especie', '=', '7')
             ->groupBy(
                 DB::RAW('DATEPART(WEEK, etd)'),
                 'transporte',
                 'c_destinatario',
+                'n_embarque',
                 'numero_g_despacho',
                 'n_pais_destino',
                 'n_empresa',
@@ -779,16 +781,19 @@ class ReporteriaController extends Controller
                 'n_embalaje',
                 't_embalaje',
                 'n_contenedor',
-                'n_etiqueta'
-            )->get();
+                'n_etiqueta',
+                'total_pallets'
+            )->orderBy('Semana', 'desc')
+            ->get();
         $total = 0;
         $totalPeso = 0;
+        $cant_contenedores = 0;
+
         foreach ($embarques as $embarque) {
             if ($embarque->c_destinatario != null) {
                 try {
-
                     if (ClientesComex::where('codigo_cliente', explode("-", $embarque->c_destinatario)[0])->exists()) {
-                       $CxComex = ClientesComex::where('codigo_cliente', explode("-", $embarque->c_destinatario)[0])->first();
+                        $CxComex = ClientesComex::where('codigo_cliente', explode("-", $embarque->c_destinatario)[0])->first();
                         $embarque->c_destinatario = ClientesComex::where('codigo_cliente', explode("-", $embarque->c_destinatario)[0])->first()->nombre_fantasia;
                         $MetaCx = MetasClienteComex::where('clientecomex_id', '=', $CxComex->id)->first();
                         if ($MetaCx != null) {
@@ -796,7 +801,7 @@ class ReporteriaController extends Controller
                             $embarque->meta = $MetaCx->cantidad;
                         } else {
                             $embarque->alsu = '';
-                             $embarque->meta = 0;
+                            $embarque->meta = 0;
                         }
                     } else {
                     }
@@ -812,26 +817,39 @@ class ReporteriaController extends Controller
         $cliente = collect($embarques)->pluck('c_destinatario')->unique()->values();
         $n_exportadora = collect($embarques)->pluck('n_exportadora')->unique()->values();
         $transporte = collect($embarques)->pluck('transporte')->unique()->values();
-        $chartCatxCliente = DB::connection("sqlsrv")->table('dbo.V_PKG_Embarques')
-            ->select(
-                'c_destinatario',
-                DB::RAW('SUM(Cantidad) as Cantidad'),
+        $semana = collect($embarques)->pluck('Semana')->unique()->values();
 
-            )
-            ->where('id_especie', '=', '7')
-            ->groupBy(
-                'c_destinatario',
 
-            )->get();
-            foreach ($chartCatxCliente as $chart) {
+        $dataMetas = DB::connection("sqlsrv")->table(function ($query) {
+            $query->from('dbo.V_PKG_Embarques')
+                ->selectRaw("
+        DATEPART(WEEK, etd) as semana,
+        c_destinatario,
+        SUM(cantidad) / CP2_Embalaje / 20 as Contenedores,
+        n_embarque
+    ")
+                ->where('id_especie', 7)
+                ->where('transporte', 'MARITIMO')
+                //->whereRaw("DATEPART(WEEK, etd) ='" . date('W')."'")
+                ->where('n_exportadora', 'Greenex Spa')
+                ->groupByRaw('DATEPART(WEEK, etd), c_destinatario, n_embarque, CP2_Embalaje');
+        },'s')
+            ->select('semana', 'c_destinatario', DB::raw('SUM(Contenedores) as contenedores'))
+            ->groupBy('semana', 'c_destinatario')
+            ->orderBy('semana', 'desc')
+            ->get();
+
+            foreach ($dataMetas as $chart) {
                 if ($chart->c_destinatario != null) {
+
                     try {
 
                         if (ClientesComex::where('codigo_cliente', explode("-", $chart->c_destinatario)[0])->exists()) {
 
                             $CxComex = ClientesComex::where('codigo_cliente', explode("-", $chart->c_destinatario)[0])->first();
-                            $chart->c_destinatario = ClientesComex::where('codigo_cliente', explode("-", $chart->c_destinatario)[0])->first()->nombre_fantasia;
-                            $MetaCx = MetasClienteComex::where('clientecomex_id', '=', $CxComex->id)->where('semana', '=', date('W'))->first();
+                            $chart->c_destinatario =$CxComex->nombre_fantasia;
+
+                            $MetaCx = MetasClienteComex::where('clientecomex_id', '=', $CxComex->id)->first();
                             if ($MetaCx != null) {
                                 $chart->alsu = $MetaCx->observaciones;
                                 $chart->meta = $MetaCx->cantidad;
@@ -839,58 +857,29 @@ class ReporteriaController extends Controller
                                 $chart->alsu = '';
                                 $chart->meta = 0;
                             }
+
+
+
                         } else {
                             $chart->alsu = '';
-                                $chart->meta = 0;
+                            $chart->meta = 0;
                         }
-                        $chart->c_destinatario = ClientesComex::where('codigo_cliente', $chart->c_destinatario)->first()->nombre_fantasia;
+                        //$chart->c_destinatario = ClientesComex::where('codigo_cliente', $chart->c_destinatario)->first()->nombre_fantasia;
                     } catch (\Throwable $th) {
                     }
                 }
             }
-        $dataMetas=DB::connection("sqlsrv")->table('dbo.V_PKG_Embarques')
-        ->select(
-            'c_destinatario',
-            DB::RAW('SUM(Cantidad) as Cantidad'),
 
-        )
-        ->where('id_especie', '=', '7')
-        ->where(DB::RAW('DATEPART(WEEK, etd)'),'=',date('W'))
-        ->groupBy(
-            'c_destinatario',
+        $chartCatxCliente = $dataMetas;
 
-        )->get();
 
-        foreach ($dataMetas as $chart) {
-            if ($chart->c_destinatario != null) {
-                try {
 
-                    if (ClientesComex::where('codigo_cliente', explode("-", $chart->c_destinatario)[0])->exists()) {
 
-                        $CxComex = ClientesComex::where('codigo_cliente', explode("-", $chart->c_destinatario)[0])->first();
-                        $chart->c_destinatario = ClientesComex::where('codigo_cliente', explode("-", $chart->c_destinatario)[0])->first()->nombre_fantasia;
-                        $MetaCx = MetasClienteComex::where('clientecomex_id', '=', $CxComex->id)->where('semana', '=', date('W'))->first();
-                        if ($MetaCx != null) {
-                            $chart->alsu = $MetaCx->observaciones;
-                            $chart->meta = $MetaCx->cantidad;
-                        } else {
-                            $chart->alsu = '';
-                            $chart->meta = 0;
-                        }
-                    } else {
-                        $chart->alsu = '';
-                            $chart->meta = 0;
-                    }
-                    $chart->c_destinatario = ClientesComex::where('codigo_cliente', $chart->c_destinatario)->first()->nombre_fantasia;
-                } catch (\Throwable $th) {
-                }
-            }
-        }
+
         $chartCantxSemana = DB::connection("sqlsrv")->table('dbo.V_PKG_Embarques')
             ->select(
                 DB::RAW('DATEPART(WEEK, etd) as Semana'),
                 DB::RAW('SUM(Cantidad) as Cantidad'),
-
             )
             ->where('id_especie', '=', '7')
             ->groupBy(
@@ -909,7 +898,8 @@ class ReporteriaController extends Controller
             'transporte' => $transporte,
             'chartCatxCliente' => $chartCatxCliente,
             'chartCantxSemana' => $chartCantxSemana,
-            'dataMetas' => $dataMetas
+            'dataMetas' => $dataMetas,
+            'semana' => $semana,
         ], 200);
     }
     public function chartCantxSemana()
