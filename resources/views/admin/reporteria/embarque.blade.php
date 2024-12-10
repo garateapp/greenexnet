@@ -393,7 +393,7 @@
                 url: "{{ route('admin.reporteria.obtieneEmbarques') }}",
                 type: "GET",
                 dataType: "json",
-                timeout: 300000,
+                
                 success: function(data) {
                     console.log(data);
                     datos = data.data;
