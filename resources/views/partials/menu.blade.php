@@ -286,6 +286,7 @@
                         </a>
                     </li>
                     @endcan
+                    @can('reporteria_access_embarques')
                     <li class="c-sidebar-nav-item">
                         <a href="{{ route('admin.reporteria.embarques') }}"
                             class="c-sidebar-nav-link {{ request()->is('admin/reporteria') || request()->is('admin/reporteria/*') ? 'c-active' : '' }}">
@@ -295,6 +296,7 @@
                             Embarques
                         </a>
                     </li>
+                    @endcan
                 </ul>
             </li>
         @endcan
