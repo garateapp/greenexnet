@@ -178,7 +178,7 @@
                         <div class="card text-white bg-info">
                             <div class="card-body pb-0 d-flex justify-content-between align-items-start">
                                 <div>
-                                    <div class="text-center">Cont. Embarcados a la Fecha  </div>
+                                    <div class="text-center">Cont. Embarcados a la Fecha </div>
                                     <div class="fs-4 fw-semibold text-center">
                                         <i class="fas fa-shipping-fast" style="color: #FFFFFF; font-size: x-large;"></i>
                                         <span class="fs-6 fw-normal text-center" id="totalContenedores"
@@ -314,6 +314,8 @@
                                     <th>Cantidad</th>
                                     <th>Cliente</th>
                                     <th>Peso Neto</th>
+                                    <th>Nave</th>
+                                    <th>Contenedor</th>
                                     <th>Transporte</th>
                                     <th>Exportadora</th>
                                     <th>Pais Destino</th>
@@ -391,6 +393,7 @@
                 url: "{{ route('admin.reporteria.obtieneEmbarques') }}",
                 type: "GET",
                 dataType: "json",
+                timeout: 300000,
                 success: function(data) {
                     console.log(data);
                     datos = data.data;
@@ -475,6 +478,14 @@
                                         maximumFractionDigits: 0
                                     }).format(data);
                                 }
+                            },
+                            {
+                                data: 'n_nave',
+                                title: 'Nave'
+                            },
+                            {   
+                                data: 'n_contenedor',
+                                title: 'Contenedor'
                             },
                             {
                                 data: 'transporte',
@@ -703,6 +714,16 @@
                             }
                         }
                     });
+                    let totalEmbarcado = 0;
+                    let totalObjetivo = 0
+                    const subtotales = result.reduce((acc, data) => {
+                        acc.cantidad += Math.round(data.contenedores);
+                        acc.objetivo += parseFloat(data.meta);
+                        return acc;
+                    }, {
+                        cantidad: 0,
+                        objetivo: 0
+                    });
                     const tablaContainer = document.getElementById('tabla-container-metas');
                     const tablaHTML = `<div class="col-md-12">
                     <div class="card">
@@ -713,22 +734,35 @@
             <table>
                 <thead>
                     <tr>
+                        <th></th>
+                        <th colspan="3">MARITITMO</th>
+                        <th> colspan="2">AEREO</th>
+                        </tr>
+                    <tr>
                         <th>Cliente</th>
                         <th>Cantidad</th>
                         <th>Objetivo</th>
                         <th>% Cumplimiento</th>
-
+                        <th>Cantidad</th>
+                        <th>Pallets</th>
                     </tr>
                 </thead>
                 <tbody>
                     ${result.map(data => `
-                            <tr>
-                                <td>${data.c_destinatario}</td>
-                                <td>${Math.round(data.contenedores)}</td>
-                                <td>${data.meta}</td>
-                                <td>${parseFloat((Math.round(data.contenedores)/Math.round(data.meta))*100).toFixed(0)}%</td>
-                            </tr>
-                        `).join('')}
+                                <tr>
+                                    <td>${data.c_destinatario}</td>
+                                    <td>${Math.round(data.contenedores)}</td>
+                                    <td>${data.meta}</td>
+                                    <td>${parseFloat((Math.round(data.contenedores)/Math.round(data.meta))*100).toFixed(0)}%</td>
+                                </tr>
+                            `).join('')}
+                            <!-- Subtotales al final de la tabla -->
+                    <tr>
+                        <td><strong>TOTAL</strong></td>
+                        <td><strong>${subtotales.cantidad}</strong></td>
+                        <td><strong>${subtotales.objetivo}</strong></td>
+                        <td><strong>${parseFloat((subtotales.cantidad / subtotales.objetivo) * 100).toFixed(0)}%</strong></td>
+                    </tr>
                 </tbody>
             </table>
             </div>

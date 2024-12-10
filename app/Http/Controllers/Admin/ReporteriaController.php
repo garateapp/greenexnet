@@ -762,7 +762,9 @@ class ReporteriaController extends Controller
                 't_embalaje',
                 'n_contenedor',
                 'n_etiqueta',
-                'n_embarque'
+                'n_embarque',
+                'n_contenedor',
+                'n_nave'
             )
             ->where('id_especie', '=', '7')
             ->groupBy(
@@ -770,6 +772,8 @@ class ReporteriaController extends Controller
                 'transporte',
                 'c_destinatario',
                 'n_embarque',
+                'n_contenedor',
+                'n_nave',
                 'numero_g_despacho',
                 'n_pais_destino',
                 'n_empresa',
@@ -826,10 +830,10 @@ class ReporteriaController extends Controller
         DATEPART(WEEK, etd) as semana,
         c_destinatario,
         SUM(cantidad) / CP2_Embalaje / 20 as Contenedores,
-        n_embarque
+        n_embarque,
     ")
                 ->where('id_especie', 7)
-                ->where('transporte', 'MARITIMO')
+                //->where('transporte', 'MARITIMO')
                 //->whereRaw("DATEPART(WEEK, etd) ='" . date('W')."'")
                 ->where('n_exportadora', 'Greenex Spa')
                 ->groupByRaw('DATEPART(WEEK, etd), c_destinatario, n_embarque, CP2_Embalaje');
