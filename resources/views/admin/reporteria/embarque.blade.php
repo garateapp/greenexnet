@@ -445,7 +445,7 @@
                 console.log(groupedDataAereo);
                 console.log(groupedDataTerrestre);
 
-                $("#totalContenedores").html(formatNumber2(contenedoresembarcados));
+                $("#totalContenedores").html(formatNumber2(contenedoresembarcados+1));
                 // Configuración del gráfico
 
                 let totalEmbarcado = 0;
@@ -494,10 +494,10 @@
                     cantidadPalletsTerrestre: result.reduce((sum, data) => sum + data.palletsTerrestre, 0),
                     cantidadCajasTerrestre: result.reduce((sum, data) => sum + data.cajasTerrestre, 0)
                 };
-                TotalCajasEnviadas=cantidadCajasMAritimos+cantidadCajas+cantidadCajasTerrestre;
-                var TotalPalletsEnviados=cantidadPallets+cantidadPalletsTerrestre;
-                $("#totalKilosEnviados").html(TotalPalletsEnviados);
-                $("#totalCajasEnviadas").html(TotalCajasEnviadas);
+                TotalCajasEnviadas=subtotales.cantidadCajasMAritimos+subtotales.cantidadCajas+subtotales.cantidadCajasTerrestre;
+                var TotalPalletsEnviados=subtotales.cantidadPallets+subtotales.cantidadPalletsTerrestre;
+                $("#totalKilosEnviados").html(formatNumber2(TotalPalletsEnviados));
+                $("#totalCajasEnviadas").html(formatNumber2(TotalCajasEnviadas));
                 console.log(subtotales);
                 const tablaContainer = document.getElementById('tabla-container-metas');
                 const tablaHTML = `<div class="col-md-12">
