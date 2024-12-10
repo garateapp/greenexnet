@@ -145,7 +145,7 @@
                         <div class="card text-white bg-info">
                             <div class="card-body pb-0 d-flex justify-content-between align-items-start">
                                 <div>
-                                    <div class="text-center">Total Kilos Enviados</div>
+                                    <div class="text-center">Total Pallets</div>
                                     <div class="fs-4 fw-semibold text-center">
                                         <i class="fas fa-weight-hanging" style="color: #FFFFFF; font-size: x-large;"></i>
                                         <span class="fs-6 fw-normal text-center" id="totalKilosEnviados"
@@ -162,7 +162,7 @@
                         <div class="card text-white bg-info">
                             <div class="card-body pb-0 d-flex justify-content-between align-items-start">
                                 <div>
-                                    <div class="text-center">Cantidad Enviada </div>
+                                    <div class="text-center">Cantidad Enviadas </div>
                                     <div class="fs-4 fw-semibold text-center">
                                         <i class="fas fa-shipping-fast" style="color: #FFFFFF; font-size: x-large;"></i>
                                         <span class="fs-6 fw-normal text-center" id="totalCajasEnviadas"
@@ -172,7 +172,7 @@
                                 </div>
                             </div>
                         </div>
-
+                        
                     </div>
                     <div class="col-sm-6 col-xl-3">
                         <div class="card text-white bg-info">
@@ -457,6 +457,7 @@
                 ]);
                 console.log("gggg");
                 console.log(clientesUnicos);
+                var TotalCajasEnviadas=0;
                 const result = Array.from(clientesUnicos).map(cliente => {
                     const maritimos = groupedData[cliente] || {
                         contenedores: 0,
@@ -493,6 +494,10 @@
                     cantidadPalletsTerrestre: result.reduce((sum, data) => sum + data.palletsTerrestre, 0),
                     cantidadCajasTerrestre: result.reduce((sum, data) => sum + data.cajasTerrestre, 0)
                 };
+                TotalCajasEnviadas=cantidadCajasMAritimos+cantidadCajas+cantidadCajasTerrestre;
+                var TotalPalletsEnviados=cantidadPallets+cantidadPalletsTerrestre;
+                $("#totalKilosEnviados").html(TotalPalletsEnviados);
+                $("#totalCajasEnviadas").html(TotalCajasEnviadas);
                 console.log(subtotales);
                 const tablaContainer = document.getElementById('tabla-container-metas');
                 const tablaHTML = `<div class="col-md-12">
