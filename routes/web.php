@@ -144,8 +144,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('reporteria/obtieneDetallesTransitoCalibre', "ReporteriaController@obtieneDetallesTransitoCalibre")->name("reporteria.obtieneDetallesTransitoCalibre");
     Route::get('reporteria/embarques', "ReporteriaController@embarques")->name("reporteria.embarques");
     Route::get('reporteria/obtieneEmbarques',"ReporteriaController@obtieneEmbarques")->name("reporteria.obtieneEmbarques");
-
-
+    Route::get('reporteria/ObjetivosEnvios',"ReporteriaController@ObjetivosEnvios")->name("reporteria.ObjetivosEnvios");
+    Route::get('reporteria/ObjetivosEnviosAereos',"ReporteriaController@ObjetivosEnviosAereos")->name("reporteria.ObjetivosEnviosAereos");
+    Route::get('reporteria/ObjetivosEnviosTerrestre',"ReporteriaController@ObjetivosEnviosTerrestre")->name("reporteria.ObjetivosEnviosTerrestre");
     // Embalajes
     Route::delete('embalajes/destroy', 'EmbalajesController@massDestroy')->name('embalajes.massDestroy');
     Route::post('embalajes/parse-csv-import', 'EmbalajesController@parseCsvImport')->name('embalajes.parseCsvImport');

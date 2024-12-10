@@ -763,7 +763,7 @@ class ReporteriaController extends Controller
                 'n_contenedor',
                 'n_etiqueta',
                 'n_embarque',
-                'n_contenedor',
+                'contenedor',
                 'n_nave'
             )
             ->where('id_especie', '=', '7')
@@ -772,7 +772,7 @@ class ReporteriaController extends Controller
                 'transporte',
                 'c_destinatario',
                 'n_embarque',
-                'n_contenedor',
+                'contenedor',
                 'n_nave',
                 'numero_g_despacho',
                 'n_pais_destino',
@@ -799,14 +799,8 @@ class ReporteriaController extends Controller
                     if (ClientesComex::where('codigo_cliente', explode("-", $embarque->c_destinatario)[0])->exists()) {
                         $CxComex = ClientesComex::where('codigo_cliente', explode("-", $embarque->c_destinatario)[0])->first();
                         $embarque->c_destinatario = ClientesComex::where('codigo_cliente', explode("-", $embarque->c_destinatario)[0])->first()->nombre_fantasia;
-                        $MetaCx = MetasClienteComex::where('clientecomex_id', '=', $CxComex->id)->first();
-                        if ($MetaCx != null) {
-                            $embarque->alsu = $MetaCx->alsu;
-                            $embarque->meta = $MetaCx->cantidad;
-                        } else {
-                            $embarque->alsu = '';
-                            $embarque->meta = 0;
-                        }
+                       
+                       
                     } else {
                     }
                     $embarque->c_destinatario = ClientesComex::where('codigo_cliente', $embarque->c_destinatario)->first()->nombre_fantasia;
@@ -823,22 +817,31 @@ class ReporteriaController extends Controller
         $transporte = collect($embarques)->pluck('transporte')->unique()->values();
         $semana = collect($embarques)->pluck('Semana')->unique()->values();
 
-
+        return response()->json([
+            'data' => $embarques,
+            'n_variedades' => $n_variedades,
+            'n_etiqueta' => $n_etiqueta,
+            'cliente' => $cliente,
+            'n_exportadora' => $n_exportadora,
+            'total' => $total,
+            'totalPeso' => $totalPeso,
+            'transporte' => $transporte,
+            'semana' => $semana,
+        ], 200);
+    }
+    public function ObjetivosEnvios(){
         $dataMetas = DB::connection("sqlsrv")->table(function ($query) {
             $query->from('dbo.V_PKG_Embarques')
                 ->selectRaw("
         DATEPART(WEEK, etd) as semana,
         c_destinatario,
-        SUM(cantidad) / CP2_Embalaje / 20 as Contenedores,
-        n_embarque,
-    ")
+        SUM(cantidad) / CP2_Embalaje / 20 as Contenedores, SUM(cantidad) as cantidad")
                 ->where('id_especie', 7)
-                //->where('transporte', 'MARITIMO')
-                //->whereRaw("DATEPART(WEEK, etd) ='" . date('W')."'")
+                ->where('transporte', 'MARITIMO')
                 ->where('n_exportadora', 'Greenex Spa')
-                ->groupByRaw('DATEPART(WEEK, etd), c_destinatario, n_embarque, CP2_Embalaje');
+                ->groupByRaw('DATEPART(WEEK, etd), c_destinatario, CP2_Embalaje');
         },'s')
-            ->select('semana', 'c_destinatario', DB::raw('SUM(Contenedores) as contenedores'))
+            ->select('semana', 'c_destinatario', DB::raw('SUM(Contenedores) as contenedores'),DB::raw('SUM(cantidad) as Cajas'))
             ->groupBy('semana', 'c_destinatario')
             ->orderBy('semana', 'desc')
             ->get();
@@ -868,64 +871,109 @@ class ReporteriaController extends Controller
                             $chart->alsu = '';
                             $chart->meta = 0;
                         }
-                        //$chart->c_destinatario = ClientesComex::where('codigo_cliente', $chart->c_destinatario)->first()->nombre_fantasia;
+               
                     } catch (\Throwable $th) {
                     }
                 }
             }
-
-        $chartCatxCliente = $dataMetas;
-
-
-
-
-
-        $chartCantxSemana = DB::connection("sqlsrv")->table('dbo.V_PKG_Embarques')
-            ->select(
-                DB::RAW('DATEPART(WEEK, etd) as Semana'),
-                DB::RAW('SUM(Cantidad) as Cantidad'),
-            )
-            ->where('id_especie', '=', '7')
-            ->groupBy(
-                DB::RAW('DATEPART(WEEK, etd)'),
-
-            )->orderBy('Semana')
-            ->get();
-        return response()->json([
-            'data' => $embarques,
-            'n_variedades' => $n_variedades,
-            'n_etiqueta' => $n_etiqueta,
-            'cliente' => $cliente,
-            'n_exportadora' => $n_exportadora,
-            'total' => $total,
-            'totalPeso' => $totalPeso,
-            'transporte' => $transporte,
-            'chartCatxCliente' => $chartCatxCliente,
-            'chartCantxSemana' => $chartCantxSemana,
-            'dataMetas' => $dataMetas,
-            'semana' => $semana,
-        ], 200);
+            return response()->json(['data' => $dataMetas], 200);
     }
-    public function chartCantxSemana()
-    {
-        $embarques = DB::connection("sqlsrv")->table('dbo.V_PKG_Embarques')
-            ->select(
-                DB::RAW('DATEPART(WEEK, etd) as Semana'),
-                DB::RAW('SUM(Cantidad) as Cantidad'),
-
-            )
-            ->where('id_especie', '=', '7')
-            ->groupBy(
-                DB::RAW('DATEPART(WEEK, etd)')
-
-            )
-            ->orderBy('Semana')
+    public function ObjetivosEnviosAereos(){
+        $dataMetas = DB::connection("sqlsrv")->table(function ($query) {
+            $query->from('dbo.V_PKG_Embarques')
+                ->selectRaw("
+        DATEPART(WEEK, etd) as semana,
+        c_destinatario,
+        ROUND(SUM(cantidad) / CP2_Embalaje,2) as Pallets, SUM(cantidad) as Cajas")
+                ->where('id_especie', 7)
+                ->where('transporte', 'AEREO')
+                ->where('n_exportadora', 'Greenex Spa')
+                ->groupByRaw('DATEPART(WEEK, etd), c_destinatario, CP2_Embalaje');
+        },'s')
+            ->select('semana', 'c_destinatario', DB::raw('SUM(Pallets) as Pallets,SUM(Cajas) as Cajas '))
+            ->groupBy('semana', 'c_destinatario')
+            ->orderBy('semana', 'desc')
             ->get();
-        return response()->json(['chartCantxSemana' => $embarques], 200);
-    }
-    public function chartCantxCliente()
-    {
+           
+            foreach ($dataMetas as $chart) {
+                if ($chart->c_destinatario != null) {
 
-        return response()->json(['chartCantxCliente' => $embarques], 200);
+                    try {
+
+                        if (ClientesComex::where('codigo_cliente', explode("-", $chart->c_destinatario)[0])->exists()) {
+
+                            $CxComex = ClientesComex::where('codigo_cliente', explode("-", $chart->c_destinatario)[0])->first();
+                            $chart->c_destinatario =$CxComex->nombre_fantasia;
+
+                            $MetaCx = MetasClienteComex::where('clientecomex_id', '=', $CxComex->id)->first();
+                            if ($MetaCx != null) {
+                                $chart->alsu = $MetaCx->observaciones;
+                                $chart->meta = $MetaCx->cantidad;
+                            } else {
+                                $chart->alsu = '';
+                                $chart->meta = 0;
+                            }
+
+
+
+                        } else {
+                            $chart->alsu = '';
+                            $chart->meta = 0;
+                        }
+               
+                    } catch (\Throwable $th) {
+                    }
+                }
+            }
+            return response()->json(['data' => $dataMetas], 200);
+    }
+    public function ObjetivosEnviosTerrestre(){
+        $dataMetas = DB::connection("sqlsrv")->table(function ($query) {
+            $query->from('dbo.V_PKG_Embarques')
+                ->selectRaw("
+        DATEPART(WEEK, etd) as semana,
+        c_destinatario,
+        ROUND(SUM(cantidad) / CP2_Embalaje,2) as Pallets, SUM(cantidad) as Cajas")
+                ->where('id_especie', 7)
+                ->where('transporte', 'CAMION FRIGORIFICO')
+                ->where('n_exportadora', 'Greenex Spa')
+                ->groupByRaw('DATEPART(WEEK, etd), c_destinatario, CP2_Embalaje');
+        },'s')
+            ->select('semana', 'c_destinatario', DB::raw('SUM(Pallets) as Pallets,SUM(Cajas) as Cajas '))
+            ->groupBy('semana', 'c_destinatario')
+            ->orderBy('semana', 'desc')
+            ->get();
+           
+            foreach ($dataMetas as $chart) {
+                if ($chart->c_destinatario != null) {
+
+                    try {
+
+                        if (ClientesComex::where('codigo_cliente', explode("-", $chart->c_destinatario)[0])->exists()) {
+
+                            $CxComex = ClientesComex::where('codigo_cliente', explode("-", $chart->c_destinatario)[0])->first();
+                            $chart->c_destinatario =$CxComex->nombre_fantasia;
+
+                            $MetaCx = MetasClienteComex::where('clientecomex_id', '=', $CxComex->id)->first();
+                            if ($MetaCx != null) {
+                                $chart->alsu = $MetaCx->observaciones;
+                                $chart->meta = $MetaCx->cantidad;
+                            } else {
+                                $chart->alsu = '';
+                                $chart->meta = 0;
+                            }
+
+
+
+                        } else {
+                            $chart->alsu = '';
+                            $chart->meta = 0;
+                        }
+               
+                    } catch (\Throwable $th) {
+                    }
+                }
+            }
+            return response()->json(['data' => $dataMetas], 200);
     }
 }
