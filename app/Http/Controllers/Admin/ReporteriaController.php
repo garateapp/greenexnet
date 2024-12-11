@@ -548,16 +548,20 @@ class ReporteriaController extends Controller
             }
             return $item;
         });
-        $antiguedad = DB::connection("sqlsrv")->table('dbo.V_PKG_Recepcion_FG')
+        $antiguedad = DB::connection("sqlsrv")->table('dbo.V_PKG_Stock_Inventario')
             ->select(
                 DB::RAW("SUM(cantidad) AS cantidad"),
                 DB::RAW("SUM(peso_neto) as peso_neto"),
-                DB::RAW("MIN(fecha_g_recepcion_sh) as fecha_minima"),
-                'numero_g_recepcion',
-            )->where('destruccion_tipo', '=', '')
+                "fecha_recepcion as fecha_minima"
+                
+            )
+            //->where('destruccion_tipo', '=', '')
             ->where('id_especie', '=', '7')
+            ->where('id_altura','=','8')
             ->where('id_empresa', '=', '1')
-            ->groupBy('numero_g_recepcion')
+            ->where(DB::raw("DATEPART(YEAR,fecha_recepcion)"), '>', '2023')
+            ->groupBy('fecha_recepcion')
+
             ->first();
 
         $n_variedades = collect($transito)->pluck('n_variedad')->unique()->values();
