@@ -510,7 +510,7 @@ class ReporteriaController extends Controller
             ->where('n_categoria', '=', 'Cat 1')
             ->where('n_exportadora', '=', 'Greenex Spa')
             ->where('id_empresa', '=', '1')
-            
+            ->where('n_categoria', '!=', 'muestra')
             ->where('fecha_produccion', '<', DB::RAW("DATEADD(DAY, -2, GETDATE())"))
             ->groupBy(
                 'n_variedad_original',
@@ -560,6 +560,7 @@ class ReporteriaController extends Controller
             ->where('id_altura','=','8')
             ->where('id_empresa', '=', '1')
             ->where(DB::raw("DATEPART(YEAR,fecha_recepcion)"), '>', '2023')
+            ->where('n_categoria', '!=', 'muestra')
             ->groupBy('fecha_recepcion')
 
             ->first();
@@ -616,6 +617,7 @@ class ReporteriaController extends Controller
             ->where('c_embalaje', '=', $request->n_embalaje)
             ->where('n_variedad_original', '=', $request->n_variedad)
             ->where('n_etiqueta', '=', $request->n_etiqueta)
+            ->where('n_categoria', '!=', 'muestra')
             ->where('id_empresa', '=', '1')
             ->where('fecha_produccion', '<', DB::RAW("DATEADD(DAY, -2, GETDATE())"))
 
