@@ -3,6 +3,12 @@
 
 @section('content')
     <style>
+        .nav-tabs .nav-link.active {
+            color: #495057;
+            background-color: #a9dd94;
+            border-color: #dee2e6 #dee2e6 #f8fafc;
+        }
+
         tr.group {
             background-color: #f2f2f2;
             font-weight: bold;
@@ -223,7 +229,7 @@
 
                         <div class="card">
                             <div class="card-body" id="chart-container">
-                                <h5 class="card-title text-center">Contenedores x Cliente</h5>
+                                <h5 class="card-title text-center">Cajas x Cliente</h5>
                                 <canvas id="MetasxClienteChart"></canvas>
 
                             </div>
@@ -337,6 +343,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.0.1"></script>
     <script>
         $(document).ready(function() {
+            $("#maritimo-tab").on('click', function() {
+                detalleMaritimo();
+            });
             let table = null;
             $('#toggleButton').on('click', function() {
                 $('#graficosContainer').slideToggle('fast', function() {
@@ -434,8 +443,7 @@
                     ...Object.keys(groupedDataAereo),
                     ...Object.keys(groupedDataTerrestre)
                 ]);
-                console.log("gggg");
-                console.log(clientesUnicos);
+               
                 var TotalCajasEnviadas = 0;
                 const result = Array.from(clientesUnicos).map(cliente => {
                     const maritimos = groupedData[cliente] || {
@@ -462,7 +470,7 @@
                         palletsTerrestre: parseFloat(terrestres.Pallets) || 0,
                         cajasTerrestre: parseFloat(terrestres.Cajas) || 0
                     };
-                });
+                }).sort((a, b) => a.c_destinatario.localeCompare(b.c_destinatario));
 
                 const subtotales = {
                     cantidadMaritimos: result.reduce((sum, data) => sum + data.contenedores, 0),
@@ -486,65 +494,65 @@
                             Cumplimiento de Objetivos
                             </div>
                             <div class="card-body">
-            <table>
-  <thead>
-    <tr>
-      <th></th>
-      <th colspan="2">MARITIMO</th>
-      <th colspan="2">AEREO</th>
-      <th colspan="2">TERRESTRE</th>
-      <th colspan="3">CUMPLIMIENTO</th>
-    </tr>
-    <tr>
-      <th>Cliente</th>     
-      <th>Contenedores</th>
-      <th>Cajas</th> 
-      <th>Pallets</th>
-      <th>Cajas</th>
-      <th>Pallets</th>
-      <th>Cajas</th>
-      <th>Objetivo</th>
-      <th>Total Cajas</th>
-      <th>% Cumplimiento</th>
-    </tr>
-  </thead>
-  <tbody>
-    ${result.map(data => `
-                                  <tr>
-                                    
-                                    <td>${data.c_destinatario}</td>                        
-                                    <td>${formatNumber2(data.contenedores)}</td>                        
-                                    <td>${formatNumber2(data.cajas)}</td>
-                                    <td>${formatNumber2(data.palletsAereo)}</td>
-                                    <td>${formatNumber2(data.cajasAereo)}</td>
-                                    <td>${formatNumber2(data.palletsTerrestre)} </td>
-                                    <td>${formatNumber2(data.cajasTerrestre)}</td>
-                                    
-                                    <td>${formatNumber2(data.meta)}</td>
-                                    <td>${formatNumber2((data.cajas+data.cajasAereo+data.cajasTerrestre))}</td>
-                                    <td>${(data.meta==0) ? 0 : parseFloat(((data.cajas+data.cajasAereo+data.cajasTerrestre) / data.meta) * 100).toFixed(0)}%</td>
-                                  </tr>
-                                `).join('')}
-    <!-- Subtotales -->
-    <tr>
-      <td><strong>TOTAL</strong></td>
-      <td><strong>${formatNumber2(subtotales.cantidadMaritimos)}</strong></td>      
-      <td><strong>${formatNumber2(subtotales.cantidadCajasMAritimos)}</strong></td>
-      
-      <td><strong>${formatNumber2(subtotales.cantidadPallets)}</strong></td>
-      <td><strong>${formatNumber2(subtotales.cantidadCajas)}</strong></td>
-      <td><strong>${formatNumber2(subtotales.cantidadPalletsTerrestre)}</strong></td>
-      <td><strong>${formatNumber2(subtotales.cantidadCajasTerrestre)}</strong></td>
-      <td><strong>${formatNumber2(subtotales.objetivoMaritimos)}</strong></td>
-      <td><strong>${formatNumber2((subtotales.cantidadCajasMAritimos+subtotales.cantidadCajasTerrestre+subtotales.cantidadCajas ))}</strong></td>
-      <td><strong>${parseFloat(((subtotales.cantidadCajasMAritimos+subtotales.cantidadCajasTerrestre+subtotales.cantidadCajas )/ subtotales.objetivoMaritimos) * 100).toFixed(0)}%</strong></td>
-    </tr>
-  </tbody>
-</table>
-            </div>
-            </div>
-            </div>
-        `;
+                            <table>
+                <thead>
+                    <tr>
+                    <th></th>
+                    <th colspan="2">MARITIMO</th>
+                    <th colspan="2">AEREO</th>
+                    <th colspan="2">TERRESTRE</th>
+                    <th colspan="3">CUMPLIMIENTO</th>
+                    </tr>
+                    <tr>
+                    <th>Cliente</th>     
+                    <th>Contenedores</th>
+                    <th>Cajas</th> 
+                    <th>Pallets</th>
+                    <th>Cajas</th>
+                    <th>Pallets</th>
+                    <th>Cajas</th>
+                    <th>Objetivo</th>
+                    <th>Total Cajas</th>
+                    <th>% Cumplimiento</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${result.map(data => `
+                                                        <tr>
+                                                            
+                                                            <td>${data.c_destinatario}</td>                        
+                                                            <td>${formatNumber2(data.contenedores)}</td>                        
+                                                            <td>${formatNumber2(data.cajas)}</td>
+                                                            <td>${formatNumber2(data.palletsAereo)}</td>
+                                                            <td>${formatNumber2(data.cajasAereo)}</td>
+                                                            <td>${formatNumber2(data.palletsTerrestre)} </td>
+                                                            <td>${formatNumber2(data.cajasTerrestre)}</td>
+                                                            
+                                                            <td>${formatNumber2(data.meta)}</td>
+                                                            <td>${formatNumber2((data.cajas+data.cajasAereo+data.cajasTerrestre))}</td>
+                                                            <td>${(data.meta==0) ? 0 : parseFloat(((data.cajas+data.cajasAereo+data.cajasTerrestre) / data.meta) * 100).toFixed(0)}%</td>
+                                                        </tr>
+                                                        `).join('')}
+                    <!-- Subtotales -->
+                    <tr>
+                    <td><strong>TOTAL</strong></td>
+                    <td><strong>${formatNumber2(subtotales.cantidadMaritimos)}</strong></td>      
+                    <td><strong>${formatNumber2(subtotales.cantidadCajasMAritimos)}</strong></td>
+                    
+                    <td><strong>${formatNumber2(subtotales.cantidadPallets)}</strong></td>
+                    <td><strong>${formatNumber2(subtotales.cantidadCajas)}</strong></td>
+                    <td><strong>${formatNumber2(subtotales.cantidadPalletsTerrestre)}</strong></td>
+                    <td><strong>${formatNumber2(subtotales.cantidadCajasTerrestre)}</strong></td>
+                    <td><strong>${formatNumber2(subtotales.objetivoMaritimos)}</strong></td>
+                    <td><strong>${formatNumber2((subtotales.cantidadCajasMAritimos+subtotales.cantidadCajasTerrestre+subtotales.cantidadCajas ))}</strong></td>
+                    <td><strong>${parseFloat(((subtotales.cantidadCajasMAritimos+subtotales.cantidadCajasTerrestre+subtotales.cantidadCajas )/ subtotales.objetivoMaritimos) * 100).toFixed(0)}%</strong></td>
+                    </tr>
+                </tbody>
+                </table>
+                            </div>
+                            </div>
+                            </div>
+                        `;
                 tablaContainer.innerHTML = tablaHTML;
                 const labels3 = result.map(data => data.c_destinatario);
                 const cantidades3 = result.map(data => parseFloat(data.cajasAereo + data.cajas + data
@@ -884,243 +892,251 @@
                     table.draw(); // Redibuja la tabla aplicando los filtros
                 });
             }
-            // $.ajax({
 
-            //     url: "{{ route('admin.reporteria.obtieneEmbarques') }}",
-            //     type: "GET",
-            //     dataType: "json",
+            function detalleMaritimo() {
+                $.ajax({
 
-            //     success: function(data) {
-            //         console.log(data);
-            //         datos = data.data;
-            //         var variedades = [];
-            //         var calibres = [];
-            //         var exportadoras = [];
-            //         var etiqueta = [];
-            //         var transporte = [];
-            //         variedades = data.n_variedades;
-            //         cliente = data.cliente;
-            //         exportadoras = data.n_exportadora;
-            //         etiqueta = data.n_etiqueta;
-            //         semana = data.semana;
-            //         transporte = data.transporte;
-            //         var chartData = data.chartCantxSemana;
-            //         var chartData2 = data.chartCatxCliente;
-            //         variedades.forEach(
-            //             function(value) {
+                    url: "{{ route('admin.reporteria.obtieneEmbarques') }}",
+                    type: "GET",
+                    dataType: "json",
 
-            //                 $('#filtroVariedad').append(new Option(value, value));
-            //             });
+                    success: function(data) {
+                        console.log(data);
+                        datos = data.data;
+                        var variedades = [];
+                        var calibres = [];
+                        var exportadoras = [];
+                        var etiqueta = [];
+                        var transporte = [];
+                        variedades = data.n_variedades;
+                        cliente = data.cliente;
+                        exportadoras = data.n_exportadora;
+                        etiqueta = data.n_etiqueta;
+                        semana = data.semana;
+                        transporte = data.transporte;
+                        var chartData = data.chartCantxSemana;
+                        var chartData2 = data.chartCatxCliente;
+                        variedades.forEach(
+                            function(value) {
 
-            //         etiqueta.forEach(
-            //             function(value) {
-            //                 $('#filtroEtiqueta').append(new Option(value, value));
-            //             });
-            //         cliente.forEach(
-            //             function(value) {
-            //                 $('#filtroCliente').append(new Option(value, value));
-            //             });
-            //         exportadoras.forEach(
-            //             function(value) {
-            //                 $('#filtroExportadora').append(new Option(value, value));
-            //             });
-            //         transporte.forEach(
-            //             function(value) {
-            //                 $('#filtroTransporte').append(new Option(value, value));
-            //             });
-            //         semana.forEach(
-            //             function(value) {
-            //                 $('#filtroSemana').append(new Option(value, value));
-            //             });
+                                $('#filtroVariedad').append(new Option(value, value));
+                            });
 
-            //         $("#totalKilosEnviados").html(formatNumber2(data.totalPeso));
-            //         $("#totalCajasEnviadas").html(formatNumber2(data.total));
+                        etiqueta.forEach(
+                            function(value) {
+                                $('#filtroEtiqueta').append(new Option(value, value));
+                            });
+                        cliente.forEach(
+                            function(value) {
+                                $('#filtroCliente').append(new Option(value, value));
+                            });
+                        exportadoras.forEach(
+                            function(value) {
+                                $('#filtroExportadora').append(new Option(value, value));
+                            });
+                        transporte.forEach(
+                            function(value) {
+                                $('#filtroTransporte').append(new Option(value, value));
+                            });
+                        semana.forEach(
+                            function(value) {
+                                $('#filtroSemana').append(new Option(value, value));
+                            });
 
-            //         table = $('#EmbarqueTable').DataTable({
-            //             fixedColumns: true,
-            //             fixedHeader: true,
-            //             responsive: true,
-            //             language: {
+                        $("#totalKilosEnviados").html(formatNumber2(data.totalPeso));
+                        $("#totalCajasEnviadas").html(formatNumber2(data.total));
 
-            //                 url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-CL.json'
-            //             },
-            //             displayLength: 10,
-            //             data: datos,
-            //             columns: [{
-            //                     className: 'dt-control',
-            //                     orderable: false,
-            //                     data: null,
-            //                     defaultContent: ''
-            //                 },
-            //                 {
-            //                     data: 'Semana',
-            //                     title: 'Semana'
-            //                 },
-            //                 {
-            //                     data: 'Cantidad',
-            //                     title: 'Cantidad'
-            //                 },
-            //                 {
-            //                     data: 'c_destinatario',
-            //                     title: 'Cliente'
-            //                 },
-            //                 {
-            //                     data: 'Peso_neto',
-            //                     title: 'Peso Neto',
-            //                     render: function(data, type, row) {
-            //                         // Formateamos el número con separador de miles y sin decimales
-            //                         return new Intl.NumberFormat('es-CL', {
-            //                             minimumFractionDigits: 0,
-            //                             maximumFractionDigits: 0
-            //                         }).format(data);
-            //                     }
-            //                 },
-            //                 {
-            //                     data: 'n_nave',
-            //                     title: 'Nave'
-            //                 },
-            //                 {
-            //                     data: 'contenedor',
-            //                     title: 'Contenedor'
-            //                 },
-            //                 {
-            //                     data: 'transporte',
-            //                     title: 'Transporte'
-            //                 },
-            //                 {
-            //                     data: 'n_exportadora',
-            //                     title: 'Exportadora',
-            //                     visible: false
+                        table = $('#EmbarqueTable').DataTable({
+                            fixedColumns: true,
+                            fixedHeader: true,
+                            responsive: true,
+                            language: {
 
-            //                 },
-            //                 {
-            //                     data: 'n_pais_destino',
-            //                     title: 'Pais Destino'
-            //                 },
-            //                 {
-            //                     data: 'numero_g_despacho',
-            //                     title: 'Despacho'
-            //                 },
-            //                 {
-            //                     data: 'n_altura',
-            //                     title: 'Altura'
-            //                 },
+                                url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-CL.json'
+                            },
+                            displayLength: 10,
+                            data: datos,
+                            columns: [{
+                                    className: 'dt-control',
+                                    orderable: false,
+                                    data: null,
+                                    defaultContent: ''
+                                },
+                                {
+                                    data: 'Semana',
+                                    title: 'Semana'
+                                },
+                                {
+                                    data: 'Cantidad',
+                                    title: 'Cantidad'
+                                },
+                                {
+                                    data: 'c_destinatario',
+                                    title: 'Cliente'
+                                },
+                                {
+                                    data: 'Peso_neto',
+                                    title: 'Peso Neto',
+                                    render: function(data, type, row) {
+                                        // Formateamos el número con separador de miles y sin decimales
+                                        return new Intl.NumberFormat('es-CL', {
+                                            minimumFractionDigits: 0,
+                                            maximumFractionDigits: 0
+                                        }).format(data);
+                                    }
+                                },
+                                {
+                                    data: 'n_nave',
+                                    title: 'Nave'
+                                },
+                                {
+                                    data: 'contenedor',
+                                    title: 'Contenedor'
+                                },
+                                {
+                                    data: 'transporte',
+                                    title: 'Transporte'
+                                },
+                                {
+                                    data: 'n_exportadora',
+                                    title: 'Exportadora',
+                                    visible: false
 
-            //                 {
-            //                     data: 'N_Variedad',
-            //                     title: 'Variedad'
-            //                 },
-            //                 {
-            //                     data: 'n_embalaje',
-            //                     title: 'Embalaje'
-            //                 },
-            //                 {
-            //                     data: 'n_etiqueta',
-            //                     title: 'Etiqueta'
-            //                 },
+                                },
+                                {
+                                    data: 'n_pais_destino',
+                                    title: 'Pais Destino'
+                                },
+                                {
+                                    data: 'numero_g_despacho',
+                                    title: 'Despacho'
+                                },
+                                {
+                                    data: 'n_altura',
+                                    title: 'Altura'
+                                },
 
-            //             ],
-            //             footerCallback: function(row, data, start, end, display) {
+                                {
+                                    data: 'N_Variedad',
+                                    title: 'Variedad'
+                                },
+                                {
+                                    data: 'n_embalaje',
+                                    title: 'Embalaje'
+                                },
+                                {
+                                    data: 'n_etiqueta',
+                                    title: 'Etiqueta'
+                                },
 
-            //                 let api = this.api();
+                            ],
+                            footerCallback: function(row, data, start, end, display) {
 
-            //                 // Función para convertir a número
-            //                 let intVal = function(i) {
-            //                     return typeof i === 'string' ? i.replace(/[\$,]/g, '') *
-            //                         1 :
-            //                         typeof i ===
-            //                         'number' ? i : 0;
-            //                 };
-            //                 let totalPesoNeto = api
-            //                     .column(4)
-            //                     .data()
-            //                     .reduce(function(a, b) {
-            //                         return intVal(a) + intVal(b);
-            //                     }, 0);
+                                let api = this.api();
 
-            //                 let subtotalPesoNeto = api
-            //                     .column(4, {
-            //                         page: 'current'
-            //                     })
-            //                     .data()
-            //                     .reduce(function(a, b) {
-            //                         return intVal(a) + intVal(b);
-            //                     }, 0);
-            //                 let totalCantidad = api
-            //                     .column(2)
-            //                     .data()
-            //                     .reduce(function(a, b) {
-            //                         return intVal(a) + intVal(b);
-            //                     }, 0);
+                                // Función para convertir a número
+                                let intVal = function(i) {
+                                    return typeof i === 'string' ? i.replace(/[\$,]/g,
+                                            '') *
+                                        1 :
+                                        typeof i ===
+                                        'number' ? i : 0;
+                                };
+                                let totalPesoNeto = api
+                                    .column(4)
+                                    .data()
+                                    .reduce(function(a, b) {
+                                        return intVal(a) + intVal(b);
+                                    }, 0);
 
-            //                 let subtotalCantidad = api
-            //                     .column(2, {
-            //                         page: 'current'
-            //                     })
-            //                     .data()
-            //                     .reduce(function(a, b) {
-            //                         return intVal(a) + intVal(b);
-            //                     }, 0);
-            //                 $(api.column(4).footer()).html(
-            //                     ` ${formatNumber2(subtotalPesoNeto.toFixed(0))}<br> ${formatNumber2(totalPesoNeto.toFixed(0))}`
-            //                 );
-            //                 $(api.column(2).footer()).html(
-            //                     ` ${formatNumber2(subtotalCantidad.toFixed(0))}<br> ${formatNumber2(totalCantidad.toFixed(0))}`
-            //                 );
-            //                 // $("#proSinIniciar").html(
-            //                 //     `${formatNumber(totalPesoNeto.toFixed(0))}`)
-            //             }
-            //         });
-            //         $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-            //             const filtroVariedad = $('#filtroVariedad').val() || [];
-            //             const filtroExportadora = $('#filtroExportadora').val() || [];
-            //             const filtroEtiqueta = $('#filtroEtiqueta').val() || [];
-            //             const filtroCliente = $('#filtroCliente').val() || [];
-            //             const filtroTransporte = $('#filtroTransporte').val() || [];
-            //             const filtroSemana = $('#filtroSemana').val() || [];
-            //             const variedad = data[
-            //                 12]; // Ajusta el índice según la posición de la columna en la tabla
-            //             const Exportadora = data[8]; // Ajusta el índice
-            //             const etiqueta = data[13]; // Ajusta el índice
-            //             const cliente = data[3]; // Ajusta el índice
-            //             const transporte = data[7]; // Ajusta el índice
-            //             const semana = data[1]; // Ajusta el índice
-            //             const coincideVariedad = filtroVariedad.length === 0 || filtroVariedad
-            //                 .includes(variedad);
-            //             const coincideExportadora = filtroExportadora.length === 0 ||
-            //                 filtroExportadora
-            //                 .includes(Exportadora);
-            //             const coincideEtiqueta = filtroEtiqueta.length === 0 || filtroEtiqueta
-            //                 .includes(etiqueta);
-            //             const coincideCliente = filtroCliente.length === 0 || filtroCliente
-            //                 .includes(cliente);
-            //             const coincideTransporte = filtroTransporte.length === 0 ||
-            //                 filtroTransporte
-            //                 .includes(transporte);
-            //             const coincideSemana = filtroSemana.length === 0 || filtroSemana
-            //                 .includes(semana);
+                                let subtotalPesoNeto = api
+                                    .column(4, {
+                                        page: 'current'
+                                    })
+                                    .data()
+                                    .reduce(function(a, b) {
+                                        return intVal(a) + intVal(b);
+                                    }, 0);
+                                let totalCantidad = api
+                                    .column(2)
+                                    .data()
+                                    .reduce(function(a, b) {
+                                        return intVal(a) + intVal(b);
+                                    }, 0);
 
-            //             return coincideVariedad && coincideExportadora && coincideEtiqueta &&
-            //                 coincideCliente && coincideTransporte && coincideSemana;
-            //         });
+                                let subtotalCantidad = api
+                                    .column(2, {
+                                        page: 'current'
+                                    })
+                                    .data()
+                                    .reduce(function(a, b) {
+                                        return intVal(a) + intVal(b);
+                                    }, 0);
+                                $(api.column(4).footer()).html(
+                                    ` ${formatNumber2(subtotalPesoNeto.toFixed(0))}<br> ${formatNumber2(totalPesoNeto.toFixed(0))}`
+                                );
+                                $(api.column(2).footer()).html(
+                                    ` ${formatNumber2(subtotalCantidad.toFixed(0))}<br> ${formatNumber2(totalCantidad.toFixed(0))}`
+                                );
+                                // $("#proSinIniciar").html(
+                                //     `${formatNumber(totalPesoNeto.toFixed(0))}`)
+                            }
+                        });
+                        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                            const filtroVariedad = $('#filtroVariedad').val() || [];
+                            const filtroExportadora = $('#filtroExportadora').val() || [];
+                            const filtroEtiqueta = $('#filtroEtiqueta').val() || [];
+                            const filtroCliente = $('#filtroCliente').val() || [];
+                            const filtroTransporte = $('#filtroTransporte').val() || [];
+                            const filtroSemana = $('#filtroSemana').val() || [];
+                            const variedad = data[
+                                12
+                            ]; // Ajusta el índice según la posición de la columna en la tabla
+                            const Exportadora = data[8]; // Ajusta el índice
+                            const etiqueta = data[13]; // Ajusta el índice
+                            const cliente = data[3]; // Ajusta el índice
+                            const transporte = data[7]; // Ajusta el índice
+                            const semana = data[1]; // Ajusta el índice
+                            const coincideVariedad = filtroVariedad.length === 0 ||
+                                filtroVariedad
+                                .includes(variedad);
+                            const coincideExportadora = filtroExportadora.length === 0 ||
+                                filtroExportadora
+                                .includes(Exportadora);
+                            const coincideEtiqueta = filtroEtiqueta.length === 0 ||
+                                filtroEtiqueta
+                                .includes(etiqueta);
+                            const coincideCliente = filtroCliente.length === 0 || filtroCliente
+                                .includes(cliente);
+                            const coincideTransporte = filtroTransporte.length === 0 ||
+                                filtroTransporte
+                                .includes(transporte);
+                            const coincideSemana = filtroSemana.length === 0 || filtroSemana
+                                .includes(semana);
+
+                            return coincideVariedad && coincideExportadora &&
+                                coincideEtiqueta &&
+                                coincideCliente && coincideTransporte && coincideSemana;
+                        });
 
 
 
 
-            //         //
-            //         // Configuración del gráfico CAnt x Cliente
-            //         hideLoading();
-            //     },
-            //     error: function(xhr, status, error) {
-            //         hideLoading();
-            //         console.log(xhr.responseText);
-            //     },
-            // });
-            // // console.log(data);
-            // $('.select2').on('change', function() {
-            //     table.draw(); // Redibuja la tabla aplicando los filtros
-            // });
-
-        });
+                        //
+                        // Configuración del gráfico CAnt x Cliente
+                        hideLoading();
+                    },
+                    error: function(xhr, status, error) {
+                        hideLoading();
+                        console.log(xhr.responseText);
+                    },
+                });
+                // console.log(data);
+                $('.select2').on('change', function() {
+                    table.draw(); // Redibuja la tabla aplicando los filtros
+                });
+            }
+           
+    });
     </script>
 @endsection

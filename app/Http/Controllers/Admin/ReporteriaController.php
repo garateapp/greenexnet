@@ -868,6 +868,7 @@ class ReporteriaController extends Controller
         },'s')
             ->select('semana', 'c_destinatario', DB::raw('SUM(Contenedores) as contenedores'),DB::raw('SUM(cantidad) as Cajas'),'CP2_Embalaje')
             ->groupBy('semana', 'c_destinatario','CP2_Embalaje')
+            ->orderBy('c_destinatario', 'asc')
             ->orderBy('semana', 'desc')
             ->get();
 
