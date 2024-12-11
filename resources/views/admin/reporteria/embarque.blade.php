@@ -567,7 +567,7 @@
       <td><strong>${formatNumber2(subtotales.cantidadPalletsTerrestre)}</strong></td>
       <td><strong>${formatNumber2(subtotales.cantidadCajasTerrestre)}</strong></td>
       <td><strong>${formatNumber2(subtotales.objetivoMaritimos)}</strong></td>
-      <td><strong>${parseFloat((subtotales.cantidadMaritimos / subtotales.objetivoMaritimos) * 100).toFixed(0)}%</strong></td>
+      <td><strong>${parseFloat(((subtotales.cantidadCajasMAritimos+subtotales.cantidadCajasTerrestre+subtotales.cantidadCajas )/ subtotales.objetivoMaritimos) * 100).toFixed(0)}%</strong></td>
     </tr>
   </tbody>
 </table>
