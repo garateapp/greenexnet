@@ -180,6 +180,7 @@ class ReporteriaController extends Controller
 
             )
             ->where('destruccion_tipo', '=', '')
+            ->where('id_empresa','=','1')
             ->groupBy('destruccion_tipo')
             ->get();
         $datosProcesados = DB::connection("sqlsrv")->table('dbo.V_PKG_Recepcion_FG')
@@ -191,12 +192,14 @@ class ReporteriaController extends Controller
 
             )
             ->where('destruccion_tipo', '=', 'PRN')
+            ->where('id_empresa','=','1')
             ->groupBy('destruccion_tipo')
             ->get();
         $maximaEsperaHoras = DB::connection("sqlsrv")->table('V_PKG_Recepcion_FG')
             ->selectRaw("DATEDIFF(HOUR, fecha_g_recepcion, GETDATE()) AS horas_en_espera")
             ->addSelect('destruccion_tipo', 'lote_recepcion', 'fecha_g_recepcion')
             ->where('destruccion_tipo', '=', '')
+            ->where('id_empresa','=','1')
             ->groupBy('lote_recepcion', 'destruccion_tipo', 'fecha_g_recepcion')
             ->orderBy('horas_en_espera', 'DESC')
             ->first();
@@ -208,6 +211,7 @@ class ReporteriaController extends Controller
                 'id_especie',
             )
             ->where('destruccion_tipo', '=', '')
+            ->where('id_empresa','=','1')
             ->where('id_especie', '=', '7')->groupBy('nota_calidad', 'id_especie')
             ->get();
 
@@ -218,6 +222,7 @@ class ReporteriaController extends Controller
                 'destruccion_tipo',
             )
             ->where('destruccion_tipo', '=', 'PRN')
+            ->where('id_empresa','=','1')
             ->groupBy('destruccion_tipo')
             ->get();
         // Consulta principal
@@ -229,6 +234,7 @@ class ReporteriaController extends Controller
                 'n_variedad',
             )
             ->where('destruccion_tipo', '=', '')
+            ->where('id_empresa','=','1')
             ->where('id_especie', '=', '7')
             ->groupBy('destruccion_tipo', 'n_variedad')
             ->get();
@@ -270,6 +276,7 @@ class ReporteriaController extends Controller
             )
             ->where('destruccion_tipo', '=', '')
             ->where('nota_calidad', '=', str_replace("Calidad ", "", $request->nota_calidad))
+            ->where('id_empresa','=','1')
             ->groupBy(
                 'lote_recepcion',
                 'n_empresa',
@@ -313,7 +320,7 @@ class ReporteriaController extends Controller
                 DB::RAW("MAX(DATEDIFF(HOUR, fecha_g_recepcion, GETDATE())) AS max_horas_en_espera")
             )
             ->where('destruccion_tipo', '=', '')
-
+            ->where('id_empresa','=','1')
             ->groupBy(
 
                 'n_empresa',
@@ -434,6 +441,7 @@ class ReporteriaController extends Controller
                 'fecha_g_recepcion_sh'
             )
             ->where('fecha_g_recepcion_sh', '>=', DB::RAW("DATEADD(DAY, -8, GETDATE())"))
+            ->where('id_empresa','=','1')
 
             ->groupBy(
                 'fecha_g_recepcion_sh',
@@ -552,16 +560,16 @@ class ReporteriaController extends Controller
             ->select(
                 DB::RAW("SUM(cantidad) AS cantidad"),
                 DB::RAW("SUM(peso_neto) as peso_neto"),
-                "fecha_recepcion as fecha_minima"
+                "fecha_produccion as fecha_minima"
                 
             )
             //->where('destruccion_tipo', '=', '')
             ->where('id_especie', '=', '7')
             ->where('id_altura','=','8')
             ->where('id_empresa', '=', '1')
-            ->where(DB::raw("DATEPART(YEAR,fecha_recepcion)"), '>', '2023')
+            ->where(DB::raw("DATEPART(YEAR,fecha_produccion)"), '>', '2023')
             ->where('n_categoria', '!=', 'muestra')
-            ->groupBy('fecha_recepcion')
+            ->groupBy('fecha_produccion')
 
             ->first();
 
