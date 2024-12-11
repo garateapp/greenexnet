@@ -510,6 +510,7 @@ class ReporteriaController extends Controller
             ->where('n_categoria', '=', 'Cat 1')
             ->where('n_exportadora', '=', 'Greenex Spa')
             ->where('id_empresa', '=', '1')
+            ->where('destruccion_tipo', '=', '')
             ->where('fecha_produccion', '<', DB::RAW("DATEADD(DAY, -2, GETDATE())"))
             ->groupBy(
                 'n_variedad_original',
@@ -744,11 +745,14 @@ class ReporteriaController extends Controller
     {
         $embarques = DB::connection("sqlsrv")->table('dbo.V_PKG_Embarques')
             ->select(
+                'n_embarque',
                 DB::RAW('DATEPART(WEEK, etd) as Semana'),
                 DB::RAW('SUM(Cantidad) as Cantidad'),
                 DB::RAW('SUM(peso_neto) as Peso_neto'),
                 DB::RAW('SUM(peso_bruto) as peso_bruto'),
+                'fecha_embarque',
                 'transporte',
+                'n_packing_origen',
                 'n_pais_destino',
                 'numero_g_despacho',
                 'c_destinatario',
@@ -762,20 +766,22 @@ class ReporteriaController extends Controller
                 't_embalaje',
                 'n_contenedor',
                 'n_etiqueta',
-                'n_embarque',
+                'n_puerto_destino',
+                'n_puerto_origen',
+                'numero_referencia',
                 'contenedor',
                 'n_nave'
             )
             ->where('id_especie', '=', '7')
             ->groupBy(
-                DB::RAW('DATEPART(WEEK, etd)'),
-                'transporte',
-                'c_destinatario',
                 'n_embarque',
-                'contenedor',
-                'n_nave',
-                'numero_g_despacho',
+                DB::RAW('DATEPART(WEEK, etd)'),
+                'fecha_embarque',
+                'transporte',
+                'n_packing_origen',
                 'n_pais_destino',
+                'numero_g_despacho',
+                'c_destinatario',
                 'n_empresa',
                 'n_exportadora',
                 'n_altura',
@@ -786,7 +792,11 @@ class ReporteriaController extends Controller
                 't_embalaje',
                 'n_contenedor',
                 'n_etiqueta',
-                'total_pallets'
+                'n_puerto_destino',
+                'n_puerto_origen',
+                'numero_referencia',
+                'contenedor',
+                'n_nave'
             )->orderBy('Semana', 'desc')
             ->get();
         $total = 0;
