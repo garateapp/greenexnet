@@ -210,65 +210,32 @@
             </ul>
             <div class="tab-content" id="myTabContent">
                 <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                    {{-- <div class="modal fade" id="calibreModal" tabindex="-1" aria-labelledby="calibreModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="calibreModalLabel">Detalles del Calibre</h5>
-                            <button type="button" id="btnImprimir" class="btn-secondary" data-bs-dismiss="modal"
-                                aria-label="Close"><i class="fas fa-print"></i></button>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i
-                                    class="fas fa-close"></i></button>
-                        </div>
 
-                        <div class="modal-body" id="modalCalibreContent">
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>Fecha</th>
-                                        <th>Folio</th>
-                                        <th>Variedad</th>
-                                        <th>Embalaje</th>
-                                        <th>Etiqueta</th>
-                                        <th>Calibre</th>
-                                        <th>Cantidad</th>
-                                        <th>Peso</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="calibreModalBody">
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                        </div>
-                    </div>
-                </div>
-            </div> --}}
                     <div class="row" style="margin-bottom: 15px;">
-                        <button class="btn btn-secondary mb-3" id="toggleButton" style="margin-top: 30px;"
+                        {{-- <button class="btn btn-secondary mb-3" id="toggleButton" style="margin-top: 30px;"
                             title="Ocultar/Mostrar">
                             <i class="fa fa-chart-bar text-white"></i>
 
-                        </button>
+                        </button> --}}
                     </div>
                     <div id="tabla-container-metas"></div>
+                    <div class="col-md-12">
 
+                        <div class="card">
+                            <div class="card-body" id="chart-container">
+                                <h5 class="card-title text-center">Contenedores x Cliente</h5>
+                                <canvas id="MetasxClienteChart"></canvas>
 
-                    <div class="row" id="graficosContainer" style="display: none;">
-
-                        <div class="col-md-12">
-                            <div class="card">
-                                <div class="card-body" id="chart-container">
-                                    <h5 class="card-title text-center">Contenedores x Cliente</h5>
-                                    <canvas id="MetasxClienteChart"></canvas>
-
-                                </div>
                             </div>
                         </div>
                     </div>
-                   
                 </div>
+
+
+
+
+
+
                 <div class="tab-pane fade" id="maritimo" role="tabpanel" aria-labelledby="maritimo-tab">
                     <div class="row" style="margin-bottom: 15px;">
                         <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
@@ -301,60 +268,61 @@
 
 
                         </div>
-                         <div class="card">
-                <div class="card-header">
-                    Embarques
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table id="EmbarqueTable"
-                            class="display table table-bordered table-striped table-hover ajaxTable datatable datatable-transito"
-                            style="width:100%">
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>Semana</th>
-                                    <th>Cantidad</th>
-                                    <th>Cliente</th>
-                                    <th>Peso Neto</th>
-                                    <th>Nave</th>
-                                    <th>Contenedor</th>
-                                    <th>Transporte</th>
-                                    <th>Exportadora</th>
-                                    <th>Pais Destino</th>
-                                    <th>Despacho</th>
-                                    <th>Altura</th>
-                                    <th>Variedad</th>
-                                    <th>Embalaje</th>
-                                    <th>Etiqueta</th>
-
-                            <tfoot>
-                                <tr>
-                                    <th></th>
-                                    <th>SubTotal<br />Total</th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                </tr>
-
-                            </tfoot>
-                        </table>
                     </div>
-                </div>
-            </div>
+                    <div class="card">
+                        <div class="card-header">
+                            Embarques
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table id="EmbarqueTable"
+                                    class="display table table-bordered table-striped table-hover ajaxTable datatable datatable-transito"
+                                    style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th>Semana</th>
+                                            <th>Cantidad</th>
+                                            <th>Cliente</th>
+                                            <th>Peso Neto</th>
+                                            <th>Nave</th>
+                                            <th>Contenedor</th>
+                                            <th>Transporte</th>
+                                            <th>Exportadora</th>
+                                            <th>Pais Destino</th>
+                                            <th>Despacho</th>
+                                            <th>Altura</th>
+                                            <th>Variedad</th>
+                                            <th>Embalaje</th>
+                                            <th>Etiqueta</th>
 
+                                    <tfoot>
+                                        <tr>
+                                            <th></th>
+                                            <th>SubTotal<br />Total</th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
                     </div>
 
-
                 </div>
+
+
+
                 <div class="tab-pane fade" id="aereo" role="tabpanel" aria-labelledby="aereo-tab">...</div>
                 <div class="tab-pane fade" id="terrestre" role="tabpanel" aria-labelledby="terrestre-tab">...</div>
             </div>
@@ -407,7 +375,7 @@
                     contenedoresembarcados = contenedoresembarcados + parseFloat(data
                         .contenedores);
                 });
-              
+
                 const groupedData = data.reduce((acc, current) => {
                     const destinatario = current.c_destinatario;
 
@@ -454,7 +422,7 @@
                     acc[destinatario].Cajas += parseFloat(current.Cajas);
                     return acc;
                 }, {});
-               
+
 
                 $("#totalContenedores").html(formatNumber2(contenedoresembarcados + 1));
                 // Configuración del gráfico
@@ -495,7 +463,7 @@
                         cajasTerrestre: parseFloat(terrestres.Cajas) || 0
                     };
                 });
-                
+
                 const subtotales = {
                     cantidadMaritimos: result.reduce((sum, data) => sum + data.contenedores, 0),
                     objetivoMaritimos: result.reduce((sum, data) => sum + data.meta, 0),
@@ -510,7 +478,7 @@
                 var TotalPalletsEnviados = subtotales.cantidadPallets + subtotales.cantidadPalletsTerrestre;
                 $("#totalKilosEnviados").html(formatNumber2(TotalPalletsEnviados));
                 $("#totalCajasEnviadas").html(formatNumber2(TotalCajasEnviadas));
-                
+
                 const tablaContainer = document.getElementById('tabla-container-metas');
                 const tablaHTML = `<div class="col-md-12">
                     <div class="card">
@@ -542,21 +510,21 @@
   </thead>
   <tbody>
     ${result.map(data => `
-                      <tr>
-                        
-                        <td>${data.c_destinatario}</td>                        
-                        <td>${formatNumber2(data.contenedores)}</td>                        
-                        <td>${formatNumber2(data.cajas)}</td>
-                        <td>${formatNumber2(data.palletsAereo)}</td>
-                        <td>${formatNumber2(data.cajasAereo)}</td>
-                        <td>${formatNumber2(data.palletsTerrestre)} </td>
-                        <td>${formatNumber2(data.cajasTerrestre)}</td>
-                        
-                        <td>${formatNumber2(data.meta)}</td>
-                        <td>${formatNumber2((data.cajas+data.cajasAereo+data.cajasTerrestre))}</td>
-                        <td>${(data.meta==0) ? 0 : parseFloat(((data.cajas+data.cajasAereo+data.cajasTerrestre) / data.meta) * 100).toFixed(0)}%</td>
-                      </tr>
-                    `).join('')}
+                                  <tr>
+                                    
+                                    <td>${data.c_destinatario}</td>                        
+                                    <td>${formatNumber2(data.contenedores)}</td>                        
+                                    <td>${formatNumber2(data.cajas)}</td>
+                                    <td>${formatNumber2(data.palletsAereo)}</td>
+                                    <td>${formatNumber2(data.cajasAereo)}</td>
+                                    <td>${formatNumber2(data.palletsTerrestre)} </td>
+                                    <td>${formatNumber2(data.cajasTerrestre)}</td>
+                                    
+                                    <td>${formatNumber2(data.meta)}</td>
+                                    <td>${formatNumber2((data.cajas+data.cajasAereo+data.cajasTerrestre))}</td>
+                                    <td>${(data.meta==0) ? 0 : parseFloat(((data.cajas+data.cajasAereo+data.cajasTerrestre) / data.meta) * 100).toFixed(0)}%</td>
+                                  </tr>
+                                `).join('')}
     <!-- Subtotales -->
     <tr>
       <td><strong>TOTAL</strong></td>
@@ -579,7 +547,8 @@
         `;
                 tablaContainer.innerHTML = tablaHTML;
                 const labels3 = result.map(data => data.c_destinatario);
-                const cantidades3 = result.map(data => parseFloat(data.cajasAereo+data.cajas+data.cajasTerrestre));
+                const cantidades3 = result.map(data => parseFloat(data.cajasAereo + data.cajas + data
+                    .cajasTerrestre));
                 console.log(result);
                 const metas = result.map(data => data.meta ||
                     0); // Asegurar que las metas nulas sean 0
@@ -870,7 +839,7 @@
                             const filtroSemana = $('#filtroSemana').val() || [];
                             const variedad = data[
                                 12
-                                ]; // Ajusta el índice según la posición de la columna en la tabla
+                            ]; // Ajusta el índice según la posición de la columna en la tabla
                             const Exportadora = data[8]; // Ajusta el índice
                             const etiqueta = data[13]; // Ajusta el índice
                             const cliente = data[3]; // Ajusta el índice
