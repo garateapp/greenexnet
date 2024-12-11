@@ -510,7 +510,7 @@ class ReporteriaController extends Controller
             ->where('n_categoria', '=', 'Cat 1')
             ->where('n_exportadora', '=', 'Greenex Spa')
             ->where('id_empresa', '=', '1')
-            ->where('destruccion_tipo', '=', '')
+            
             ->where('fecha_produccion', '<', DB::RAW("DATEADD(DAY, -2, GETDATE())"))
             ->groupBy(
                 'n_variedad_original',
