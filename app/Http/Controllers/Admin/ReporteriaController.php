@@ -859,14 +859,15 @@ class ReporteriaController extends Controller
                 ->selectRaw("
         DATEPART(WEEK, etd) as semana,
         c_destinatario,
-        SUM(cantidad) / CP2_Embalaje / 20 as Contenedores, SUM(cantidad) as cantidad")
+        SUM(cantidad) / CP2_Embalaje / 20 as Contenedores, SUM(cantidad) as cantidad,CP2_Embalaje")
+
                 ->where('id_especie', 7)
                 ->where('transporte', 'MARITIMO')
                 ->where('n_exportadora', 'Greenex Spa')
                 ->groupByRaw('DATEPART(WEEK, etd), c_destinatario, CP2_Embalaje');
         },'s')
-            ->select('semana', 'c_destinatario', DB::raw('SUM(Contenedores) as contenedores'),DB::raw('SUM(cantidad) as Cajas'))
-            ->groupBy('semana', 'c_destinatario')
+            ->select('semana', 'c_destinatario', DB::raw('SUM(Contenedores) as contenedores'),DB::raw('SUM(cantidad) as Cajas'),'CP2_Embalaje')
+            ->groupBy('semana', 'c_destinatario','CP2_Embalaje')
             ->orderBy('semana', 'desc')
             ->get();
 
@@ -883,7 +884,7 @@ class ReporteriaController extends Controller
                             $MetaCx = MetasClienteComex::where('clientecomex_id', '=', $CxComex->id)->first();
                             if ($MetaCx != null) {
                                 $chart->alsu = $MetaCx->observaciones;
-                                $chart->meta = $MetaCx->cantidad;
+                                $chart->meta = ($MetaCx->cantidad*$chart->CP2_Embalaje)*20;
                             } else {
                                 $chart->alsu = '';
                                 $chart->meta = 0;

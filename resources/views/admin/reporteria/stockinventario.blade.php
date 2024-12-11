@@ -488,10 +488,14 @@
                     uniqueValues.nota_calidad.sort();
 
                     // Llenar los filtros con los valores únicos obtenidos
-
+                    let EmpresaHasGarate =
+                    false;
                     uniqueValues.n_empresa.forEach(
                         function(value) {
                             $('#filtroEmpresa').append(new Option(value, value));
+                            if (value === "Comercializadora Garate Hermanos Limitada") {
+                            EmpresaHasGarate = true;
+                        }
                         });
 
                     uniqueValues.n_exportadora.forEach(
@@ -506,6 +510,7 @@
                         });
                     let specieHasCherries =
                         false;
+                      
                     // Bandera para verificar si 'Cherries' está presente
                     uniqueValues.n_especie.forEach(function(value) {
                         $('#filtroEspecie').append(new Option(value, value));
@@ -529,7 +534,12 @@
                         // table.column(3).search('^Cherries$', true, false).draw();
                         applyFilters();
                     }
-
+                    if (specieHasCherries) {
+                        $('#filtroEmpresa').val("Comercializadora Garate Hermanos Limitada");
+                        // Aplicar el filtro automáticamente
+                        // table.column(3).search('^Cherries$', true, false).draw();
+                        applyFilters();
+                    }
 
                     // Configurar Select2
                     $('.select2').select2();

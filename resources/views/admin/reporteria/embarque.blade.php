@@ -128,8 +128,6 @@
 
     <div class="content">
         <div class="container-fluid">
-
-
             <div id="loading-animation"
                 style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 9999; justify-content: center; align-items: center;">
                 <video autoplay loop muted style="width: auto; height: auto;">
@@ -172,7 +170,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                     </div>
                     <div class="col-sm-6 col-xl-3">
                         <div class="card text-white bg-info">
@@ -192,10 +190,27 @@
                     </div>
                 </div>
             </div>
-
-
-
-            {{-- <div class="modal fade" id="calibreModal" tabindex="-1" aria-labelledby="calibreModalLabel" aria-hidden="true">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home"
+                        type="button" role="tab" aria-controls="home" aria-selected="true">Resumen</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="maritimo-tab" data-bs-toggle="tab" data-bs-target="#maritimo"
+                        type="button" role="tab" aria-controls="maritimo" aria-selected="false">Maritimo</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="aereo-tab" data-bs-toggle="tab" data-bs-target="#aereo" type="button"
+                        role="tab" aria-controls="aereo" aria-selected="false">Aéreo</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="terrestre-tab" data-bs-toggle="tab" data-bs-target="#terrestre"
+                        type="button" role="tab" aria-controls="terrestre" aria-selected="false">Terrestre</button>
+                </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                    {{-- <div class="modal fade" id="calibreModal" tabindex="-1" aria-labelledby="calibreModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -230,78 +245,63 @@
                     </div>
                 </div>
             </div> --}}
-            <div id="tabla-container-metas"></div>
-            <div class="row" style="margin-bottom: 15px;">
-            <button class="btn btn-secondary mb-3" id="toggleButton" style="margin-top: 30px;"
-                        title="Ocultar/Mostrar">
-                        <i class="fa fa-chart-bar text-white"></i>
+                    <div class="row" style="margin-bottom: 15px;">
+                        <button class="btn btn-secondary mb-3" id="toggleButton" style="margin-top: 30px;"
+                            title="Ocultar/Mostrar">
+                            <i class="fa fa-chart-bar text-white"></i>
 
-                    </button>
-            </div>
-            {{-- <div class="row" style="margin-bottom: 15px;">
-                <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
-                    <label for="filtroExportadora">Exportadora</label>
-                    <select id="filtroExportadora" class="form-control select2" multiple="multiple"></select>
-                </div>
-                <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
-                    <label for="filtroVariedad">Variedad</label>
-                    <select id="filtroVariedad" class="form-control select2" multiple="multiple"></select>
-                </div>
-                <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
-                    <label for="filtroCliente">Cliente</label>
-                    <select id="filtroCliente" class="form-control select2" multiple="multiple"></select>
-                </div>
-                <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
-                    <label for="filtroEtiqueta">Etiqueta</label>
-                    <select id="filtroEtiqueta" class="form-control select2" multiple="multiple"></select>
-                </div>
-                <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
-                    <label for="filtroTransporte">Tipo transporte</label>
-                    <select id="filtroTransporte" class="form-control select2" multiple="multiple"></select>
-                </div>
-                <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
-                    <label for="filtroSemana">Semana</label>
-                    <select id="filtroSemana" class="form-control select2" multiple="multiple"></select>
-                </div>
-                <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
-                    <button id="btnRecargar" class="btn btn-secondary mb-3" style="margin-top: 30px;" title="Recargar"><i
-                            class="fas fa-sync"></i></button>
-                    
+                        </button>
+                    </div>
+                    <div id="tabla-container-metas"></div>
 
-                </div>
 
-            </div> --}}
-            <div class="row" id="graficosContainer" style="display: none;">
-                <!-- Primera columna -->
-                {{-- <div class="col-md-12">
-                    <div class="card">
-                        <div class="card-body" id="chart-container">
-                            <h5 class="card-title text-center">Cantidad Embarcada por Semana</h5>
-                            <canvas id="CantxSemanaChart"></canvas>
+                    <div class="row" id="graficosContainer" style="display: none;">
+
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-body" id="chart-container">
+                                    <h5 class="card-title text-center">Contenedores x Cliente</h5>
+                                    <canvas id="MetasxClienteChart"></canvas>
+
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div> --}}
-
-                <!-- Segunda columna -->
-                {{-- <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-body" id="chart-container">
-                            <h5 class="card-title text-center">Cantidad Contenedores x Cliente</h5>
-                            <canvas id="CantidadxClienteChart"></canvas>
-                        </div>
-                    </div>
-                </div> --}}
-                <div class="col-md-12">
-                    <div class="card">
-                        <div class="card-body" id="chart-container">
-                            <h5 class="card-title text-center">Contenedores x Cliente</h5>
-                            <canvas id="MetasxClienteChart"></canvas>
-
-                        </div>
-                    </div>
+                   
                 </div>
-            </div>
-            {{-- <div class="card">
+                <div class="tab-pane fade" id="maritimo" role="tabpanel" aria-labelledby="maritimo-tab">
+                    <div class="row" style="margin-bottom: 15px;">
+                        <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
+                            <label for="filtroExportadora">Exportadora</label>
+                            <select id="filtroExportadora" class="form-control select2" multiple="multiple"></select>
+                        </div>
+                        <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
+                            <label for="filtroVariedad">Variedad</label>
+                            <select id="filtroVariedad" class="form-control select2" multiple="multiple"></select>
+                        </div>
+                        <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
+                            <label for="filtroCliente">Cliente</label>
+                            <select id="filtroCliente" class="form-control select2" multiple="multiple"></select>
+                        </div>
+                        <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
+                            <label for="filtroEtiqueta">Etiqueta</label>
+                            <select id="filtroEtiqueta" class="form-control select2" multiple="multiple"></select>
+                        </div>
+                        <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
+                            <label for="filtroTransporte">Tipo transporte</label>
+                            <select id="filtroTransporte" class="form-control select2" multiple="multiple"></select>
+                        </div>
+                        <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
+                            <label for="filtroSemana">Semana</label>
+                            <select id="filtroSemana" class="form-control select2" multiple="multiple"></select>
+                        </div>
+                        <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
+                            <button id="btnRecargar" class="btn btn-secondary mb-3" style="margin-top: 30px;"
+                                title="Recargar"><i class="fas fa-sync"></i></button>
+
+
+                        </div>
+                         <div class="card">
                 <div class="card-header">
                     Embarques
                 </div>
@@ -349,7 +349,20 @@
                         </table>
                     </div>
                 </div>
-            </div> --}}
+            </div>
+
+                    </div>
+
+
+                </div>
+                <div class="tab-pane fade" id="aereo" role="tabpanel" aria-labelledby="aereo-tab">...</div>
+                <div class="tab-pane fade" id="terrestre" role="tabpanel" aria-labelledby="terrestre-tab">...</div>
+            </div>
+
+
+
+
+
 
         </div>
     </div>
@@ -403,7 +416,7 @@
                             c_destinatario: destinatario,
                             contenedores: 0,
                             meta: current.meta,
-                            cajas:0,
+                            cajas: 0,
                         };
                     }
 
@@ -445,7 +458,7 @@
                 console.log(groupedDataAereo);
                 console.log(groupedDataTerrestre);
 
-                $("#totalContenedores").html(formatNumber2(contenedoresembarcados+1));
+                $("#totalContenedores").html(formatNumber2(contenedoresembarcados + 1));
                 // Configuración del gráfico
 
                 let totalEmbarcado = 0;
@@ -457,7 +470,7 @@
                 ]);
                 console.log("gggg");
                 console.log(clientesUnicos);
-                var TotalCajasEnviadas=0;
+                var TotalCajasEnviadas = 0;
                 const result = Array.from(clientesUnicos).map(cliente => {
                     const maritimos = groupedData[cliente] || {
                         contenedores: 0,
@@ -477,7 +490,7 @@
                         c_destinatario: cliente,
                         contenedores: Math.round(maritimos.contenedores),
                         meta: maritimos.meta,
-                        cajas:parseFloat(maritimos.cajas) || 0,
+                        cajas: parseFloat(maritimos.cajas) || 0,
                         palletsAereo: Math.round(parseFloat(aereos.Pallets)) || 0,
                         cajasAereo: parseFloat(aereos.Cajas) || 0,
                         palletsTerrestre: parseFloat(terrestres.Pallets) || 0,
@@ -494,8 +507,9 @@
                     cantidadPalletsTerrestre: result.reduce((sum, data) => sum + data.palletsTerrestre, 0),
                     cantidadCajasTerrestre: result.reduce((sum, data) => sum + data.cajasTerrestre, 0)
                 };
-                TotalCajasEnviadas=subtotales.cantidadCajasMAritimos+subtotales.cantidadCajas+subtotales.cantidadCajasTerrestre;
-                var TotalPalletsEnviados=subtotales.cantidadPallets+subtotales.cantidadPalletsTerrestre;
+                TotalCajasEnviadas = subtotales.cantidadCajasMAritimos + subtotales.cantidadCajas + subtotales
+                    .cantidadCajasTerrestre;
+                var TotalPalletsEnviados = subtotales.cantidadPallets + subtotales.cantidadPalletsTerrestre;
                 $("#totalKilosEnviados").html(formatNumber2(TotalPalletsEnviados));
                 $("#totalCajasEnviadas").html(formatNumber2(TotalCajasEnviadas));
                 console.log(subtotales);
@@ -510,48 +524,50 @@
   <thead>
     <tr>
       <th></th>
-      <th colspan="4">MARITIMO</th>
+      <th colspan="2">MARITIMO</th>
       <th colspan="2">AEREO</th>
       <th colspan="2">TERRESTRE</th>
+      <th colspan="2">CUMPLIMIENTO</th>
     </tr>
     <tr>
-      <th>Cliente</th>
-      <th>Cajas</th>
+      <th>Cliente</th>     
       <th>Contenedores</th>
+      <th>Cajas</th> 
+      <th>Pallets</th>
+      <th>Cajas</th>
+      <th>Pallets</th>
+      <th>Cajas</th>
       <th>Objetivo</th>
       <th>% Cumplimiento</th>
-      <th>Pallets</th>
-      <th>Cajas</th>
-      <th>Pallets</th>
-      <th>Cajas</th>
     </tr>
   </thead>
   <tbody>
     ${result.map(data => `
-              <tr>
-                
-                <td>${data.c_destinatario}</td>
-                <td>${formatNumber2(data.cajas)}</td>
-                <td>${formatNumber2(data.contenedores)}</td>
-                <td>${formatNumber2(data.meta)}</td>
-                <td>${isNaN(parseFloat((data.contenedores / data.meta) * 100).toFixed(0)) ? 0 : parseFloat((data.contenedores / data.meta) * 100).toFixed(0)}%</td>
-                <td>${formatNumber2(data.palletsAereo)}</td>
-                <td>${formatNumber2(data.cajasAereo)}</td>
-                <td>${formatNumber2(data.palletsTerrestre)} </td>
-                <td>${formatNumber2(data.cajasTerrestre)}</td>
-              </tr>
-            `).join('')}
+                      <tr>
+                        
+                        <td>${data.c_destinatario}</td>                        
+                        <td>${formatNumber2(data.contenedores)}</td>                        
+                        <td>${formatNumber2(data.cajas)}</td>
+                        <td>${formatNumber2(data.palletsAereo)}</td>
+                        <td>${formatNumber2(data.cajasAereo)}</td>
+                        <td>${formatNumber2(data.palletsTerrestre)} </td>
+                        <td>${formatNumber2(data.cajasTerrestre)}</td>
+                        <td>${formatNumber2(data.meta)}</td>
+                        <td>${(data.meta==0) ? 0 : parseFloat(((data.cajas+data.cajasAereo+data.cajasTerrestre) / data.meta) * 100).toFixed(0)}%</td>
+                      </tr>
+                    `).join('')}
     <!-- Subtotales -->
     <tr>
       <td><strong>TOTAL</strong></td>
+      <td><strong>${formatNumber2(subtotales.cantidadMaritimos)}</strong></td>      
       <td><strong>${formatNumber2(subtotales.cantidadCajasMAritimos)}</strong></td>
-      <td><strong>${formatNumber2(subtotales.cantidadMaritimos)}</strong></td>
-      <td><strong>${formatNumber2(subtotales.objetivoMaritimos)}</strong></td>
-      <td><strong>${parseFloat((subtotales.cantidadMaritimos / subtotales.objetivoMaritimos) * 100).toFixed(0)}%</strong></td>
+      
       <td><strong>${formatNumber2(subtotales.cantidadPallets)}</strong></td>
       <td><strong>${formatNumber2(subtotales.cantidadCajas)}</strong></td>
       <td><strong>${formatNumber2(subtotales.cantidadPalletsTerrestre)}</strong></td>
       <td><strong>${formatNumber2(subtotales.cantidadCajasTerrestre)}</strong></td>
+      <td><strong>${formatNumber2(subtotales.objetivoMaritimos)}</strong></td>
+      <td><strong>${parseFloat((subtotales.cantidadMaritimos / subtotales.objetivoMaritimos) * 100).toFixed(0)}%</strong></td>
     </tr>
   </tbody>
 </table>
@@ -650,6 +666,250 @@
                         drawResumenGeneral(datosMaritimo, datosAereo, response.data);
                     },
                     error(error) {}
+                });
+            }
+
+            function DatosMaritimos() {
+                $.ajax({
+
+                    url: "{{ route('admin.reporteria.obtieneEmbarques') }}",
+                    type: "GET",
+                    dataType: "json",
+
+                    success: function(data) {
+                        console.log(data);
+                        datos = data.data;
+                        var variedades = [];
+                        var calibres = [];
+                        var exportadoras = [];
+                        var etiqueta = [];
+                        var transporte = [];
+                        variedades = data.n_variedades;
+                        cliente = data.cliente;
+                        exportadoras = data.n_exportadora;
+                        etiqueta = data.n_etiqueta;
+                        semana = data.semana;
+                        transporte = data.transporte;
+                        var chartData = data.chartCantxSemana;
+                        var chartData2 = data.chartCatxCliente;
+                        variedades.forEach(
+                            function(value) {
+
+                                $('#filtroVariedad').append(new Option(value, value));
+                            });
+
+                        etiqueta.forEach(
+                            function(value) {
+                                $('#filtroEtiqueta').append(new Option(value, value));
+                            });
+                        cliente.forEach(
+                            function(value) {
+                                $('#filtroCliente').append(new Option(value, value));
+                            });
+                        exportadoras.forEach(
+                            function(value) {
+                                $('#filtroExportadora').append(new Option(value, value));
+                            });
+                        transporte.forEach(
+                            function(value) {
+                                $('#filtroTransporte').append(new Option(value, value));
+                            });
+                        semana.forEach(
+                            function(value) {
+                                $('#filtroSemana').append(new Option(value, value));
+                            });
+
+                        $("#totalKilosEnviados").html(formatNumber2(data.totalPeso));
+                        $("#totalCajasEnviadas").html(formatNumber2(data.total));
+
+                        table = $('#EmbarqueTable').DataTable({
+                            fixedColumns: true,
+                            fixedHeader: true,
+                            responsive: true,
+                            language: {
+
+                                url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-CL.json'
+                            },
+                            displayLength: 10,
+                            data: datos,
+                            columns: [{
+                                    className: 'dt-control',
+                                    orderable: false,
+                                    data: null,
+                                    defaultContent: ''
+                                },
+                                {
+                                    data: 'Semana',
+                                    title: 'Semana'
+                                },
+                                {
+                                    data: 'Cantidad',
+                                    title: 'Cantidad'
+                                },
+                                {
+                                    data: 'c_destinatario',
+                                    title: 'Cliente'
+                                },
+                                {
+                                    data: 'Peso_neto',
+                                    title: 'Peso Neto',
+                                    render: function(data, type, row) {
+                                        // Formateamos el número con separador de miles y sin decimales
+                                        return new Intl.NumberFormat('es-CL', {
+                                            minimumFractionDigits: 0,
+                                            maximumFractionDigits: 0
+                                        }).format(data);
+                                    }
+                                },
+                                {
+                                    data: 'n_nave',
+                                    title: 'Nave'
+                                },
+                                {
+                                    data: 'contenedor',
+                                    title: 'Contenedor'
+                                },
+                                {
+                                    data: 'transporte',
+                                    title: 'Transporte'
+                                },
+                                {
+                                    data: 'n_exportadora',
+                                    title: 'Exportadora',
+                                    visible: false
+
+                                },
+                                {
+                                    data: 'n_pais_destino',
+                                    title: 'Pais Destino'
+                                },
+                                {
+                                    data: 'numero_g_despacho',
+                                    title: 'Despacho'
+                                },
+                                {
+                                    data: 'n_altura',
+                                    title: 'Altura'
+                                },
+
+                                {
+                                    data: 'N_Variedad',
+                                    title: 'Variedad'
+                                },
+                                {
+                                    data: 'n_embalaje',
+                                    title: 'Embalaje'
+                                },
+                                {
+                                    data: 'n_etiqueta',
+                                    title: 'Etiqueta'
+                                },
+
+                            ],
+                            footerCallback: function(row, data, start, end, display) {
+
+                                let api = this.api();
+
+                                // Función para convertir a número
+                                let intVal = function(i) {
+                                    return typeof i === 'string' ? i.replace(/[\$,]/g,
+                                            '') *
+                                        1 :
+                                        typeof i ===
+                                        'number' ? i : 0;
+                                };
+                                let totalPesoNeto = api
+                                    .column(4)
+                                    .data()
+                                    .reduce(function(a, b) {
+                                        return intVal(a) + intVal(b);
+                                    }, 0);
+
+                                let subtotalPesoNeto = api
+                                    .column(4, {
+                                        page: 'current'
+                                    })
+                                    .data()
+                                    .reduce(function(a, b) {
+                                        return intVal(a) + intVal(b);
+                                    }, 0);
+                                let totalCantidad = api
+                                    .column(2)
+                                    .data()
+                                    .reduce(function(a, b) {
+                                        return intVal(a) + intVal(b);
+                                    }, 0);
+
+                                let subtotalCantidad = api
+                                    .column(2, {
+                                        page: 'current'
+                                    })
+                                    .data()
+                                    .reduce(function(a, b) {
+                                        return intVal(a) + intVal(b);
+                                    }, 0);
+                                $(api.column(4).footer()).html(
+                                    ` ${formatNumber2(subtotalPesoNeto.toFixed(0))}<br> ${formatNumber2(totalPesoNeto.toFixed(0))}`
+                                );
+                                $(api.column(2).footer()).html(
+                                    ` ${formatNumber2(subtotalCantidad.toFixed(0))}<br> ${formatNumber2(totalCantidad.toFixed(0))}`
+                                );
+                                // $("#proSinIniciar").html(
+                                //     `${formatNumber(totalPesoNeto.toFixed(0))}`)
+                            }
+                        });
+                        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                            const filtroVariedad = $('#filtroVariedad').val() || [];
+                            const filtroExportadora = $('#filtroExportadora').val() || [];
+                            const filtroEtiqueta = $('#filtroEtiqueta').val() || [];
+                            const filtroCliente = $('#filtroCliente').val() || [];
+                            const filtroTransporte = $('#filtroTransporte').val() || [];
+                            const filtroSemana = $('#filtroSemana').val() || [];
+                            const variedad = data[
+                                12
+                                ]; // Ajusta el índice según la posición de la columna en la tabla
+                            const Exportadora = data[8]; // Ajusta el índice
+                            const etiqueta = data[13]; // Ajusta el índice
+                            const cliente = data[3]; // Ajusta el índice
+                            const transporte = data[7]; // Ajusta el índice
+                            const semana = data[1]; // Ajusta el índice
+                            const coincideVariedad = filtroVariedad.length === 0 ||
+                                filtroVariedad
+                                .includes(variedad);
+                            const coincideExportadora = filtroExportadora.length === 0 ||
+                                filtroExportadora
+                                .includes(Exportadora);
+                            const coincideEtiqueta = filtroEtiqueta.length === 0 ||
+                                filtroEtiqueta
+                                .includes(etiqueta);
+                            const coincideCliente = filtroCliente.length === 0 || filtroCliente
+                                .includes(cliente);
+                            const coincideTransporte = filtroTransporte.length === 0 ||
+                                filtroTransporte
+                                .includes(transporte);
+                            const coincideSemana = filtroSemana.length === 0 || filtroSemana
+                                .includes(semana);
+
+                            return coincideVariedad && coincideExportadora &&
+                                coincideEtiqueta &&
+                                coincideCliente && coincideTransporte && coincideSemana;
+                        });
+
+
+
+
+                        //
+                        // Configuración del gráfico CAnt x Cliente
+                        hideLoading();
+                    },
+                    error: function(xhr, status, error) {
+                        hideLoading();
+                        console.log(xhr.responseText);
+                    },
+                });
+                // console.log(data);
+                $('.select2').on('change', function() {
+                    table.draw(); // Redibuja la tabla aplicando los filtros
                 });
             }
             // $.ajax({
