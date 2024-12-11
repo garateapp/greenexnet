@@ -520,7 +520,7 @@
                 <thead>
                     <tr>
                     <th></th>
-                    <th colspan="6"></th>
+                    <th colspan="6">TIPO DE TRANSPORTE</th>
                     <th colspan="5">CUMPLIMIENTO</th>
                     
                     </tr>
