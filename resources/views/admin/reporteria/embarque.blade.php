@@ -407,7 +407,7 @@
                     contenedoresembarcados = contenedoresembarcados + parseFloat(data
                         .contenedores);
                 });
-                console.log(data);
+              
                 const groupedData = data.reduce((acc, current) => {
                     const destinatario = current.c_destinatario;
 
@@ -454,9 +454,7 @@
                     acc[destinatario].Cajas += parseFloat(current.Cajas);
                     return acc;
                 }, {});
-                console.log(groupedData);
-                console.log(groupedDataAereo);
-                console.log(groupedDataTerrestre);
+               
 
                 $("#totalContenedores").html(formatNumber2(contenedoresembarcados + 1));
                 // Configuración del gráfico
@@ -497,7 +495,7 @@
                         cajasTerrestre: parseFloat(terrestres.Cajas) || 0
                     };
                 });
-                console.log(result);
+                
                 const subtotales = {
                     cantidadMaritimos: result.reduce((sum, data) => sum + data.contenedores, 0),
                     objetivoMaritimos: result.reduce((sum, data) => sum + data.meta, 0),
@@ -512,7 +510,7 @@
                 var TotalPalletsEnviados = subtotales.cantidadPallets + subtotales.cantidadPalletsTerrestre;
                 $("#totalKilosEnviados").html(formatNumber2(TotalPalletsEnviados));
                 $("#totalCajasEnviadas").html(formatNumber2(TotalCajasEnviadas));
-                console.log(subtotales);
+                
                 const tablaContainer = document.getElementById('tabla-container-metas');
                 const tablaHTML = `<div class="col-md-12">
                     <div class="card">
@@ -527,7 +525,7 @@
       <th colspan="2">MARITIMO</th>
       <th colspan="2">AEREO</th>
       <th colspan="2">TERRESTRE</th>
-      <th colspan="2">CUMPLIMIENTO</th>
+      <th colspan="3">CUMPLIMIENTO</th>
     </tr>
     <tr>
       <th>Cliente</th>     
@@ -538,6 +536,7 @@
       <th>Pallets</th>
       <th>Cajas</th>
       <th>Objetivo</th>
+      <th>Total Cajas</th>
       <th>% Cumplimiento</th>
     </tr>
   </thead>
@@ -552,7 +551,9 @@
                         <td>${formatNumber2(data.cajasAereo)}</td>
                         <td>${formatNumber2(data.palletsTerrestre)} </td>
                         <td>${formatNumber2(data.cajasTerrestre)}</td>
+                        
                         <td>${formatNumber2(data.meta)}</td>
+                        <td>${formatNumber2((data.cajas+data.cajasAereo+data.cajasTerrestre))}</td>
                         <td>${(data.meta==0) ? 0 : parseFloat(((data.cajas+data.cajasAereo+data.cajasTerrestre) / data.meta) * 100).toFixed(0)}%</td>
                       </tr>
                     `).join('')}
@@ -567,6 +568,7 @@
       <td><strong>${formatNumber2(subtotales.cantidadPalletsTerrestre)}</strong></td>
       <td><strong>${formatNumber2(subtotales.cantidadCajasTerrestre)}</strong></td>
       <td><strong>${formatNumber2(subtotales.objetivoMaritimos)}</strong></td>
+      <td><strong>${formatNumber2((subtotales.cantidadCajasMAritimos+subtotales.cantidadCajasTerrestre+subtotales.cantidadCajas ))}</strong></td>
       <td><strong>${parseFloat(((subtotales.cantidadCajasMAritimos+subtotales.cantidadCajasTerrestre+subtotales.cantidadCajas )/ subtotales.objetivoMaritimos) * 100).toFixed(0)}%</strong></td>
     </tr>
   </tbody>
@@ -577,7 +579,8 @@
         `;
                 tablaContainer.innerHTML = tablaHTML;
                 const labels3 = result.map(data => data.c_destinatario);
-                const cantidades3 = result.map(data => parseFloat(data.contenedores));
+                const cantidades3 = result.map(data => parseFloat(data.cajasAereo+data.cajas+data.cajasTerrestre));
+                console.log(result);
                 const metas = result.map(data => data.meta ||
                     0); // Asegurar que las metas nulas sean 0
                 const ctx3 = document.getElementById('MetasxClienteChart').getContext('2d');
