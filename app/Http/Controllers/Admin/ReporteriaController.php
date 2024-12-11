@@ -886,9 +886,11 @@ class ReporteriaController extends Controller
                             if ($MetaCx != null) {
                                 $chart->alsu = $MetaCx->observaciones;
                                 $chart->meta = ($MetaCx->cantidad*$chart->CP2_Embalaje)*20;
+                                $chart->metacont = $MetaCx->cantidad;
                             } else {
                                 $chart->alsu = '';
                                 $chart->meta = 0;
+                                $chart->metacont =0;
                             }
 
 
@@ -910,13 +912,14 @@ class ReporteriaController extends Controller
                 ->selectRaw("
         DATEPART(WEEK, etd) as semana,
         c_destinatario,
+        SUM(cantidad)/CP2_Embalaje/20 as Contenedores,
         ROUND(SUM(cantidad) / CP2_Embalaje,2) as Pallets, SUM(cantidad) as Cajas")
                 ->where('id_especie', 7)
                 ->where('transporte', 'AEREO')
                 ->where('n_exportadora', 'Greenex Spa')
                 ->groupByRaw('DATEPART(WEEK, etd), c_destinatario, CP2_Embalaje');
         },'s')
-            ->select('semana', 'c_destinatario', DB::raw('SUM(Pallets) as Pallets,SUM(Cajas) as Cajas '))
+            ->select('semana', 'c_destinatario', DB::raw('SUM(Pallets) as Pallets,SUM(Cajas) as Cajas '), DB::raw('SUM(Contenedores) as contenedores'))
             ->groupBy('semana', 'c_destinatario')
             ->orderBy('semana', 'desc')
             ->get();
@@ -935,9 +938,12 @@ class ReporteriaController extends Controller
                             if ($MetaCx != null) {
                                 $chart->alsu = $MetaCx->observaciones;
                                 $chart->meta = $MetaCx->cantidad;
+                                $chart->metacont =0;
+                              //  $chart->metacont = $MetaCx->contenedores;
                             } else {
                                 $chart->alsu = '';
                                 $chart->meta = 0;
+                                $chart->metacont =0;
                             }
 
 
@@ -959,6 +965,7 @@ class ReporteriaController extends Controller
                 ->selectRaw("
         DATEPART(WEEK, etd) as semana,
         c_destinatario,
+         SUM(cantidad) / CP2_Embalaje / 20 as Contenedores,
         ROUND(SUM(cantidad) / CP2_Embalaje,2) as Pallets, SUM(cantidad) as Cajas")
                 ->where('id_especie', 7)
                 ->where('transporte', 'CAMION FRIGORIFICO')
