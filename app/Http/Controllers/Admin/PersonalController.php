@@ -301,7 +301,7 @@ class PersonalController extends Controller
                 if(!$personal){
                     $personal=new Personal();
                     $personal->rut=$entry[0];
-                    $personal->name=$entry[1];
+                    $personal->nombre=$entry[1];
                     $personal->save();
                 }
             }
@@ -591,6 +591,7 @@ class PareadosSheet implements FromCollection, WithHeadings
             'RUT Salida',
             'Nombre Salida',
             'Fecha/Hora Salida',
+            'Departamento',
         ];
     }
 }
