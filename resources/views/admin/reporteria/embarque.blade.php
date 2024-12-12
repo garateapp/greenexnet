@@ -201,7 +201,7 @@
                     <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home"
                         type="button" role="tab" aria-controls="home" aria-selected="true">Resumen</button>
                 </li>
-                <li class="nav-item" role="presentation">
+                {{-- <li class="nav-item" role="presentation">
                     <button class="nav-link" id="maritimo-tab" data-bs-toggle="tab" data-bs-target="#maritimo"
                         type="button" role="tab" aria-controls="maritimo" aria-selected="false">Maritimo</button>
                 </li>
@@ -212,7 +212,7 @@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="terrestre-tab" data-bs-toggle="tab" data-bs-target="#terrestre"
                         type="button" role="tab" aria-controls="terrestre" aria-selected="false">Terrestre</button>
-                </li>
+                </li> --}}
             </ul>
             <div class="tab-content" id="myTabContent">
                 <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
@@ -416,7 +416,7 @@
                         };
                     }
                     acc[destinatario].contenedores += parseFloat(current.contenedores);
-                   
+
                     acc[destinatario].Pallets += parseFloat(current.Pallets);
                     acc[destinatario].Cajas += parseFloat(current.Cajas);
                     return acc;
@@ -435,14 +435,14 @@
                         };
                     }
                     acc[destinatario].contenedores += parseFloat(current.contenedores);
-                    
+
                     acc[destinatario].Pallets += parseFloat(current.Pallets);
                     acc[destinatario].Cajas += parseFloat(current.Cajas);
                     return acc;
                 }, {});
 
 
-                
+
                 // Configuración del gráfico
 
                 let totalEmbarcado = 0;
@@ -452,7 +452,7 @@
                     ...Object.keys(groupedDataAereo),
                     ...Object.keys(groupedDataTerrestre)
                 ]);
-               
+
                 var TotalCajasEnviadas = 0;
                 const result = Array.from(clientesUnicos).map(cliente => {
                     const maritimos = groupedData[cliente] || {
@@ -485,7 +485,7 @@
                         palletsTerrestre: parseFloat(terrestres.Pallets) || 0,
                         cajasTerrestre: parseFloat(terrestres.Cajas) || 0
                     };
-                    
+
                 }).sort((a, b) => a.c_destinatario.localeCompare(b.c_destinatario));
                 console.log("aereo");
                 console.log(result);
@@ -522,27 +522,27 @@
                     <th></th>
                     <th colspan="6">TIPO DE TRANSPORTE</th>
                     <th colspan="5">CUMPLIMIENTO</th>
-                    
+
                     </tr>
                     <tr>
                         <th></th>
                         <th colspan="2">MARITIMO</th>
                     <th colspan="2">AEREO</th>
                     <th colspan="2">TERRESTRE</th>
-                        
+
                         <th colspan="2">Cajas</th>
                         <th colspan="2">Contenedores</th>
                         <th>%</th>
                         </tr>
                     <tr>
-                    <th>Cliente</th>     
+                    <th>Cliente</th>
                     <th>Contenedores</th>
-                    <th>Cajas</th> 
-                    <th>Pallets</th>
                     <th>Cajas</th>
                     <th>Pallets</th>
                     <th>Cajas</th>
-                    <th>Objetivo</th>                    
+                    <th>Pallets</th>
+                    <th>Cajas</th>
+                    <th>Objetivo</th>
                     <th>Total</th>
                     <th>Objetivo</th>
                     <th>Total</th>
@@ -552,16 +552,16 @@
                 <tbody>
                     ${result.map(data => `
                                                         <tr>
-                                                            
-                                                            <td>${data.c_destinatario}</td>                        
-                                                            <td>${formatNumber2(data.contenedores)}</td>                        
+
+                                                            <td>${data.c_destinatario}</td>
+                                                            <td>${formatNumber2(data.contenedores)}</td>
                                                             <td>${formatNumber2(data.cajas)}</td>
                                                             <td>${formatNumber2(data.palletsAereo)}</td>
                                                             <td>${formatNumber2(data.cajasAereo)}</td>
                                                             <td>${formatNumber2(data.palletsTerrestre)} </td>
-                                                            <td>${formatNumber2(data.cajasTerrestre)}</td>                                                            
+                                                            <td>${formatNumber2(data.cajasTerrestre)}</td>
                                                             <td>${formatNumber2(data.meta)}</td>
-                                                            <td>${formatNumber2((data.cajas+data.cajasAereo+data.cajasTerrestre))}</td>                                                           
+                                                            <td>${formatNumber2((data.cajas+data.cajasAereo+data.cajasTerrestre))}</td>
                                                             <td>${formatNumber2(data.metacont)}</td>
                                                              <td>~${isNaN(data.contenedores+data.contenedoresAereo+data.contenedoresTerrestre)?0:parseFloat(data.contenedores+data.contenedoresAereo+data.contenedoresTerrestre).toFixed(1)}</td>
                                                             <td>${(data.meta==0) ? 0 : parseFloat(((data.cajas+data.cajasAereo+data.cajasTerrestre) / data.meta) * 100).toFixed(0)}%</td>
@@ -570,9 +570,9 @@
                     <!-- Subtotales -->
                     <tr>
                     <td><strong>TOTAL</strong></td>
-                    <td><strong>${formatNumber2(subtotales.cantidadMaritimos)}</strong></td>      
+                    <td><strong>${formatNumber2(subtotales.cantidadMaritimos)}</strong></td>
                     <td><strong>${formatNumber2(subtotales.cantidadCajasMAritimos)}</strong></td>
-                    
+
                     <td><strong>${formatNumber2(subtotales.cantidadPallets)}</strong></td>
                     <td><strong>${formatNumber2(subtotales.cantidadCajas)}</strong></td>
                     <td><strong>${formatNumber2(subtotales.cantidadPalletsTerrestre)}</strong></td>
@@ -1173,7 +1173,7 @@
                     table.draw(); // Redibuja la tabla aplicando los filtros
                 });
             }
-           
+
     });
     </script>
 @endsection
