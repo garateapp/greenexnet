@@ -297,6 +297,12 @@ class PersonalController extends Controller
                 $entrada->setType($entry[5]);
                 $entrada->setLlave($entrada->getRut() . '-' . $entrada->getDateTime());
                 $entradas->push($entrada);
+                $personal=Personal::where('rut', $entry[0])->first();
+                if(!$personal){
+                    $personal->rut=$entry[0];
+                    $personal->name=$entry[1];
+                    $personal->save();
+                }
             }
             if ($entry[5] == "Salida") {
                 $salida = new relojControl(); // Crear una nueva instancia para cada salida
@@ -324,18 +330,18 @@ class PersonalController extends Controller
                        $salida->getName() === $entrada->getName() &&
                        $salida->getDateTime() > $entrada->getDateTime();
             });
-    
+
             if ($matchingSalida) {
                 $pareados->push([
                     'entrada' => $entrada,
                     'salida' => $matchingSalida
                 ]);
-    
+
                 // Remover de entradas y salidas
                 $entradas = $entradas->reject(function ($item) use ($entrada) {
                     return $item->getLlave() === $entrada->getLlave();
                 });
-    
+
                 $salidas = $salidas->reject(function ($item) use ($matchingSalida) {
                     return $item->getLlave() === $matchingSalida->getLlave();
                 });
@@ -344,13 +350,13 @@ class PersonalController extends Controller
         $unificados = $entradas->merge($salidas)->sortBy(function ($item) {
             return $item->getRut() . '-' . $item->getName() . '-' . $item->getDateTime();
         });
-    
+
        //exportToExcel($pareados, $unificados,$fechaXls);
        return Excel::download(new MultiSheetExport($pareados, $unificados), 'reporte_asistencia-depurado-'.$fechaXls.'.xlsx');
-       
 
 
-       
+
+
         // $writer = new Xlsx($spreadsheet);
         // $filePath = storage_path('app/public/attendance_report.xlsx');
         // // $writer->save($filePath);
@@ -570,6 +576,7 @@ class PareadosSheet implements FromCollection, WithHeadings
                 'RUT Salida' => $item['salida']->getRut(),
                 'Nombre Salida' => $item['salida']->getName(),
                 'Fecha/Hora Salida' => $item['salida']->getDateTime(),
+                'Departamento' => $item['salida']->getPuesto(),
             ];
         });
     }
@@ -602,7 +609,7 @@ class UnificadosSheet implements FromCollection, WithHeadings
             return [
                 'RUT' => $item->getRut(),
                 'Nombre' => $item->getName(),
-                'Puesto' => $item->getPuesto(),                
+                'Departamento' => $item->getPuesto(),
                 'Fecha/Hora'=>$item->getDateTime(),
                 'Tipo' => $item->getType(),
             ];
@@ -617,7 +624,7 @@ class UnificadosSheet implements FromCollection, WithHeadings
             'Puesto',
             'Fecha/Hora',
             'Tipo',
-            
+
         ];
     }
 }
