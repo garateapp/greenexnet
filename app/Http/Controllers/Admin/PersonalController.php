@@ -299,6 +299,7 @@ class PersonalController extends Controller
                 $entradas->push($entrada);
                 $personal=Personal::where('rut', $entry[0])->first();
                 if(!$personal){
+                    $personal=new Personal();
                     $personal->rut=$entry[0];
                     $personal->name=$entry[1];
                     $personal->save();
