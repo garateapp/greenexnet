@@ -183,7 +183,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('embarques/ImportarEmbarques', 'EmbarquesController@ImportarEmbarques')->name('embarques.ImportarEmbarques');
     Route::post('embarques/GuardarEmbarques', 'EmbarquesController@GuardarEmbarques')->name('embarques.GuardarEmbarques');
     Route::post('embarques/ActualizaSistemaFX', 'EmbarquesController@ActualizaSistemaFX')->name('embarques.ActualizaSistemaFX');
-    Route::get('embarques/testMail', 'EmbarquesController@testMail')->name('embarques.testMail');
+    Route::get('embarques/enviarMail', 'EmbarquesController@enviarMail')->name('embarques.enviarMail');
     Route::resource('embarques', 'EmbarquesController');
 
 

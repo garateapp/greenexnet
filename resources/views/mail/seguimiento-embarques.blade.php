@@ -21,7 +21,7 @@
         }
 
         #contenido {
-            margin: 20px;
+
         }
         .table {
     width: 100%;
@@ -86,7 +86,7 @@
         /* Agrega un pequeño margen en tablets y escritorio */
         @media screen and (min-width: 768px) {
             #contenido {
-                margin: 20px auto;
+                margin: 2px 30px;
                 max-width: 600px;
                 /* Ancho máximo del contenido */
             }
@@ -108,7 +108,7 @@
             <tr>
                 <th colspan="10"></th>
                 <th colspan="2">Conexiones</th>
-                <th colspan="3"></th>
+                <th colspan="4"></th>
             <tr>
 
 
@@ -131,9 +131,7 @@
                 <th>
                     N° Pallets
                 </th>
-                <th>
-                    Peso Neto
-                </th>
+
                 <th>
                     Aerop. Destino
                 </th>
@@ -188,7 +186,7 @@
                 @endforeach
             </tbody>
         </table>
-        <p>Adjuntamos documento, para mayor información ingresar a nuestra intranet <a
+        <p>Para mayor información ingresar a nuestra intranet <a
                 href="http://net.greenex.cl">net.greenex.cl</a> menú COMEX opción embarques</p>
         <p>Saludos,</p>
         <p>Equipo Greenex</p>

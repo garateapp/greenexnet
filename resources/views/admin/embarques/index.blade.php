@@ -9,10 +9,12 @@
                 <button class="btn btn-warning" data-toggle="modal" data-target="#csvImportModal">
                     {{ trans('global.app_csvImport') }}
                 </button> --}}
-                <a class="btn btn-primary" href="{{ route('admin.embarques.ImportarEmbarques') }}">
+                <a class="btn btn-success" href="{{ route('admin.embarques.ImportarEmbarques') }}">
                     Importar Embarques
                 </a>
-
+                <a class="btn btn-success" href="{{ route('admin.embarques.enviarMail') }}">
+                    Enviar Mail
+                </a>
             </div>
         </div>
     @endcan

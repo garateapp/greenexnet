@@ -16,6 +16,10 @@ use DB;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
+use App\Models\Mensaje;
+use App\Mail\MiMailable;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\MensajeGenericoMailable;
 
 class EmbarquesController extends Controller
 {
@@ -487,8 +491,11 @@ class EmbarquesController extends Controller
         }
         return response()->json(['message' => 'Se han actualizado los embarques seleccionados'], Response::HTTP_CREATED);
     }
-    public function testMail(){
-        $embarques=Embarque::whereNull('fecha_arribo_real')->orderBy('num_embarque','desc')->get();
+    public function enviarMail(){
+        $embarques=Embarque::whereNull('fecha_arribo_real')->where("transporte","=","AEREO")->orderBy('num_embarque','desc')->get();
+        $mensaje=New Mensaje();
+        $mensaje->mensaje='hola';
+        Mail::to(['carlos.alvarez@greenex.cl','docs@greenex.cl'])->send(new MensajeGenericoMailable($mensaje,''));
         return view('mail.seguimiento-embarques', compact('embarques'));
     }
 }
