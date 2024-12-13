@@ -279,7 +279,7 @@
                     <li class="c-sidebar-nav-item">
                         <a href="{{ route('admin.reporteria.Transito') }}"
                             class="c-sidebar-nav-link {{ request()->is('admin/reporteria') || request()->is('admin/reporteria/*') ? 'c-active' : '' }}">
-                            <i class="fa-fw fas fa-chart-pie c-sidebar-nav-icon">
+                            <i class="fa-fw fas fa-shipping-fast c-sidebar-nav-icon">
 
                             </i>
                            Tránsito
