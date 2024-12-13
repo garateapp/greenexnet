@@ -300,10 +300,47 @@
                 </ul>
             </li>
         @endcan
+        <li class="c-sidebar-nav-dropdown {{ request()->is('admin/embalajes*') ? 'c-show' : '' }}">
+            <a class="c-sidebar-nav-dropdown-toggle" href="#">
+                <i class="fa-fw fas fa-coins c-sidebar-nav-icon"></i>
+                COMEX
+            </a>
+            <ul class="c-sidebar-nav-dropdown-items">
+            @can('embarque_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.embarques.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/embarques") || request()->is("admin/embarques/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fas fa-cogs c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.embarque.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                </ul>
+            </li>
+            <li class="c-sidebar-nav-dropdown {{ request()->is('admin/embalajes*') ? 'c-show' : '' }}">
+                <a class="c-sidebar-nav-dropdown-toggle" href="#">
+                    <i class="fa-fw fas fa-cogs c-sidebar-nav-icon"></i>
+                    Operaciones
+                </a>
+                <ul class="c-sidebar-nav-dropdown-items">
+                    @can('operaciones_fusionar_folios_access')
+                    <li class="c-sidebar-nav-item">
+                        <a href="{{ route('admin.operaciones.fusionarFolios') }}"
+                            class="c-sidebar-nav-link {{ request()->is('admin/operaciones') || request()->is('admin/operaciones/*') ? 'c-active' : '' }}">
+                            <i class="fa-fw fas fa-documents c-sidebar-nav-icon">
+
+                            </i>
+                            Fusionar Folios
+                        </a>
+                    </li>
+                    @endcan
+                </ul>
+            </li>
         @can("maestros_access")
         <li class="c-sidebar-nav-dropdown {{ request()->is('admin/embalajes*') ? 'c-show' : '' }}">
             <a class="c-sidebar-nav-dropdown-toggle" href="#">
-                <i class="fa-fw fas fa-cogs c-sidebar-nav-icon">
+                <i class="fa-fw fas fa-table c-sidebar-nav-icon">
 
                 </i>
                 Maestros

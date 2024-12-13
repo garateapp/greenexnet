@@ -151,6 +151,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::delete('embalajes/destroy', 'EmbalajesController@massDestroy')->name('embalajes.massDestroy');
     Route::post('embalajes/parse-csv-import', 'EmbalajesController@parseCsvImport')->name('embalajes.parseCsvImport');
     Route::post('embalajes/process-csv-import', 'EmbalajesController@processCsvImport')->name('embalajes.processCsvImport');
+
     Route::resource('embalajes', 'EmbalajesController');
 
     // Clientes Comex
@@ -170,6 +171,21 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('reporteria/getDatosgenerales', 'ReporteriaController@getDatosgenerales')->name('reporteria.getDatosgenerales');
     Route::get('reporteria/getSabana', 'ReporteriaController@getSabana')->name('reporteria.getSabana');
     //Route::get('/reporteria', [ReporteriaController::class, 'getDatosgenerales']);
+
+    //Operaciones
+    Route::get('operaciones/fusionarFolios', 'OperacionesController@fusionarFolios')->name('operaciones.fusionarFolios');
+
+
+    // Embarques
+    Route::delete('embarques/destroy', 'EmbarquesController@massDestroy')->name('embarques.massDestroy');
+    Route::post('embarques/parse-csv-import', 'EmbarquesController@parseCsvImport')->name('embarques.parseCsvImport');
+    Route::post('embarques/process-csv-import', 'EmbarquesController@processCsvImport')->name('embarques.processCsvImport');
+    Route::get('embarques/ImportarEmbarques', 'EmbarquesController@ImportarEmbarques')->name('embarques.ImportarEmbarques');
+    Route::post('embarques/GuardarEmbarques', 'EmbarquesController@GuardarEmbarques')->name('embarques.GuardarEmbarques');
+    Route::post('embarques/ActualizaSistemaFX', 'EmbarquesController@ActualizaSistemaFX')->name('embarques.ActualizaSistemaFX');
+    Route::get('embarques/testMail', 'EmbarquesController@testMail')->name('embarques.testMail');
+    Route::resource('embarques', 'EmbarquesController');
+
 
     Route::get('messenger', 'MessengerController@index')->name('messenger.index');
     Route::get('messenger/create', 'MessengerController@createTopic')->name('messenger.createTopic');
