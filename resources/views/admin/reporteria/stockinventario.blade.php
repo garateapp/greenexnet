@@ -510,7 +510,7 @@
                         });
                     let specieHasCherries =
                         false;
-                      
+
                     // Bandera para verificar si 'Cherries' está presente
                     uniqueValues.n_especie.forEach(function(value) {
                         $('#filtroEspecie').append(new Option(value, value));
@@ -846,26 +846,28 @@
                     console.log("totalsPerDaySemanal", totalsPerDaySemanal);
                     console.log("exportadoraTotalsSemanal", exportadoraTotalsSemanal);
                     stockxSemana.forEach(item => {
+
                         const semana = item.numero_semana;
                         const exportadora = item.n_exportadora;
-                        const peso = Math.round(parseFloat(item.peso_neto), 0);
+                        const peso = Math.round(item.peso_neto, 0);
                         if (!groupedDataSemanal[semana]) groupedDataSemanal[semana] = {};
                         if (!groupedDataSemanal[semana][exportadora]) groupedDataSemanal[semana]
                             [exportadora] = 0;
                         if (!totalsPerDaySemanal[semana]) totalsPerDaySemanal[semana] = 0;
                         if (!exportadoraTotalsSemanal[exportadora]) exportadoraTotalsSemanal[
                             exportadora] = 0;
-                        groupedDataSemanal[semana][exportadora] = peso + Math.round(parseFloat(
+                        groupedDataSemanal[semana][exportadora] =  peso + parseFloat(
                             groupedDataSemanal[semana][
                                 exportadora
-                            ]));
+                            ]);
+                        console.log("groupedDataSemanalXX", groupedDataSemanal, 'item', item);
 
                         if (!totalsPerDaySemanal[semana]) {
                             totalsPerDaySemanal[semana] = 0;
                         }
                         totalsPerDaySemanal[semana] = peso + Math.round(parseFloat(
                             totalsPerDaySemanal[semana]));
-                        exportadoraTotalsSemanal[exportadora] = peso + Math.round(parseFloat(
+                        exportadoraTotalsSemanal[exportadora] = Math.round(parseFloat(peso)) + Math.round(parseFloat(
                             exportadoraTotalsSemanal[exportadora]));
                     });
 
@@ -905,7 +907,7 @@
                         .n_exportadora))];
                     const dataTotals = fechas.map(fecha => totalsPerDay[fecha] ||
                         0);
-
+                        console.log("groupedDataSemanal[semana][exportadora]",groupedDataSemanal);
 
 
                     function generateTable() {
@@ -969,7 +971,8 @@
                             // Llenar las columnas de cada exportadora
                             exportadorasSemanal.forEach(exportadora => {
                                 tableHTML +=
-                                    `<td>${isNaN(formatNumber(groupedDataSemanal[semana][exportadora]))?0:formatNumber(groupedDataSemanal[semana][exportadora])}</td>`;
+                                    `<td>${(groupedDataSemanal[semana][exportadora]==null)?0:formatNumber(groupedDataSemanal[semana][exportadora])}</td>`;
+
                             });
 
                             // Llenar columna del total general
