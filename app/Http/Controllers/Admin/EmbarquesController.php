@@ -572,9 +572,9 @@ class EmbarquesController extends Controller
         }
 
         // Variables globales (cabecera)
-        $id_adm_p_entidades_empresa = '8581';
+        $id_adm_p_entidades_empresa = 8581;
         $id_adm_p_estados = 2;
-        $id_adm_p_entidades_packing = 4313;
+        $id_adm_p_entidades_packing = 8581;
         $items = new Collection();
 
         foreach ($data[0] as $index => $entry) {
@@ -658,7 +658,7 @@ class EmbarquesController extends Controller
                     'id_adm_items_plu' => 2383,
                     'id_adm_p_bodegas_paso' => 1091,
                     'termografo' => 0,
-                    'id_adm_p_entidades_packing_origen' => 4313,
+                    'id_adm_p_entidades_packing_origen' => 8581,
                     'id_origen' => 3,
                     'tipo_origen' => 'RFP',
                     'fecha_packing'=>Carbon::parse($this->convertirFechaExcel($entry["fecha_de_packing"]))->format('d-m-Y'),
@@ -725,7 +725,7 @@ class EmbarquesController extends Controller
                                             @id_adm_p_entidades_productor_rotulado = ?',
 
                                             [
-                                                4138,                    // @id_adm_p_entidades_empresa
+                                                $id_adm_p_entidades_empresa,                    // @id_adm_p_entidades_empresa
                                                 'RFP',                   // @tipo_i
                                                 $numero_i,               // @numero_i
                                                 $this->convertirFechaExcel($entry["fecha_de_packing"]), // @fecha
@@ -733,10 +733,10 @@ class EmbarquesController extends Controller
                                                 0,                       // @aprobado
                                                 'GD',                    // @tipo_d
                                                 $entry["documento_venta"], // @numero_d
-                                                4138,                    // @id_adm_p_entidades_emisor
+                                                $id_adm_p_entidades_empresa,                    // @id_adm_p_entidades_emisor
                                                 0,                       // @id_adm_p_entidades_transportista
                                                 1091,                    // @id_adm_p_bodegas
-                                                4313,                    // @id_adm_p_entidades_packing
+                                                $id_adm_p_entidades_packing,                    // @id_adm_p_entidades_packing
                                                 0,                       // @interplanta
                                                 0,                       // @id_origen
                                                 '',                      // @origen
