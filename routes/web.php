@@ -151,6 +151,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('reporteria/detalleembarque',"ReporteriaController@detalleembarque")->name("reporteria.detalleembarque");
     Route::get('reporteria/getPAckingList',"ReporteriaController@getPackingList")->name("reporteria.getPackingList");
     Route::get('reporteria/getClientesComex',"ReporteriaController@getClientesComex")->name("reporteria.getClientesComex");
+    Route::get('reporteria/getCantRegistros',"ReporteriaController@getCantRegistros")->name("reporteria.getCantRegistros");
 
 
     // Embalajes

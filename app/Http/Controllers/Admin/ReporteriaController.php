@@ -1013,6 +1013,20 @@ class ReporteriaController extends Controller
             }
             return response()->json(['data' => $dataMetas], 200);
     }
+    public function getCantRegistros(){
+       $cantEmbarques= DB::connection("sqlsrv")->table('dbo.V_PKG_Embarques')
+       ->select(DB::raw('COUNT(n_embarque) as cant'))
+       ->where('id_especie', 7)
+       ->where(DB::raw('DATEPART(WEEK, etd)'), '>', 43)
+            //->where('n_embarque', '>', $cargados->num_embarque)
+            ->where('id_exportadora','=','22')
+            ->whereNotNull('id_destinatario')
+            ->whereNotNull('n_destinatario')
+            ->whereIn('transporte',['MARITIMO','AEREO'])
+            ->get();
+
+            return response()->json(['cantEmbarques' => $cantEmbarques], 200);
+    }
     public function ObtieneEmbarquesyPackingList()
     {
 
@@ -1063,7 +1077,7 @@ class ReporteriaController extends Controller
             ->where('id_exportadora','=','22')
             ->whereNotNull('id_destinatario')
             ->whereNotNull('n_destinatario')
-            ->whereIn('transporte',['MARITIMO','AEREO'])->get();
+            ->get();
             $lstEmbarque = collect();
 
 

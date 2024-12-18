@@ -229,9 +229,9 @@
         </div>
         <script>
             $(document).ready(function() {
-
+                let totalRegistros = 0;
                 function sincronizar() {
-
+                    obtieneCantidad();
                     const urls = [
                         "{{ route('admin.reporteria.ObtieneEmbarquesyPackingList') }}",
                         // "{{ route('admin.reporteria.getPackingList') }}",
@@ -239,7 +239,7 @@
                     ];
 
                     const progressBar = $("#progress-bar");
-                    const totalRequests = urls.length;
+                    const totalRequests = urls.length + (totalRegistros % 5000);
                     let completedRequests = 0;
 
                     function updateProgress() {
@@ -253,30 +253,67 @@
                         }
                     }
 
-                    urls.forEach((url) => {
+
+                    function obtieneCantidad() {
                         $.ajax({
-                            url: url,
+                            url: "{{ route('admin.reporteria.getCantRegistros') }}",
                             type: "GET",
                             dataType: "json",
                             success: function(data) {
-                                console.log("Datos recibidos de: " + url, data);
-                                updateProgress(); // Incrementar el progreso al completar
-                                if (url === "{{ route('admin.reporteria.getClientesComex') }}") {
-                                    console.log("data", data.CxComex);
-                                    SetDBCxComex(data.CxComex);
-                                }
-                                if (url ===
-                                    "{{ route('admin.reporteria.ObtieneEmbarquesyPackingList') }}"
-                                ) {
-                                    console.log("data", data.objEmbarque);
-                                    SetDBEmbarque(data.objEmbarque);
-                                }
+                                console.log("Datos recibidos de: " + data);
+                                totalRegistros = data.totalRegistros;
                             },
                             error: function(xhr, status, error) {
                                 console.error("Error en la solicitud AJAX a " + url, error);
-                                updateProgress(); // Incrementar el progreso incluso si falla
                             }
                         });
+                    }
+
+                    // if (url ===
+                    //                 "{{ route('admin.reporteria.ObtieneEmbarquesyPackingList') }}"
+                    //             ) {
+                    //
+                    //             }
+                    urls.forEach((url) => {
+                        if (url === "{{ route('admin.reporteria.getClientesComex') }}") {
+                            $.ajax({
+                                url: url,
+                                type: "GET",
+                                dataType: "json",
+                                success: function(data) {
+                                    console.log("Datos recibidos de: " + url, data);
+                                    updateProgress(); // Incrementar el progreso al completar
+                                    if (url ===
+                                        "{{ route('admin.reporteria.getClientesComex') }}") {
+                                        console.log("data", data.CxComex);
+                                        SetDBCxComex(data.CxComex);
+                                    }
+
+                                },
+                                error: function(xhr, status, error) {
+                                    console.error("Error en la solicitud AJAX a " + url, error);
+                                    updateProgress(); // Incrementar el progreso incluso si falla
+                                }
+                            });
+                        } else {
+
+                            $.ajax({
+                                url: url,
+                                type: "GET",
+                                dataType: "json",
+                                success: function(data) {
+                                    console.log("Datos recibidos de: " + url, data);
+                                    updateProgress(); // Incrementar el progreso al completar
+                                    console.log("data", data.objEmbarque);
+                                    SetDBEmbarque(data.objEmbarque);
+
+                                },
+                                error: function(xhr, status, error) {
+                                    console.error("Error en la solicitud AJAX a " + url, error);
+                                    updateProgress(); // Incrementar el progreso incluso si falla
+                                }
+                            });
+                        }
                     });
 
                 }
