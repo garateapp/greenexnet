@@ -296,6 +296,15 @@
                             Embarques
                         </a>
                     </li>
+                    <li class="c-sidebar-nav-item">
+                        <a href="{{ route('admin.reporteria.detalleembarque') }}"
+                            class="c-sidebar-nav-link {{ request()->is('admin/reporteria') || request()->is('admin/reporteria/*') ? 'c-active' : '' }}">
+                            <i class="fa-fw fas fa-ship c-sidebar-nav-icon">
+
+                            </i>
+                           Detalle Embarques
+                        </a>
+                    </li>
                     @endcan
                 </ul>
             </li>
@@ -315,6 +324,13 @@
                                 {{ trans('cruds.embarque.title') }}
                             </a>
                         </li>
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.embarques.ingresagrecepcion") }}" class="c-sidebar-nav-link {{ request()->is("admin/detalle-embarques") || request()->is("admin/detalle-embarques/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fas fa-cogs c-sidebar-nav-icon">
+
+                                </i>
+                                Ingresa Guía de Recepción
+                            </a>
                     @endcan
                 </ul>
             </li>

@@ -4,8 +4,8 @@ namespace App\Imports;
 
 
 use Maatwebsite\Excel\Concerns\ToArray;
-
-class ExcelImport implements ToArray
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
+class ExcelImport implements ToArray,WithHeadingRow
 {
     public function array(array $array)
     {

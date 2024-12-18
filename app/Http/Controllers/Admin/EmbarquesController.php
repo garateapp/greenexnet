@@ -8,6 +8,11 @@ use App\Http\Requests\MassDestroyEmbarqueRequest;
 use App\Http\Requests\StoreEmbarqueRequest;
 use App\Http\Requests\UpdateEmbarqueRequest;
 use App\Models\Embarque;
+use App\Imports\ExcelImport;
+use Maatwebsite\Excel\Facades\Excel;
+use Maatwebsite\Excel\Concerns\WithMultipleSheets;
+use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithHeadings;
 use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -158,7 +163,12 @@ class EmbarquesController extends Controller
             $table->editColumn('tipo_especie', function ($row) {
                 return $row->tipo_especie ? $row->tipo_especie : '';
             });
-
+            $table->editColumn('peso_total', function ($row) {
+                return $row->peso_total ? $row->peso_total : '';
+            });
+            $table->editColumn('numero_reserva_agente_naviero', function ($row) {
+                return $row->numero_reserva_agente_naviero ? $row->numero_reserva_agente_naviero : '';
+            });
             $table->rawColumns(['actions', 'placeholder']);
 
             return $table->make(true);
@@ -256,9 +266,9 @@ class EmbarquesController extends Controller
                 'numero_referencia',
                 'nave'
             )
-            //->where(DB::raw('DATEPART(WEEK, etd)'), '>', 48)
-            ->where('n_embarque', '>', $cargados->num_embarque)
-            ->where('id_exportadora','=','22')
+            ->where(DB::raw('DATEPART(WEEK, etd)'), '>', 43)
+            //->where('n_embarque', '>', $cargados->num_embarque)
+            ->where('id_exportadora', '=', '22')
             ->whereNotNull('id_destinatario')
             ->whereNotNull('n_destinatario')
             ->groupBy(
@@ -328,7 +338,6 @@ class EmbarquesController extends Controller
 
 
             $lstEmbarque->push($objEmbarque);
-
         }
         $lstEmbarqueAgrupado = $lstEmbarque->groupBy('num_embarque');
         $lstEmbarque = new Collection();
@@ -403,7 +412,6 @@ class EmbarquesController extends Controller
             $objEmbarque->transporte = $embarque["transporte"];
 
             $objEmbarque->save();
-
         }
 
 
@@ -491,11 +499,368 @@ class EmbarquesController extends Controller
         }
         return response()->json(['message' => 'Se han actualizado los embarques seleccionados'], Response::HTTP_CREATED);
     }
-    public function enviarMail(){
-        $embarques=Embarque::whereNull('fecha_arribo_real')->where("transporte","=","AEREO")->orderBy('num_embarque','desc')->get();
-        $mensaje=New Mensaje();
-        $mensaje->mensaje='hola';
-        Mail::to(['carlos.alvarez@greenex.cl','docs@greenex.cl'])->send(new MensajeGenericoMailable($mensaje,''));
+    public function enviarMail()
+    {
+        $embarques = Embarque::whereNull('fecha_arribo_real')->where("transporte", "=", "AEREO")->orderBy('num_embarque', 'desc')->get();
+        $mensaje = new Mensaje();
+        $mensaje->mensaje = 'CARGA DIARIA/TMP 2024-2025';
+        Mail::to(['iromero@greenex.cl', 'rodrigo.garate@greenex.cl', 'eduardo.garate@greenex.cl', 'mario.yanez@greenex.cl', 'cobranzas@greenex.cl', 'pcarreno@greenex.cl'])
+            ->cc(['comex@greenex.cl', 'hhoffmann@greenex.cl', 'docs@greenex.cl', 'exportaciones@greenex.cl', 'carol.padilla@greenex.cl'])
+            ->send(new MensajeGenericoMailable($mensaje, ''));
         return view('mail.seguimiento-embarques', compact('embarques'));
+    }
+    public function ingresaPackingList(Request $request)
+    {
+
+        set_time_limit(300);
+        // $fecha = explode("/", $request->fecha);
+        // $fechaIni = $fecha[2] . '-' . $fecha[1] . '-' . $fecha[0] . ' 00:00:00';
+        // $fechaFin = $fecha[2] . '-' . $fecha[1] . '-' . ($fecha[0] + 1) . ' 23:59:59';
+
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls,csv',
+        ]);
+
+
+        // Cargar el archivo y procesarlo
+        $file = $request->file('file');
+
+        $data = Excel::toArray(new ExcelImport, $file);
+
+
+
+        // $i = 0;
+        // foreach ($data as $entry) {
+        //     if ($i == 1) {
+        //         $id_adm_p_entidades_empresa = '8581';
+        //         $tipo_i = 'RFD';
+        //         $numero_i = 0;
+        //         $fecha = $entry[24]; //fecha de carga?
+        //         $id_adm_p_estados = 2;
+        //         $aprobado = 0;
+        //         $tipo_d = 'GD';
+        //         $numero_d = $numero_r->numero_guia_cliente;
+        //         $id_adm_p_entidades_emisor = '8581';
+        //         $id_adm_p_entidades_transportista = '0';
+        //         $id_adm_p_bodegas = 1091;
+        //         $calidad_exportacion = 0;
+        //         $calidad_mercado_interno = 0;
+        //         $id_adm_p_entidades_packing = 4313;
+        //         $transmitido = 0;
+        //         $id_adm_p_entidades_productor_rotulado = 8581;
+        //     }
+        //     $i++;
+        // }
+
+        // Obtener el número de guía desde la primera fila
+
+        $numeroReferencia = $data[0][0]["instructivo"] ?? null;
+        $entry = $data[0][0];
+
+        if (!$numeroReferencia) {
+            return response()->json(['error' => 'No se encontró número de referencia en el archivo'], 400);
+        }
+
+        $numero_r = DB::connection("sqlsrv")
+            ->table('dbo.V_PKG_Embarques')
+            ->select('numero_guia_cliente')
+            ->where('numero_referencia', '=', $numeroReferencia)
+            ->first();
+
+        if (!$numero_r) {
+            return response()->json(['error' => 'No se encontró número de guía en la base de datos'], 400);
+        }
+
+        // Variables globales (cabecera)
+        $id_adm_p_entidades_empresa = '8581';
+        $id_adm_p_estados = 2;
+        $id_adm_p_entidades_packing = 4313;
+        $items = new Collection();
+
+        foreach ($data[0] as $index => $entry) {
+            // Saltar el encabezado (primera fila)
+            if ($index == 0) continue;
+
+            if (!empty($entry["instructivo"])) {
+                // Consultas a la base de datos para los IDs
+                $envase = DB::connection("sqlsrv")
+                    ->table('dbo.ADM_P_items')
+                    ->select('id')
+                    ->where('codigo', '=', $entry["nombre_abre_envase"])
+                    ->first();
+
+                $categoria = DB::connection("sqlsrv")
+                    ->table('dbo.PRO_P_categorias')
+                    ->select('id')
+                    ->where('nombre', '=', $entry["categoria"])
+                    ->first();
+
+                $calibre = DB::connection("sqlsrv")
+                    ->table('dbo.PRO_P_calibres')
+                    ->select('id')
+                    ->where('codigo', '=', $entry["denominacion_calibre"])
+                    ->first();
+
+                $etiquetas = DB::connection("sqlsrv")
+                    ->table('dbo.PRO_P_etiquetas')
+                    ->select('id')
+                    ->where('nombre', '=', $entry["etiqueta_u_emb"])
+                    ->first();
+
+                $productor = DB::connection("sqlsrv")
+                    ->table('dbo.ADM_P_entidades')
+                    ->select('id')
+                    ->where('nombre', '=', rtrim($entry["den_csg_rotulado"], '.'))
+                    ->first();
+
+                // Asignar variedad de rotulación (si existe)
+                $variedad_rotulacion = 0;
+                if (!empty($entry["variedad_rotulada"])) {
+                    $variedad = DB::connection("sqlsrv")
+                        ->table('dbo.PRO_P_variedades')
+                        ->select('id')
+                        ->where('nombre', '=', $entry["variedad_rotulada"])
+                        ->first();
+                    $variedad_rotulacion = $variedad->id ?? 0;
+                }
+                if(!empty($entry["codigo_csp"])) {
+                    $csg_rotulado = DB::connection("sqlsrv")->table('dbo.ADM_P_CentrosCosto')
+                    ->select('id')
+                    ->where('codigo', 'like', $entry["csg_rotulado"].'%')
+                    ->first();
+                }
+                $items->push([
+                    'id_pkg_stock' => $entry["instructivo"],
+                    'folio' => $entry["pallet"],
+                    'id_adm_p_centroscosto' => $csg_rotulado->id ?? null,
+                    'id_adm_p_items' => $envase->id ?? null,
+                    'id_pro_p_categorias' => $categoria->id ?? null,
+                    'id_pro_p_calibres' => $calibre->id ?? null,
+                    'cantidad' => $entry["cantidad_entrega"],
+                    'peso_neto' => $entry["peso_neto"],
+                    'creacion_tipo' => 'RFP',
+                    'creacion_id' => 3,
+                    'destruccion_tipo' => '',
+                    'destruccion_id' => 0,
+                    'inventario' => 1,
+                    'trazabilidad' => 1,
+                    'lote_recepcion' => 2,
+                    'id_pro_etiquetas' => $etiquetas->id ?? null,
+                    'fecha_produccion' => Carbon::parse($this->convertirFechaExcel($entry["fecha_de_packing"]))->format('d-m-Y'),
+                    'id_adm_p_entidad_exportadora' => 22,
+                    'id_pro_turno_creacion' => 1,
+                    'id_pro_turnos_destruccion' => 0,
+                    'fecha_hora_creacion' => date('Y-m-d H:i:s'),
+                    'fecha_hora_destruccion' => "1900-01-01 00:00:00",
+                    'id_adm_p_entidades_productor_rotulacion' => $productor->id ?? null,
+                    'id_pro_p_variedades_rotulacion' => $variedad_rotulacion,
+                    'tara_envase' => 0,
+                    'id_adm_items_plu' => 2383,
+                    'id_adm_p_bodegas_paso' => 1091,
+                    'termografo' => 0,
+                    'id_adm_p_entidades_packing_origen' => 4313,
+                    'id_origen' => 3,
+                    'tipo_origen' => 'RFP',
+                    'fecha_packing'=>Carbon::parse($this->convertirFechaExcel($entry["fecha_de_packing"]))->format('d-m-Y'),
+                ]);
+            }
+        }
+
+        // Iniciar una transacción
+        // Insertar la cabecera
+        $num_i = DB::connection("sqlsrv")->table('PKG_G_Recepcion')->select('numero_i')
+            ->where('tipo_i', 'RFP')
+            ->orderBy('id', 'desc')->limit(1)->get();
+
+        if(count($num_i)==0){
+            $numero_i = 1;
+        }else{
+            $numero_i = $num_i[0]->numero_i + 1;
+        }
+        // $result = DB::connection("sqlsrv")->table('PKG_G_Recepcion')->insert([
+        //     'id_adm_p_entidades_empresa' => '4138', //cambiar a 8581
+        //     'tipo_i' => 'RFP',
+        //     'numero_i' => $numero_i,
+        //     'fecha' => $this->convertirFechaExcel($entry["fecha_de_packing"]), //fecha de carga?
+        //     'id_adm_p_estados' => 2,
+        //     'aprobado' => 0,
+        //     'tipo_d' => 'GD',
+        //     'numero_d' => $entry["documento_venta"],
+        //     'id_adm_p_entidades_emisor' => '4138',
+        //     'id_adm_p_entidades_transportista' => '0',
+        //     'id_adm_p_bodegas' => 1091,
+        //     'calidad_exportacion' => 0,
+        //     'calidad_mercado_interno' => 0,
+        //     'id_adm_p_entidades_packing' => 4313,
+        //     'transmitido' => 0,
+        //     'id_adm_p_entidades_productor_rotulado' => 4313,
+        //     'id_origen' => 0,
+        //     'origen' => '',
+        //     'interplanta' => 0,
+        //     'Id_PKG_P_Tratamiento' => 0,
+        //     'calidad_desecho' => 100,
+        //     //'clave' => ''
+
+        // ]);
+         DB::connection("sqlsrv")->statement('
+
+                                            EXEC PKG_G_Recepcion_Grabar
+                                            @id = 0,
+                                            @id_adm_p_entidades_empresa = ?,
+                                            @tipo_i = ?,
+                                            @numero_i = ?,
+                                            @fecha = ?,
+                                            @id_adm_p_estados = ?,
+                                            @aprobado = ?,
+                                            @tipo_d = ?,
+                                            @numero_d = ?,
+                                            @id_adm_p_entidades_emisor = ?,
+                                            @id_adm_p_entidades_transportista = ?,
+                                            @id_adm_p_bodegas = ?,
+                                            @id_adm_p_entidades_packing = ?,
+                                            @interplanta = ?,
+                                            @id_origen = ?,
+                                            @origen = ?,
+                                            @Id_PKG_P_Tratamiento = ?,
+                                            @id_adm_p_entidades_productor_rotulado = ?',
+
+                                            [
+                                                4138,                    // @id_adm_p_entidades_empresa
+                                                'RFP',                   // @tipo_i
+                                                $numero_i,               // @numero_i
+                                                $this->convertirFechaExcel($entry["fecha_de_packing"]), // @fecha
+                                                2,                       // @id_adm_p_estados
+                                                0,                       // @aprobado
+                                                'GD',                    // @tipo_d
+                                                $entry["documento_venta"], // @numero_d
+                                                4138,                    // @id_adm_p_entidades_emisor
+                                                0,                       // @id_adm_p_entidades_transportista
+                                                1091,                    // @id_adm_p_bodegas
+                                                4313,                    // @id_adm_p_entidades_packing
+                                                0,                       // @interplanta
+                                                0,                       // @id_origen
+                                                '',                      // @origen
+                                                0,                       // @Id_PKG_P_Tratamiento
+                                                4313                     // @id_adm_p_entidades_productor_rotulado
+                                            ]);
+
+        // $stock_id = DB::connection("sqlsrv")->select('PKG_Stock')->insertGetId([
+        //    'folio'=>$entry["pallet"],
+        //    'id_adm_p_items_contenedor'=>2733,
+        //    'id_adm_p_entidades'=>4138,
+        //    'id_pro_p_alturas'=>7,
+        //    'tara_contenedor'=>19.5,
+        //    'texto_libre_hs'=>'',
+        // ]);
+        // Insertar los detalles
+        $origen_id= DB::connection("sqlsrv")->table('PKG_G_Recepcion')
+        ->select('id')
+
+        ->orderBy('id', 'desc')->limit(1)->get();
+
+
+        $detalles = [];
+        foreach ($items as $item) {
+            DB::connection("sqlsrv")->statement('EXEC PKG_G_Recepcion_Grabar_Detalle
+            @id = ?,
+            @id_pkg_stock = ?,
+            @folio = ?,
+            @fecha_cosecha = ?,
+            @id_adm_p_centroscosto = ?,
+            @id_adm_p_items = ?,
+            @id_pro_p_categorias = ?,
+            @id_pro_p_calibres = ?,
+            @cantidad = ?,
+            @peso_neto = ?,
+            @creacion_tipo = ?,
+            @creacion_id = ?,
+            @id_adm_p_bodegas = ?,
+            @id_adm_p_entidades = ?,
+            @id_pro_p_alturas = ?,
+            @id_pro_p_etiquetas = ?,
+            @fecha_produccion = ?,
+            @id_adm_p_items_contenedor = ?,
+            @id_adm_p_entidades_exportadora = ?,
+            @id_pro_p_turnos_creacion = ?,
+            @id_adm_p_items_plu = ?,
+            @tara_contenedor = ?,
+            @Id_Adm_P_Contratista = ?,
+            @id_adm_p_entidades_packing_origen = ?,
+            @id_variedadRotulador = ?,
+            @interplanta = ?,
+            @textoLibreHS = ?,
+            @SecuenciaImpresion = ?',
+            [
+                0,                                  // @id
+                0,                          // @id_pkg_stock
+                $item["folio"],                     // @folio
+                Carbon::parse($item["fecha_packing"])->format('d-m-Y H:i:s'), // @fecha_cosecha
+                $item['id_adm_p_centroscosto'],     // @id_adm_p_centroscosto
+                $item['id_adm_p_items'],            // @id_adm_p_items
+                $item['id_pro_p_categorias'],       // @id_pro_p_categorias
+                $item['id_pro_p_calibres'],         // @id_pro_p_calibres
+                $item['cantidad'],                  // @cantidad
+                $item['peso_neto'],                 // @peso_neto
+                $item['creacion_tipo'],             // @creacion_tipo
+                $origen_id[0]->id,               // @creacion_id
+                1091,                               // @id_adm_p_bodegas (puedes ajustarlo)
+                $item['id_adm_p_entidades_productor_rotulacion'],        // @id_adm_p_entidades
+                7,                               // @id_pro_p_alturas
+                $item['id_pro_etiquetas'],          // @id_pro_p_etiquetas
+                Carbon::parse($item['fecha_produccion'])->format('d-m-Y H:i:s'), // @fecha_produccion
+                2733,                               // @id_adm_p_items_contenedor
+                $item['id_adm_p_entidad_exportadora'], // @id_adm_p_entidades_exportadora
+                $item['id_pro_turno_creacion'],     // @id_pro_p_turnos_creacion
+                $item['id_adm_items_plu'],          // @id_adm_p_items_plu
+                $item['tara_envase'],               // @tara_contenedor
+                null,                               // @Id_Adm_P_Contratista
+                $item['id_adm_p_entidades_packing_origen'], // @id_adm_p_entidades_packing_origen
+                $item['id_pro_p_variedades_rotulacion'] ?? null, // @id_variedadRotulador
+                0,                                  // @interplanta
+                '',                                 // @textoLibreHS
+                0                                   // @SecuenciaImpresion
+            ]);
+        }
+
+        //dd($detalles);
+        // Realizar el insert masivo de detalles
+
+
+
+
+        return response()->json(['message' => 'Se han actualizado los embarques seleccionados'], Response::HTTP_CREATED);
+    }
+    public function ingresagrecepcion()
+    {
+        return view('admin.embarques.ingresagrecepcion');
+    }
+    function formatDate2($date)
+    {
+        try {
+            // Excel almacena las fechas como un número de días desde 1900-01-01
+            $excelDate = (float)$date;  // Convertir a float para asegurar que el cálculo sea preciso
+
+            // Ajustar el desfase desde 1900-01-01 (día base en Excel)
+            $timestamp = Carbon::createFromTimestampUTC((int)(($excelDate - 25569) * 86400));
+
+            // Establecer la zona horaria requerida
+            //$timestamp->setTimezone('America/Santiago');
+
+            // Devolver el formato esperado
+            return $timestamp->format('d-m-Y H:i');
+        } catch (\Exception $e) {
+            Log::error("Error al formatear la fecha: " . $e->getMessage());
+            return $date; // Si falla, devuelve la fecha original
+        }
+    }
+    function convertirFechaExcel($valorFechaExcel)
+    {
+        // La fecha base de Excel es el 1 de enero de 1900
+        $fechaBase = Carbon::createFromDate(1900, 1, 1);
+
+        // Excel incluye incorrectamente el 29 de febrero de 1900, hay que restar un día
+        $fecha = $fechaBase->addDays($valorFechaExcel - 2);
+
+        return $fecha->format('Y-m-d H:i:s');
     }
 }

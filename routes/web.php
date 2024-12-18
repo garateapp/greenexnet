@@ -2,7 +2,7 @@
 
 //use Illuminate\Routing\Route;
 use App\Http\Controllers\Admin\ReporteriaController;
-
+//use Illuminate\Routing\Route;
 
 Route::view('/', '/welcome');
 Route::get('userVerification/{token}', 'UserVerificationController@approve')->name('userVerification');
@@ -147,6 +147,12 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('reporteria/ObjetivosEnvios',"ReporteriaController@ObjetivosEnvios")->name("reporteria.ObjetivosEnvios");
     Route::get('reporteria/ObjetivosEnviosAereos',"ReporteriaController@ObjetivosEnviosAereos")->name("reporteria.ObjetivosEnviosAereos");
     Route::get('reporteria/ObjetivosEnviosTerrestre',"ReporteriaController@ObjetivosEnviosTerrestre")->name("reporteria.ObjetivosEnviosTerrestre");
+    Route::get('reporteria/ObtieneEmbarquesyPackingList',"ReporteriaController@ObtieneEmbarquesyPackingList")->name("reporteria.ObtieneEmbarquesyPackingList");
+    Route::get('reporteria/detalleembarque',"ReporteriaController@detalleembarque")->name("reporteria.detalleembarque");
+    Route::get('reporteria/getPAckingList',"ReporteriaController@getPackingList")->name("reporteria.getPackingList");
+    Route::get('reporteria/getClientesComex',"ReporteriaController@getClientesComex")->name("reporteria.getClientesComex");
+
+
     // Embalajes
     Route::delete('embalajes/destroy', 'EmbalajesController@massDestroy')->name('embalajes.massDestroy');
     Route::post('embalajes/parse-csv-import', 'EmbalajesController@parseCsvImport')->name('embalajes.parseCsvImport');
@@ -184,6 +190,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('embarques/GuardarEmbarques', 'EmbarquesController@GuardarEmbarques')->name('embarques.GuardarEmbarques');
     Route::post('embarques/ActualizaSistemaFX', 'EmbarquesController@ActualizaSistemaFX')->name('embarques.ActualizaSistemaFX');
     Route::get('embarques/enviarMail', 'EmbarquesController@enviarMail')->name('embarques.enviarMail');
+    Route::post('embarques/ingresaPackingList','EmbarquesController@ingresaPackingList')->name('embarques.ingresaPackingList');
+    Route::get('embarques/ingresagrecepcion', 'EmbarquesController@ingresagrecepcion')->name('embarques.ingresagrecepcion');
+
+
     Route::resource('embarques', 'EmbarquesController');
 
 

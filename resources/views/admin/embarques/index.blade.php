@@ -151,7 +151,9 @@
                         <th>
                             {{ trans('cruds.embarque.fields.tipo_especie') }}
                         </th>
-
+                        <th>
+                            AWB
+                        </th>
                         <th>
                             &nbsp;
                         </th>
@@ -297,12 +299,15 @@
                         <td>
                             <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                         </td>
-
+                        <td>
+                            <input class="search" type="text" placeholder="{{ trans('global.search') }}">
+                        </td>
                         <td>
                         </td>
                     </tr>
                 </thead>
             </table>
+
         </div>
     </div>
 @endsection
@@ -310,6 +315,7 @@
     @parent
     <script>
         $(document).ready(function() {
+
             $(function() {
                 let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
                 @can('embarque_delete')
@@ -576,6 +582,10 @@
                             name: 'tipo_especie'
                         },
                         {
+                            data: 'numero_reserva_agente_naviero',
+                            name: 'numero_reserva_agente_naviero'
+                        },
+                        {
                             data: 'actions',
                             name: '{{ trans('global.actions') }}'
                         },
@@ -639,7 +649,8 @@
 
                     if (cell.index().column === 24 || cell.index().column === 25 || cell.index()
                         .column === 34 || cell.index().column === 37 || cell.index().column ===
-                        38 || cell.index().column === 39 || cell.index().column === 40 || cell.index().column === 35) {
+                        38 || cell.index().column === 39 || cell.index().column === 40 || cell
+                        .index().column === 35) {
                         $(this).html(
                             '<div class="form-group"><input type="text" class="form-control date" value="' +
                             originalValue + '"></div>');
@@ -696,10 +707,10 @@
                     input.on('blur', function() {
                         var newValue = input.val();
 
-                            // Actualiza la celda con el nuevo valor
-                            cell.data(newValue).draw();
+                        // Actualiza la celda con el nuevo valor
+                        cell.data(newValue).draw();
 
-                            guardarEdicion(cell, input); // Actualizar la celda
+                        guardarEdicion(cell, input); // Actualizar la celda
 
                     });
 
