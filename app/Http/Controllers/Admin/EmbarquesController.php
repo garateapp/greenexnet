@@ -670,6 +670,7 @@ class EmbarquesController extends Controller
         // Insertar la cabecera
         $num_i = DB::connection("sqlsrv")->table('PKG_G_Recepcion')->select('numero_i')
             ->where('tipo_i', 'RFP')
+            ->where('id_adm_p_entidades_empresa', '=', $id_adm_p_entidades_empresa)
             ->orderBy('tipo_i', 'desc')->limit(1)->get();
 
         if(count($num_i)==0){
