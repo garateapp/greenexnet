@@ -683,6 +683,7 @@ class EmbarquesController extends Controller
         //     //'clave' => ''
 
         // ]);
+        $fecha_packing=Carbon::parse($this->convertirFechaExcel($entry["fecha_de_packing"]))->format('d-m-Y');
          DB::connection("sqlsrv")->statement('
 
                                             EXEC PKG_G_Recepcion_Grabar
@@ -709,7 +710,7 @@ class EmbarquesController extends Controller
                                                 $id_adm_p_entidades_empresa,                    // @id_adm_p_entidades_empresa
                                                 'RFP',                   // @tipo_i
                                                 $numero_i,               // @numero_i
-                                                $this->convertirFechaExcel($entry["fecha_de_packing"]), // @fecha
+                                                $fecha_packing, // @fecha
                                                 2,                       // @id_adm_p_estados
                                                 0,                       // @aprobado
                                                 'GD',                    // @tipo_d

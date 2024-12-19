@@ -911,6 +911,7 @@ class ReporteriaController extends Controller
             return response()->json(['data' => $dataMetas], 200);
     }
     public function ObjetivosEnviosAereos(){
+        ini_set('memory_limit', '512M');
         $dataMetas = DB::connection("sqlsrv")->table(function ($query) {
             $query->from('dbo.V_PKG_Embarques')
                 ->selectRaw("
