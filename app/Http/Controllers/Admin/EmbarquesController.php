@@ -529,28 +529,6 @@ class EmbarquesController extends Controller
 
 
 
-        // $i = 0;
-        // foreach ($data as $entry) {
-        //     if ($i == 1) {
-        //         $id_adm_p_entidades_empresa = '8581';
-        //         $tipo_i = 'RFD';
-        //         $numero_i = 0;
-        //         $fecha = $entry[24]; //fecha de carga?
-        //         $id_adm_p_estados = 2;
-        //         $aprobado = 0;
-        //         $tipo_d = 'GD';
-        //         $numero_d = $numero_r->numero_guia_cliente;
-        //         $id_adm_p_entidades_emisor = '8581';
-        //         $id_adm_p_entidades_transportista = '0';
-        //         $id_adm_p_bodegas = 1091;
-        //         $calidad_exportacion = 0;
-        //         $calidad_mercado_interno = 0;
-        //         $id_adm_p_entidades_packing = 4313;
-        //         $transmitido = 0;
-        //         $id_adm_p_entidades_productor_rotulado = 8581;
-        //     }
-        //     $i++;
-        // }
 
         // Obtener el número de guía desde la primera fila
 
@@ -579,9 +557,9 @@ class EmbarquesController extends Controller
 
         foreach ($data[0] as $index => $entry) {
             // Saltar el encabezado (primera fila)
-            if ($index == 0) continue;
 
-            if (!empty($entry["instructivo"])) {
+
+            //if (!empty($entry["instructivo"])) {
                 // Consultas a la base de datos para los IDs
                 $envase = DB::connection("sqlsrv")
                     ->table('dbo.ADM_P_items')
@@ -665,7 +643,7 @@ class EmbarquesController extends Controller
                     'tipo_origen' => 'RFP',
                     'fecha_packing'=>Carbon::parse($this->convertirFechaExcel($entry["fecha_de_packing"]))->format('d-m-Y'),
                 ]);
-            }
+            //}
         }
 
         // Iniciar una transacción
