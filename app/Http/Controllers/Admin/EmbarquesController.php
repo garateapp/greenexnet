@@ -759,7 +759,7 @@ class EmbarquesController extends Controller
 
         ->orderBy('id', 'desc')->limit(1)->get();
 
-
+        //CAmbios
         $detalles = [];
         foreach ($items as $item) {
 
