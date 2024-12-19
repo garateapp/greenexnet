@@ -762,6 +762,7 @@ class EmbarquesController extends Controller
 
         $detalles = [];
         foreach ($items as $item) {
+
             DB::connection("sqlsrv")->statement('EXEC PKG_G_Recepcion_Grabar_Detalle
             @id = ?,
             @id_pkg_stock = ?,
@@ -801,11 +802,11 @@ class EmbarquesController extends Controller
                 $item['id_pro_p_categorias'],       // @id_pro_p_categorias
                 $item['id_pro_p_calibres'],         // @id_pro_p_calibres
                 $item['cantidad'],                  // @cantidad
-                $item['peso_neto'],                 // @peso_neto
+                $item['peso_neto']*$item['cantidad'],                 // @peso_neto
                 $item['creacion_tipo'],             // @creacion_tipo
                 $origen_id[0]->id,               // @creacion_id
                 1091,                               // @id_adm_p_bodegas (puedes ajustarlo)
-                $item['id_adm_p_entidades_productor_rotulacion'],        // @id_adm_p_entidades
+                8581,        // @id_adm_p_entidades
                 7,                               // @id_pro_p_alturas
                 $item['id_pro_etiquetas'],          // @id_pro_p_etiquetas
                 Carbon::parse($item['fecha_produccion'])->format('d-m-Y H:i:s'), // @fecha_produccion
