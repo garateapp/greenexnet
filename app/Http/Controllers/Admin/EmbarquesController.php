@@ -627,8 +627,10 @@ class EmbarquesController extends Controller
                     $csg_rotulado = DB::connection("sqlsrv")->table('dbo.ADM_P_CentrosCosto')
                     ->select('id')
                     ->where('codigo', 'like', $entry["csg_rotulado"].'%')
+                    ->where('id_pro_p_variedades', '=', $variedad_rotulacion)
                     ->first();
                 }
+
                 $items->push([
                     'id_pkg_stock' => $entry["instructivo"],
                     'folio' => $entry["pallet"],
