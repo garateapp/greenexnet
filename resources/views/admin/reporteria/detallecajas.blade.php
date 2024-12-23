@@ -5,6 +5,7 @@
             Lector de Códigos de Cajas
         </div>
         <div class="card-body">
+            <div id="reader" style="width:300px;height:250px"></div>
             <div id="reader__scan_region" style="width: 100%; min-height: 100px; text-align: center; position: relative;">
                 <video muted="true" playsinline="" style="width: 640px; display: block;"></video><canvas id="qr-canvas"
                     width="360" height="360" style="width: 360px; height: 360px; display: none;"></canvas>
@@ -33,24 +34,16 @@
         /** Ugly function to write the results to a table dynamically. */
         function printScanResultPretty(codeId, decodedText, decodedResult) {
 
-            const urlParams = new URL(`${decodedText}`).searchParams;
-            console.log(urlParams);
-            // Obtener el valor del parámetro "RUN"
-            const runValue = urlParams.get("RUN");
-            console.log(runValue);
+            // const urlParams = new URL(`${decodedText}`).searchParams;
+            // console.log(urlParams);
+            // // Obtener el valor del parámetro "RUN"
+            // const runValue = urlParams.get("RUN");
+            alert(decodedText);
+            console.log(decodedText);
             //$("#personal_id").val(runValue).trigger('change');
-            const now = new Date();
 
-            // Formatear la fecha y hora como "YYYY-MM-DD HH:MM:SS"
-            const formattedDateTime = String(now.getDate()).padStart(2, '0') + '/' +
-                String(now.getMonth() + 1).padStart(2, '0') + '/' +
-                now.getFullYear() + ' ' +
-                String(now.getHours()).padStart(2, '0') + ':' +
-                String(now.getMinutes()).padStart(2, '0') + ':' +
-                String(now.getSeconds()).padStart(2, '0');
 
-            // Asignar el valor formateado al campo de fecha y hora
-            $("#fecha_hora").val(formattedDateTime);
+
 
         }
         docReady(function() {
