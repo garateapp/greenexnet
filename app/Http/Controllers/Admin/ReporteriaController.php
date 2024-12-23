@@ -22,6 +22,7 @@ use DateTime;
 use DB;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 
 class ReporteriaController extends Controller
 {
@@ -791,6 +792,7 @@ class ReporteriaController extends Controller
                 'n_nave'
             )
             ->where('id_especie', '=', '7')
+            ->where(DB::RAW('DATEPART(WEEK, etd)'), '>', '48')
             ->groupBy(
                 'n_embarque',
                 DB::RAW('DATEPART(WEEK, etd)'),
@@ -844,6 +846,7 @@ class ReporteriaController extends Controller
         $n_exportadora = collect($embarques)->pluck('n_exportadora')->unique()->values();
         $transporte = collect($embarques)->pluck('transporte')->unique()->values();
         $semana = collect($embarques)->pluck('Semana')->unique()->values();
+        Storage::disk('public')->put('embarques.json', json_encode($embarques));
 
         return response()->json([
             'data' => $embarques,
@@ -1211,8 +1214,9 @@ class ReporteriaController extends Controller
 
 
 
-
+        Storage::disk('public')->put('datos.json', json_encode($embarques));
         //dd($lstEmbarque);
+
         return response()->json([
             'objEmbarque' => $embarques
         ], 200);
@@ -1232,5 +1236,33 @@ class ReporteriaController extends Controller
     }
     public function detalleembarque(){
         return view('admin.reporteria.detalleembarque');
+    }
+    function SyncDatosCajas(){
+        $cajas=DB::connection("sqlsrv")->table('PKG_Stock_Cajas AS SC')
+        ->join('FX6_Packing_Garate_Operaciones.dbo.PKG_Stock_Cajas_Historial AS SCH', 'SC.id', '=', 'SCH.id_pkg_stock_cajas')
+        ->join('FX6_Packing_Garate_Operaciones.dbo.PKG_Stock_Det AS SD', 'SD.id', '=', 'SCH.id_pkg_stock_det')
+        ->join('FX6_Packing_Garate_Operaciones.dbo.PKG_Stock AS S', 'SD.id_pkg_stock', '=', 'S.id')
+        ->join('FX6_Packing_Garate_Operaciones.dbo.ADM_P_Entidades AS E', 'SD.id_adm_p_entidades_productor_rotulacion', '=', 'E.id')
+        ->join('FX6_Packing_Garate_Operaciones.dbo.PRO_P_Variedades AS V', 'V.id', '=', 'SD.id_pro_p_variedades_rotulacion')
+        ->join('FX6_Packing_Garate_Operaciones.dbo.PRO_P_Calibres AS C', 'C.id', '=', 'SD.id_pro_p_calibres')
+        ->join('FX6_Packing_Garate_Operaciones.dbo.PRO_P_Etiquetas AS ET', 'ET.id', '=', 'SD.id_pro_p_etiquetas')
+        ->join('FX6_Packing_Garate_Operaciones.dbo.ADM_P_Entidades AS E2', 'SD.id_adm_p_entidades_exportadora', '=', 'E2.id')
+        ->join('FX6_Packing_Garate_Operaciones.dbo.ADM_P_Entidades AS E3', 'SD.id_adm_p_entidades_packing_origen', '=', 'E3.id')
+        ->select(
+            'SC.ncaja',
+            'SD.folio',
+            'E.nombre AS Productor',
+            'ET.nombre AS Etiquetas',
+            'V.nombre AS Variedad',
+            'C.nombre AS Calibre',
+            'E2.nombre AS Exportadora',
+            'E3.nombre AS Packing'
+        )
+        ->orderBy('SC.ncaja')
+        ->get();
+        return response()->json(['Cajas'=>$cajas,'message'=>'Se ha actualizado la información de las cajas'], Response::HTTP_CREATED);
+    }
+    public function detallecajas(){
+        return view('admin.reporteria.detallecajas');
     }
 }

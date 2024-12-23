@@ -846,4 +846,5 @@ class EmbarquesController extends Controller
 
         return $fecha->format('Y-m-d H:i:s');
     }
+
 }

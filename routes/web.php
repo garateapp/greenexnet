@@ -152,7 +152,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('reporteria/getPAckingList',"ReporteriaController@getPackingList")->name("reporteria.getPackingList");
     Route::get('reporteria/getClientesComex',"ReporteriaController@getClientesComex")->name("reporteria.getClientesComex");
     Route::get('reporteria/getCantRegistros',"ReporteriaController@getCantRegistros")->name("reporteria.getCantRegistros");
-
+    Route::get('reporteria/SyncDatosCajas', 'ReporteriaController@SyncDatosCajas')->name('reporteria.SyncDatosCajas');
+    Route::get('reporteria/detallecajas', 'ReporteriaController@detallecajas')->name('reporteria.detallecajas');
 
     // Embalajes
     Route::delete('embalajes/destroy', 'EmbalajesController@massDestroy')->name('embalajes.massDestroy');
@@ -193,6 +194,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('embarques/enviarMail', 'EmbarquesController@enviarMail')->name('embarques.enviarMail');
     Route::post('embarques/ingresaPackingList','EmbarquesController@ingresaPackingList')->name('embarques.ingresaPackingList');
     Route::get('embarques/ingresagrecepcion', 'EmbarquesController@ingresagrecepcion')->name('embarques.ingresagrecepcion');
+
 
 
     Route::resource('embarques', 'EmbarquesController');

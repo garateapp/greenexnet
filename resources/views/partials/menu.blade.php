@@ -305,6 +305,15 @@
                            Detalle Embarques
                         </a>
                     </li>
+                    <li class="c-sidebar-nav-item">
+                        <a href="{{ route('admin.reporteria.detallecajas') }}"
+                            class="c-sidebar-nav-link {{ request()->is('admin/reporteria') || request()->is('admin/reporteria/*') ? 'c-active' : '' }}">
+                            <i class="fa-fw fas fa-box-open c-sidebar-nav-icon">
+
+                            </i>
+                           Detalle Cajas
+                        </a>
+                    </li>
                     @endcan
                 </ul>
             </li>
