@@ -2,9 +2,15 @@
 
 
 @section('content')
-    <link href="{{ asset('css/jquery.treegrid.css') }}" rel="stylesheet" />
+
     <link href="{{ asset('css/bootstrap-table.min.css') }}" rel="stylesheet" />
     <link href="{{ asset('js/webdatarocks/webdatarocks.css') }}" rel="stylesheet" />
+    <!-- Bootstrap CSS -->
+
+
+    <!-- Bootstrap JS -->
+
+
     <style>
         .nav-tabs .nav-link.active {
             color: #495057;
@@ -162,6 +168,7 @@
         .calugar {
             max-height: 300px;
             overflow-y: auto;
+            overflow-x: auto;
         }
 
         @media (max-width: 576px) {
@@ -174,6 +181,10 @@
             .card {
                 margin-bottom: 20px;
             }
+        }
+        .clickable-container{
+            cursor: pointer;
+            color: #ff7313;
         }
 
         /* Hacer los encabezados de las tablas sticky */
@@ -214,6 +225,58 @@
         .etiqueta {
             background-color: #fff8e1;
         }
+        /* Estilos para el modal */
+.modal {
+    display: none; /* Ocultar el modal por defecto */
+    position: fixed;
+    z-index: 1;
+    left: 0px;
+    top: 30px;
+    width: 100%;
+    height: 80%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro */
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease-in-out; /* Animación de entrada */
+}
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    /* max-width: 600px; */
+    margin: auto;
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
+.close-btn {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    cursor: pointer;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
     </style>
     <div class="row">
         <div class="col-md-12">
@@ -293,19 +356,13 @@
                             <select id="filtroSemana" class="form-control select2" multiple="multiple"></select>
                         </div>
                     </div>
+                    <button id="btnAplicarFiltros" class="btn btn-secondary mb-3 align-middle" style="margin-top: 30px;">
+                        Aplicar filtros
+                    </button>
                 </div>
             </div>
         </div>
-        <div class="col-12 col-sm-12">
-            <div class="card">
-                <div class="card-header">
-                    Datos generales
-                </div>
-                <div class="card-body" style="max-height: 500px; overflow-y: auto;overflow-x: auto;">
-                    <div id="pivot-container"></div>
-                </div>
-            </div>
-        </div>
+
         <div class="col-12 col-lg-6">
             <div class="card">
                 <div class="card-header">
@@ -313,10 +370,10 @@
                 </div>
                 <div class="card-body calugar">
                     <table id="tablaCalibres" class="display table table-bordered table-striped table-hover">
-                        <thead>
+                        <thead id="tablaCalibreHead">
                             <!-- Encabezados dinámicos -->
                         </thead>
-                        <tbody>
+                        <tbody id="tablaCalibreBody">
                             <!-- Filas dinámicas -->
                         </tbody>
                     </table>
@@ -329,12 +386,12 @@
         <div class="col-12 col-sm-6 ">
             <div class="card">
                 <div class="card-header">
-                    Cliente x Embarque
+                    Etiqueta x Contenedor
                 </div>
                 <div class="card-body" style="height: 300px; overflow-y: auto;">
                     <table id="tablaEmbarqueDestinatario" class="display table table-bordered table-striped table-hover">
-                        <thead id="tablaEmbarqueDestinatarioHead"></thead>
-                        <tbody id="tablaEmbarqueDestinatarioBody"></tbody>
+                        <thead id="tablaEtiquetaHead"></thead>
+                        <tbody id="tablaEtiquetaBody"></tbody>
                     </table>
                 </div>
             </div>
@@ -348,8 +405,8 @@
                 </div>
                 <div class="card-body calugar">
                     <table class="display table table-bordered table-striped table-hover">
-                        <thead id="tablaContenedorVariedadHead"></thead>
-                        <tbody id="tablaContenedorVariedadBody"></tbody>
+                        <thead id="tablaVariedadHead"></thead>
+                        <tbody id="tablaVariedadBody"></tbody>
                     </table>
                 </div>
             </div>
@@ -363,1064 +420,694 @@
                 </div>
                 <div class="card-body calugar">
                     <table id="tablaSemanas" class="display table table-bordered table-striped table-hover">
-                        <thead id="tablaNavesSemanasHead">
+                        <thead id="tablaSemanaHead">
                             <!-- Header dinámico -->
                         </thead>
-                        <tbody id="tablaNavesSemanasBody">
+                        <tbody id="tablaSemanaBody">
                             <!-- Filas dinámicas -->
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
-        <!-- Tabla general de detalles -->
+        <!-- Modal para detalles de contenedor -->
+        <!-- Modal -->
+        <div id="contenedorModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header d-flex justify-content-between align-items-center">
+                    <h5 class="modal-title" id="contenedorModalLabel">Detalles del Contenedor</h5> <span
+                        id="numContenedor"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeModal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Wrapper para permitir el scroll horizontal -->
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>id</th>
+                                    <th>n_embarque</th>
+                                    <th>id_destinatario</th>
+                                    <th>n_destinatario</th>
+                                    <th>c_destinatario</th>
+                                    <th>fecha_embarque</th>
+                                    <th>n_packing_origen</th>
+                                    <th>n_naviera</th>
+                                    <th>n_nave</th>
+                                    <th>contenedor</th>
+                                    <th>N_Especie</th>
+                                    <th>N_Variedad</th>
+                                    <th>n_embalaje</th>
+                                    <th>t_embalaje</th>
+                                    <th>n_etiqueta</th>
+                                    <th>cantidad</th>
+                                    <th>peso_neto</th>
+                                    <th>n_puerto_origen</th>
+                                    <th>n_pais_destino</th>
+                                    <th>n_puerto_destino</th>
+                                    <th>transporte</th>
+                                    <th>etd</th>
+                                    <th>eta</th>
+                                    <th>numero_reserva_agente_naviero</th>
+                                    <th>total_pallets</th>
+                                    <th>numero_referencia</th>
+                                    <th>nave</th>
+                                    <th>folio</th>
+                                    <th>peso_std_embalaje</th>
+                                    <th>n_variedad_rotulacion</th>
+                                    <th>n_categoria</th>
+                                    <th>fecha_produccion</th>
+                                    <th>n_productor_rotulacion</th>
+                                    <th>codigo_sag_productor</th>
+                                    <th>n_calibre</th>
+                                </tr>
+                            </thead>
+                            <tbody id="contenedorModalBody">
+                                <!-- El contenido de las filas será agregado dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla general de detalles -->
+
+    <script>
+        let totalRegistros = 0;
+
+        function sincronizar() {
+            obtieneCantidad();
+            const urls = [
+                "{{ route('admin.reporteria.ObtieneEmbarquesyPackingList') }}",
+                // "{{ route('admin.reporteria.getPackingList') }}",
+                "{{ route('admin.reporteria.getClientesComex') }}"
+            ];
+
+            const progressBar = $("#progress-bar");
+            const totalRequests = urls.length + (totalRegistros % 5000);
+            let completedRequests = 0;
+
+            function updateProgress() {
+                completedRequests++;
+                const percentage = Math.round((completedRequests / totalRequests) * 100);
+                progressBar.css("width", percentage + "%");
+                progressBar.text(percentage + "%");
+
+                if (completedRequests === totalRequests) {
+                    alert("Sincronización completada");
+                }
+            }
 
 
-            <script src="{{ asset('js/jquery.treegrid.min.js') }}"></script>
-            <script src="{{ asset('js/bootstrap-table.min.js') }}"></script>
-            <script src="{{ asset('js/bootstrap-table-treegrid.min.js') }}"></script>
-            <script src="{{ asset('js/webdatarocks/webdatarocks.toolbar.min.js') }}"></script>
-            <script src="{{ asset('js/webdatarocks/webdatarocks.js') }}"></script>
+            function obtieneCantidad() {
+                $.ajax({
+                    url: "{{ route('admin.reporteria.getCantRegistros') }}",
+                    type: "GET",
+                    dataType: "json",
+                    success: function(data) {
+                        console.log("Datos recibidos de: " + data);
+                        totalRegistros = data.totalRegistros;
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error en la solicitud AJAX a " + url, error);
+                    }
+                });
+            }
 
-            <script>
-                let totalRegistros = 0;
+            // if (url ===
+            //                 "{{ route('admin.reporteria.ObtieneEmbarquesyPackingList') }}"
+            //             ) {
+            //
+            //             }
+            urls.forEach((url) => {
+                if (url === "{{ route('admin.reporteria.getClientesComex') }}") {
+                    $.ajax({
+                        url: url,
+                        type: "GET",
+                        dataType: "json",
+                        success: function(data) {
+                            console.log("Datos recibidos de: " + url, data);
+                            updateProgress(); // Incrementar el progreso al completar
+                            if (url ===
+                                "{{ route('admin.reporteria.getClientesComex') }}") {
+                                console.log("data", data.CxComex);
+                                SetDBCxComex(data.CxComex);
+                            }
 
-                function sincronizar() {
-                    obtieneCantidad();
-                    const urls = [
-                        "{{ route('admin.reporteria.ObtieneEmbarquesyPackingList') }}",
-                        // "{{ route('admin.reporteria.getPackingList') }}",
-                        "{{ route('admin.reporteria.getClientesComex') }}"
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("Error en la solicitud AJAX a " + url, error);
+                            updateProgress(); // Incrementar el progreso incluso si falla
+                        }
+                    });
+                } else {
+
+                    $.ajax({
+                        url: url,
+                        type: "GET",
+                        dataType: "json",
+                        success: function(data) {
+                            console.log("Datos recibidos de: " + url, data);
+                            updateProgress(); // Incrementar el progreso al completar
+                            console.log("data", data.objEmbarque);
+                            SetDBEmbarque(data.objEmbarque);
+
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("Error en la solicitud AJAX a " + url, error);
+                            updateProgress(); // Incrementar el progreso incluso si falla
+                        }
+                    });
+                }
+            });
+
+        }
+        $("#btnSync").on("click", function() {
+            $("#progress-bar").css("width", "0%").text("0%");
+            sincronizar();
+        });
+
+        function SetDBCxComex(data) {
+            const openRequest = indexedDB.open("CxComexDB", 1);
+
+            openRequest.onupgradeneeded = function(event) {
+                const db = event.target.result;
+
+                // Crear objeto de almacenamiento
+                if (!db.objectStoreNames.contains("CxComex")) {
+                    const store = db.createObjectStore("CxComex", {
+                        keyPath: "id"
+                    });
+                    store.createIndex("codigo_cliente", "codigo_cliente");
+                    store.createIndex("nombre_empresa", "nombre_empresa");
+                }
+            };
+
+            openRequest.onsuccess = function(event) {
+                const db = event.target.result;
+
+                // Almacenar datos
+                const transaction = db.transaction("CxComex", "readwrite");
+                const store = transaction.objectStore("CxComex");
+
+                data.forEach((item) => {
+                    store.put(item);
+                });
+
+                transaction.oncomplete = function() {
+                    console.log("Todos los datos se han almacenado correctamente.");
+                };
+
+                transaction.onerror = function(error) {
+                    console.error("Error al almacenar datos:", error);
+                };
+            };
+
+            openRequest.onerror = function(error) {
+                console.error("Error al abrir la base de datos:", error);
+            };
+        }
+
+        function SetDBEmbarque(data) {
+            const openRequest = indexedDB.open("EmbarqueDB", 1);
+
+            openRequest.onupgradeneeded = function(event) {
+                const db = event.target.result;
+
+                // Crear objeto de almacenamiento
+                if (!db.objectStoreNames.contains("EmbarqueDB")) {
+                    const store = db.createObjectStore("EmbarqueDB", {
+                        keyPath: "id"
+                    });
+                    store.createIndex("n_embarque", "n_embarque");
+                }
+            };
+
+            openRequest.onsuccess = function(event) {
+                const db = event.target.result;
+
+                // Almacenar datos
+                const transaction = db.transaction("EmbarqueDB", "readwrite");
+                const store = transaction.objectStore("EmbarqueDB");
+
+                data.forEach((item) => {
+                    store.put(item);
+                });
+
+                transaction.oncomplete = function() {
+                    console.log("Todos los datos se han almacenado correctamente.");
+                    fillSelects(); // Llenar n_embarque y nave
+                    fillWeekSelect(); // Llenar semanas
+                };
+
+                transaction.onerror = function(error) {
+                    console.error("Error al almacenar datos:", error);
+                };
+            };
+
+            openRequest.onerror = function(error) {
+                console.error("Error al abrir la base de datos:", error);
+            };
+        }
+
+
+
+
+        // Llenar semanas
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            try {
+                await fillSelects(); // Llenar selects de 'n_embarque' y 'nave'
+                await fillWeekSelect(); // Llenar select de semanas
+            } catch (error) {
+                console.error("Error al recargar los selects:", error);
+            }
+
+            function openDatabase() {
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open("EmbarqueDB", 1);
+
+                    request.onsuccess = (event) => {
+                        resolve(event.target.result);
+                    };
+
+                    request.onerror = (event) => {
+                        reject("Error al abrir la base de datos:", event.target.error);
+                    };
+                });
+            }
+            async function getUniqueValues(column) {
+                const db = await openDatabase();
+                const transaction = db.transaction("EmbarqueDB", "readonly");
+                const store = transaction.objectStore("EmbarqueDB");
+                const uniqueValues = new Set();
+
+                return new Promise((resolve, reject) => {
+                    const request = store.openCursor();
+
+                    request.onsuccess = (event) => {
+                        const cursor = event.target.result;
+                        if (cursor) {
+                            uniqueValues.add(cursor.value[column]);
+                            cursor.continue();
+                        } else {
+                            resolve(Array.from(uniqueValues).filter(value => value !== null &&
+                                value !== ""));
+                        }
+                    };
+
+                    request.onerror = (event) => {
+                        reject("Error al leer los datos:", event.target.error);
+                    };
+                });
+            }
+            async function fillSelects() {
+                try {
+                    // Definir los campos y sus respectivos elementos select
+                    const fields = {
+                        n_embarque: "filtroNumEmbarque",
+                        nave: "filtroNave",
+                        contenedor: "filtroContenedor",
+                        N_Variedad: "filtroVariedad",
+                        n_calibre: "filtroCalibre",
+                        n_embalaje: "filtroEmbalaje",
+                        n_etiqueta: "filtroEtiqueta",
+                        transporte: "filtroTransporte",
+                        n_pais_destino: "filtroDestino",
+                        n_productor_rotulacion: "filtroProductor",
+                        n_destinatario:"filtroCliente"
+                    };
+
+                    // Llenar cada select dinámicamente
+                    for (const [field, selectId] of Object.entries(fields)) {
+                        const values = await getUniqueValues(field); // Obtener valores únicos
+                        const selectElement = document.getElementById(selectId); // Seleccionar el elemento
+
+                        values.forEach(value => {
+                            const option = document.createElement("option");
+                            option.value = value;
+                            option.textContent = value;
+                            selectElement.appendChild(option);
+                        });
+                    }
+
+                } catch (error) {
+                    console.error("Error llenando los selectores:", error);
+                }
+            }
+
+            // Ejecutar al cargar la página
+            function getWeekNumber(date) {
+                const d = new Date(date);
+                const oneJan = new Date(d.getFullYear(), 0, 1);
+                const numberOfDays = Math.floor((d - oneJan) / (24 * 60 * 60 * 1000));
+                return Math.ceil((numberOfDays + oneJan.getDay() + 1) / 7);
+            }
+            async function getUniqueWeeks() {
+                const db = await openDatabase();
+                const transaction = db.transaction("EmbarqueDB", "readonly");
+                const store = transaction.objectStore("EmbarqueDB");
+                const uniqueWeeks = new Set();
+
+                return new Promise((resolve, reject) => {
+                    const request = store.openCursor();
+
+                    request.onsuccess = (event) => {
+                        const cursor = event.target.result;
+                        if (cursor) {
+                            const eta = cursor.value.eta;
+                            if (eta) {
+                                const weekNumber = getWeekNumber(eta);
+                                uniqueWeeks.add(weekNumber);
+                            }
+                            cursor.continue();
+                        } else {
+                            resolve(Array.from(uniqueWeeks).sort((a, b) => a -
+                                b)); // Ordenamos por número de semana
+                        }
+                    };
+
+                    request.onerror = (event) => {
+                        reject("Error al leer los datos:", event.target.error);
+                    };
+                });
+            }
+            async function fillWeekSelect() {
+                try {
+                    const weeks = await getUniqueWeeks();
+                    const weekSelect = document.getElementById("filtroSemana");
+
+                    weeks.forEach(week => {
+                        const option = document.createElement("option");
+                        option.value = week;
+                        option.textContent = `${week}`;
+                        weekSelect.appendChild(option);
+                    });
+                } catch (error) {
+                    console.error("Error llenando el selector de semanas:", error);
+                }
+            }
+            // Función para abrir la base de datos IndexedDB
+            async function openDatabaseEmbarqueDB() {
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open("EmbarqueDB");
+
+                    request.onsuccess = (event) => {
+                        resolve(event.target.result);
+                    };
+
+                    request.onerror = (event) => {
+                        reject("Error al abrir la base de datos: " + event.target.error);
+                    };
+                });
+            }
+
+            // Obtener valores únicos de una columna
+            async function getUniqueValues(column) {
+                const db = await openDatabaseEmbarqueDB();
+                const transaction = db.transaction("EmbarqueDB", "readonly");
+                const store = transaction.objectStore("EmbarqueDB");
+                const uniqueValues = new Set();
+
+                return new Promise((resolve, reject) => {
+                    const request = store.openCursor();
+
+                    request.onsuccess = (event) => {
+                        const cursor = event.target.result;
+                        if (cursor) {
+                            const value = cursor.value[column];
+                            if (value) uniqueValues.add(value);
+                            cursor.continue();
+                        } else {
+                            resolve(Array.from(uniqueValues));
+                        }
+                    };
+
+                    request.onerror = (event) => {
+                        reject("Error al obtener valores únicos:", event.target.error);
+                    };
+                });
+            }
+
+
+
+
+
+
+            // Generar tabla dinámica con contenedores, variedades y cantidad de cajas
+
+
+            // const groupedData = await getDataByContenedorAndVariedad(); // Agrupar datos
+            // const tableHead = document.getElementById("tablaContenedorVariedadHead");
+            // const tableBody = document.getElementById("tablaContenedorVariedadBody");
+
+
+
+            //visualización 2
+
+            let originalData = []; // Almacena todos los datos originales
+            let filteredData = []; // Almacena los datos después de aplicar filtros
+
+            // Mapear IDs de filtros con las claves de los datos
+            const filters = {
+                n_embarque: "filtroNumEmbarque",
+                nave: "filtroNave",
+                contenedor: "filtroContenedor",
+                N_Variedad: "filtroVariedad",
+                n_calibre: "filtroCalibre",
+                n_embalaje: "filtroEmbalaje",
+                n_etiqueta: "filtroEtiqueta",
+                transporte: "filtroTransporte",
+                n_pais_destino: "filtroDestino",
+                n_productor_rotulacion: "filtroProductor",
+                n_destinatario:"filtroCliente",
+                semana:"filtroSemana",
+            };
+            async function loadData() {
+                try {
+                    const db = await openDatabaseEmbarqueDB();
+                    const transaction = db.transaction("EmbarqueDB", "readonly");
+                    const store = transaction.objectStore("EmbarqueDB");
+
+                    return new Promise((resolve, reject) => {
+                        const data = [];
+                        const request = store.openCursor();
+
+                        request.onsuccess = (event) => {
+                            const cursor = event.target.result;
+                            if (cursor) {
+                                data.push(cursor.value);
+                                cursor.continue();
+                            } else {
+                                originalData = data; // Guardar todos los datos originales
+                                resolve(data);
+                            }
+                        };
+
+                        request.onerror = (event) => {
+                            reject(`Error al obtener datos: ${event.target.error}`);
+                        };
+                    });
+                } catch (error) {
+                    console.error("Error al cargar datos:", error);
+                }
+            }
+
+            function applyFilters() {
+                // Obtener valores de los filtros
+                const filterValues = {};
+                for (const [key, filterId] of Object.entries(filters)) {
+                    const value = document.getElementById(filterId).value.trim();
+                    if (value) {
+                        filterValues[key] = value;
+                    }
+                }
+
+                // Aplicar filtros a los datos originales
+                filteredData = originalData.filter((item) => {
+                    return Object.entries(filterValues).every(([key, value]) => {
+                        return item[key]?.toString().toLowerCase().includes(value
+                            .toLowerCase());
+                    });
+                });
+
+                // Actualizar todas las tablas
+                updateAllTables();
+            }
+
+
+            function generateTable(groupByRow, groupByColumn, tableHeadId, tableBodyId) {
+                const groupedData = {};
+                const columnSet = new Set();
+
+                filteredData.forEach((record) => {
+                    const rowKey = record[groupByRow];
+                    const colKey = record[groupByColumn];
+                    const quantity = parseFloat(record.cantidad) || 0;
+
+                    if (rowKey && colKey) {
+                        groupedData[rowKey] = groupedData[rowKey] || {};
+                        groupedData[rowKey][colKey] = (groupedData[rowKey][colKey] || 0) + quantity;
+                        columnSet.add(colKey);
+                    }
+                });
+
+                const columns = Array.from(columnSet).sort();
+
+                const tableHead = document.getElementById(tableHeadId);
+                const tableBody = document.getElementById(tableBodyId);
+
+                tableHead.innerHTML = "";
+                tableBody.innerHTML = "";
+
+                // Crear encabezado
+                const headerRow = document.createElement("tr");
+                const headerCell = document.createElement("th");
+                headerCell.textContent = `${groupByRow} / ${groupByColumn}`;
+                headerRow.appendChild(headerCell);
+
+                columns.forEach((col) => {
+                    const th = document.createElement("th");
+                    th.textContent = col;
+                    headerRow.appendChild(th);
+                });
+
+                const totalColHeader = document.createElement("th");
+                totalColHeader.textContent = "Total Fila";
+                headerRow.appendChild(totalColHeader);
+                tableHead.appendChild(headerRow);
+
+                let grandTotal = 0;
+                const columnTotals = {};
+
+                // Crear filas
+                Object.entries(groupedData).forEach(([row, rowData]) => {
+                    const rowElement = document.createElement("tr");
+
+                    const rowHeader = document.createElement("td");
+                    rowHeader.textContent = row;
+                    rowHeader.classList.add("clickable-container");
+                    rowHeader.addEventListener("click", () => showContainerDetails(
+                        row)); // Evento de clic
+                    rowElement.appendChild(rowHeader);
+
+                    let rowTotal = 0;
+                    columns.forEach((col) => {
+                        const cell = document.createElement("td");
+                        const value = rowData[col] || 0;
+                        cell.textContent = value;
+                        rowElement.appendChild(cell);
+
+                        rowTotal += value;
+                        columnTotals[col] = (columnTotals[col] || 0) + value;
+                    });
+
+                    const rowTotalCell = document.createElement("td");
+                    rowTotalCell.textContent = rowTotal;
+                    rowElement.appendChild(rowTotalCell);
+
+                    grandTotal += rowTotal;
+                    tableBody.appendChild(rowElement);
+                });
+
+                // Crear fila de Totales
+                const totalRow = document.createElement("tr");
+                const totalHeader = document.createElement("td");
+                totalHeader.textContent = "Total Columna";
+                totalRow.appendChild(totalHeader);
+
+                columns.forEach((col) => {
+                    const totalCell = document.createElement("td");
+                    totalCell.textContent = columnTotals[col] || 0;
+                    totalRow.appendChild(totalCell);
+                });
+
+                const grandTotalCell = document.createElement("td");
+                grandTotalCell.textContent = grandTotal;
+                totalRow.appendChild(grandTotalCell);
+
+                tableBody.appendChild(totalRow);
+            }
+            // 4. Actualizar Tablas Específicas
+            function updateAllTables() {
+                generateTable("contenedor", "n_etiqueta", "tablaEtiquetaHead", "tablaEtiquetaBody");
+                generateTable("contenedor", "N_Variedad", "tablaVariedadHead", "tablaVariedadBody");
+                generateTable("contenedor", "n_calibre", "tablaCalibreHead", "tablaCalibreBody");
+                generateTable("contenedor", "semana", "tablaSemanaHead", "tablaSemanaBody");
+            }
+
+            // 5. Inicializar
+            async function initializeTables() {
+                await loadData();
+                applyFilters();
+            }
+
+            document.getElementById("btnAplicarFiltros").addEventListener("click", applyFilters);
+
+            initializeTables();
+            // 🟢 1. Mostrar detalles en un modal al hacer clic en una celda de contenedor
+            function showContainerDetails(containerValue) {
+                // Filtrar los datos por contenedor respetando los filtros activos
+                const filteredData = originalData.filter(item => item.contenedor === containerValue);
+                document.getElementById("numContenedor").innerHTML = containerValue;
+                // Obtener el modal y el cuerpo de la tabla
+                const modalBody = document.getElementById("contenedorModalBody");
+                modalBody.innerHTML = ""; // Limpiar contenido previo
+
+                // Crear las filas de la tabla dentro del modal
+                filteredData.forEach(item => {
+                    const row = document.createElement("tr");
+
+                    // Lista de las cabeceras de la tabla
+                    const headers = [
+                        "id", "n_embarque", "id_destinatario", "n_destinatario", "c_destinatario",
+                        "fecha_embarque", "n_packing_origen",
+                        "n_naviera", "n_nave", "contenedor", "N_Especie", "N_Variedad",
+                        "n_embalaje", "t_embalaje", "n_etiqueta",
+                        "cantidad", "peso_neto", "n_puerto_origen", "n_pais_destino",
+                        "n_puerto_destino", "transporte", "etd", "eta",
+                        "numero_reserva_agente_naviero", "total_pallets", "numero_referencia",
+                        "nave", "folio", "peso_std_embalaje",
+                        "n_variedad_rotulacion", "n_categoria", "fecha_produccion",
+                        "n_productor_rotulacion", "codigo_sag_productor",
+                        "n_calibre"
                     ];
 
-                    const progressBar = $("#progress-bar");
-                    const totalRequests = urls.length + (totalRegistros % 5000);
-                    let completedRequests = 0;
-
-                    function updateProgress() {
-                        completedRequests++;
-                        const percentage = Math.round((completedRequests / totalRequests) * 100);
-                        progressBar.css("width", percentage + "%");
-                        progressBar.text(percentage + "%");
-
-                        if (completedRequests === totalRequests) {
-                            alert("Sincronización completada");
-                        }
-                    }
-
-
-                    function obtieneCantidad() {
-                        $.ajax({
-                            url: "{{ route('admin.reporteria.getCantRegistros') }}",
-                            type: "GET",
-                            dataType: "json",
-                            success: function(data) {
-                                console.log("Datos recibidos de: " + data);
-                                totalRegistros = data.totalRegistros;
-                            },
-                            error: function(xhr, status, error) {
-                                console.error("Error en la solicitud AJAX a " + url, error);
-                            }
-                        });
-                    }
-
-                    // if (url ===
-                    //                 "{{ route('admin.reporteria.ObtieneEmbarquesyPackingList') }}"
-                    //             ) {
-                    //
-                    //             }
-                    urls.forEach((url) => {
-                        if (url === "{{ route('admin.reporteria.getClientesComex') }}") {
-                            $.ajax({
-                                url: url,
-                                type: "GET",
-                                dataType: "json",
-                                success: function(data) {
-                                    console.log("Datos recibidos de: " + url, data);
-                                    updateProgress(); // Incrementar el progreso al completar
-                                    if (url ===
-                                        "{{ route('admin.reporteria.getClientesComex') }}") {
-                                        console.log("data", data.CxComex);
-                                        SetDBCxComex(data.CxComex);
-                                    }
-
-                                },
-                                error: function(xhr, status, error) {
-                                    console.error("Error en la solicitud AJAX a " + url, error);
-                                    updateProgress(); // Incrementar el progreso incluso si falla
-                                }
-                            });
-                        } else {
-
-                            $.ajax({
-                                url: url,
-                                type: "GET",
-                                dataType: "json",
-                                success: function(data) {
-                                    console.log("Datos recibidos de: " + url, data);
-                                    updateProgress(); // Incrementar el progreso al completar
-                                    console.log("data", data.objEmbarque);
-                                    SetDBEmbarque(data.objEmbarque);
-
-                                },
-                                error: function(xhr, status, error) {
-                                    console.error("Error en la solicitud AJAX a " + url, error);
-                                    updateProgress(); // Incrementar el progreso incluso si falla
-                                }
-                            });
-                        }
+                    // Crear celdas para cada columna
+                    headers.forEach(header => {
+                        const td = document.createElement("td");
+                        td.textContent = item[header] ||
+                            "N/A"; // Si no existe el valor, mostrar "N/A"
+                        row.appendChild(td);
                     });
 
-                }
-                $("#btnSync").on("click", function() {
-                    $("#progress-bar").css("width", "0%").text("0%");
-                    sincronizar();
+                    modalBody.appendChild(row);
                 });
 
-                function SetDBCxComex(data) {
-                    const openRequest = indexedDB.open("CxComexDB", 1);
+                // Mostrar el modal
+                // Obtener el modal
+                document.getElementById('contenedorModal').style.display = 'flex';
 
-                    openRequest.onupgradeneeded = function(event) {
-                        const db = event.target.result;
 
-                        // Crear objeto de almacenamiento
-                        if (!db.objectStoreNames.contains("CxComex")) {
-                            const store = db.createObjectStore("CxComex", {
-                                keyPath: "id"
-                            });
-                            store.createIndex("codigo_cliente", "codigo_cliente");
-                            store.createIndex("nombre_empresa", "nombre_empresa");
-                        }
-                    };
+            }
 
-                    openRequest.onsuccess = function(event) {
-                        const db = event.target.result;
+            // 2. Cerrar el modal
+            function closeModal() {
+                document.getElementById('contenedorModal').style.display='none';
+                //modal.addAttribute('inert');
+                //document.getElementById("containerModal").addAttr('inert');
 
-                        // Almacenar datos
-                        const transaction = db.transaction("CxComex", "readwrite");
-                        const store = transaction.objectStore("CxComex");
+            }
 
-                        data.forEach((item) => {
-                            store.put(item);
-                        });
+            // 3. Generar la tabla con el evento de clic en celdas de contenedor
 
-                        transaction.oncomplete = function() {
-                            console.log("Todos los datos se han almacenado correctamente.");
-                        };
+            const closeModalBtn = document.getElementById('closeModal');
+const modalTableBody = document.querySelector('#modalTable tbody');
 
-                        transaction.onerror = function(error) {
-                            console.error("Error al almacenar datos:", error);
-                        };
-                    };
+closeModalBtn.addEventListener('click', closeModal);
 
-                    openRequest.onerror = function(error) {
-                        console.error("Error al abrir la base de datos:", error);
-                    };
-                }
-
-                function SetDBEmbarque(data) {
-                    const openRequest = indexedDB.open("EmbarqueDB", 1);
-
-                    openRequest.onupgradeneeded = function(event) {
-                        const db = event.target.result;
-
-                        // Crear objeto de almacenamiento
-                        if (!db.objectStoreNames.contains("EmbarqueDB")) {
-                            const store = db.createObjectStore("EmbarqueDB", {
-                                keyPath: "id"
-                            });
-                            store.createIndex("n_embarque", "n_embarque");
-                        }
-                    };
-
-                    openRequest.onsuccess = function(event) {
-                        const db = event.target.result;
-
-                        // Almacenar datos
-                        const transaction = db.transaction("EmbarqueDB", "readwrite");
-                        const store = transaction.objectStore("EmbarqueDB");
-
-                        data.forEach((item) => {
-                            store.put(item);
-                        });
-
-                        transaction.oncomplete = function() {
-                            console.log("Todos los datos se han almacenado correctamente.");
-                            fillSelects(); // Llenar n_embarque y nave
-                            fillWeekSelect(); // Llenar semanas
-                        };
-
-                        transaction.onerror = function(error) {
-                            console.error("Error al almacenar datos:", error);
-                        };
-                    };
-
-                    openRequest.onerror = function(error) {
-                        console.error("Error al abrir la base de datos:", error);
-                    };
-                }
-
-
-
-
-                // Llenar semanas
-
-                document.addEventListener("DOMContentLoaded", async () => {
-                    try {
-                        await fillSelects(); // Llenar selects de 'n_embarque' y 'nave'
-                        await fillWeekSelect(); // Llenar select de semanas
-                    } catch (error) {
-                        console.error("Error al recargar los selects:", error);
-                    }
-
-                    function openDatabase() {
-                        return new Promise((resolve, reject) => {
-                            const request = indexedDB.open("EmbarqueDB", 1);
-
-                            request.onsuccess = (event) => {
-                                resolve(event.target.result);
-                            };
-
-                            request.onerror = (event) => {
-                                reject("Error al abrir la base de datos:", event.target.error);
-                            };
-                        });
-                    }
-                    async function getUniqueValues(column) {
-                        const db = await openDatabase();
-                        const transaction = db.transaction("EmbarqueDB", "readonly");
-                        const store = transaction.objectStore("EmbarqueDB");
-                        const uniqueValues = new Set();
-
-                        return new Promise((resolve, reject) => {
-                            const request = store.openCursor();
-
-                            request.onsuccess = (event) => {
-                                const cursor = event.target.result;
-                                if (cursor) {
-                                    uniqueValues.add(cursor.value[column]);
-                                    cursor.continue();
-                                } else {
-                                    resolve(Array.from(uniqueValues).filter(value => value !== null &&
-                                        value !== ""));
-                                }
-                            };
-
-                            request.onerror = (event) => {
-                                reject("Error al leer los datos:", event.target.error);
-                            };
-                        });
-                    }
-                    async function fillSelects() {
-                        try {
-                            const nEmbarques = await getUniqueValues("n_embarque");
-                            const naves = await getUniqueValues("nave");
-                            const contenedor = await getUniqueValues("contenedor");
-                            const variedad = await getUniqueValues("N_Variedad");
-                            const calibre = await getUniqueValues("n_calibre");
-                            const embalaje = await getUniqueValues("n_embalaje");
-                            const etiqueta = await getUniqueValues("n_etiqueta");
-                            const transporte = await getUniqueValues("transporte");
-                            const destino = await getUniqueValues("n_pais_destino");
-                            const productor = await getUniqueValues("n_productor_rotulacion");
-
-
-                            const nEmbarqueSelect = document.getElementById("filtroNumEmbarque");
-                            const naveSelect = document.getElementById("filtroNave");
-                            const contenedorSelect = document.getElementById("filtroContenedor");
-                            const variedadSelect = document.getElementById("filtroVariedad");
-                            const calibreSelect = document.getElementById("filtroCalibre");
-                            const embalajeSelect = document.getElementById("filtroEmbalaje");
-                            const etiquetaSelect = document.getElementById("filtroEtiqueta");
-                            const transporteSelect = document.getElementById("filtroTransporte");
-                            const destinoSelect = document.getElementById("filtroDestino");
-                            const productorSelect = document.getElementById("filtroProductor");
-
-                            // Llenar n_embarque
-                            nEmbarques.forEach(value => {
-                                const option = document.createElement("option");
-                                option.value = value;
-                                option.textContent = value;
-                                nEmbarqueSelect.appendChild(option);
-                            });
-
-                            // Llenar nave
-                            naves.forEach(value => {
-                                const option = document.createElement("option");
-                                option.value = value;
-                                option.textContent = value;
-                                naveSelect.appendChild(option);
-                            });
-                            // Llenar contenedor
-                            contenedor.forEach(value => {
-                                const option = document.createElement("option");
-                                option.value = value;
-                                option.textContent = value;
-                                contenedorSelect.appendChild(option);
-                            });
-                            variedad.forEach(value => {
-                                const option = document.createElement("option");
-                                option.value = value;
-                                option.textContent = value;
-                                variedadSelect.appendChild(option);
-                            });
-                            calibre.forEach(value => {
-                                const option = document.createElement("option");
-                                option.value = value;
-                                option.textContent = value;
-                                calibreSelect.appendChild(option);
-                            });
-                            embalaje.forEach(value => {
-                                const option = document.createElement("option");
-                                option.value = value;
-                                option.textContent = value;
-                                embalajeSelect.appendChild(option);
-                            });
-                            etiqueta.forEach(value => {
-                                const option = document.createElement("option");
-                                option.value = value;
-                                option.textContent = value;
-                                etiquetaSelect.appendChild(option);
-                            });
-                            transporte.forEach(value => {
-                                const option = document.createElement("option");
-                                option.value = value;
-                                option.textContent = value;
-                                transporteSelect.appendChild(option);
-                            });
-                            destino.forEach(value => {
-                                const option = document.createElement("option");
-                                option.value = value;
-                                option.textContent = value;
-                                destinoSelect.appendChild(option);
-                            });
-                            productor.forEach(value => {
-                                const option = document.createElement("option");
-                                option.value = value;
-                                option.textContent = value;
-                                productorSelect.appendChild(option);
-                            });
-
-
-
-                        } catch (error) {
-                            console.error("Error llenando los selectores:", error);
-                        }
-                    }
-
-                    // Ejecutar al cargar la página
-                    function getWeekNumber(date) {
-                        const d = new Date(date);
-                        const oneJan = new Date(d.getFullYear(), 0, 1);
-                        const numberOfDays = Math.floor((d - oneJan) / (24 * 60 * 60 * 1000));
-                        return Math.ceil((numberOfDays + oneJan.getDay() + 1) / 7);
-                    }
-                    async function getUniqueWeeks() {
-                        const db = await openDatabase();
-                        const transaction = db.transaction("EmbarqueDB", "readonly");
-                        const store = transaction.objectStore("EmbarqueDB");
-                        const uniqueWeeks = new Set();
-
-                        return new Promise((resolve, reject) => {
-                            const request = store.openCursor();
-
-                            request.onsuccess = (event) => {
-                                const cursor = event.target.result;
-                                if (cursor) {
-                                    const eta = cursor.value.eta;
-                                    if (eta) {
-                                        const weekNumber = getWeekNumber(eta);
-                                        uniqueWeeks.add(weekNumber);
-                                    }
-                                    cursor.continue();
-                                } else {
-                                    resolve(Array.from(uniqueWeeks).sort((a, b) => a -
-                                        b)); // Ordenamos por número de semana
-                                }
-                            };
-
-                            request.onerror = (event) => {
-                                reject("Error al leer los datos:", event.target.error);
-                            };
-                        });
-                    }
-                    async function fillWeekSelect() {
-                        try {
-                            const weeks = await getUniqueWeeks();
-                            const weekSelect = document.getElementById("filtroSemana");
-
-                            weeks.forEach(week => {
-                                const option = document.createElement("option");
-                                option.value = week;
-                                option.textContent = `Semana ${week}`;
-                                weekSelect.appendChild(option);
-                            });
-                        } catch (error) {
-                            console.error("Error llenando el selector de semanas:", error);
-                        }
-                    }
-                    // Función para abrir la base de datos IndexedDB
-                    async function openDatabaseEmbarqueDB() {
-                        return new Promise((resolve, reject) => {
-                            const request = indexedDB.open("EmbarqueDB");
-
-                            request.onsuccess = (event) => {
-                                resolve(event.target.result);
-                            };
-
-                            request.onerror = (event) => {
-                                reject("Error al abrir la base de datos: " + event.target.error);
-                            };
-                        });
-                    }
-
-                    // Obtener valores únicos de una columna
-                    async function getUniqueValues(column) {
-                        const db = await openDatabaseEmbarqueDB();
-                        const transaction = db.transaction("EmbarqueDB", "readonly");
-                        const store = transaction.objectStore("EmbarqueDB");
-                        const uniqueValues = new Set();
-
-                        return new Promise((resolve, reject) => {
-                            const request = store.openCursor();
-
-                            request.onsuccess = (event) => {
-                                const cursor = event.target.result;
-                                if (cursor) {
-                                    const value = cursor.value[column];
-                                    if (value) uniqueValues.add(value);
-                                    cursor.continue();
-                                } else {
-                                    resolve(Array.from(uniqueValues));
-                                }
-                            };
-
-                            request.onerror = (event) => {
-                                reject("Error al obtener valores únicos:", event.target.error);
-                            };
-                        });
-                    }
-                    async function countByCombination(column1, value1, column2, value2) {
-                        const db = await openDatabase();
-                        const transaction = db.transaction("EmbarqueDB", "readonly");
-                        const store = transaction.objectStore("EmbarqueDB");
-                        let count = 0;
-
-                        return new Promise((resolve, reject) => {
-                            const request = store.openCursor();
-
-                            request.onsuccess = (event) => {
-                                const cursor = event.target.result;
-                                if (cursor) {
-                                    const record = cursor.value;
-                                    if (record[column1] === value1 && record[column2] === value2) {
-                                        count++;
-                                    }
-                                    cursor.continue();
-                                } else {
-                                    resolve(count);
-                                }
-                            };
-
-                            request.onerror = (event) => {
-                                reject("Error al contar registros:", event.target.error);
-                            };
-                        });
-                    }
-
-                    // Generar la tabla dinámicamente
-                    async function generateTable() {
-                        try {
-                            const calibres = await getUniqueValues("n_calibre");
-                            const contenedores = await getUniqueValues("contenedor");
-
-                            const table = document.getElementById("tablaCalibres");
-                            const thead = table.querySelector("thead");
-                            const tbody = table.querySelector("tbody");
-
-                            // Crear encabezados
-                            const headerRow = document.createElement("tr");
-                            const emptyHeader = document.createElement("th");
-                            emptyHeader.textContent = "Contenedor / Calibre";
-                            headerRow.appendChild(emptyHeader);
-
-                            calibres.forEach(calibre => {
-                                const th = document.createElement("th");
-                                th.textContent = calibre;
-                                headerRow.appendChild(th);
-                            });
-                            thead.appendChild(headerRow);
-
-                            // Crear filas
-                            for (const contenedor of contenedores) {
-                                const row = document.createElement("tr");
-                                const contenedorCell = document.createElement("td");
-                                contenedorCell.textContent = contenedor;
-                                row.appendChild(contenedorCell);
-
-                                for (const calibre of calibres) {
-                                    const cell = document.createElement("td");
-                                    const count = await countByCombination("contenedor", contenedor, "n_calibre",
-                                        calibre);
-                                    cell.textContent = count;
-                                    row.appendChild(cell);
-                                }
-
-                                tbody.appendChild(row);
-                            }
-                        } catch (error) {
-                            console.error("Error generando la tabla:", error);
-                        }
-                    }
-                    generateTable();
-
-
-
-
-                    // Generar tabla dinámica con Naves y Semanas, asegurando contenedores únicos
-                    async function getDataByNaveAndWeek() {
-                        const db = await openDatabaseEmbarqueDB();
-                        const transaction = db.transaction("EmbarqueDB", "readonly");
-                        const store = transaction.objectStore("EmbarqueDB");
-
-                        const groupedData = {};
-
-                        return new Promise((resolve, reject) => {
-                            const request = store.openCursor();
-
-                            request.onsuccess = (event) => {
-                                const cursor = event.target.result;
-                                if (cursor) {
-                                    const record = cursor.value;
-                                    const week = getWeekNumber(record.etd);
-                                    const nave = record.nave || "Sin nave";
-                                    const contenedor = record.contenedor || "Sin contenedor";
-
-                                    if (!groupedData[nave]) {
-                                        groupedData[nave] = {};
-                                    }
-                                    if (!groupedData[nave][week]) {
-                                        groupedData[nave][week] = [];
-                                    }
-
-                                    groupedData[nave][week].push(contenedor);
-                                    cursor.continue();
-                                } else {
-                                    resolve(groupedData);
-                                }
-                            };
-
-                            request.onerror = (event) => {
-                                reject("Error al agrupar los datos:", event.target.error);
-                            };
-                        });
-                    }
-
-
-                    async function generateNaveWeekTable() {
-                        try {
-                            const groupedData = await getDataByNaveAndWeek();
-                            const tableHead = document.getElementById("tablaNavesSemanasHead");
-                            const tableBody = document.getElementById("tablaNavesSemanasBody");
-
-                            tableHead.innerHTML = ""; // Limpiar encabezado previo
-                            tableBody.innerHTML = ""; // Limpiar cuerpo previo
-
-                            // Obtener semanas únicas ordenadas
-                            const allWeeks = new Set();
-                            Object.values(groupedData).forEach((weeks) => {
-                                Object.keys(weeks).forEach((week) => allWeeks.add(Number(week)));
-                            });
-                            const sortedWeeks = Array.from(allWeeks).sort((a, b) => a - b);
-
-                            // Crear encabezado
-                            const headerRow = document.createElement("tr");
-                            const naveCell = document.createElement("th");
-                            naveCell.textContent = "Nave / Semana";
-                            naveCell.rowSpan = 2; // Celda abarca dos filas del encabezado
-                            headerRow.appendChild(naveCell);
-
-                            // Crear celdas de semanas
-                            sortedWeeks.forEach((week) => {
-                                const th = document.createElement("th");
-                                th.textContent = `Semana ${week}`;
-                                headerRow.appendChild(th);
-                            });
-
-                            tableHead.appendChild(headerRow);
-
-                            // Crear filas por nave, excluyendo naves sin datos
-                            Object.entries(groupedData).forEach(([nave, weeks]) => {
-                                // Crear un conjunto para evitar contenedores duplicados
-                                const uniqueContenedores = new Set();
-
-                                // Recopilar contenedores de todas las semanas para esta nave
-                                sortedWeeks.forEach((week) => {
-                                    const contenedores = weeks[week] || [];
-                                    contenedores.forEach((contenedor) => uniqueContenedores.add(
-                                        contenedor));
-                                });
-
-                                // Verificar si la nave tiene al menos un contenedor único
-                                if (uniqueContenedores.size === 0) {
-                                    return; // Excluir naves sin contenedores
-                                }
-
-                                const row = document.createElement("tr");
-                                const naveCell = document.createElement("td");
-                                naveCell.textContent = nave;
-                                row.appendChild(naveCell);
-
-                                // Añadir celdas de contenedores únicos para cada semana
-                                sortedWeeks.forEach((week) => {
-                                    const cell = document.createElement("td");
-                                    const contenedores = weeks[week] ||
-                                []; // Contenedores para la semana
-
-                                    // Filtrar contenedores únicos para esta semana
-                                    const uniqueWeekContenedores = contenedores.filter((
-                                        contenedor) => {
-                                        if (uniqueContenedores.has(contenedor)) {
-                                            uniqueContenedores.delete(
-                                                contenedor); // Evitar duplicados
-                                            return true;
-                                        }
-                                        return false;
-                                    });
-
-                                    cell.textContent = uniqueWeekContenedores.join(", ") ||
-                                        "Sin datos"; // Mostrar lista de contenedores únicos
-                                    row.appendChild(cell);
-                                });
-
-                                tableBody.appendChild(row);
-                            });
-                        } catch (error) {
-                            console.error("Error generando la tabla:", error);
-                        }
-                    }
-
-                    // Inicializar tabla
-                    async function initializeTable() {
-                        await generateNaveWeekTable();
-                    }
-
-                    initializeTable();
-                    // Generar tabla dinámica con n_embarque y n_destinatarios únicos por semana
-                    async function generateEmbarqueDestinatarioTable() {
-                        try {
-                            const groupedData =
-                                await getDataByEmbarqueAndWeek(); // Reutilizamos la función base con nueva agrupación
-                            const tableHead = document.getElementById("tablaEmbarqueDestinatarioHead");
-                            const tableBody = document.getElementById("tablaEmbarqueDestinatarioBody");
-
-                            tableHead.innerHTML = ""; // Limpiar encabezado previo
-                            tableBody.innerHTML = ""; // Limpiar cuerpo previo
-
-                            // Obtener semanas únicas ordenadas
-                            const allWeeks = new Set();
-                            Object.values(groupedData).forEach((weeks) => {
-                                Object.keys(weeks).forEach((week) => allWeeks.add(Number(week)));
-                            });
-                            const sortedWeeks = Array.from(allWeeks).sort((a, b) => a - b);
-
-                            // Crear encabezado
-                            const headerRow = document.createElement("tr");
-                            const embarqueCell = document.createElement("th");
-                            embarqueCell.textContent = "N° Embarque / Semana";
-                            embarqueCell.rowSpan = 2; // Celda abarca dos filas del encabezado
-                            headerRow.appendChild(embarqueCell);
-
-                            // Crear celdas de semanas
-                            sortedWeeks.forEach((week) => {
-                                const th = document.createElement("th");
-                                th.textContent = `Semana ${week}`;
-                                headerRow.appendChild(th);
-                            });
-
-                            tableHead.appendChild(headerRow);
-
-                            // Crear filas por n_embarque, excluyendo filas sin destinatarios
-                            Object.entries(groupedData).forEach(([embarque, weeks]) => {
-                                // Crear un conjunto para evitar destinatarios duplicados
-                                const uniqueDestinatarios = new Set();
-
-                                // Recopilar destinatarios de todas las semanas para este embarque
-                                sortedWeeks.forEach((week) => {
-                                    const destinatarios = weeks[week] || [];
-                                    destinatarios.forEach((destinatario) => uniqueDestinatarios.add(
-                                        destinatario));
-                                });
-
-                                // Verificar si el embarque tiene al menos un destinatario único
-                                if (uniqueDestinatarios.size === 0) {
-                                    return; // Excluir embarques sin destinatarios
-                                }
-
-                                const row = document.createElement("tr");
-                                const embarqueCell = document.createElement("td");
-                                embarqueCell.textContent = embarque;
-                                row.appendChild(embarqueCell);
-
-                                // Añadir celdas de destinatarios únicos para cada semana
-                                sortedWeeks.forEach((week) => {
-                                    const cell = document.createElement("td");
-                                    const destinatarios = weeks[week] ||
-                                []; // Destinatarios para la semana
-
-                                    // Filtrar destinatarios únicos para esta semana
-                                    const uniqueWeekDestinatarios = destinatarios.filter((
-                                        destinatario) => {
-                                        if (uniqueDestinatarios.has(destinatario)) {
-                                            uniqueDestinatarios.delete(
-                                                destinatario); // Evitar duplicados
-                                            return true;
-                                        }
-                                        return false;
-                                    });
-
-                                    cell.textContent = uniqueWeekDestinatarios.join(", ") ||
-                                        "Sin datos"; // Mostrar lista de destinatarios únicos
-                                    row.appendChild(cell);
-                                });
-
-                                tableBody.appendChild(row);
-                            });
-                        } catch (error) {
-                            console.error("Error generando la tabla:", error);
-                        }
-                    }
-
-                    // Obtener datos agrupados por n_embarque y semana
-                    async function getDataByEmbarqueAndWeek() {
-                        const db = await openDatabaseEmbarqueDB();
-                        const transaction = db.transaction("EmbarqueDB", "readonly");
-                        const store = transaction.objectStore("EmbarqueDB");
-                        const groupedData = {};
-
-                        return new Promise((resolve, reject) => {
-                            const request = store.openCursor();
-
-                            request.onsuccess = (event) => {
-                                const cursor = event.target.result;
-                                if (cursor) {
-                                    const record = cursor.value;
-                                    const n_embarque = record.n_embarque;
-                                    const n_destinatario = record.n_destinatario;
-                                    const eta = record.eta;
-
-                                    if (n_embarque && n_destinatario && eta) {
-                                        const week = getWeekNumber(eta); // Calcular semana
-
-                                        if (!groupedData[n_embarque]) {
-                                            groupedData[n_embarque] = {};
-                                        }
-
-                                        if (!groupedData[n_embarque][week]) {
-                                            groupedData[n_embarque][week] = [];
-                                        }
-
-                                        groupedData[n_embarque][week].push(n_destinatario);
-                                    }
-
-                                    cursor.continue();
-                                } else {
-                                    resolve(groupedData); // Retornar datos agrupados
-                                }
-                            };
-
-                            request.onerror = (event) => {
-                                reject("Error al agrupar datos:", event.target.error);
-                            };
-                        });
-                    }
-
-                    // Inicializar tabla
-                    async function initializeEmbarqueDestinatarioTable() {
-                        await generateEmbarqueDestinatarioTable();
-                    }
-
-                    initializeEmbarqueDestinatarioTable();
-
-                    // Generar tabla dinámica con contenedores, variedades y cantidad de cajas
-                    async function generateContenedorVariedadTable() {
-                        try {
-                            const groupedData = await getDataByContenedorAndVariedad(); // Agrupar datos
-                            const tableHead = document.getElementById("tablaContenedorVariedadHead");
-                            const tableBody = document.getElementById("tablaContenedorVariedadBody");
-
-                            tableHead.innerHTML = ""; // Limpiar encabezado previo
-                            tableBody.innerHTML = ""; // Limpiar cuerpo previo
-
-                            // Obtener variedades únicas ordenadas
-                            const allVarieties = new Set();
-                            Object.values(groupedData).forEach((varieties) => {
-                                Object.keys(varieties).forEach((variety) => allVarieties.add(variety));
-                            });
-                            const sortedVarieties = Array.from(allVarieties).sort();
-
-                            // Crear encabezado
-                            const headerRow = document.createElement("tr");
-                            const contenedorCell = document.createElement("th");
-                            contenedorCell.textContent = "Contenedor / Variedad";
-                            headerRow.appendChild(contenedorCell);
-
-                            // Crear celdas de variedades
-                            sortedVarieties.forEach((variety) => {
-                                const th = document.createElement("th");
-                                th.textContent = variety;
-                                headerRow.appendChild(th);
-                            });
-
-                            tableHead.appendChild(headerRow);
-
-                            // Crear filas por contenedor
-                            Object.entries(groupedData).forEach(([contenedor, varieties]) => {
-                                const row = document.createElement("tr");
-                                const contenedorCell = document.createElement("td");
-                                contenedorCell.textContent = contenedor;
-                                row.appendChild(contenedorCell);
-
-                                // Añadir celdas de cantidad de cajas para cada variedad
-                                sortedVarieties.forEach((variety) => {
-                                    const cell = document.createElement("td");
-                                    const quantity = varieties[variety] ||
-                                        0; // Cantidad de cajas o 0 si no hay datos
-                                    cell.textContent = quantity;
-                                    row.appendChild(cell);
-                                });
-
-                                tableBody.appendChild(row);
-                            });
-                        } catch (error) {
-                            console.error("Error generando la tabla:", error);
-                        }
-                    }
-
-                    // Obtener datos agrupados por contenedor y variedad
-                    async function getDataByContenedorAndVariedad() {
-                        const db = await openDatabaseEmbarqueDB();
-                        const transaction = db.transaction("EmbarqueDB", "readonly");
-                        const store = transaction.objectStore("EmbarqueDB");
-                        const groupedData = {};
-
-                        return new Promise((resolve, reject) => {
-                            const request = store.openCursor();
-
-                            request.onsuccess = (event) => {
-                                const cursor = event.target.result;
-                                if (cursor) {
-                                    const record = cursor.value;
-                                    const contenedor = record.contenedor;
-                                    const variedad = record.n_variedad_rotulacion;
-                                    const cantidadCajas = parseFloat(record.cantidad);
-
-                                    if (contenedor && variedad && cantidadCajas) {
-                                        if (!groupedData[contenedor]) {
-                                            groupedData[contenedor] = {};
-                                        }
-
-                                        if (!groupedData[contenedor][variedad]) {
-                                            groupedData[contenedor][variedad] = 0;
-                                        }
-
-                                        groupedData[contenedor][variedad] +=
-                                            cantidadCajas; // Sumar cantidad de cajas
-                                    }
-
-                                    cursor.continue();
-                                } else {
-                                    resolve(groupedData); // Retornar datos agrupados
-                                }
-                            };
-
-                            request.onerror = (event) => {
-                                reject("Error al agrupar datos:", event.target.error);
-                            };
-                        });
-                    }
-
-                    // Inicializar tabla
-                    async function initializeContenedorVariedadTable() {
-                        await generateContenedorVariedadTable();
-                    }
-
-
-                    initializeContenedorVariedadTable();
-
-
-                    //Treeview
-                    async function getGroupedDataFromIndexedDB() {
-                        return new Promise((resolve, reject) => {
-                            const request = indexedDB.open('EmbarqueDB', 1);
-
-                            request.onsuccess = function(event) {
-                                const db = event.target.result;
-                                const transaction = db.transaction(['EmbarqueDB'], 'readonly');
-                                const store = transaction.objectStore('EmbarqueDB');
-                                console.log(store);
-                                const cursorRequest = store.openCursor();
-
-                                const groupedData = {};
-
-                                cursorRequest.onsuccess = function(event) {
-                                    const cursor = event.target.result;
-                                    if (cursor) {
-                                        const record = cursor.value;
-                                        const nave = record.nave;
-                                        const contenedor = record.contenedor;
-                                        const etiqueta = record.n_etiqueta;
-
-                                        if (!groupedData[nave]) groupedData[nave] = {};
-                                        if (!groupedData[nave][contenedor]) groupedData[nave][
-                                            contenedor
-                                        ] = {};
-                                        if (!groupedData[nave][contenedor][etiqueta]) {
-                                            groupedData[nave][contenedor][etiqueta] = {
-                                                cajas: [],
-                                                variedad: [],
-                                                calibre: [],
-                                                productor: []
-                                            };
-                                        }
-
-                                        groupedData[nave][contenedor][etiqueta].cajas.push(record
-                                            .cantidad);
-                                        groupedData[nave][contenedor][etiqueta].variedad.push(record
-                                            .n_variedad_rotulacion);
-                                        groupedData[nave][contenedor][etiqueta].calibre.push(record
-                                            .n_calibre);
-                                        groupedData[nave][contenedor][etiqueta].productor.push(
-                                            record.n_productor_rotulacion);
-
-                                        cursor.continue();
-                                    } else {
-                                        resolve(groupedData);
-                                    }
-                                };
-
-                                cursorRequest.onerror = function(error) {
-                                    reject(error);
-                                };
-                            };
-
-                            request.onerror = function(error) {
-                                reject(error);
-                            };
-                        });
-                    }
-
-                    async function renderTreeGrid() {
-                        const groupedData = await getGroupedDataFromIndexedDB();
-                        console.log(groupedData);
-                        const treeData = [];
-                        let idCounter = 1;
-
-                        // Crear la estructura jerárquica
-                        Object.keys(groupedData).forEach(nave => {
-                            const naveId = idCounter++;
-                            treeData.push({
-                                id: naveId,
-                                name: nave,
-                                level: 'Nave'
-                            });
-
-                            Object.keys(groupedData[nave]).forEach(contenedor => {
-                                const contenedorId = idCounter++;
-                                treeData.push({
-                                    id: contenedorId,
-                                    parentId: naveId,
-                                    name: contenedor,
-                                    level: 'Contenedor'
-                                });
-
-                                Object.keys(groupedData[nave][contenedor]).forEach(etiqueta => {
-                                    const etiquetaId = idCounter++;
-                                    treeData.push({
-                                        id: etiquetaId,
-                                        parentId: contenedorId,
-                                        name: etiqueta,
-                                        level: 'Etiqueta'
-                                    });
-
-                                    const data = groupedData[nave][contenedor][etiqueta];
-                                    const uniqueCalibres = [...new Set(data.calibre)];
-
-                                    uniqueCalibres.forEach(calibre => {
-                                        const totalCajas = data.cajas.reduce(
-                                            (total, caja, index) => (data
-                                                .calibre[index] === calibre ?
-                                                total + parseFloat(caja) : total
-                                            ),
-                                            0
-                                        );
-
-                                        treeData.push({
-                                            id: idCounter++,
-                                            parentId: etiquetaId,
-                                            calibre,
-                                            totalCajas,
-                                            level: 'Calibre',
-                                            action: `<button class="btn btn-primary btn-sm" onclick="viewDetails('${calibre}')">Detalle</button>`
-                                        });
-                                    });
-                                });
-                            });
-                        });
-
-                        // Inicializar la tabla
-                        $('#treeTable').bootstrapTable('destroy').bootstrapTable({
-                            data: treeData,
-                            columns: [{
-                                    field: 'name',
-                                    title: 'Nombre',
-                                    fixedColumns: true,
-                                    formatter: (value, row) => {
-                                        if (row.level === 'Calibre')
-                                            return `Calibre: ${row.calibre}`;
-                                        return value;
-                                    }
-                                },
-                                {
-                                    field: 'totalCajas',
-                                    title: 'Total Cajas',
-                                    align: 'center',
-                                    formatter: (value, row) => (row.level === 'Calibre' ? value : '-')
-                                },
-                                {
-                                    field: 'action',
-                                    title: 'Acciones',
-                                    align: 'center',
-                                    formatter: (value, row) => (row.level === 'Calibre' ? value : '-')
-                                }
-                            ],
-                            treeShowField: 'name',
-                            parentIdField: 'parentId',
-                            onPostBody: function() {
-                                $('#treeTable').treegrid({
-                                    treeColumn: 0,
-                                    onChange: function() {
-                                        $('#treeTable').bootstrapTable('resetView');
-                                    }
-                                });
-                            }
-                        });
-                    }
-
-                    // Función para ver detalles (personalizable)
-                    function viewDetails(calibre) {
-                        alert(`Ver detalles para calibre: ${calibre}`);
-                    }
-
-                    // Renderizar la tabla
-                    renderTreeGrid();
-
-                    const pivot = new WebDataRocks({
-                        container: "#pivot-container",
-                        toolbar: true,
-
-                    });
-
-                });
-            </script>
-        @endsection
+        });
+    </script>
+@endsection

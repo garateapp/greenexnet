@@ -185,7 +185,7 @@ class ReporteriaController extends Controller
 
             )
             ->where('destruccion_tipo', '=', '')
-            ->where('id_empresa','=','1')
+            ->where('id_empresa', '=', '1')
             ->groupBy('destruccion_tipo')
             ->get();
         $datosProcesados = DB::connection("sqlsrv")->table('dbo.V_PKG_Recepcion_FG')
@@ -197,14 +197,14 @@ class ReporteriaController extends Controller
 
             )
             ->where('destruccion_tipo', '=', 'PRN')
-            ->where('id_empresa','=','1')
+            ->where('id_empresa', '=', '1')
             ->groupBy('destruccion_tipo')
             ->get();
         $maximaEsperaHoras = DB::connection("sqlsrv")->table('V_PKG_Recepcion_FG')
             ->selectRaw("DATEDIFF(HOUR, fecha_g_recepcion, GETDATE()) AS horas_en_espera")
             ->addSelect('destruccion_tipo', 'lote_recepcion', 'fecha_g_recepcion')
             ->where('destruccion_tipo', '=', '')
-            ->where('id_empresa','=','1')
+            ->where('id_empresa', '=', '1')
             ->groupBy('lote_recepcion', 'destruccion_tipo', 'fecha_g_recepcion')
             ->orderBy('horas_en_espera', 'DESC')
             ->first();
@@ -216,7 +216,7 @@ class ReporteriaController extends Controller
                 'id_especie',
             )
             ->where('destruccion_tipo', '=', '')
-            ->where('id_empresa','=','1')
+            ->where('id_empresa', '=', '1')
             ->where('id_especie', '=', '7')->groupBy('nota_calidad', 'id_especie')
             ->get();
 
@@ -227,7 +227,7 @@ class ReporteriaController extends Controller
                 'destruccion_tipo',
             )
             ->where('destruccion_tipo', '=', 'PRN')
-            ->where('id_empresa','=','1')
+            ->where('id_empresa', '=', '1')
             ->groupBy('destruccion_tipo')
             ->get();
         // Consulta principal
@@ -239,7 +239,7 @@ class ReporteriaController extends Controller
                 'n_variedad',
             )
             ->where('destruccion_tipo', '=', '')
-            ->where('id_empresa','=','1')
+            ->where('id_empresa', '=', '1')
             ->where('id_especie', '=', '7')
             ->groupBy('destruccion_tipo', 'n_variedad')
             ->get();
@@ -281,7 +281,7 @@ class ReporteriaController extends Controller
             )
             ->where('destruccion_tipo', '=', '')
             ->where('nota_calidad', '=', str_replace("Calidad ", "", $request->nota_calidad))
-            ->where('id_empresa','=','1')
+            ->where('id_empresa', '=', '1')
             ->groupBy(
                 'lote_recepcion',
                 'n_empresa',
@@ -325,7 +325,7 @@ class ReporteriaController extends Controller
                 DB::RAW("MAX(DATEDIFF(HOUR, fecha_g_recepcion, GETDATE())) AS max_horas_en_espera")
             )
             ->where('destruccion_tipo', '=', '')
-            ->where('id_empresa','=','1')
+            ->where('id_empresa', '=', '1')
             ->groupBy(
 
                 'n_empresa',
@@ -446,7 +446,7 @@ class ReporteriaController extends Controller
                 'fecha_g_recepcion_sh'
             )
             ->where('fecha_g_recepcion_sh', '>=', DB::RAW("DATEADD(DAY, -8, GETDATE())"))
-            ->where('id_empresa','=','1')
+            ->where('id_empresa', '=', '1')
 
             ->groupBy(
                 'fecha_g_recepcion_sh',
@@ -570,7 +570,7 @@ class ReporteriaController extends Controller
             )
             //->where('destruccion_tipo', '=', '')
             ->where('id_especie', '=', '7')
-            ->where('id_altura','=','8')
+            ->where('id_altura', '=', '8')
             ->where('id_empresa', '=', '1')
             ->where(DB::raw("DATEPART(YEAR,fecha_produccion)"), '>', '2023')
             ->where('n_categoria', '!=', 'muestra')
@@ -829,8 +829,6 @@ class ReporteriaController extends Controller
                     if (ClientesComex::where('codigo_cliente', explode("-", $embarque->c_destinatario)[0])->exists()) {
                         $CxComex = ClientesComex::where('codigo_cliente', explode("-", $embarque->c_destinatario)[0])->first();
                         $embarque->c_destinatario = ClientesComex::where('codigo_cliente', explode("-", $embarque->c_destinatario)[0])->first()->nombre_fantasia;
-
-
                     } else {
                     }
                     $embarque->c_destinatario = ClientesComex::where('codigo_cliente', $embarque->c_destinatario)->first()->nombre_fantasia;
@@ -860,7 +858,8 @@ class ReporteriaController extends Controller
             'semana' => $semana,
         ], 200);
     }
-    public function ObjetivosEnvios(){
+    public function ObjetivosEnvios()
+    {
         $dataMetas = DB::connection("sqlsrv")->table(function ($query) {
             $query->from('dbo.V_PKG_Embarques')
                 ->selectRaw("
@@ -872,48 +871,45 @@ class ReporteriaController extends Controller
                 ->where('transporte', 'MARITIMO')
                 ->where('n_exportadora', 'Greenex Spa')
                 ->groupByRaw('DATEPART(WEEK, etd), c_destinatario, CP2_Embalaje');
-        },'s')
-            ->select('semana', 'c_destinatario', DB::raw('SUM(Contenedores) as contenedores'),DB::raw('SUM(cantidad) as Cajas'),'CP2_Embalaje')
-            ->groupBy('semana', 'c_destinatario','CP2_Embalaje')
+        }, 's')
+            ->select('semana', 'c_destinatario', DB::raw('SUM(Contenedores) as contenedores'), DB::raw('SUM(cantidad) as Cajas'), 'CP2_Embalaje')
+            ->groupBy('semana', 'c_destinatario', 'CP2_Embalaje')
             ->orderBy('c_destinatario', 'asc')
             ->orderBy('semana', 'desc')
             ->get();
 
-            foreach ($dataMetas as $chart) {
-                if ($chart->c_destinatario != null) {
+        foreach ($dataMetas as $chart) {
+            if ($chart->c_destinatario != null) {
 
-                    try {
+                try {
 
-                        if (ClientesComex::where('codigo_cliente', explode("-", $chart->c_destinatario)[0])->exists()) {
+                    if (ClientesComex::where('codigo_cliente', explode("-", $chart->c_destinatario)[0])->exists()) {
 
-                            $CxComex = ClientesComex::where('codigo_cliente', explode("-", $chart->c_destinatario)[0])->first();
-                            $chart->c_destinatario =$CxComex->nombre_fantasia;
+                        $CxComex = ClientesComex::where('codigo_cliente', explode("-", $chart->c_destinatario)[0])->first();
+                        $chart->c_destinatario = $CxComex->nombre_fantasia;
 
-                            $MetaCx = MetasClienteComex::where('clientecomex_id', '=', $CxComex->id)->first();
-                            if ($MetaCx != null) {
-                                $chart->alsu = $MetaCx->observaciones;
-                                $chart->meta = ($MetaCx->cantidad*$chart->CP2_Embalaje)*20;
-                                $chart->metacont = $MetaCx->cantidad;
-                            } else {
-                                $chart->alsu = '';
-                                $chart->meta = 0;
-                                $chart->metacont =0;
-                            }
-
-
-
+                        $MetaCx = MetasClienteComex::where('clientecomex_id', '=', $CxComex->id)->first();
+                        if ($MetaCx != null) {
+                            $chart->alsu = $MetaCx->observaciones;
+                            $chart->meta = ($MetaCx->cantidad * $chart->CP2_Embalaje) * 20;
+                            $chart->metacont = $MetaCx->cantidad;
                         } else {
                             $chart->alsu = '';
                             $chart->meta = 0;
+                            $chart->metacont = 0;
                         }
-
-                    } catch (\Throwable $th) {
+                    } else {
+                        $chart->alsu = '';
+                        $chart->meta = 0;
                     }
+                } catch (\Throwable $th) {
                 }
             }
-            return response()->json(['data' => $dataMetas], 200);
+        }
+        return response()->json(['data' => $dataMetas], 200);
     }
-    public function ObjetivosEnviosAereos(){
+    public function ObjetivosEnviosAereos()
+    {
         ini_set('memory_limit', '512M');
         $dataMetas = DB::connection("sqlsrv")->table(function ($query) {
             $query->from('dbo.V_PKG_Embarques')
@@ -926,48 +922,45 @@ class ReporteriaController extends Controller
                 ->where('transporte', 'AEREO')
                 ->where('n_exportadora', 'Greenex Spa')
                 ->groupByRaw('DATEPART(WEEK, etd), c_destinatario, CP2_Embalaje');
-        },'s')
+        }, 's')
             ->select('semana', 'c_destinatario', DB::raw('SUM(Pallets) as Pallets,SUM(Cajas) as Cajas '), DB::raw('SUM(Contenedores) as contenedores'))
             ->groupBy('semana', 'c_destinatario')
             ->orderBy('semana', 'desc')
             ->get();
 
-            foreach ($dataMetas as $chart) {
-                if ($chart->c_destinatario != null) {
+        foreach ($dataMetas as $chart) {
+            if ($chart->c_destinatario != null) {
 
-                    try {
+                try {
 
-                        if (ClientesComex::where('codigo_cliente', explode("-", $chart->c_destinatario)[0])->exists()) {
+                    if (ClientesComex::where('codigo_cliente', explode("-", $chart->c_destinatario)[0])->exists()) {
 
-                            $CxComex = ClientesComex::where('codigo_cliente', explode("-", $chart->c_destinatario)[0])->first();
-                            $chart->c_destinatario =$CxComex->nombre_fantasia;
+                        $CxComex = ClientesComex::where('codigo_cliente', explode("-", $chart->c_destinatario)[0])->first();
+                        $chart->c_destinatario = $CxComex->nombre_fantasia;
 
-                            $MetaCx = MetasClienteComex::where('clientecomex_id', '=', $CxComex->id)->first();
-                            if ($MetaCx != null) {
-                                $chart->alsu = $MetaCx->observaciones;
-                                $chart->meta = $MetaCx->cantidad;
-                                $chart->metacont =0;
-                              //  $chart->metacont = $MetaCx->contenedores;
-                            } else {
-                                $chart->alsu = '';
-                                $chart->meta = 0;
-                                $chart->metacont =0;
-                            }
-
-
-
+                        $MetaCx = MetasClienteComex::where('clientecomex_id', '=', $CxComex->id)->first();
+                        if ($MetaCx != null) {
+                            $chart->alsu = $MetaCx->observaciones;
+                            $chart->meta = $MetaCx->cantidad;
+                            $chart->metacont = 0;
+                            //  $chart->metacont = $MetaCx->contenedores;
                         } else {
                             $chart->alsu = '';
                             $chart->meta = 0;
+                            $chart->metacont = 0;
                         }
-
-                    } catch (\Throwable $th) {
+                    } else {
+                        $chart->alsu = '';
+                        $chart->meta = 0;
                     }
+                } catch (\Throwable $th) {
                 }
             }
-            return response()->json(['data' => $dataMetas], 200);
+        }
+        return response()->json(['data' => $dataMetas], 200);
     }
-    public function ObjetivosEnviosTerrestre(){
+    public function ObjetivosEnviosTerrestre()
+    {
         $dataMetas = DB::connection("sqlsrv")->table(function ($query) {
             $query->from('dbo.V_PKG_Embarques')
                 ->selectRaw("
@@ -979,57 +972,54 @@ class ReporteriaController extends Controller
                 ->where('transporte', 'CAMION FRIGORIFICO')
                 ->where('n_exportadora', 'Greenex Spa')
                 ->groupByRaw('DATEPART(WEEK, etd), c_destinatario, CP2_Embalaje');
-        },'s')
+        }, 's')
             ->select('semana', 'c_destinatario', DB::raw('SUM(Pallets) as Pallets,SUM(Cajas) as Cajas '))
             ->groupBy('semana', 'c_destinatario')
             ->orderBy('semana', 'desc')
             ->get();
 
-            foreach ($dataMetas as $chart) {
-                if ($chart->c_destinatario != null) {
+        foreach ($dataMetas as $chart) {
+            if ($chart->c_destinatario != null) {
 
-                    try {
+                try {
 
-                        if (ClientesComex::where('codigo_cliente', explode("-", $chart->c_destinatario)[0])->exists()) {
+                    if (ClientesComex::where('codigo_cliente', explode("-", $chart->c_destinatario)[0])->exists()) {
 
-                            $CxComex = ClientesComex::where('codigo_cliente', explode("-", $chart->c_destinatario)[0])->first();
-                            $chart->c_destinatario =$CxComex->nombre_fantasia;
+                        $CxComex = ClientesComex::where('codigo_cliente', explode("-", $chart->c_destinatario)[0])->first();
+                        $chart->c_destinatario = $CxComex->nombre_fantasia;
 
-                            $MetaCx = MetasClienteComex::where('clientecomex_id', '=', $CxComex->id)->first();
-                            if ($MetaCx != null) {
-                                $chart->alsu = $MetaCx->observaciones;
-                                $chart->meta = $MetaCx->cantidad;
-                            } else {
-                                $chart->alsu = '';
-                                $chart->meta = 0;
-                            }
-
-
-
+                        $MetaCx = MetasClienteComex::where('clientecomex_id', '=', $CxComex->id)->first();
+                        if ($MetaCx != null) {
+                            $chart->alsu = $MetaCx->observaciones;
+                            $chart->meta = $MetaCx->cantidad;
                         } else {
                             $chart->alsu = '';
                             $chart->meta = 0;
                         }
-
-                    } catch (\Throwable $th) {
+                    } else {
+                        $chart->alsu = '';
+                        $chart->meta = 0;
                     }
+                } catch (\Throwable $th) {
                 }
             }
-            return response()->json(['data' => $dataMetas], 200);
+        }
+        return response()->json(['data' => $dataMetas], 200);
     }
-    public function getCantRegistros(){
-       $cantEmbarques= DB::connection("sqlsrv")->table('dbo.V_PKG_Embarques')
-       ->select(DB::raw('COUNT(n_embarque) as cant'))
-       ->where('id_especie', 7)
-       ->where(DB::raw('DATEPART(WEEK, etd)'), '>', 43)
+    public function getCantRegistros()
+    {
+        $cantEmbarques = DB::connection("sqlsrv")->table('dbo.V_PKG_Embarques')
+            ->select(DB::raw('COUNT(n_embarque) as cant'))
+            ->where('id_especie', 7)
+            ->where(DB::raw('DATEPART(WEEK, etd)'), '>', 43)
             //->where('n_embarque', '>', $cargados->num_embarque)
-            ->where('id_exportadora','=','22')
+            ->where('id_exportadora', '=', '22')
             ->whereNotNull('id_destinatario')
             ->whereNotNull('n_destinatario')
-            ->whereIn('transporte',['MARITIMO','AEREO'])
+            ->whereIn('transporte', ['MARITIMO', 'AEREO'])
             ->get();
 
-            return response()->json(['cantEmbarques' => $cantEmbarques], 200);
+        return response()->json(['cantEmbarques' => $cantEmbarques], 200);
     }
     public function ObtieneEmbarquesyPackingList()
     {
@@ -1040,6 +1030,7 @@ class ReporteriaController extends Controller
             ->select(
                 DB::raw('ROW_NUMBER() OVER (ORDER BY [etd] ASC) AS id'),
                 'n_embarque',
+                DB::raw("DATEPART(WEEK, eta) as semana"),
                 'id_destinatario',
                 'n_destinatario',
                 'c_destinatario',
@@ -1076,14 +1067,21 @@ class ReporteriaController extends Controller
                 'n_calibre',
 
             )
-            ->where(DB::raw('DATEPART(WEEK, etd)'), '>', 43)
+            ->whereIn(DB::raw('DATEPART(WEEK, etd)'), [51, 52, 1, 2, 3, 4, 5, 6])
             //->where('n_embarque', '>', $cargados->num_embarque)
-            ->where('id_exportadora','=','22')
+            ->where('id_exportadora', '=', '22')
             ->whereNotNull('id_destinatario')
             ->whereNotNull('n_destinatario')
             ->get();
-            $lstEmbarque = collect();
+        $lstEmbarque = collect();
+        foreach ($embarques as $embarque) {
+            if (ClientesComex::where('codigo_cliente', explode("-", $embarque->c_destinatario)[0])->exists()) {
 
+                $CxComex = ClientesComex::where('codigo_cliente', explode("-", $embarque->c_destinatario)[0])->first();
+                $embarque->n_destinatario = $CxComex->nombre_fantasia;
+            } else {
+            }
+        }
 
 
 
@@ -1209,7 +1207,7 @@ class ReporteriaController extends Controller
         $n_exportadora = collect($embarques)->pluck('n_exportadora')->unique()->values();
         $transporte = collect($embarques)->pluck('transporte')->unique()->values();
         $semana = collect($embarques)->pluck('Semana')->unique()->values();
-        $nave= collect($embarques)->pluck('nave')->unique()->values();
+        $nave = collect($embarques)->pluck('nave')->unique()->values();
         $embalajes = collect($embarques)->pluck('n_etiqueta')->unique()->values();
 
 
@@ -1221,48 +1219,73 @@ class ReporteriaController extends Controller
             'objEmbarque' => $embarques
         ], 200);
     }
-    public function getPackingList(){
+    public function getPackingList()
+    {
 
-        $packingList=DB::connection("sqlsrv")->table('dbo.V_PKG_Despachos_Embarques')
-        ->select('*')
-        ->where('id_exportadora','=',22)->get();
+        $packingList = DB::connection("sqlsrv")->table('dbo.V_PKG_Despachos_Embarques')
+            ->select('*')
+            ->where('id_exportadora', '=', 22)->get();
         return response()->json([
-            'packingList'=>$packingList
+            'packingList' => $packingList
         ], 200);
     }
-    public function getClientesComex(){
-        $CxComex=ClientesComex::all();
-        return response()->json(['CxComex'=>$CxComex],200);
+    public function getClientesComex()
+    {
+        $CxComex = ClientesComex::all();
+        return response()->json(['CxComex' => $CxComex], 200);
     }
-    public function detalleembarque(){
+    public function detalleembarque()
+    {
         return view('admin.reporteria.detalleembarque');
     }
-    function SyncDatosCajas(){
-        $cajas=DB::connection("sqlsrv")->table('PKG_Stock_Cajas AS SC')
-        ->join('FX6_Packing_Garate_Operaciones.dbo.PKG_Stock_Cajas_Historial AS SCH', 'SC.id', '=', 'SCH.id_pkg_stock_cajas')
-        ->join('FX6_Packing_Garate_Operaciones.dbo.PKG_Stock_Det AS SD', 'SD.id', '=', 'SCH.id_pkg_stock_det')
-        ->join('FX6_Packing_Garate_Operaciones.dbo.PKG_Stock AS S', 'SD.id_pkg_stock', '=', 'S.id')
-        ->join('FX6_Packing_Garate_Operaciones.dbo.ADM_P_Entidades AS E', 'SD.id_adm_p_entidades_productor_rotulacion', '=', 'E.id')
-        ->join('FX6_Packing_Garate_Operaciones.dbo.PRO_P_Variedades AS V', 'V.id', '=', 'SD.id_pro_p_variedades_rotulacion')
-        ->join('FX6_Packing_Garate_Operaciones.dbo.PRO_P_Calibres AS C', 'C.id', '=', 'SD.id_pro_p_calibres')
-        ->join('FX6_Packing_Garate_Operaciones.dbo.PRO_P_Etiquetas AS ET', 'ET.id', '=', 'SD.id_pro_p_etiquetas')
-        ->join('FX6_Packing_Garate_Operaciones.dbo.ADM_P_Entidades AS E2', 'SD.id_adm_p_entidades_exportadora', '=', 'E2.id')
-        ->join('FX6_Packing_Garate_Operaciones.dbo.ADM_P_Entidades AS E3', 'SD.id_adm_p_entidades_packing_origen', '=', 'E3.id')
-        ->select(
-            'SC.ncaja',
-            'SD.folio',
-            'E.nombre AS Productor',
-            'ET.nombre AS Etiquetas',
-            'V.nombre AS Variedad',
-            'C.nombre AS Calibre',
-            'E2.nombre AS Exportadora',
-            'E3.nombre AS Packing'
-        )
-        ->orderBy('SC.ncaja')
-        ->get();
-        return response()->json(['Cajas'=>$cajas,'message'=>'Se ha actualizado la información de las cajas'], Response::HTTP_CREATED);
+    function SyncDatosCajas(Request $request)
+    {
+
+
+
+
+
+
+
+        $cajas = DB::connection("sqlsrv")->table('PKG_Stock_Cajas as SC')
+        ->join('PKG_Stock_Cajas_Historial as SCH', 'SC.id', '=', 'SCH.id_pkg_stock_cajas')
+        ->join('PKG_Stock_Det as SD', 'SD.id', '=', 'SCH.id_pkg_stock_det')
+        ->select('SC.ncaja', 'SD.folio', 'SCH.id_pkg_stock_det',  DB::raw('ROW_NUMBER() OVER (ORDER BY SC.ncaja ASC) AS id'))
+        ->where('SC.ncaja', '>', $request->min)
+        ->orderBy('SC.ncaja', 'asc')->take(100000)->get();
+
+       $min=collect($cajas)->pluck('ncaja')->max();
+
+
+        return response()->json(['Cajas' => $cajas,'min'=>$min, 'message' => 'Se ha actualizado la información de las cajas'], Response::HTTP_CREATED);
     }
-    public function detallecajas(){
+
+
+/*************  ✨ Codeium Command ⭐  *************/
+    /**
+     * Retrieves the minimum and maximum values of the 'ncaja' field from the PKG_Stock_Cajas table.
+     *
+     * This method connects to the 'sqlsrv' database and queries the PKG_Stock_Cajas table
+     * to find the minimum and maximum 'ncaja' values. It returns a JSON response containing
+     * these values.
+     *
+     * @return \Illuminate\Http\JsonResponse A JSON response with the minimum and maximum 'ncaja' values.
+     */
+
+/******  528248c7-8b99-4d68-a491-5aaedecfd03a  *******/
+    public function getMinMaxCajas(){
+
+        $NumCajas=DB::connection("sqlsrv")->table('PKG_Stock_Cajas as SC')
+        ->select(DB::raw('MIN(SC.ncaja) as minimo') ,DB::raw('MAX(SC.ncaja) as maximo')
+        )->get();
+
+        $min=$NumCajas[0]->minimo;
+        $max=$NumCajas[0]->maximo;
+
+        return response()->json(['min' => $min, 'max' => $max], 200);
+    }
+    public function detallecajas()
+    {
         return view('admin.reporteria.detallecajas');
     }
 }
