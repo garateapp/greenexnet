@@ -120,13 +120,13 @@
                     request.onsuccess = function(event) {
                         const db = event.target.result;
 
-                        if (!db.objectStoreNames.contains('cajas')) {
+                        if (!db.objectStoreNames.contains('CajasDB')) {
                             console.error("El almacén 'cajas' no existe. Verifica la creación del almacén.");
                             return;
                         }
 
-                        const transaction = db.transaction('cajas', 'readwrite');
-                        const store = transaction.objectStore('cajas');
+                        const transaction = db.transaction('CajasDB', 'readwrite');
+                        const store = transaction.objectStore('CajasDB');
 
                         cajas.forEach(caja => {
                             if (caja.id_pkg_stock_det) {
