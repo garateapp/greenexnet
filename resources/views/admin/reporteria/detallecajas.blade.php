@@ -70,7 +70,7 @@
                 }
 
                 async function getCajas(min) {
-                    try {
+
                         const response = await $.ajax({
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -108,10 +108,10 @@
                         SetDBCajas(response.Cajas);
                         return response.min;
 
-                    } catch (error) {
-                        console.error("Error en getCajas:", error);
-                        throw error; // Interrumpe el bucle si hay un error
-                    }
+                    // } catch (error) {
+                    //     console.error("Error en getCajas:", error);
+                    //     throw error; // Interrumpe el bucle si hay un error
+                    // }
                 }
 
                 function SetDBCajas(cajas) {

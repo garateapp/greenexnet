@@ -1256,7 +1256,7 @@ class ReporteriaController extends Controller
             return response()->json(['message' => $e], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        return response()->json(['Cajas' => $cajas,'min'=>$min, 'message' => 'Se ha actualizado la información de las cajas'], Response::HTTP_CREATED);
+        return response()->json(['Cajas' => $cajas,'min'=>$min, 'message' => 'Se ha actualizado la información de las cajas'], 200);
     }
 
 
