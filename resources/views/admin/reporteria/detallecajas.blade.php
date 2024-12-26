@@ -84,16 +84,16 @@
                         });
 
                         console.log(response.Cajas);
-                        const request = indexedDB.open('miBaseDatos', 2); // Incrementa la versión si es necesario
+                        const request = indexedDB.open('CajasDB', 2); // Incrementa la versión si es necesario
 
                         request.onupgradeneeded = function(event) {
                             const db = event.target.result;
 
-                            if (!db.objectStoreNames.contains('cajas')) {
-                                db.createObjectStore('cajas', {
+                            if (!db.objectStoreNames.contains('CajasDB')) {
+                                db.createObjectStore('CajasDB', {
                                     keyPath: 'id_pkg_stock_det'
                                 });
-                                console.log("Almacén de objetos 'cajas' creado correctamente.");
+                                console.log("Almacén de objetos 'CajasDB' creado correctamente.");
                             }
                         };
 
