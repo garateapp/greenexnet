@@ -155,6 +155,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('reporteria/getMinMaxCajas', 'ReporteriaController@getMinMaxCajas')->name('reporteria.getMinMaxCajas');
     Route::get('reporteria/detallecajas', 'ReporteriaController@detallecajas')->name('reporteria.detallecajas');
     Route::post('reporteria/SyncDatosCajas', 'ReporteriaController@SyncDatosCajas')->name('reporteria.SyncDatosCajas');
+    Route::get('reporteria/SyncDatosCajas2', 'ReporteriaController@SyncDatosCajas2')->name('reporteria.SyncDatosCajas2');
     // Embalajes
     Route::delete('embalajes/destroy', 'EmbalajesController@massDestroy')->name('embalajes.massDestroy');
     Route::post('embalajes/parse-csv-import', 'EmbalajesController@parseCsvImport')->name('embalajes.parseCsvImport');

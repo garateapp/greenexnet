@@ -1258,7 +1258,26 @@ class ReporteriaController extends Controller
 
         return response()->json(['Cajas' => $cajas,'min'=>$min, 'message' => 'Se ha actualizado la información de las cajas'], 200);
     }
+    function SyncDatosCajas2()
+    {
+        try{
+        $cajas = DB::connection("sqlsrv")->table('PKG_Stock_Cajas as SC')
+        ->join('PKG_Stock_Cajas_Historial as SCH', 'SC.id', '=', 'SCH.id_pkg_stock_cajas')
+        ->join('PKG_Stock_Det as SD', 'SD.id', '=', 'SCH.id_pkg_stock_det')
+        ->select('SC.ncaja', 'SD.folio', 'SCH.id_pkg_stock_det',  DB::raw('ROW_NUMBER() OVER (ORDER BY SC.ncaja ASC) AS id'))
+        //->where('SC.ncaja', '>', $request->min)
+        ->orderBy('SC.ncaja', 'asc')->take(100000)->get();
 
+
+       $min=collect($cajas)->pluck('ncaja')->max();
+
+
+        }catch(\Exception $e){
+            return response()->json(['message' => $e], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return response()->json(['Cajas' => $cajas,'min'=>$min, 'message' => 'Se ha actualizado la información de las cajas'], 200);
+    }
 
 /*************  ✨ Codeium Command ⭐  *************/
     /**
