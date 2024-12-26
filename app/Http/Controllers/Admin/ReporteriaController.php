@@ -1250,6 +1250,7 @@ class ReporteriaController extends Controller
 
 
        $min=collect($cajas)->pluck('ncaja')->max();
+       dd($min);
 
         }catch(\Exception $e){
             return response()->json(['message' => $e], Response::HTTP_INTERNAL_SERVER_ERROR);
