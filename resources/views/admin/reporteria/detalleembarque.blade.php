@@ -2,7 +2,6 @@
 
 
 @section('content')
-
     <link href="{{ asset('css/bootstrap-table.min.css') }}" rel="stylesheet" />
     <link href="{{ asset('js/webdatarocks/webdatarocks.css') }}" rel="stylesheet" />
     <!-- Bootstrap CSS -->
@@ -182,7 +181,8 @@
                 margin-bottom: 20px;
             }
         }
-        .clickable-container{
+
+        .clickable-container {
             cursor: pointer;
             color: #ff7313;
         }
@@ -225,62 +225,76 @@
         .etiqueta {
             background-color: #fff8e1;
         }
+
         /* Estilos para el modal */
-.modal {
-    display: none; /* Ocultar el modal por defecto */
-    position: fixed;
-    z-index: 1;
-    left: 0px;
-    top: 30px;
-    width: 100%;
-    height: 80%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro */
-    justify-content: center;
-    align-items: center;
-    animation: fadeIn 0.3s ease-in-out; /* Animación de entrada */
-}
+        .modal {
+            display: none;
+            /* Ocultar el modal por defecto */
+            position: fixed;
+            z-index: 1;
+            left: 0px;
+            top: 30px;
+            width: 100%;
+            height: 80%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            /* Fondo oscuro */
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease-in-out;
+            /* Animación de entrada */
+        }
 
-.modal-content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    width: 80%;
-    /* max-width: 600px; */
-    margin: auto;
-    overflow-y: auto;
-    overflow-x: auto;
-}
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            /* max-width: 600px; */
+            margin: auto;
+            overflow-y: auto;
+            overflow-x: auto;
+        }
 
-.close-btn {
-    color: #aaa;
-    font-size: 28px;
-    font-weight: bold;
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    cursor: pointer;
-}
+        .close-btn {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            cursor: pointer;
+        }
 
-.close-btn:hover,
-.close-btn:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-}
+        .close-btn:hover,
+        .close-btn:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
     </style>
     <div class="row">
         <div class="col-md-12">
             <div class="card">
+                <div id="loading-animation"
+                    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 9999; justify-content: center; align-items: center;">
+                    <video autoplay loop muted style="width: auto; height: auto;">
+                        <source src="{{ asset('img/embarque.webm') }}" type="video/webm">
+                        Tu navegador no soporta el video.
+                    </video>
+                    <br />
+
+                </div>
                 <div class="card-header">
                     Sincronizar
                     <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
@@ -290,12 +304,7 @@
                 <div class="card-body">
                     <button id="btnSync" class="btn btn-secondary mb-3" style="margin-top: 30px;" title="Sincronizar"><i
                             class="fas fa-sync"></i></button>
-                    <div style="width: 100%; background-color: #f3f3f3; border: 1px solid #ccc; border-radius: 5px;">
-                        <div id="progress-bar"
-                            style="width: 0%; height: 25px; background-color: #4caf50; text-align: center; color: white; line-height: 25px; border-radius: 5px;">
-                            0%
-                        </div>
-                    </div>
+
                 </div>
             </div>
         </div>
@@ -437,7 +446,8 @@
                 <div class="modal-header d-flex justify-content-between align-items-center">
                     <h5 class="modal-title" id="contenedorModalLabel">Detalles del Contenedor</h5> <span
                         id="numContenedor"></span>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeModal"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                        id="closeModal"></button>
                 </div>
                 <div class="modal-body">
                     <!-- Wrapper para permitir el scroll horizontal -->
@@ -497,7 +507,17 @@
     <script>
         let totalRegistros = 0;
 
+        function showLoading() {
+
+            $("#loading-animation").fadeIn();
+        }
+
+        function hideLoading() {
+            $("#loading-animation").fadeOut();
+        }
+
         function sincronizar() {
+            showLoading();
             obtieneCantidad();
             const urls = [
                 "{{ route('admin.reporteria.ObtieneEmbarquesyPackingList') }}",
@@ -581,6 +601,7 @@
                         }
                     });
                 }
+                hideLoading();
             });
 
         }
@@ -737,7 +758,7 @@
                         transporte: "filtroTransporte",
                         n_pais_destino: "filtroDestino",
                         n_productor_rotulacion: "filtroProductor",
-                        n_destinatario:"filtroCliente"
+                        n_destinatario: "filtroCliente"
                     };
 
                     // Llenar cada select dinámicamente
@@ -882,8 +903,8 @@
                 transporte: "filtroTransporte",
                 n_pais_destino: "filtroDestino",
                 n_productor_rotulacion: "filtroProductor",
-                n_destinatario:"filtroCliente",
-                semana:"filtroSemana",
+                n_destinatario: "filtroCliente",
+                semana: "filtroSemana",
             };
             async function loadData() {
                 try {
@@ -1095,7 +1116,7 @@
 
             // 2. Cerrar el modal
             function closeModal() {
-                document.getElementById('contenedorModal').style.display='none';
+                document.getElementById('contenedorModal').style.display = 'none';
                 //modal.addAttribute('inert');
                 //document.getElementById("containerModal").addAttr('inert');
 
@@ -1104,9 +1125,9 @@
             // 3. Generar la tabla con el evento de clic en celdas de contenedor
 
             const closeModalBtn = document.getElementById('closeModal');
-const modalTableBody = document.querySelector('#modalTable tbody');
+            const modalTableBody = document.querySelector('#modalTable tbody');
 
-closeModalBtn.addEventListener('click', closeModal);
+            closeModalBtn.addEventListener('click', closeModal);
 
         });
     </script>
