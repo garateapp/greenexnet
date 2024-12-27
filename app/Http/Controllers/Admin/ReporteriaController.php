@@ -1278,7 +1278,7 @@ class ReporteriaController extends Controller
                 DB::raw('ISNULL(PPE.nombre, \'\') AS n_especie_rotulacion'),
                 DB::raw('ISNULL(PPE.Tipo_Produccion, \'\') as tipo_produccion'),
                 DB::raw('ISNULL(PPV.nombre, \'\') AS n_variedad_rotulacion'),
-                DB::raw('ISNULL(dbo.ADM_Entidades_nombre(APE5.id),"") as n_empresa'),
+                DB::raw('ISNULL(dbo.ADM_Entidades_nombre(APE5.id), \'\') AS n_empresa'),
                 DB::raw('(SELECT APE5.nombre from ADM_P_Entidades APE5 where APE5.id=pemb.id_adm_p_entidades_exportadora) as n_exportadora'),
                 DB::raw('(SELECT APE5.nombre from ADM_P_Entidades APE5 where APE5.id=pemb.id_adm_p_entidades_destinatario) as n_destinatario'),
                 ])
@@ -1348,6 +1348,7 @@ class ReporteriaController extends Controller
                     'PGD.contenedor',
                     'SD.cantidad',
                     'SD.peso_neto',
+
                     DB::raw('CASE WHEN ISNULL(SD.peso_final, 0) = 0 THEN isnull(SD.peso_neto, 0) + ISNULL(AIT.tara_std, 0)
                     ELSE isnull(SD.peso_final, 0) + ISNULL(AIT.tara_std, 0) END AS peso_bruto'),
                     DB::raw('ISNULL(APE4.nombre_sucursal, \'\') AS ns_productor_rotulacion'),
