@@ -608,7 +608,7 @@ class EmbarquesController extends Controller
                     ->where('id_pro_p_variedades', '=', $variedad_rotulacion)
                     ->first();
                 }
-
+                if($entry["pallet"]){
                 $items->push([
                     'id_pkg_stock' => $entry["instructivo"],
                     'folio' => $entry["pallet"],
@@ -643,7 +643,7 @@ class EmbarquesController extends Controller
                     'tipo_origen' => 'RFP',
                     'fecha_packing'=>Carbon::parse($this->convertirFechaExcel($entry["fecha_de_packing"]))->format('d-m-Y'),
                 ]);
-            //}
+            }
         }
 
         // Iniciar una transacción
