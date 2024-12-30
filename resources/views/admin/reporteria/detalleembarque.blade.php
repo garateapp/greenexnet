@@ -809,8 +809,8 @@
 
                 transaction.oncomplete = function() {
                     console.log("Todos los datos se han almacenado correctamente.");
-                    fillSelects(); // Llenar n_embarque y nave
-                    fillWeekSelect(); // Llenar semanas
+                    // await fillSelects(); // Llenar n_embarque y nave
+                    // await fillWeekSelect(); // Llenar semanas
                 };
 
                 transaction.onerror = function(error) {
