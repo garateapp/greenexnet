@@ -708,7 +708,8 @@
                         },
                         error: function(xhr, status, error) {
                             console.error("Error en la solicitud AJAX a " + url, error);
-                            updateProgress(); // Incrementar el progreso incluso si falla
+                            alert("error:"+error);
+                            hideLoading(); // Incrementar el progreso incluso si falla
                         }
                     });
                 } else {
