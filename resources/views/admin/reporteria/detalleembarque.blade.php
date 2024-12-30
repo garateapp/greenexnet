@@ -723,7 +723,7 @@
                             console.log("Datos recibidos de: " + url, data);
                             //updateProgress(); // Incrementar el progreso al completar
                             console.log("data", data.objEmbarque);
-                            SetDBEmbarque(data.objEmbarque);
+                            SetDBEmbarque(data);
 
                         },
                         error: function(xhr, status, error) {
