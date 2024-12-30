@@ -648,8 +648,9 @@
            
             obtieneCantidad();
             const urls = [
-                "{{ route('admin.reporteria.ObtieneEmbarquesyPackingList') }}",
+                //"{{ route('admin.reporteria.ObtieneEmbarquesyPackingList') }}",
                 // "{{ route('admin.reporteria.getPackingList') }}",
+                "https://net.greenexweb.cl/datos.json",
                 "{{ route('admin.reporteria.getClientesComex') }}"
             ];
 
