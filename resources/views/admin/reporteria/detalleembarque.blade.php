@@ -645,7 +645,7 @@
         }
 
         function sincronizar() {
-            showLoading();
+           
             obtieneCantidad();
             const urls = [
                 "{{ route('admin.reporteria.ObtieneEmbarquesyPackingList') }}",
@@ -653,23 +653,24 @@
                 "{{ route('admin.reporteria.getClientesComex') }}"
             ];
 
-            const progressBar = $("#progress-bar");
-            const totalRequests = urls.length + (totalRegistros % 5000);
+            //const progressBar = $("#progress-bar");
+            //const totalRequests = urls.length + (totalRegistros % 5000);
             let completedRequests = 0;
 
             function updateProgress() {
-                completedRequests++;
-                const percentage = Math.round((completedRequests / totalRequests) * 100);
-                progressBar.css("width", percentage + "%");
-                progressBar.text(percentage + "%");
+                // completedRequests++;
+                // const percentage = Math.round((completedRequests / totalRequests) * 100);
+                // progressBar.css("width", percentage + "%");
+                // progressBar.text(percentage + "%");
 
-                if (completedRequests === totalRequests) {
-                    alert("Sincronización completada");
-                }
+                // if (completedRequests === totalRequests) {
+                //     alert("Sincronización completada");
+                // }
             }
 
 
             function obtieneCantidad() {
+                showLoading();
                 $.ajax({
                     url: "{{ route('admin.reporteria.getCantRegistros') }}",
                     type: "GET",
@@ -697,7 +698,7 @@
                         dataType: "json",
                         success: function(data) {
                             console.log("Datos recibidos de: " + url, data);
-                            updateProgress(); // Incrementar el progreso al completar
+                           //updateProgress(); // Incrementar el progreso al completar
                             if (url ===
                                 "{{ route('admin.reporteria.getClientesComex') }}") {
                                 console.log("data", data.CxComex);
@@ -718,7 +719,7 @@
                         dataType: "json",
                         success: function(data) {
                             console.log("Datos recibidos de: " + url, data);
-                            updateProgress(); // Incrementar el progreso al completar
+                            //updateProgress(); // Incrementar el progreso al completar
                             console.log("data", data.objEmbarque);
                             SetDBEmbarque(data.objEmbarque);
 
