@@ -631,7 +631,7 @@
     </div>
 
     <!-- Tabla general de detalles -->
-
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
     <script>
         let totalRegistros = 0;
 
@@ -722,7 +722,7 @@
                         success: function(data) {
                             console.log("Datos recibidos de: " + url, data);
                             //updateProgress(); // Incrementar el progreso al completar
-                            console.log("data", data.objEmbarque);
+                            console.log("data", data);
                             SetDBEmbarque(data);
 
                         },
@@ -810,8 +810,8 @@
 
                 transaction.oncomplete = function() {
                     console.log("Todos los datos se han almacenado correctamente.");
-                    // await fillSelects(); // Llenar n_embarque y nave
-                    // await fillWeekSelect(); // Llenar semanas
+                    // fillSelects(); // Llenar n_embarque y nave
+                    // fillWeekSelect(); // Llenar semanas
                 };
 
                 transaction.onerror = function(error) {
@@ -1003,7 +1003,7 @@
                 });
             }
 
-
+            eruda.init();
 
 
 
