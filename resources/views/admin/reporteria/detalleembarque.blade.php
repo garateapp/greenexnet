@@ -645,12 +645,12 @@
         }
 
         function sincronizar() {
-           
+
             obtieneCantidad();
             const urls = [
                 //"{{ route('admin.reporteria.ObtieneEmbarquesyPackingList') }}",
                 // "{{ route('admin.reporteria.getPackingList') }}",
-                "https://net.greenexweb.cl/datos.json",
+                "https://net.greenexweb.cl/storage/datos.json",
                 "{{ route('admin.reporteria.getClientesComex') }}"
             ];
 
