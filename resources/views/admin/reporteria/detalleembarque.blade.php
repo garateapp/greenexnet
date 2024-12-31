@@ -413,7 +413,7 @@
     </style>
     <div class="row">
         <div class="col-md-12">
-            <div class="card">
+            {{-- <div class="card">
                 <div id="loading-animation"
                     style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 9999; justify-content: center; align-items: center;">
                     <video autoplay loop muted style="width: auto; height: auto;">
@@ -434,7 +434,7 @@
                             class="fas fa-sync"></i></button>
 
                 </div>
-            </div>
+            </div> --}}
         </div>
         <div class="col-md-12">
             <div class="card">
