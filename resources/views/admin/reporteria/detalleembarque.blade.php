@@ -1280,20 +1280,20 @@
                 n_destinatario: "filtroCliente",
                 semana: "filtroSemana",
             }; // Almacenar todos los datos originales
-           
+
             // Cargar los datos desde el archivo datos.json
             async function loadData() {
                 try {
                     const response = await fetch("https://net.greenexweb.cl/storage/datos.json");
                     const data = await response.json();
-                    
+
                     originalData = data; // Guardar todos los datos originales
                     try {
                         await fillSelects(); // Llenar selects de 'n_embarque' y 'nave'
                         await fillWeekSelect(); // Llenar select de semanas
-            } catch (error) {
-                console.error("Error al recargar los selects:", error);
-            }
+                    } catch (error) {
+                        console.error("Error al recargar los selects:", error);
+                    }
 
                     return data;
                 } catch (error) {
@@ -1334,7 +1334,7 @@
 
                 return Array.from(uniqueWeeks).sort((a, b) => a - b); // Ordenamos por número de semana
             }
- 
+
             // Llenar los selects
             async function fillSelects() {
                 try {
@@ -1403,7 +1403,7 @@
                 filteredData = originalData.filter((item) => {
                     return Object.entries(filterValues).every(([key, value]) => {
                         return item[key]?.toString().toLowerCase().includes(value
-                    .toLowerCase());
+                            .toLowerCase());
                     });
                 });
 
@@ -1463,8 +1463,12 @@
                     const rowHeader = document.createElement("td");
                     rowHeader.textContent = row;
                     rowHeader.classList.add("clickable-container");
-                    rowHeader.addEventListener("click", () => showContainerDetails(
-                    row)); // Evento de clic
+                    rowHeader.addEventListener("click", (event) => {
+                        event.stopPropagation(); // Prevenir propagación innecesaria
+                        console.log("Clic en fila:", row); // Verificar en consola
+                        showContainerDetails(row); // Llamada a la función con el valor correcto
+                    });
+                
                     rowElement.appendChild(rowHeader);
 
                     let rowTotal = 0;
@@ -1524,12 +1528,72 @@
             initializeTables();
 
             // 🟢 1. Mostrar detalles en un modal al hacer clic en una celda de contenedor
+            // function showContainerDetails(containerValue) {
+            //     // Filtrar los datos por contenedor respetando los filtros activos
+            //     const filteredData = originalData.filter((item) => item.contenedor === containerValue);
+            //     // Mostrar los datos del contenedor en el modal o en otro lugar
+            //     console.log(filteredData);
+            // }
             function showContainerDetails(containerValue) {
                 // Filtrar los datos por contenedor respetando los filtros activos
-                const filteredData = originalData.filter((item) => item.contenedor === containerValue);
-                // Mostrar los datos del contenedor en el modal o en otro lugar
-                console.log(filteredData);
+                const filteredData = originalData.filter(item => item.contenedor === containerValue);
+                document.getElementById("numContenedor").innerHTML = containerValue;
+                // Obtener el modal y el cuerpo de la tabla
+                const modalBody = document.getElementById("contenedorModalBody");
+                modalBody.innerHTML = ""; // Limpiar contenido previo
+
+                // Crear las filas de la tabla dentro del modal
+                filteredData.forEach(item => {
+                    const row = document.createElement("tr");
+
+                    // Lista de las cabeceras de la tabla
+                    const headers = [
+                        "id", "n_embarque", "id_destinatario", "n_destinatario", "c_destinatario",
+                        "fecha_embarque", "n_packing_origen",
+                        "n_naviera", "n_nave", "contenedor", "N_Especie", "N_Variedad",
+                        "n_embalaje", "t_embalaje", "n_etiqueta",
+                        "cantidad", "peso_neto", "n_puerto_origen", "n_pais_destino",
+                        "n_puerto_destino", "transporte", "etd", "eta",
+                        "numero_reserva_agente_naviero", "total_pallets", "numero_referencia",
+                        "nave", "folio", "peso_std_embalaje",
+                        "n_variedad_rotulacion", "n_categoria", "fecha_produccion",
+                        "n_productor_rotulacion", "codigo_sag_productor",
+                        "n_calibre"
+                    ];
+
+                    // Crear celdas para cada columna
+                    headers.forEach(header => {
+                        const td = document.createElement("td");
+                        td.textContent = item[header] ||
+                            "N/A"; // Si no existe el valor, mostrar "N/A"
+                        row.appendChild(td);
+                    });
+
+                    modalBody.appendChild(row);
+                });
+
+                // Mostrar el modal
+                // Obtener el modal
+                document.getElementById('contenedorModal').style.display = 'flex';
+
+
             }
+
+            // 2. Cerrar el modal
+            function closeModal() {
+                document.getElementById('contenedorModal').style.display = 'none';
+                //modal.addAttribute('inert');
+                //document.getElementById("containerModal").addAttr('inert');
+
+            }
+
+            // 3. Generar la tabla con el evento de clic en celdas de contenedor
+
+            const closeModalBtn = document.getElementById('closeModal');
+            const modalTableBody = document.querySelector('#modalTable tbody');
+
+            closeModalBtn.addEventListener('click', closeModal);
+
         });
     </script>
 @endsection
