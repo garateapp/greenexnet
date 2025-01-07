@@ -24,8 +24,8 @@ class DatosCajaController extends Controller
     {
         abort_if(Gate::denies('datos_caja_calidad_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $especies = Especy::whereIn('id', [4, 7, 5, 6])->pluck('nombre', 'nombre')->prepend(trans('global.pleaseSelect'), '');
-
-        return view('admin.datosCajas.index', compact('especies'));
+        dd($especies);
+            return view('admin.datosCajas.index', compact('especies'));
     }
     /*************  ✨ Codeium Command ⭐  *************/
     /**
