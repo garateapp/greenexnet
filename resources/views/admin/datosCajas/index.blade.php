@@ -87,6 +87,9 @@
                             if($("#especie").val()=="Nectarines"){
                                 cantidades=0;
                             }
+                            if($("#especie").val()=="Plums"){
+                                cantidades=0;
+                            }
                             console.log($("#especie").val());
                             var qrcode = new QRCode('divQR', {
                                 text: response.CodLinea + "-" + response.Turno + "-" + response
@@ -139,6 +142,9 @@
                         } else {
                             var cantidades=100;
                             if($("#especie").val()=="Nectarines"){
+                                cantidades=0;
+                            }
+                            if($("#especie").val()=="Plums"){
                                 cantidades=0;
                             }
                             console.log($("#especie").val());

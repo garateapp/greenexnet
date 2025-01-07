@@ -121,31 +121,33 @@ class DatosCajaController extends Controller
                 ->first();
                 break;
                 case 'Plums':
-                    $datos = DB::connection("sqlsrv")->table('V_PKG_Etiquetado_Datos_Cajas as A')
-                    ->select(
-                        'A.C_Linea_Produccion as CodLinea',
-                        'B.nombre as ProductorReal',
-                        'A.LN_Variedad_R as VariedadReal',
-                        'A.N_Proceso as Proceso',
-                        'A.N_Especie_R as Especie',
-                        'A.N_Calibre as CalibreTimbrado',
-                        'A.CP1_Embalaje as Marca',
-                        'A.N_Categoria as CAT',
-                        'A.C_Embalaje as CodConfeccion',
-                        'A.Peso_Neto as PesoTimbrado',
-                        'A.Salida as Salida',
-                        'A.n_caja as CodCaja',
-                        DB::raw('CONCAT(A.Dia, \'/\', A.Mes, \'/\', A.Ano_AA) as FechaProduccion'),
-                        DB::raw("CASE 
-                                    WHEN A.C_TURNO LIKE 'TU1' THEN 'TURNO 1'
-                                    WHEN A.C_TURNO LIKE 'TU2' THEN 'TURNO 2'
-                                    ELSE CONCAT('TURNO ', SUBSTRING(A.C_TURNO,2,1)) 
-                                END as Turno"),
-                    )
-                    ->leftJoin('V_ADM_Entidades as B', 'A.CSG_Productor_R', '=', 'B.csg')
-                    ->where('A.N_Categoria', '=', 'Cat 1')
-                    ->where('n_caja', '=', $request->codCaja)
-                    ->where('N_Especie_R', '=', $request->especie)
+                    $datos = DB::connection("sqlsrv")->table('PKG_Cajas_Inkjet')
+                    ->select([
+                        'PPL.nombre as CodLinea',
+                        DB::raw('(SELECT PPEsp.nombre FROM PRO_P_Especies PPEsp WHERE PPEsp.id = PPV.id_pro_p_especies) as Especie'),
+                        'AE.nombre as ProductorReal',
+                        'PPV.nombre as VariedadReal',
+                        'PGP.numero_i as Proceso',
+                        'PPC.nombre as CalibreTimbrado',
+                        'PPE.nombre as Marca',
+                        'PPCat.nombre as CAT',
+                        'API.nombre as CodConfeccion',
+                        'Kilos as PesoTimbrado',
+                        'PPT.nombre as Turno',
+                        'Salida',
+                        'ncaja as CodCaja',
+                        'FechaHora_Creacion',
+                    ])
+                    ->join('ADM_P_Entidades as AE', 'AE.id', '=', 'id_adm_p_entidades_productor_rotulacion')
+                    ->join('PRO_P_Variedades as PPV', 'PPV.id', '=', 'id_pro_p_variedades_rotulacion')
+                    ->join('PRO_P_Etiquetas as PPE', 'PPE.id', '=', 'id_pro_p_etiquetas')
+                    ->join('PRO_P_Calibres as PPC', 'PPC.id', '=', 'id_pro_p_calibres')
+                    ->join('PRO_P_Categorias as PPCat', 'PPCat.id', '=', 'id_pro_p_categorias')
+                    ->join('ADM_P_Items as API', 'API.id', '=', 'id_adm_p_items')
+                    ->join('PKG_G_Produccion as PGP', 'PGP.id', '=', 'id_pkg_g_produccion')
+                    ->join('PKG_P_Lineas as PPL', 'PPL.id', '=', 'PGP.id_pkg_p_lineas')
+                    ->join('PRO_P_Turnos as PPT', 'PPT.id', '=', 'PGP.Id_Pro_p_Turnos_Principal')
+                    ->where('ncaja', '=', $request->codCaja)
                     ->first();
                     break;
             default:
