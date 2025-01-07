@@ -110,8 +110,9 @@ class SyncCajasJob implements ShouldQueue
             ->where('SD.destruccion_id', '>=', 0)
             ->orderBy('SC.ncaja')->chunk(50000, function ($cajasChunk) {
                 $jsonData = json_encode($cajasChunk);
-                Log::info("registross".count($cajasChunk));
-                Storage::disk('public')->append('cajas.json.gz', gzcompress($jsonData, 9));
+                // Log::info("registross".count($cajasChunk));
+                // Storage::disk('public')->append('cajas.json.gz', gzcompress($jsonData, 9));
+                Storage::disk('public')->put('cajas2.json', json_encode($cajasChunk));
             
             });
                     
