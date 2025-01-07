@@ -9,6 +9,21 @@
             <form method="POST" action="#" name="formDatosCaja" enctype="multipart/form-data">
                 @csrf
                 <div class="form-group">
+                    <label class="required" for="fecha_inicio">Seleccione Especie</label>
+                    <select class="form-control select2 {{ $errors->has('especie') ? 'is-invalid' : '' }}" name="especie" id="especie" required>
+                        @foreach($especies as $id => $entry)
+                        <option value="{{ $id }}" {{ old('especie') == $id ? 'selected' : '' }}>{{ $entry }}</option>
+                        @endforeach
+                    </select>
+                    @if($errors->has('especie'))
+                        <div class="invalid-feedback">
+                            {{ $errors->first('especie') }}
+                        </div>
+                    @endif
+                    <span class="help-block">{{ trans('cruds.datosCaja.fields.especie_helper') }}</span>
+                </div>
+
+                <div class="form-group">
                     <label class="required" for="fecha_inicio">Ingrese Número de Caja</label>
                     <input class="form-control " type="text" name="CodCaja" id="CodCaja" value="" required>
 
@@ -38,7 +53,7 @@
             if (event.keyCode === 13) {
                 event.preventDefault();
                 $("#divQR").html('');
-
+                console.log($("#especie").val());
 
                 $.ajax({
                         headers: {
@@ -48,22 +63,37 @@
                         url: 'datos-cajas/buscaDatosCaja',
                         data: {
                             codCaja: $("#CodCaja").val(),
+                            especie:$("#especie").val(),
                         }
                     })
                     .done(function(response) {
-                        console.log(response);
+                    
+                        console.log(response.CodLinea + "-" + response.Turno + "-" + response
+                                    .ProductorReal +
+                                    "-" + response.VariedadReal + "-" + response.Proceso + "-" +
+                                    response
+                                    .CalibreTimbrado + "-100-" + response.Marca + "-" + response.CAT +
+                                    "-" +
+                                    response.CodConfeccion + "-" + response.PesoTimbrado + "-" +
+                                    response
+                                    .Salida);
                         if (response.success) {
                             $("#divQR").show();
                         }
                         if (response.length == 0) {
                             $("#divQR").html('No se encontró la caja :(');
                         } else {
+                            var cantidades=100;
+                            if($("#especie").val()=="Nectarines"){
+                                cantidades=0;
+                            }
+                            console.log($("#especie").val());
                             var qrcode = new QRCode('divQR', {
                                 text: response.CodLinea + "-" + response.Turno + "-" + response
                                     .ProductorReal +
                                     "-" + response.VariedadReal + "-" + response.Proceso + "-" +
                                     response
-                                    .CalibreTimbrado + "-100-" + response.Marca + "-" + response.CAT +
+                                    .CalibreTimbrado + "-" + cantidades + "-" + response.Marca + "-" + response.CAT +
                                     "-" +
                                     response.CodConfeccion + "-" + response.PesoTimbrado + "-" +
                                     response
@@ -96,33 +126,47 @@
                     url: 'datos-cajas/buscaDatosCaja',
                     data: {
                         codCaja: $("#CodCaja").val(),
+                        especie:$("#especie").val(),
                     }
                 })
                 .done(function(response) {
-                    console.log(response);
-                    if (response.success) {
-                        $("#divQR").show();
-                    }
-                    if (response.length == 0) {
-                        $("#divQR").html('No se encontró la caja :(');
-                    } else {
-                        var qrcode = new QRCode('divQR', {
-                            text: response.CodLinea + "-" + response.Turno + "-" + response
-                                .ProductorReal +
-                                "-" + response.VariedadReal + "-" + response.Proceso + "-" +
-                                response
-                                .CalibreTimbrado + "-100-" + response.Marca + "-" + response.CAT +
-                                "-" +
-                                response.CodConfeccion + "-" + response.PesoTimbrado + "-" +
-                                response
-                                .Salida,
-                            width: 128, // Ancho del código QR
-                            height: 128, // Alto del código QR
-                            colorDark: "#000000",
-                            colorLight: "#FFFFFF",
-                            correctLevel: QRCode.CorrectLevel.L
-                        });
-                    }
+                    console.log(response.CodLinea + "-" + response.Turno + "-" + response
+                                    .ProductorReal +
+                                    "-" + response.VariedadReal + "-" + response.Proceso + "-" +
+                                    response
+                                    .CalibreTimbrado + "-100-" + response.Marca + "-" + response.CAT +
+                                    "-" +
+                                    response.CodConfeccion + "-" + response.PesoTimbrado + "-" +
+                                    response
+                                    .Salida);
+                        if (response.success) {
+                            $("#divQR").show();
+                        }
+                        if (response.length == 0) {
+                            $("#divQR").html('No se encontró la caja :(');
+                        } else {
+                            var cantidades=100;
+                            if($("#especie").val()=="Nectarines"){
+                                cantidades=0;
+                            }
+                            console.log($("#especie").val());
+                            var qrcode = new QRCode('divQR', {
+                                text: response.CodLinea + "-" + response.Turno + "-" + response
+                                    .ProductorReal +
+                                    "-" + response.VariedadReal + "-" + response.Proceso + "-" +
+                                    response
+                                    .CalibreTimbrado + "-" + cantidades + "-" + response.Marca + "-" + response.CAT +
+                                    "-" +
+                                    response.CodConfeccion + "-" + response.PesoTimbrado + "-" +
+                                    response
+                                    .Salida,
+                                width: 128, // Ancho del código QR
+                                height: 128, // Alto del código QR
+                                colorDark: "#000000",
+                                colorLight: "#FFFFFF",
+                                correctLevel: QRCode.CorrectLevel.M
+                            });
+                        }
 
                 })
                 .fail(function(response) {

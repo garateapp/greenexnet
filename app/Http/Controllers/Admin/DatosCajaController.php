@@ -15,6 +15,7 @@ use Yajra\DataTables\Facades\DataTables;
 use DB;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
+use App\Models\Especy;
 
 class DatosCajaController extends Controller
 {
@@ -22,9 +23,9 @@ class DatosCajaController extends Controller
     public function index(Request $request)
     {
         abort_if(Gate::denies('datos_caja_calidad_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        $especies = Especy::whereIn('id', [4, 7, 5])->pluck('nombre', 'nombre')->prepend(trans('global.pleaseSelect'), '');
 
-
-        return view('admin.datosCajas.index');
+        return view('admin.datosCajas.index', compact('especies'));
     }
     /*************  ✨ Codeium Command ⭐  *************/
     /**
@@ -37,29 +38,113 @@ class DatosCajaController extends Controller
     public function buscaDatosCaja(Request $request)
     {
         abort_if(Gate::denies('datos_caja_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        switch ($request->especie) {
+            case 'Cherries':
+                $datos = DB::connection("sqlsrvUnitec")->table('dbo.DatosCajas')
+                    ->select(
+                        'Proceso',
+                        'FechaProduccion',
+                        'Turno',
+                        'CodLinea',
+                        'CAT',
+                        'VariedadReal',
+                        'VariedadTimbrada',
+                        'Salida',
+                        'Marca',
+                        'ProductorReal',
+                        'Especie',
+                        'CodCaja',
+                        'CodConfeccion',
+                        'CalibreTimbrado',
+                        'PesoTimbrado',
+                        'Lote'
+                    )
+                    ->where('codCaja', '=', $request->codCaja)
+                    ->first(); //DatosCaja::whereBetween('FechaProduccion', ['2023-11-11', '2023-11-12'])->get(); //dd($request->fecha_inicio)
 
+                break;
+            case 'Nectarines':
+                $datos = DB::connection("sqlsrv")->table('V_PKG_Etiquetado_Datos_Cajas as A')
+                    ->select(
+                        'A.C_Linea_Produccion  as CodLinea',
+                        'B.nombre as ProductorReal',
+                        'A.LN_Variedad_R as VariedadReal',
+                        'A.N_Proceso as Proceso',
+                        'A.N_Especie_R as Especie',
+                        'A.N_Calibre as CalibreTimbrado',
+                        'A.CP1_Embalaje as Marca',
+                        'A.N_Categoria as CAT',
+                        'A.C_Embalaje as CodConfeccion',
+                        'A.Peso_Neto as PesoTimbrado',
+                        'A.Salida as Salida',
+                        'A.n_caja as CodCaja',
+                        DB::raw('CONCAT(A.Dia, \'/\', A.Mes, \'/\', A.Ano_AA) as FechaProduccion'),
+                        DB::raw("CASE 
+                                    WHEN A.C_TURNO LIKE 'TU1' THEN 'TURNO 1'
+                                    WHEN A.C_TURNO LIKE 'TU2' THEN 'TURNO 2'
+                                    ELSE CONCAT('TURNO ', SUBSTRING(A.C_TURNO,2,1)) 
+                                END as Turno"),
+                    )
+                    ->leftJoin('V_ADM_Entidades as B', 'A.CSG_Productor_R', '=', 'B.csg')
+                    ->where('A.N_Categoria', '=', 'Cat 1')
+                    ->where('n_caja', '=', $request->codCaja)
+                    ->where('N_Especie_R', '=', $request->especie)
+                    ->first();
+
+                break;
+            case 'Peaches':
+                $datos = DB::connection("sqlsrv")->table('V_PKG_Etiquetado_Datos_Cajas as A')
+                ->select(
+                    'A.C_Linea_Produccion as CodLinea',
+                    'B.nombre as ProductorReal',
+                    'A.LN_Variedad_R as VariedadReal',
+                    'A.N_Proceso as Proceso',
+                    'A.N_Especie_R as Especie',
+                    'A.N_Calibre as CalibreTimbrado',
+                    'A.CP1_Embalaje as Marca',
+                    'A.N_Categoria as CAT',
+                    'A.C_Embalaje as CodConfeccion',
+                    'A.Peso_Neto as PesoTimbrado',
+                    'A.Salida as Salida',
+                    'A.n_caja as CodCaja',
+                    DB::raw('CONCAT(A.Dia, \'/\', A.Mes, \'/\', A.Ano_AA) as FechaProduccion'),
+                    DB::raw("CASE 
+                                WHEN A.C_TURNO LIKE 'TU1' THEN 'TURNO 1'
+                                WHEN A.C_TURNO LIKE 'TU2' THEN 'TURNO 2'
+                                ELSE CONCAT('TURNO ', SUBSTRING(A.C_TURNO,2,1)) 
+                            END as Turno"),
+                )
+                ->leftJoin('V_ADM_Entidades as B', 'A.CSG_Productor_R', '=', 'B.csg')
+                ->where('A.N_Categoria', '=', 'Cat 1')
+                ->where('n_caja', '=', $request->codCaja)
+                ->where('N_Especie_R', '=', $request->especie)
+                ->first();
+                break;
+            default:
+                $datos = DB::connection("sqlsrvUnitec")->table('dbo.DatosCajas')
+                    ->select(
+                        'Proceso',
+                        'FechaProduccion',
+                        'Turno',
+                        'CodLinea',
+                        'CAT',
+                        'VariedadReal',
+                        'VariedadTimbrada',
+                        'Salida',
+                        'Marca',
+                        'ProductorReal',
+                        'Especie',
+                        'CodCaja',
+                        'CodConfeccion',
+                        'CalibreTimbrado',
+                        'PesoTimbrado',
+                        'Lote',
+                         
+                    )
+                    ->where('codCaja', '=', $request->codCaja)
+                    ->first();
+        }
         //dd($request);
-        $datos = DB::connection("sqlsrvUnitec")->table('dbo.DatosCajas')
-            ->select(
-                'Proceso',
-                'FechaProduccion',
-                'Turno',
-                'CodLinea',
-                'CAT',
-                'VariedadReal',
-                'VariedadTimbrada',
-                'Salida',
-                'Marca',
-                'ProductorReal',
-                'Especie',
-                'CodCaja',
-                'CodConfeccion',
-                'CalibreTimbrado',
-                'PesoTimbrado',
-                'Lote'
-            )
-            ->where('codCaja', '=', $request->codCaja)
-            ->first(); //DatosCaja::whereBetween('FechaProduccion', ['2023-11-11', '2023-11-12'])->get(); //dd($request->fecha_inicio)
 
         if (!$datos) {
             return response()->json([], 200);

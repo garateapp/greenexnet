@@ -4,6 +4,8 @@
 use App\Http\Controllers\Admin\ReporteriaController;
 //use Illuminate\Routing\Route;
 
+//use Illuminate\Routing\Route;
+
 Route::view('/', '/welcome');
 Route::get('userVerification/{token}', 'UserVerificationController@approve')->name('userVerification');
 Auth::routes();
@@ -101,6 +103,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('personals/process-csv-import', 'PersonalController@processCsvImport')->name('personals.processCsvImport');
     Route::get('personals/cuadratura', 'PersonalController@cuadratura')->name('personals.cuadratura');
     Route::post('personals/ejecutaCuadratura', 'PersonalController@ejecutaCuadratura')->name('personals.ejecutaCuadratura');
+    Route::get('personals/tratoembalaje', 'PersonalController@tratoembalaje')->name('personals.tratoembalaje');
+    Route::post('personals/ejecutaTratoembalaje', 'PersonalController@ejecutaTratoembalaje')->name('personals.ejecutaTratoembalaje');
     Route::resource('personals', 'PersonalController');
 
 
@@ -143,18 +147,18 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('reporteria/obtieneDetallesTransito', "ReporteriaController@obtieneDetallesTransito")->name("reporteria.obtieneDetallesTransito");
     Route::post('reporteria/obtieneDetallesTransitoCalibre', "ReporteriaController@obtieneDetallesTransitoCalibre")->name("reporteria.obtieneDetallesTransitoCalibre");
     Route::get('reporteria/embarques', "ReporteriaController@embarques")->name("reporteria.embarques");
-    Route::get('reporteria/obtieneEmbarques',"ReporteriaController@obtieneEmbarques")->name("reporteria.obtieneEmbarques");
-    Route::get('reporteria/ObjetivosEnvios',"ReporteriaController@ObjetivosEnvios")->name("reporteria.ObjetivosEnvios");
-    Route::get('reporteria/ObjetivosEnviosAereos',"ReporteriaController@ObjetivosEnviosAereos")->name("reporteria.ObjetivosEnviosAereos");
-    Route::get('reporteria/ObjetivosEnviosTerrestre',"ReporteriaController@ObjetivosEnviosTerrestre")->name("reporteria.ObjetivosEnviosTerrestre");
-    Route::get('reporteria/ObtieneEmbarquesyPackingList',"ReporteriaController@ObtieneEmbarquesyPackingList")->name("reporteria.ObtieneEmbarquesyPackingList");
-    Route::get('reporteria/detalleembarque',"ReporteriaController@detalleembarque")->name("reporteria.detalleembarque");
-    Route::get('reporteria/getPAckingList',"ReporteriaController@getPackingList")->name("reporteria.getPackingList");
-    Route::get('reporteria/getClientesComex',"ReporteriaController@getClientesComex")->name("reporteria.getClientesComex");
-    Route::get('reporteria/getCantRegistros',"ReporteriaController@getCantRegistros")->name("reporteria.getCantRegistros");
+    Route::get('reporteria/obtieneEmbarques', "ReporteriaController@obtieneEmbarques")->name("reporteria.obtieneEmbarques");
+    Route::get('reporteria/ObjetivosEnvios', "ReporteriaController@ObjetivosEnvios")->name("reporteria.ObjetivosEnvios");
+    Route::get('reporteria/ObjetivosEnviosAereos', "ReporteriaController@ObjetivosEnviosAereos")->name("reporteria.ObjetivosEnviosAereos");
+    Route::get('reporteria/ObjetivosEnviosTerrestre', "ReporteriaController@ObjetivosEnviosTerrestre")->name("reporteria.ObjetivosEnviosTerrestre");
+    Route::get('reporteria/ObtieneEmbarquesyPackingList', "ReporteriaController@ObtieneEmbarquesyPackingList")->name("reporteria.ObtieneEmbarquesyPackingList");
+    Route::get('reporteria/detalleembarque', "ReporteriaController@detalleembarque")->name("reporteria.detalleembarque");
+    Route::get('reporteria/getPAckingList', "ReporteriaController@getPackingList")->name("reporteria.getPackingList");
+    Route::get('reporteria/getClientesComex', "ReporteriaController@getClientesComex")->name("reporteria.getClientesComex");
+    Route::get('reporteria/getCantRegistros', "ReporteriaController@getCantRegistros")->name("reporteria.getCantRegistros");
     Route::get('reporteria/getMinMaxCajas', 'ReporteriaController@getMinMaxCajas')->name('reporteria.getMinMaxCajas');
     Route::get('reporteria/detallecajas', 'ReporteriaController@detallecajas')->name('reporteria.detallecajas');
-    Route::post('reporteria/SyncDatosCajas', 'ReporteriaController@SyncDatosCajas')->name('reporteria.SyncDatosCajas');
+    Route::get('reporteria/SyncDatosCajas', 'ReporteriaController@SyncDatosCajas')->name('reporteria.SyncDatosCajas');
     Route::get('reporteria/SyncDatosCajas2', 'ReporteriaController@SyncDatosCajas2')->name('reporteria.SyncDatosCajas2');
     // Embalajes
     Route::delete('embalajes/destroy', 'EmbalajesController@massDestroy')->name('embalajes.massDestroy');
@@ -169,11 +173,16 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('clientes-comexes/process-csv-import', 'ClientesComexController@processCsvImport')->name('clientes-comexes.processCsvImport');
     Route::resource('clientes-comexes', 'ClientesComexController');
 
-     // Metas Cliente Comex
-     Route::delete('metas-cliente-comexes/destroy', 'MetasClienteComexController@massDestroy')->name('metas-cliente-comexes.massDestroy');
-     Route::post('metas-cliente-comexes/parse-csv-import', 'MetasClienteComexController@parseCsvImport')->name('metas-cliente-comexes.parseCsvImport');
-     Route::post('metas-cliente-comexes/process-csv-import', 'MetasClienteComexController@processCsvImport')->name('metas-cliente-comexes.processCsvImport');
-     Route::resource('metas-cliente-comexes', 'MetasClienteComexController');
+
+    Route::get('comex/capturador', 'ComexController@capturador')->name('comex.capturador');
+    Route::post('comex/capturadorexcel', 'ComexController@capturadorexcel')->name('comex.capturadorexcel');
+    Route::post('comex/guardaliquidacion', 'ComexController@guardaliquidacion')->name('comex.guardaliquidacion');
+    Route::post('comex/generacomparativa', 'ComexController@generacomparativa')->name('comex.generacomparativa');
+    // Metas Cliente Comex
+    Route::delete('metas-cliente-comexes/destroy', 'MetasClienteComexController@massDestroy')->name('metas-cliente-comexes.massDestroy');
+    Route::post('metas-cliente-comexes/parse-csv-import', 'MetasClienteComexController@parseCsvImport')->name('metas-cliente-comexes.parseCsvImport');
+    Route::post('metas-cliente-comexes/process-csv-import', 'MetasClienteComexController@processCsvImport')->name('metas-cliente-comexes.processCsvImport');
+    Route::resource('metas-cliente-comexes', 'MetasClienteComexController');
 
     //getDatosgenerales
 
@@ -193,12 +202,156 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('embarques/GuardarEmbarques', 'EmbarquesController@GuardarEmbarques')->name('embarques.GuardarEmbarques');
     Route::post('embarques/ActualizaSistemaFX', 'EmbarquesController@ActualizaSistemaFX')->name('embarques.ActualizaSistemaFX');
     Route::get('embarques/enviarMail', 'EmbarquesController@enviarMail')->name('embarques.enviarMail');
-    Route::post('embarques/ingresaPackingList','EmbarquesController@ingresaPackingList')->name('embarques.ingresaPackingList');
+    Route::post('embarques/ingresaPackingList', 'EmbarquesController@ingresaPackingList')->name('embarques.ingresaPackingList');
     Route::get('embarques/ingresagrecepcion', 'EmbarquesController@ingresagrecepcion')->name('embarques.ingresagrecepcion');
-
-
-
     Route::resource('embarques', 'EmbarquesController');
+
+    // Countries
+    Route::delete('countries/destroy', 'CountriesController@massDestroy')->name('countries.massDestroy');
+    Route::post('countries/parse-csv-import', 'CountriesController@parseCsvImport')->name('countries.parseCsvImport');
+    Route::post('countries/process-csv-import', 'CountriesController@processCsvImport')->name('countries.processCsvImport');
+    Route::resource('countries', 'CountriesController');
+
+    // Puerto
+    Route::delete('puertos/destroy', 'PuertoController@massDestroy')->name('puertos.massDestroy');
+    Route::post('puertos/parse-csv-import', 'PuertoController@parseCsvImport')->name('puertos.parseCsvImport');
+    Route::post('puertos/process-csv-import', 'PuertoController@processCsvImport')->name('puertos.processCsvImport');
+    Route::resource('puertos', 'PuertoController');
+
+    // Familia
+    Route::delete('familia/destroy', 'FamiliaController@massDestroy')->name('familia.massDestroy');
+    Route::post('familia/parse-csv-import', 'FamiliaController@parseCsvImport')->name('familia.parseCsvImport');
+    Route::post('familia/process-csv-import', 'FamiliaController@processCsvImport')->name('familia.processCsvImport');
+    Route::resource('familia', 'FamiliaController');
+
+    // Especie
+    Route::delete('especies/destroy', 'EspecieController@massDestroy')->name('especies.massDestroy');
+    Route::post('especies/parse-csv-import', 'EspecieController@parseCsvImport')->name('especies.parseCsvImport');
+    Route::post('especies/process-csv-import', 'EspecieController@processCsvImport')->name('especies.processCsvImport');
+    Route::resource('especies', 'EspecieController');
+
+    // Variedad
+    Route::delete('variedads/destroy', 'VariedadController@massDestroy')->name('variedads.massDestroy');
+    Route::post('variedads/parse-csv-import', 'VariedadController@parseCsvImport')->name('variedads.parseCsvImport');
+    Route::post('variedads/process-csv-import', 'VariedadController@processCsvImport')->name('variedads.processCsvImport');
+    Route::resource('variedads', 'VariedadController');
+
+    // Categoria
+    Route::delete('categoria/destroy', 'CategoriaController@massDestroy')->name('categoria.massDestroy');
+    Route::post('categoria/parse-csv-import', 'CategoriaController@parseCsvImport')->name('categoria.parseCsvImport');
+    Route::post('categoria/process-csv-import', 'CategoriaController@processCsvImport')->name('categoria.processCsvImport');
+    Route::resource('categoria', 'CategoriaController');
+
+    // Etiqueta
+    Route::delete('etiqueta/destroy', 'EtiquetaController@massDestroy')->name('etiqueta.massDestroy');
+    Route::post('etiqueta/parse-csv-import', 'EtiquetaController@parseCsvImport')->name('etiqueta.parseCsvImport');
+    Route::post('etiqueta/process-csv-import', 'EtiquetaController@processCsvImport')->name('etiqueta.processCsvImport');
+    Route::resource('etiqueta', 'EtiquetaController');
+
+    // Etiquetas X Especie
+    Route::delete('etiquetas-x-especies/destroy', 'EtiquetasXEspecieController@massDestroy')->name('etiquetas-x-especies.massDestroy');
+    Route::post('etiquetas-x-especies/parse-csv-import', 'EtiquetasXEspecieController@parseCsvImport')->name('etiquetas-x-especies.parseCsvImport');
+    Route::post('etiquetas-x-especies/process-csv-import', 'EtiquetasXEspecieController@processCsvImport')->name('etiquetas-x-especies.processCsvImport');
+    Route::resource('etiquetas-x-especies', 'EtiquetasXEspecieController');
+
+    // Naves
+    Route::delete('naves/destroy', 'NavesController@massDestroy')->name('naves.massDestroy');
+    Route::post('naves/parse-csv-import', 'NavesController@parseCsvImport')->name('naves.parseCsvImport');
+    Route::post('naves/process-csv-import', 'NavesController@processCsvImport')->name('naves.processCsvImport');
+    Route::resource('naves', 'NavesController');
+
+    // Item Embalaje
+    Route::delete('item-embalajes/destroy', 'ItemEmbalajeController@massDestroy')->name('item-embalajes.massDestroy');
+    Route::post('item-embalajes/parse-csv-import', 'ItemEmbalajeController@parseCsvImport')->name('item-embalajes.parseCsvImport');
+    Route::post('item-embalajes/process-csv-import', 'ItemEmbalajeController@processCsvImport')->name('item-embalajes.processCsvImport');
+    Route::resource('item-embalajes', 'ItemEmbalajeController');
+
+    // Costo
+    Route::delete('costos/destroy', 'CostoController@massDestroy')->name('costos.massDestroy');
+    Route::post('costos/parse-csv-import', 'CostoController@parseCsvImport')->name('costos.parseCsvImport');
+    Route::post('costos/process-csv-import', 'CostoController@processCsvImport')->name('costos.processCsvImport');
+    Route::resource('costos', 'CostoController');
+
+    // Configuracion
+    Route::delete('configuracions/destroy', 'ConfiguracionController@massDestroy')->name('configuracions.massDestroy');
+    Route::post('configuracions/parse-csv-import', 'ConfiguracionController@parseCsvImport')->name('configuracions.parseCsvImport');
+    Route::post('configuracions/process-csv-import', 'ConfiguracionController@processCsvImport')->name('configuracions.processCsvImport');
+    Route::resource('configuracions', 'ConfiguracionController');
+
+    // Diccionario
+    Route::delete('diccionarios/destroy', 'DiccionarioController@massDestroy')->name('diccionarios.massDestroy');
+    Route::post('diccionarios/parse-csv-import', 'DiccionarioController@parseCsvImport')->name('diccionarios.parseCsvImport');
+    Route::post('diccionarios/process-csv-import', 'DiccionarioController@processCsvImport')->name('diccionarios.processCsvImport');
+    Route::resource('diccionarios', 'DiccionarioController');
+
+
+
+   
+
+
+
+    // Conversor Xls
+    Route::delete('conversor-xls/destroy', 'ConversorXlsController@massDestroy')->name('conversor-xls.massDestroy');
+    Route::post('conversor-xls/parse-csv-import', 'ConversorXlsController@parseCsvImport')->name('conversor-xls.parseCsvImport');
+    Route::post('conversor-xls/process-csv-import', 'ConversorXlsController@processCsvImport')->name('conversor-xls.processCsvImport');
+    Route::resource('conversor-xls', 'ConversorXlsController');
+
+    // Tipos Seccion Conversor
+    Route::delete('tipos-seccion-conversors/destroy', 'TiposSeccionConversorController@massDestroy')->name('tipos-seccion-conversors.massDestroy');
+    Route::post('tipos-seccion-conversors/parse-csv-import', 'TiposSeccionConversorController@parseCsvImport')->name('tipos-seccion-conversors.parseCsvImport');
+    Route::post('tipos-seccion-conversors/process-csv-import', 'TiposSeccionConversorController@processCsvImport')->name('tipos-seccion-conversors.processCsvImport');
+    Route::resource('tipos-seccion-conversors', 'TiposSeccionConversorController');
+
+    // Funciones
+    Route::delete('funciones/destroy', 'FuncionesController@massDestroy')->name('funciones.massDestroy');
+    Route::post('funciones/parse-csv-import', 'FuncionesController@parseCsvImport')->name('funciones.parseCsvImport');
+    Route::post('funciones/process-csv-import', 'FuncionesController@processCsvImport')->name('funciones.processCsvImport');
+    Route::resource('funciones', 'FuncionesController');
+
+    // Modulo
+    Route::delete('modulos/destroy', 'ModuloController@massDestroy')->name('modulos.massDestroy');
+    Route::post('modulos/parse-csv-import', 'ModuloController@parseCsvImport')->name('modulos.parseCsvImport');
+    Route::post('modulos/process-csv-import', 'ModuloController@processCsvImport')->name('modulos.processCsvImport');
+    Route::resource('modulos', 'ModuloController');
+
+     // Capturador
+     Route::delete('capturadors/destroy', 'CapturadorController@massDestroy')->name('capturadors.massDestroy');
+     Route::post('capturadors/parse-csv-import', 'CapturadorController@parseCsvImport')->name('capturadors.parseCsvImport');
+     Route::post('capturadors/process-csv-import', 'CapturadorController@processCsvImport')->name('capturadors.processCsvImport');
+     Route::resource('capturadors', 'CapturadorController');
+ 
+     // Capturador Estructura
+     Route::delete('capturador-estructuras/destroy', 'CapturadorEstructuraController@massDestroy')->name('capturador-estructuras.massDestroy');
+     Route::post('capturador-estructuras/parse-csv-import', 'CapturadorEstructuraController@parseCsvImport')->name('capturador-estructuras.parseCsvImport');
+     Route::post('capturador-estructuras/process-csv-import', 'CapturadorEstructuraController@processCsvImport')->name('capturador-estructuras.processCsvImport');
+     Route::resource('capturador-estructuras', 'CapturadorEstructuraController');
+
+
+    //Liquidaciones de Cliente
+
+    //Controlador Central de Liquidaciones de Cliente
+    
+
+    // Liq Cx Cabecera
+    Route::delete('liq-cx-cabeceras/destroy', 'LiqCxCabeceraController@massDestroy')->name('liq-cx-cabeceras.massDestroy');
+    Route::post('liq-cx-cabeceras/parse-csv-import', 'LiqCxCabeceraController@parseCsvImport')->name('liq-cx-cabeceras.parseCsvImport');
+    Route::post('liq-cx-cabeceras/process-csv-import', 'LiqCxCabeceraController@processCsvImport')->name('liq-cx-cabeceras.processCsvImport');
+    Route::resource('liq-cx-cabeceras', 'LiqCxCabeceraController');
+
+    // Liquidaciones Cx
+    Route::delete('liquidaciones-cxes/destroy', 'LiquidacionesCxController@massDestroy')->name('liquidaciones-cxes.massDestroy');
+    Route::post('liquidaciones-cxes/parse-csv-import', 'LiquidacionesCxController@parseCsvImport')->name('liquidaciones-cxes.parseCsvImport');
+    Route::post('liquidaciones-cxes/process-csv-import', 'LiquidacionesCxController@processCsvImport')->name('liquidaciones-cxes.processCsvImport');
+    Route::resource('liquidaciones-cxes', 'LiquidacionesCxController');
+
+    // Liq Costos
+    Route::delete('liq-costos/destroy', 'LiqCostosController@massDestroy')->name('liq-costos.massDestroy');
+    Route::post('liq-costos/parse-csv-import', 'LiqCostosController@parseCsvImport')->name('liq-costos.parseCsvImport');
+    Route::post('liq-costos/process-csv-import', 'LiqCostosController@processCsvImport')->name('liq-costos.processCsvImport');
+    Route::resource('liq-costos', 'LiqCostosController');
+
+    //Fin Liquidaciones de Cliente
+
 
 
     Route::get('messenger', 'MessengerController@index')->name('messenger.index');

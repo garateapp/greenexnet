@@ -128,7 +128,7 @@
                     <i class="fa-fw fas fa-users c-sidebar-nav-icon">
 
                     </i>
-                    {{ trans('cruds.greenexNet.title') }}
+                    RRHH
                 </a>
                 <ul class="c-sidebar-nav-dropdown-items">
                     @can('entidad_access')
@@ -228,6 +228,15 @@
                                 Cuadratura de Asistencia
                             </a>
                         </li>
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.personals.tratoembalaje') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/personals') || request()->is('admin/personals/*') ? 'c-active' : '' }}">
+                                <i class="fa-fw fas fa-clock c-sidebar-nav-icon">
+
+                                </i>
+                                Trato Embalaje
+                            </a>
+                        </li>
                     @endcan
                 </ul>
             </li>
@@ -265,55 +274,55 @@
                 </a>
                 <ul class="c-sidebar-nav-dropdown-items">
                     @can('reporteria_access_stock_inventario')
-                    <li class="c-sidebar-nav-item">
-                        <a href="{{ route('admin.reporteria.obtenerDatosReporte') }}"
-                            class="c-sidebar-nav-link {{ request()->is('admin/reporteria') || request()->is('admin/reporteria/*') ? 'c-active' : '' }}">
-                            <i class="fa-fw fas fa-chart-pie c-sidebar-nav-icon">
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.reporteria.obtenerDatosReporte') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/reporteria') || request()->is('admin/reporteria/*') ? 'c-active' : '' }}">
+                                <i class="fa-fw fas fa-chart-pie c-sidebar-nav-icon">
 
-                            </i>
-                            Stock Inventario
-                        </a>
-                    </li>
+                                </i>
+                                Stock Inventario
+                            </a>
+                        </li>
                     @endcan
                     @can('reporteria_access_transito')
-                    <li class="c-sidebar-nav-item">
-                        <a href="{{ route('admin.reporteria.Transito') }}"
-                            class="c-sidebar-nav-link {{ request()->is('admin/reporteria') || request()->is('admin/reporteria/*') ? 'c-active' : '' }}">
-                            <i class="fa-fw fas fa-shipping-fast c-sidebar-nav-icon">
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.reporteria.Transito') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/reporteria') || request()->is('admin/reporteria/*') ? 'c-active' : '' }}">
+                                <i class="fa-fw fas fa-shipping-fast c-sidebar-nav-icon">
 
-                            </i>
-                           Tránsito
-                        </a>
-                    </li>
+                                </i>
+                                Tránsito
+                            </a>
+                        </li>
                     @endcan
                     @can('reporteria_access_embarques')
-                    <li class="c-sidebar-nav-item">
-                        <a href="{{ route('admin.reporteria.embarques') }}"
-                            class="c-sidebar-nav-link {{ request()->is('admin/reporteria') || request()->is('admin/reporteria/*') ? 'c-active' : '' }}">
-                            <i class="fa-fw fas fa-ship c-sidebar-nav-icon">
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.reporteria.embarques') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/reporteria') || request()->is('admin/reporteria/*') ? 'c-active' : '' }}">
+                                <i class="fa-fw fas fa-ship c-sidebar-nav-icon">
 
-                            </i>
-                            Embarques
-                        </a>
-                    </li>
-                    <li class="c-sidebar-nav-item">
-                        <a href="{{ route('admin.reporteria.detalleembarque') }}"
-                            class="c-sidebar-nav-link {{ request()->is('admin/reporteria') || request()->is('admin/reporteria/*') ? 'c-active' : '' }}">
-                            <i class="fa-fw fas fa-ship c-sidebar-nav-icon">
+                                </i>
+                                Embarques
+                            </a>
+                        </li>
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.reporteria.detalleembarque') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/reporteria') || request()->is('admin/reporteria/*') ? 'c-active' : '' }}">
+                                <i class="fa-fw fas fa-ship c-sidebar-nav-icon">
 
-                            </i>
-                           Detalle Embarques
-                        </a>
-                    </li>
-                    <li class="c-sidebar-nav-item">
-                        <a href="{{ route('admin.reporteria.detallecajas') }}"
-                            class="c-sidebar-nav-link {{ request()->is('admin/reporteria') || request()->is('admin/reporteria/*') ? 'c-active' : '' }}">
-                            <i class="fa-fw fas fa-box-open c-sidebar-nav-icon">
+                                </i>
+                                Detalle Embarques
+                            </a>
+                        </li>
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.reporteria.detallecajas') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/reporteria') || request()->is('admin/reporteria/*') ? 'c-active' : '' }}">
+                                <i class="fa-fw fas fa-box-open c-sidebar-nav-icon">
 
-                            </i>
-                           Detalle Cajas
-                        </a>
-                    </li>
+                                </i>
+                                Detalle Cajas
+                            </a>
+                        </li>
                     @endcan
                 </ul>
             </li>
@@ -324,84 +333,329 @@
                 COMEX
             </a>
             <ul class="c-sidebar-nav-dropdown-items">
-            @can('embarque_access')
+                @can('embarque_access')
+                    <li class="c-sidebar-nav-item">
+                        <a href="{{ route('admin.embarques.index') }}"
+                            class="c-sidebar-nav-link {{ request()->is('admin/embarques') || request()->is('admin/embarques/*') ? 'c-active' : '' }}">
+                            <i class="fa-fw fas fa-cogs c-sidebar-nav-icon">
+
+                            </i>
+                            {{ trans('cruds.embarque.title') }}
+                        </a>
+                    </li>
+                    <li class="c-sidebar-nav-item">
+                        <a href="{{ route('admin.embarques.ingresagrecepcion') }}"
+                            class="c-sidebar-nav-link {{ request()->is('admin/detalle-embarques') || request()->is('admin/detalle-embarques/*') ? 'c-active' : '' }}">
+                            <i class="fa-fw fas fa-cogs c-sidebar-nav-icon">
+
+                            </i>
+                            Ingresa Guía de Recepción
+                        </a>
+                    </li>
+                    <li class="c-sidebar-nav-item">
+                        <a href="{{ route('admin.comex.capturador') }}"
+                            class="c-sidebar-nav-link {{ request()->is('admin/comex') || request()->is('admin/comex/*') ? 'c-active' : '' }}">
+                            <i class="fa-fw fas fa-file-code c-sidebar-nav-icon">
+                            </i>
+                            Capturador de Liquidaciones
+                        </a>
+                    </li>
+                    @can('liq_cx_cabecera_access')
                         <li class="c-sidebar-nav-item">
-                            <a href="{{ route("admin.embarques.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/embarques") || request()->is("admin/embarques/*") ? "c-active" : "" }}">
-                                <i class="fa-fw fas fa-cogs c-sidebar-nav-icon">
+                            <a href="{{ route('admin.liq-cx-cabeceras.index') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/liq-cx-cabeceras') || request()->is('admin/liq-cx-cabeceras/*') ? 'c-active' : '' }}">
+                                <i class="fa-fw fas fa-address-card c-sidebar-nav-icon">
 
                                 </i>
-                                {{ trans('cruds.embarque.title') }}
+                                {{ trans('cruds.liqCxCabecera.title') }}
                             </a>
                         </li>
+                    @endcan
+                    @can('liquidaciones_cx_access')
                         <li class="c-sidebar-nav-item">
-                            <a href="{{ route("admin.embarques.ingresagrecepcion") }}" class="c-sidebar-nav-link {{ request()->is("admin/detalle-embarques") || request()->is("admin/detalle-embarques/*") ? "c-active" : "" }}">
+                            <a href="{{ route('admin.liquidaciones-cxes.index') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/liquidaciones-cxes') || request()->is('admin/liquidaciones-cxes/*') ? 'c-active' : '' }}">
+                                <i class="fa-fw fas fa-balance-scale c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.liquidacionesCx.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('liq_costo_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.liq-costos.index') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/liq-costos') || request()->is('admin/liq-costos/*') ? 'c-active' : '' }}">
                                 <i class="fa-fw fas fa-cogs c-sidebar-nav-icon">
 
                                 </i>
-                                Ingresa Guía de Recepción
+                                {{ trans('cruds.liqCosto.title') }}
                             </a>
+                        </li>
                     @endcan
-                </ul>
-            </li>
-            <li class="c-sidebar-nav-dropdown {{ request()->is('admin/embalajes*') ? 'c-show' : '' }}">
-                <a class="c-sidebar-nav-dropdown-toggle" href="#">
-                    <i class="fa-fw fas fa-cogs c-sidebar-nav-icon"></i>
-                    Operaciones
-                </a>
-                <ul class="c-sidebar-nav-dropdown-items">
-                    @can('operaciones_fusionar_folios_access')
+                @endcan
+
+            </ul>
+        </li>
+        <li class="c-sidebar-nav-dropdown {{ request()->is('admin/embalajes*') ? 'c-show' : '' }}">
+            <a class="c-sidebar-nav-dropdown-toggle" href="#">
+                <i class="fa-fw fas fa-cogs c-sidebar-nav-icon"></i>
+                Operaciones
+            </a>
+            <ul class="c-sidebar-nav-dropdown-items">
+                @can('operaciones_fusionar_folios_access')
                     <li class="c-sidebar-nav-item">
                         <a href="{{ route('admin.operaciones.fusionarFolios') }}"
                             class="c-sidebar-nav-link {{ request()->is('admin/operaciones') || request()->is('admin/operaciones/*') ? 'c-active' : '' }}">
                             <i class="fa-fw fas fa-documents c-sidebar-nav-icon">
 
                             </i>
-                            Fusionar Folios
+                            Fusionar
                         </a>
                     </li>
+                @endcan
+            </ul>
+        </li>
+        @can('maestros_access')
+            <li class="c-sidebar-nav-dropdown {{ request()->is('admin/embalajes*') ? 'c-show' : '' }}">
+                <a class="c-sidebar-nav-dropdown-toggle" href="#">
+                    <i class="fa-fw fas fa-table c-sidebar-nav-icon">
+
+                    </i>
+                    Maestros
+                </a>
+                <ul class="c-sidebar-nav-dropdown-items">
+                    @can('clientes_comex_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.clientes-comexes.index') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/clientes-comexes') || request()->is('admin/clientes-comexes/*') ? 'c-active' : '' }}">
+                                <i class="fa-fw fas fa-wallet c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.clientesComex.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('metas_cliente_comex_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.metas-cliente-comexes.index') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/metas-cliente-comexes') || request()->is('admin/metas-cliente-comexes/*') ? 'c-active' : '' }}">
+                                <i class="fa-fw fas fa-cogs c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.metasClienteComex.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    <li class="c-sidebar-nav-item">
+                        <a href="{{ route('admin.embalajes.index') }}"
+                            class="c-sidebar-nav-link {{ request()->is('admin/embalajes') || request()->is('admin/embalajes/*') ? 'c-active' : '' }}">
+                            <i class="fa-fw fas fa-box c-sidebar-nav-icon">
+
+                            </i>
+                            Embalajes
+                        </a>
+                    </li>
+                    @can('country_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.countries.index') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/countries') || request()->is('admin/countries/*') ? 'c-active' : '' }}">
+                                <i class="fa-fw fas fa-flag c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.country.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('puerto_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.puertos.index') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/puertos') || request()->is('admin/puertos/*') ? 'c-active' : '' }}">
+                                <i class="fa-fw fas fa-swimming-pool c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.puerto.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('familium_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.familia.index') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/familia') || request()->is('admin/familia/*') ? 'c-active' : '' }}">
+                                <i class="fa-fw fab fa-apple c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.familium.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('especy_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.especies.index') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/especies') || request()->is('admin/especies/*') ? 'c-active' : '' }}">
+                                <i class="fa-fw fab fa-blackberry c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.especy.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('variedad_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.variedads.index') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/variedads') || request()->is('admin/variedads/*') ? 'c-active' : '' }}">
+                                <i class="fa-fw fab fa-affiliatetheme c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.variedad.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('categorium_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.categoria.index') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/categoria') || request()->is('admin/categoria/*') ? 'c-active' : '' }}">
+                                <i class="fa-fw fab fa-accusoft c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.categorium.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('etiquetum_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.etiqueta.index') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/etiqueta') || request()->is('admin/etiqueta/*') ? 'c-active' : '' }}">
+                                <i class="fa-fw fab fa-adversal c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.etiquetum.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('etiquetas_x_especy_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.etiquetas-x-especies.index') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/etiquetas-x-especies') || request()->is('admin/etiquetas-x-especies/*') ? 'c-active' : '' }}">
+                                <i class="fa-fw fas fa-cogs c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.etiquetasXEspecy.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('nafe_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.naves.index') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/naves') || request()->is('admin/naves/*') ? 'c-active' : '' }}">
+                                <i class="fa-fw fas fa-ship c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.nafe.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('item_embalaje_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.item-embalajes.index') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/item-embalajes') || request()->is('admin/item-embalajes/*') ? 'c-active' : '' }}">
+                                <i class="fa-fw fas fa-box-open c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.itemEmbalaje.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('costo_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.costos.index') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/costos') || request()->is('admin/costos/*') ? 'c-active' : '' }}">
+                                <i class="fa-fw fas fa-hand-holding-usd c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.costo.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('configuracion_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.configuracions.index') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/configuracions') || request()->is('admin/configuracions/*') ? 'c-active' : '' }}">
+                                <i class="fa-fw fas fa-users-cog c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.configuracion.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('diccionario_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.diccionarios.index') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/diccionarios') || request()->is('admin/diccionarios/*') ? 'c-active' : '' }}">
+                                <i class="fa-fw fas fa-book c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.diccionario.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('capturador_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.capturadors.index') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/capturadors') || request()->is('admin/capturadors/*') ? 'c-active' : '' }}">
+                                <i class="fa-fw fas fa-cogs c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.capturador.title') }}
+                            </a>
+                        </li>
+                        @can('capturador_estructura_access')
+                            <li class="c-sidebar-nav-item">
+                                <a href="{{ route('admin.capturador-estructuras.index') }}"
+                                    class="c-sidebar-nav-link {{ request()->is('admin/capturador-estructuras') || request()->is('admin/capturador-estructuras/*') ? 'c-active' : '' }}">
+                                    <i class="fa-fw fas fa-align-left c-sidebar-nav-icon">
+
+                                    </i>
+                                    {{ trans('cruds.capturadorEstructura.title') }}
+                                </a>
+                            </li>
+                        @endcan
+                    @endcan
+                    @can('tipos_seccion_conversor_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.tipos-seccion-conversors.index') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/tipos-seccion-conversors') || request()->is('admin/tipos-seccion-conversors/*') ? 'c-active' : '' }}">
+                                <i class="fa-fw fas fa-cogs c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.tiposSeccionConversor.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('funcione_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.funciones.index') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/funciones') || request()->is('admin/funciones/*') ? 'c-active' : '' }}">
+                                <i class="fa-fw fas fa-thermometer-full c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.funcione.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('modulo_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.modulos.index') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/modulos') || request()->is('admin/modulos/*') ? 'c-active' : '' }}">
+                                <i class="fa-fw fab fa-affiliatetheme c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.modulo.title') }}
+                            </a>
+                        </li>
                     @endcan
                 </ul>
             </li>
-        @can("maestros_access")
-        <li class="c-sidebar-nav-dropdown {{ request()->is('admin/embalajes*') ? 'c-show' : '' }}">
-            <a class="c-sidebar-nav-dropdown-toggle" href="#">
-                <i class="fa-fw fas fa-table c-sidebar-nav-icon">
-
-                </i>
-                Maestros
-            </a>
-            <ul class="c-sidebar-nav-dropdown-items">
-                @can('clientes_comex_access')
-                <li class="c-sidebar-nav-item">
-                    <a href="{{ route("admin.clientes-comexes.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/clientes-comexes") || request()->is("admin/clientes-comexes/*") ? "c-active" : "" }}">
-                        <i class="fa-fw fas fa-wallet c-sidebar-nav-icon">
-
-                        </i>
-                        {{ trans('cruds.clientesComex.title') }}
-                    </a>
-                </li>
-                @endcan
-                @can('metas_cliente_comex_access')
-                <li class="c-sidebar-nav-item">
-                    <a href="{{ route("admin.metas-cliente-comexes.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/metas-cliente-comexes") || request()->is("admin/metas-cliente-comexes/*") ? "c-active" : "" }}">
-                        <i class="fa-fw fas fa-cogs c-sidebar-nav-icon">
-
-                        </i>
-                        {{ trans('cruds.metasClienteComex.title') }}
-                    </a>
-                </li>
-            @endcan
-                <li class="c-sidebar-nav-item">
-                    <a href="{{ route('admin.embalajes.index') }}"
-                        class="c-sidebar-nav-link {{ request()->is('admin/embalajes') || request()->is('admin/embalajes/*') ? 'c-active' : '' }}">
-                        <i class="fa-fw fas fa-box c-sidebar-nav-icon">
-
-                        </i>
-                        Embalajes
-                    </a>
-                </li>
-            </ul>
-        </li>
         @endcan
         <li class="c-sidebar-nav-item">
             <a href="#" class="c-sidebar-nav-link"

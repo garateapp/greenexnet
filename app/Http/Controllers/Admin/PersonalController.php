@@ -32,6 +32,7 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 use App\Exports\AsistenciaExport;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use DB;
 
 
 class PersonalController extends Controller
@@ -224,7 +225,76 @@ class PersonalController extends Controller
 
         return response(null, Response::HTTP_NO_CONTENT);
     }
-
+    //Trato embalaje
+    public function tratoEmbalaje()
+    {
+        return view('admin.personals.tratoembalaje');
+    }
+    public function ejecutatratoembalaje(Request $request){
+        $datos = DB::connection("sqlsrv")
+        ->table('V_PKG_Embaladoras_MiniPC as A')
+            ->select(
+                'A.Creacion',
+                'A.C_Trabajador',
+                'A.nombre',
+                'A.Rut_Trabajador',
+                'A.N_embalaje_Actual',
+                'A.C_embalaje_Actual as codigo',
+                'A.N_Turno',
+                'A.n_linea',
+                'B.peso_std',
+                DB::raw('COUNT(A.caja) as Cantidad_Cajas'),
+                'B.CP4 as Valor'
+            )
+            ->leftJoin('V_Maestro_Items as B', 'A.C_embalaje_Actual', '=', 'B.codigo')
+            ->whereNotNull('A.C_Trabajador')
+            ->groupBy(
+                'A.Creacion',
+                'A.C_Trabajador',
+                'A.nombre',
+                'A.Rut_Trabajador',
+                'A.N_embalaje_Actual',
+                'A.C_embalaje_Actual',
+                'A.N_Turno',
+                'A.n_linea',
+                'B.peso_std',
+                'B.CP4'
+            )
+            ->orderByDesc('A.Rut_Trabajador','A.Creacion')
+            ->get();
+            
+            // --b.CP4*b.peso_std as Valor_Kilo,
+            // --b.CP4*b.peso_std *count (a.caja) as Valor_Ganado_diario,
+            // --b.CP4*b.peso_std *count (a.caja)-12500 as Total_a_Pagar 
+            $resultado = $datos->groupBy('Rut_Trabajador')->map(function ($items, $rut) {
+                // Calcular el total a pagar por trabajador
+                $totalAPagar = $items->reduce(function ($carry, $item) {
+                    $valorPorCaja = ((float)$item->Valor) * ((float)$item->peso_std) * ((float)$item->Cantidad_Cajas);
+                    return $carry + ($valorPorCaja - 12500);
+                }, 0);
+        
+                // Formatear la estructura
+                return [
+                    'Rut_Trabajador' => $rut,
+                    'nombre' => $items[0]->nombre,
+                    'Total_a_pagar' => $totalAPagar,
+                    'detalles' => $items->map(function ($item) {
+                        return [
+                            'Creacion' =>Carbon::parse($item->Creacion)->format('d-m-Y'),
+                            'C_Trabajador' => $item->C_Trabajador,
+                            'N_embalaje_Actual' => $item->N_embalaje_Actual,
+                            'Cantidad_Cajas' => $item->Cantidad_Cajas,
+                            'Valor_kilo' => ((float)$item->Valor) * ((float)$item->peso_std),
+                            'Valor_Ganado_diario' => (((float)$item->Valor) * ((float)$item->peso_std) * ((float)$item->Cantidad_Cajas))-12500,
+                        ];
+                    }),
+                ];
+            })->values(); // Usamos values() para eliminar las claves asociativas y devolver un array numerado.
+        
+            // Retornar en formato JSON
+            return response()->json($resultado);
+    }
+    //Trato de embalaje
 
     //Cuadratura de Asistencia
     public function cuadratura()
@@ -629,4 +699,5 @@ class UnificadosSheet implements FromCollection, WithHeadings
 
         ];
     }
+
 }
