@@ -130,15 +130,7 @@
                     }
                 })
                 .done(function(response) {
-                    console.log(response.CodLinea + "-" + response.Turno + "-" + response
-                                    .ProductorReal +
-                                    "-" + response.VariedadReal + "-" + response.Proceso + "-" +
-                                    response
-                                    .CalibreTimbrado + "-100-" + response.Marca + "-" + response.CAT +
-                                    "-" +
-                                    response.CodConfeccion + "-" + response.PesoTimbrado + "-" +
-                                    response
-                                    .Salida);
+                   
                         if (response.success) {
                             $("#divQR").show();
                         }

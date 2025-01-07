@@ -1,134 +1,134 @@
 @extends('layouts.admin')
 @section('content')
-<style>
-    .nav-tabs .nav-link.active {
-        color: #495057;
-        background-color: #a9dd94;
-        border-color: #dee2e6 #dee2e6 #f8fafc;
-    }
+    <style>
+        .nav-tabs .nav-link.active {
+            color: #495057;
+            background-color: #a9dd94;
+            border-color: #dee2e6 #dee2e6 #f8fafc;
+        }
 
-    tr.group {
-        background-color: #f2f2f2;
-        font-weight: bold;
-        text-align: left;
-    }
+        tr.group {
+            background-color: #f2f2f2;
+            font-weight: bold;
+            text-align: left;
+        }
 
-    .group-header {
-        font-weight: bold;
-        cursor: pointer;
-        background-color: #f2f2f2;
-    }
+        .group-header {
+            font-weight: bold;
+            cursor: pointer;
+            background-color: #f2f2f2;
+        }
 
-    .details-table {
-        margin: 10px 0;
-        width: 100%;
-        border-collapse: collapse;
-    }
+        .details-table {
+            margin: 10px 0;
+            width: 100%;
+            border-collapse: collapse;
+        }
 
-    .details-table th,
-    .details-table td {
-        border: 1px solid #ddd;
-        padding: 8px;
-    }
+        .details-table th,
+        .details-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
 
-    .text-bold {
-        font-weight: bolder;
-    }
+        .text-bold {
+            font-weight: bolder;
+        }
 
 
-    .bg-info {
-        background-color: #81b940 !important;
-    }
+        .bg-info {
+            background-color: #81b940 !important;
+        }
 
-    .bg-danger {
-        background-color: #ff7313 !important;
-    }
+        .bg-danger {
+            background-color: #ff7313 !important;
+        }
 
-    #cerrarFiltros {
-        cursor: pointer;
-    }
+        #cerrarFiltros {
+            cursor: pointer;
+        }
 
-    #chart-container {
-        position: relative;
-        width: 90%;
-        /* Ajusta el ancho del gráfico */
-        margin: auto;
-        /* Centra el contenedor */
-    }
+        #chart-container {
+            position: relative;
+            width: 90%;
+            /* Ajusta el ancho del gráfico */
+            margin: auto;
+            /* Centra el contenedor */
+        }
 
-    canvas {
-        display: block;
-        max-width: 100%;
-        /* Asegura que el canvas no se desborde */
-        height: auto !important;
-        /* Mantiene la proporción del gráfico */
-    }
+        canvas {
+            display: block;
+            max-width: 100%;
+            /* Asegura que el canvas no se desborde */
+            height: auto !important;
+            /* Mantiene la proporción del gráfico */
+        }
 
-    /* Estilo para hacer el gráfico responsivo */
-    #chart-container {
-        position: relative;
-        width: 90%;
-        /* Ajusta el ancho del gráfico */
-        margin: auto;
-        /* Centra el contenedor */
-    }
+        /* Estilo para hacer el gráfico responsivo */
+        #chart-container {
+            position: relative;
+            width: 90%;
+            /* Ajusta el ancho del gráfico */
+            margin: auto;
+            /* Centra el contenedor */
+        }
 
-    canvas {
-        display: block;
-        max-width: 100%;
-        /* Asegura que el canvas no se desborde */
-        /* height: auto !important; */
-        /* Mantiene la proporción del gráfico */
-    }
+        canvas {
+            display: block;
+            max-width: 100%;
+            /* Asegura que el canvas no se desborde */
+            /* height: auto !important; */
+            /* Mantiene la proporción del gráfico */
+        }
 
-    table {
-        margin: 20px auto;
-        border-collapse: collapse;
-        width: 90%;
-    }
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 90%;
+        }
 
-    th,
-    td {
-        border: 1px solid #ddd;
-        text-align: center;
-        padding: 8px;
-    }
+        th,
+        td {
+            border: 1px solid #ddd;
+            text-align: center;
+            padding: 8px;
+        }
 
-    th {
-        background-color: #f4f4f4;
-    }
+        th {
+            background-color: #f4f4f4;
+        }
 
-    .total-row {
-        font-weight: bold;
-        background-color: #e8f0fe;
-    }
+        .total-row {
+            font-weight: bold;
+            background-color: #e8f0fe;
+        }
 
-    #kilosPorDia {
-        width: 100%;
-        /* El tamaño que necesites */
-        height: 400px;
-        /* Establece un tamaño fijo o máximo */
-        max-height: 600px;
-        /* Evita el crecimiento infinito */
-        overflow: auto;
-        /* Permite desplazamiento si el contenido es más grande */
-    }
+        #kilosPorDia {
+            width: 100%;
+            /* El tamaño que necesites */
+            height: 400px;
+            /* Establece un tamaño fijo o máximo */
+            max-height: 600px;
+            /* Evita el crecimiento infinito */
+            overflow: auto;
+            /* Permite desplazamiento si el contenido es más grande */
+        }
 
-    .highlight {
-        background-color: green;
-        color: white;
-    }
+        .highlight {
+            background-color: green;
+            color: white;
+        }
 
-    #loading-animation {
-        display: flex;
-        background: rgba(0, 0, 0, 0.7);
-        z-index: 1000;
-    }
+        #loading-animation {
+            display: flex;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+        }
 
-    video {
-        border-radius: 10px;
-    }
-</style>
+        video {
+            border-radius: 10px;
+        }
+    </style>
     <div class="card">
         <div id="loading-animation"
             style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 9999; justify-content: center; align-items: center;">
@@ -249,6 +249,7 @@
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/highlight.min.js"></script>
             <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
             <script>
                 function showLoading() {
 
@@ -258,347 +259,163 @@
                 function hideLoading() {
                     $("#loading-animation").fadeOut();
                 }
-                $(document).ready(function() {
-                    $("#btnSync").click(function() {
-                        obtieneCajas();
+                document.addEventListener("DOMContentLoaded", async () => {
+                    let data = [];
+                    await getCajas();
+                    async function getCajas() {
+                        try {
+                            const response = await fetch('{{ route("admin.reporteria.SyncDatosCajas") }}');
+                             data = await response.json();
+                            console.log(data);
 
-                    });
-                })
 
-                async function obtieneCajas() {
-                    let min = 0;
-                    let max = 0;
-                    showLoading();
-                    try {
-                        // Obtener valores mínimos y máximos
-                        const response = await $.ajax({
-                            url: "{{ route('admin.reporteria.getMinMaxCajas') }}",
-                            type: "GET",
-                            dataType: "json"
-                        });
 
-                        min = response.min;
-                        max = response.max;
-
-                        // Llamar a getCajas de forma secuencial
-                        while (min < max) {
-                            console.log(min);
-                            min = await getCajas(min);
-
+                        } catch (error) {
+                            console.error("Error al cargar cajas:", error);
                         }
 
-                        console.log("Datos cargados completamente.");
-                        hideLoading();
-
-                    } catch (error) {
-                        console.error("Error en obtieneCajas:", error);
                     }
-                }
-
-                async function getCajas(min) {
-
-                    const response = await $.ajax({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        url: "{{ route('admin.reporteria.SyncDatosCajas') }}",
-                        type: "POST",
-                        dataType: "json",
-                        data: {
-                            min: min
-                        }
-                    });
-
-                    console.log(response.Cajas);
 
 
-                    SetDBCajas(response.Cajas);
-                    return response.min;
 
-                    // } catch (error) {
-                    //     console.error("Error en getCajas:", error);
-                    //     throw error; // Interrumpe el bucle si hay un error
-                    // }
-                }
+                    function buscaCajas(ncajas) {
+                        const ncaja = document.getElementById('CodCaja').value;
+                        const errorDiv = document.getElementById('error-message');
+                        const resultadoDiv = document.getElementById('resultado');
 
-                function SetDBCajas(cajas) {
-                    const request = indexedDB.open('CajasDB', 4); // Usa la misma versión que la anterior
-                    request.onupgradeneeded = (event) => {
-                        const db = event.target.result;
-                        if (!db.objectStoreNames.contains('CajasDB')) {
-                            const store = db.createObjectStore('CajasDB', {
-                                keyPath: 'id',
-                                autoIncrement: true
-                            });
-                            // Crear un índice para ncaja
-                            store.createIndex('ncaja', 'ncaja', {
-                                unique: false
-                            });
-                        }
-                    };
+                        // Ocultar mensajes previos
+                        errorDiv.style.display = 'none';
+                        resultadoDiv.style.display = 'none';
 
-                    request.onsuccess = function(event) {
-                        const db = event.target.result;
-
-                        if (!db.objectStoreNames.contains('CajasDB')) {
-                            const store = db.createObjectStore("CajasDB", {
-                                keyPath: "ncaja"
-                            });
-                            store.createIndex("ncaja", "ncaja");
-                            console.error("El almacén 'CajasDB' no existe. Verifica la creación del almacén.");
-                            return;
-                        }
-
-                        const transaction = db.transaction('CajasDB', 'readwrite');
-                        const store = transaction.objectStore('CajasDB');
-
-                        cajas.forEach(caja => {
-                            if (caja.id_pkg_stock_det) {
-                                store.put(caja); // Insertar si el campo clave es válido
-                            } else {
-                                console.warn("Objeto inválido, falta la clave primaria:", caja);
-                            }
-                        });
-
-                        transaction.oncomplete = function() {
-                            console.log("Datos almacenados correctamente en IndexedDB.");
-                        };
-
-                        transaction.onerror = function(event) {
-                            console.error("Error en la transacción de IndexedDB:", event.target.error);
-                        };
-                    };
-
-                    request.onerror = function(event) {
-                        console.error("Error al abrir la base de datos IndexedDB:", event.target.error);
-                    };
-                }
-
-                function contarRegistrosTotales() {
-                    // Abre la base de datos
-                    const request = indexedDB.open('CajasDB');
-
-                    request.onsuccess = (event) => {
-                        const db = event.target.result;
-
-                        // Inicia una transacción de solo lectura
-                        const transaction = db.transaction('CajasDB', 'readonly');
-                        const store = transaction.objectStore('CajasDB');
-
-                        // Usa el método count para obtener el total de registros
-                        const countRequest = store.count();
-
-                        countRequest.onsuccess = (event) => {
-                            console.log(`📦 Total de registros en CajasDB: ${event.target.result}`);
-                        };
-
-                        countRequest.onerror = (event) => {
-                            console.error('❌ Error al contar los registros:', event.target.error);
-                        };
-                    };
-
-                    request.onerror = (event) => {
-                        console.error('❌ Error al abrir la base de datos:', event.target.error);
-                    };
-                }
-
-                function buscaCajas(ncajas) {
-                    const ncaja = document.getElementById('CodCaja').value;
-                    const errorDiv = document.getElementById('error-message');
-                    const resultadoDiv = document.getElementById('resultado');
-
-                    // Ocultar mensajes previos
-                    errorDiv.style.display = 'none';
-                    resultadoDiv.style.display = 'none';
-
-                    // Abrir conexión con IndexedDB
-                    const request = indexedDB.open('CajasDB', 4);
-
-                    request.onerror = (event) => {
-                        errorDiv.textContent = 'Error al conectar con la base de datos';
-                        errorDiv.style.display = 'block';
-                    };
-
-                    request.onsuccess = (event) => {
-                        const db = event.target.result;
-                        const transaction = db.transaction(['CajasDB'], 'readonly');
-                        const store = transaction.objectStore('CajasDB');
-                        const index = store.index('ncaja');
-                        const getRequest = index.get(ncaja);
-
-                        getRequest.onsuccess = (event) => {
-                            const data = event.target.result;
-                            if (data) {
-                                // Mostrar los datos
-                                document.getElementById('res-ncaja').textContent = data.ncaja || '';
-                                document.getElementById('res-productor').textContent = data.n_productor ||
-                                    'No especificado';
-                                document.getElementById('res-especie').textContent = data.n_especie || 'No especificado';
-                                document.getElementById('res-variedad').textContent = data.n_variedad || 'No especificado';
-                                document.getElementById('res-cantidad').textContent = data.cantidad || '0';
-                                document.getElementById('res-peso-neto').textContent = (data.peso_neto || '0') + ' kg';
-                                document.getElementById('res-peso-bruto').textContent = (data.peso_bruto || '0') + ' kg';
-                                document.getElementById('res-contenedor').textContent = data.contenedor ||
-                                    'No especificado';
-                                document.getElementById('res-nave').textContent = data.nave || 'No especificado';
-                                document.getElementById('res-destinatario').textContent = data.n_destinatario ||
-                                    'No especificado';
-                                document.getElementById('res-exportadora').textContent = data.n_exportadora ||
-                                    'No especificado';
-                                document.getElementById('res-fecha-cosecha').textContent = data.fecha_cosecha ||
-                                    'No especificado';
-                                document.getElementById('res-fecha-produccion').textContent = data.fecha_produccion ||
-                                    'No especificado';
-                                document.getElementById('res-fecha-despacho').textContent = data.fecha_despacho ||
-                                    'No especificado';
-                                document.getElementById('res-fecha-Salida-etd').textContent = data.etd || 'No especificado';
+                        // Abrir conexión con IndexedDB
+                        const caja = data.find(item => item.ncaja === ncajas);
 
 
-                                    resultadoDiv.style.display = 'block';
-                            } else {
-                                errorDiv.textContent = 'No se encontró la caja especificada';
-                                errorDiv.style.display = 'block';
-                            }
-                        };
 
-                        getRequest.onerror = (event) => {
-                            errorDiv.textContent = 'Error al buscar la caja';
+
+                        if (caja) {
+                            // Mostrar los datos
+                            document.getElementById('res-ncaja').textContent = caja.ncaja || '';
+                            document.getElementById('res-productor').textContent = caja.n_productor ||
+                                'No especificado';
+                            document.getElementById('res-especie').textContent = caja.n_especie || 'No especificado';
+                            document.getElementById('res-variedad').textContent = caja.n_variedad || 'No especificado';
+                            document.getElementById('res-cantidad').textContent = caja.cantidad || '0';
+                            document.getElementById('res-peso-neto').textContent = (caja.peso_neto || '0') + ' kg';
+                            document.getElementById('res-peso-bruto').textContent = (caja.peso_bruto || '0') + ' kg';
+                            document.getElementById('res-contenedor').textContent = caja.contenedor ||
+                                'No especificado';
+                            document.getElementById('res-nave').textContent = caja.nave || 'No especificado';
+                            document.getElementById('res-destinatario').textContent = caja.n_destinatario ||
+                                'No especificado';
+                            document.getElementById('res-exportadora').textContent = caja.n_exportadora ||
+                                'No especificado';
+                            document.getElementById('res-fecha-cosecha').textContent = caja.fecha_cosecha ||
+                                'No especificado';
+                            document.getElementById('res-fecha-produccion').textContent = caja.fecha_produccion ||
+                                'No especificado';
+                            document.getElementById('res-fecha-despacho').textContent = caja.fecha_despacho ||
+                                'No especificado';
+                            // document.getElementById('res-fecha-Salida-etd').textContent = data.etd || 'No especificado';
+
+
+                            resultadoDiv.style.display = 'block';
+                        } else {
+                            errorDiv.textContent = 'No se encontró la caja especificada';
                             errorDiv.style.display = 'block';
-                        };
-                    };
-                }
-
-                function buscaEmbarque(folio) {
-
-                    const request = indexedDB.open('EmbarqueDB');
-
-                    request.onsuccess = (event) => {
-                        const db = event.target.result;
-
-                        if (!db.objectStoreNames.contains('EmbarqueDB')) {
-                            console.error('El almacén "EmbarqueDB" no existe en la base de datos.');
-                            return;
                         }
 
-                        const transaction = db.transaction('EmbarqueDB', 'readonly');
-                        const store = transaction.objectStore('EmbarqueDB');
+                    }
 
-                        const cursorRequest = store.openCursor();
-                        let resultados = [];
 
-                        cursorRequest.onsuccess = (event) => {
-                            const cursor = event.target.result;
 
-                            if (cursor) {
-                                if (cursor.value.folio === folio) {
-                                    resultados.push(cursor.value);
+                    function docReady(fn) {
+                        // see if DOM is already available
+                        if (document.readyState === "complete" || document.readyState === "interactive") {
+                            // call on next available tick
+                            setTimeout(fn, 1);
+                        } else {
+                            document.addEventListener("DOMContentLoaded", fn);
+                        }
+                    }
+                    /** Ugly function to write the results to a table dynamically. */
+                    function printScanResultPretty(codeId, decodedText, decodedResult) {
+
+                        // const urlParams = new URL(`${decodedText}`).searchParams;
+                        // console.log(urlParams);
+                        // // Obtener el valor del parámetro "RUN"
+                        // const runValue = urlParams.get("RUN");
+                        buscaCajas(decodedText);
+                        alert(decodedText);
+                        console.log(decodedText);
+                        //$("#personal_id").val(runValue).trigger('change');
+
+
+
+
+                    }
+                    docReady(function() {
+                        hljs.initHighlightingOnLoad();
+                        var lastMessage;
+                        var codeId = 0;
+
+                        function onScanSuccess(decodedText, decodedResult) {
+                            /**
+                             * If you following the code example of this page by looking at the
+                             * source code of the demo page - good job!!
+                             *
+                             * Tip: update this function with a success callback of your choise.
+                             */
+                            if (lastMessage !== decodedText) {
+                                lastMessage = decodedText;
+                                printScanResultPretty(codeId, decodedText, decodedResult);
+                                ++codeId;
+                            }
+                        }
+                        var qrboxFunction = function(viewfinderWidth, viewfinderHeight) {
+                            // Square QR Box, with size = 80% of the min edge.
+                            var minEdgeSizeThreshold = 250;
+                            var edgeSizePercentage = 0.75;
+                            var minEdgeSize = (viewfinderWidth > viewfinderHeight) ?
+                                viewfinderHeight : viewfinderWidth;
+                            var qrboxEdgeSize = Math.floor(minEdgeSize * edgeSizePercentage);
+                            if (qrboxEdgeSize < minEdgeSizeThreshold) {
+                                if (minEdgeSize < minEdgeSizeThreshold) {
+                                    return {
+                                        width: minEdgeSize,
+                                        height: minEdgeSize
+                                    };
+                                } else {
+                                    return {
+                                        width: minEdgeSizeThreshold,
+                                        height: minEdgeSizeThreshold
+                                    };
                                 }
-                                cursor.continue(); // Continúa al siguiente registro
-                            } else {
-                                console.log('🔍 Registros encontrados:', resultados);
                             }
-                        };
-
-                        cursorRequest.onerror = (event) => {
-                            console.error(' Error al abrir el cursor:', event.target.error);
-                        };
-
-                        transaction.oncomplete = () => {
-                            console.log(' Transacción completada correctamente.');
-                        };
-                    };
-
-                    request.onerror = (event) => {
-                        console.error(' Error al abrir la base de datos:', event.target.error);
-                    };
-                }
-
-                function docReady(fn) {
-                    // see if DOM is already available
-                    if (document.readyState === "complete" || document.readyState === "interactive") {
-                        // call on next available tick
-                        setTimeout(fn, 1);
-                    } else {
-                        document.addEventListener("DOMContentLoaded", fn);
-                    }
-                }
-                /** Ugly function to write the results to a table dynamically. */
-                function printScanResultPretty(codeId, decodedText, decodedResult) {
-
-                    // const urlParams = new URL(`${decodedText}`).searchParams;
-                    // console.log(urlParams);
-                    // // Obtener el valor del parámetro "RUN"
-                    // const runValue = urlParams.get("RUN");
-                    buscaCajas(decodedText);
-                    alert(decodedText);
-                    console.log(decodedText);
-                    //$("#personal_id").val(runValue).trigger('change');
-
-
-
-
-                }
-                docReady(function() {
-                    hljs.initHighlightingOnLoad();
-                    var lastMessage;
-                    var codeId = 0;
-
-                    function onScanSuccess(decodedText, decodedResult) {
-                        /**
-                         * If you following the code example of this page by looking at the
-                         * source code of the demo page - good job!!
-                         *
-                         * Tip: update this function with a success callback of your choise.
-                         */
-                        if (lastMessage !== decodedText) {
-                            lastMessage = decodedText;
-                            printScanResultPretty(codeId, decodedText, decodedResult);
-                            ++codeId;
+                            return {
+                                width: qrboxEdgeSize,
+                                height: qrboxEdgeSize
+                            };
                         }
-                    }
-                    var qrboxFunction = function(viewfinderWidth, viewfinderHeight) {
-                        // Square QR Box, with size = 80% of the min edge.
-                        var minEdgeSizeThreshold = 250;
-                        var edgeSizePercentage = 0.75;
-                        var minEdgeSize = (viewfinderWidth > viewfinderHeight) ?
-                            viewfinderHeight : viewfinderWidth;
-                        var qrboxEdgeSize = Math.floor(minEdgeSize * edgeSizePercentage);
-                        if (qrboxEdgeSize < minEdgeSizeThreshold) {
-                            if (minEdgeSize < minEdgeSizeThreshold) {
-                                return {
-                                    width: minEdgeSize,
-                                    height: minEdgeSize
-                                };
-                            } else {
-                                return {
-                                    width: minEdgeSizeThreshold,
-                                    height: minEdgeSizeThreshold
-                                };
-                            }
-                        }
-                        return {
-                            width: qrboxEdgeSize,
-                            height: qrboxEdgeSize
-                        };
-                    }
-                    let html5QrcodeScanner = new Html5QrcodeScanner(
-                        "reader", {
-                            fps: 10,
-                            qrbox: qrboxFunction,
-                            // Important notice: this is experimental feature, use it at your
-                            // own risk. See documentation in
-                            // mebjas@/html5-qrcode/src/experimental-features.ts
-                            experimentalFeatures: {
-                                useBarCodeDetectorIfSupported: true
-                            },
-                            rememberLastUsedCamera: true,
-                            showTorchButtonIfSupported: true
-                        });
-                    html5QrcodeScanner.render(onScanSuccess);
+                        let html5QrcodeScanner = new Html5QrcodeScanner(
+                            "reader", {
+                                fps: 10,
+                                qrbox: qrboxFunction,
+                                // Important notice: this is experimental feature, use it at your
+                                // own risk. See documentation in
+                                // mebjas@/html5-qrcode/src/experimental-features.ts
+                                experimentalFeatures: {
+                                    useBarCodeDetectorIfSupported: true
+                                },
+                                rememberLastUsedCamera: true,
+                                showTorchButtonIfSupported: true
+                            });
+                        html5QrcodeScanner.render(onScanSuccess);
+                    });
+                    $("#btn-consultar").click(function() {
+                        buscaCajas($("#CodCaja").val());
+                    });
+                    //contarRegistrosTotales();
                 });
-                $("#btn-consultar").click(function() {
-                    buscaCajas($("#CodCaja").val());
-                });
-                //contarRegistrosTotales();
             </script>
         @endsection

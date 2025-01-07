@@ -14,24 +14,64 @@ class PermissionsTableSeeder extends Seeder
 
 
             [
-                'id'    => 428,
-                'title' => 'recibe_master_create',
+                'id'    => 570,
+                'title' => 'liq_cx_cabecera_create',
             ],
             [
-                'id'    => 429,
-                'title' => 'recibe_master_edit',
+                'id'    => 571,
+                'title' => 'liq_cx_cabecera_edit',
             ],
             [
-                'id'    => 430,
-                'title' => 'recibe_master_show',
+                'id'    => 572,
+                'title' => 'liq_cx_cabecera_show',
             ],
             [
-                'id'    => 431,
-                'title' => 'recibe_master_delete',
+                'id'    => 573,
+                'title' => 'liq_cx_cabecera_delete',
             ],
             [
-                'id'    => 432,
-                'title' => 'recibe_master_access',
+                'id'    => 574,
+                'title' => 'liq_cx_cabecera_access',
+            ],
+            [
+                'id'    => 575,
+                'title' => 'liquidaciones_cx_create',
+            ],
+            [
+                'id'    => 576,
+                'title' => 'liquidaciones_cx_edit',
+            ],
+            [
+                'id'    => 577,
+                'title' => 'liquidaciones_cx_show',
+            ],
+            [
+                'id'    => 578,
+                'title' => 'liquidaciones_cx_delete',
+            ],
+            [
+                'id'    => 579,
+                'title' => 'liquidaciones_cx_access',
+            ],
+            [
+                'id'    => 580,
+                'title' => 'liq_costo_create',
+            ],
+            [
+                'id'    => 581,
+                'title' => 'liq_costo_edit',
+            ],
+            [
+                'id'    => 582,
+                'title' => 'liq_costo_show',
+            ],
+            [
+                'id'    => 583,
+                'title' => 'liq_costo_delete',
+            ],
+            [
+                'id'    => 584,
+                'title' => 'liq_costo_access',
             ],
 
 

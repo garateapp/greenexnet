@@ -23,6 +23,7 @@ use DB;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
+use App\Jobs\SyncCajasJob;
 
 class ReporteriaController extends Controller
 {
@@ -519,7 +520,7 @@ class ReporteriaController extends Controller
 
 
             )
-            ->where('id_altura', '=', 8)
+            //->where('c_altura', '=', '240')
             ->where('n_categoria', '=', 'Cat 1')
             ->where('n_exportadora', '=', 'Greenex Spa')
             ->where('id_empresa', '=', '1')
@@ -570,7 +571,7 @@ class ReporteriaController extends Controller
             )
             //->where('destruccion_tipo', '=', '')
             ->where('id_especie', '=', '7')
-            ->where('id_altura', '=', '8')
+            //->where('id_altura', '=', '8')
             ->where('id_empresa', '=', '1')
             ->where(DB::raw("DATEPART(YEAR,fecha_produccion)"), '>', '2023')
             ->where('n_categoria', '!=', 'muestra')
@@ -624,7 +625,7 @@ class ReporteriaController extends Controller
                 'cuenta_pallets',
                 'Tratamiento'
             )
-            ->where('id_altura', '=', 8)
+            //->where('id_altura', '=', 8)
             ->where('n_categoria', '=', 'Cat 1')
             ->where('n_exportadora', '=', 'Greenex Spa')
             ->where('c_embalaje', '=', $request->n_embalaje)
@@ -694,7 +695,7 @@ class ReporteriaController extends Controller
                 'cuenta_pallets',
                 'Tratamiento'
             )
-            ->where('id_altura', '=', 8)
+            //->where('id_altura', '=', 8)
             ->where('n_categoria', '=', 'Cat 1')
             ->where('n_exportadora', '=', 'Greenex Spa')
             ->where('c_embalaje', '=', $request->c_embalaje)
@@ -1006,6 +1007,19 @@ class ReporteriaController extends Controller
         }
         return response()->json(['data' => $dataMetas], 200);
     }
+/*************  ✨ Codeium Command ⭐  *************/
+    /**
+     * Retorna la cantidad de embarques que se encuentran en la vista dbo.V_PKG_Embarques,
+     * que cumplen con los siguientes filtros:
+     * - id_especie = 7
+     * - Semana de embarque mayor o igual a 1
+     * - id_exportadora = 22
+     * - id_destinatario y n_destinatario no nulos
+     * - Transporte en ['MARITIMO', 'AEREO']
+     *
+     * @return \Illuminate\Http\Response
+     */
+/******  7627ef3b-343b-436c-8433-d4abf1cc0599  *******/
     public function getCantRegistros()
     {
         $cantEmbarques = DB::connection("sqlsrv")->table('dbo.V_PKG_Embarques')
@@ -1065,9 +1079,9 @@ class ReporteriaController extends Controller
                 'n_productor_rotulacion',
                 'codigo_sag_productor',
                 'n_calibre',
-
             )
-            ->whereIn(DB::raw('DATEPART(WEEK, etd)'), [51, 52, 1, 2, 3, 4, 5, 6])
+            ->where(DB::raw('DATEPART(YEAR, eta)'),'=',2025)
+            ->where(DB::raw('DATEPART(MONTH, eta)'),'>=',1)
             //->where('n_embarque', '>', $cargados->num_embarque)
             ->where('id_exportadora', '=', '22')
             ->whereNotNull('id_destinatario')
@@ -1085,122 +1099,6 @@ class ReporteriaController extends Controller
 
 
 
-        // foreach ($embarques as $embarque) {
-        //     $objEmbarque = new Embarque();
-        //     $annioEmb = Carbon::parse($embarque->fecha_embarque)->year;
-        //     $agno = date('Y');
-
-        //     if (date('Y') == Carbon::parse($embarque->fecha_embarque)->year) {
-        //         $temporada = $annioEmb . '-' . ($annioEmb + 1);
-        //     } else {
-        //         $temporada = ($annioEmb - 1) . '-' . ($annioEmb);
-        //     }
-
-        //     $objEmbarque->temporada = $temporada;
-        //     $objEmbarque->num_embarque = $embarque->n_embarque;
-        //     $objEmbarque->id_cliente = $embarque->id_destinatario;
-        //     $objEmbarque->n_cliente = $embarque->n_destinatario;
-        //     $objEmbarque->semana = $embarque->Semana;
-        //     $objEmbarque->planta_carga = $embarque->n_packing_origen;
-        //     $objEmbarque->n_naviera = $embarque->n_naviera;
-        //     $objEmbarque->nave = $embarque->n_nave;
-        //     $objEmbarque->num_contenedor = $embarque->contenedor;
-        //     $objEmbarque->especie = $embarque->N_Especie;
-        //     $objEmbarque->variedad = $embarque->N_Variedad;
-        //     $objEmbarque->embalajes = $embarque->n_embalaje;
-        //     $objEmbarque->etiqueta = $embarque->n_etiqueta;
-        //     $objEmbarque->cajas = $embarque->Cajas;
-        //     $objEmbarque->peso_neto = $embarque->Peso_neto;
-        //     $objEmbarque->puerto_embarque = $embarque->n_puerto_origen;
-        //     $objEmbarque->pais_destino = $embarque->n_pais_destino;
-        //     $objEmbarque->puerto_destino = $embarque->n_puerto_destino;
-        //     $objEmbarque->mercado = $embarque->transporte;
-        //     $objEmbarque->etd_estimado = Carbon::parse($embarque->etd)->format('d-m-Y H:i:s'); //$embarque->etd;
-        //     $objEmbarque->eta_estimado = Carbon::parse($embarque->eta)->format('d-m-Y H:i:s'); //$embarque->eta;
-        //     $objEmbarque->numero_reserva_agente_naviero = $embarque->numero_reserva_agente_naviero;
-        //     $objEmbarque->cant_pallets = $embarque->total_pallets;
-        //     $objEmbarque->transporte = $embarque->transporte;
-
-
-        //     $lstEmbarque->push($objEmbarque);
-
-        // }
-        // $lstEmbarqueAgrupado = $lstEmbarque->groupBy('num_embarque');
-        // $lstEmbarque = new Collection();
-        // $lstEmbarque = $lstEmbarqueAgrupado->map(function ($embarqueAgrupado, $num_embarque) {
-
-        //     return [
-        //         'num_embarque' => $num_embarque,
-        //         'id_cliente' => $embarqueAgrupado[0]->id_cliente,
-        //         'n_cliente' => $embarqueAgrupado[0]->n_cliente,
-        //         'semana' => $embarqueAgrupado[0]->semana,
-        //         'planta_carga' => $embarqueAgrupado[0]->planta_carga,
-        //         'n_naviera' => $embarqueAgrupado[0]->n_naviera,
-        //         'nave' => $embarqueAgrupado[0]->nave,
-        //         'num_contenedor' => $embarqueAgrupado[0]->num_contenedor,
-        //         'especie' => $embarqueAgrupado[0]->especie,
-        //         'variedad' => collect($embarqueAgrupado->pluck('variedad')->toArray())
-        //             ->filter() // Eliminar valores nulos o vacíos
-        //             ->unique() // Asegurar valores únicos
-        //             ->implode(', '),
-        //         'embalajes' => collect($embarqueAgrupado->pluck('embalajes')->toArray())
-        //             ->filter() // Eliminar valores nulos o vacíos
-        //             ->map(function ($embalaje) {
-        //                 // Extraer únicamente los valores de Kg con una expresión regular
-        //                 preg_match('/(\d+(?:[.,]\d+)?)\s*kg/i', $embalaje, $matches);
-        //                 return isset($matches[1]) ? $matches[1] . ' Kg' : null;
-        //             })
-        //             ->filter() // Eliminar valores nulos generados por embalajes sin Kg
-        //             ->unique() // Asegurar valores únicos
-        //             ->implode(', '),
-        //         'etiqueta' => $embarqueAgrupado[0]->etiqueta,
-        //         'cajas' => $embarqueAgrupado->sum('cajas'),
-        //         'peso_neto' => $embarqueAgrupado->sum('peso_neto'),
-        //         'puerto_embarque' => $embarqueAgrupado[0]->puerto_embarque,
-        //         'pais_destino' => $embarqueAgrupado[0]->pais_destino,
-        //         'puerto_destino' => $embarqueAgrupado[0]->puerto_destino,
-        //         'mercado' => $embarqueAgrupado[0]->mercado,
-        //         'etd_estimado' => Carbon::parse($embarqueAgrupado[0]->etd_estimado)->format('d-m-Y H:i:s'), //$embarqueAgrupado[0]->etd_estimado,
-        //         'eta_estimado' => Carbon::parse($embarqueAgrupado[0]->eta_estimado)->format('d-m-Y H:i:s'), //$embarqueAgrupado[0]->eta_estimado,
-        //         'numero_reserva_agente_naviero' => $embarqueAgrupado[0]->numero_reserva_agente_naviero,
-        //         'cant_pallets' => $embarqueAgrupado->sum('cant_pallets'),
-        //         'temporada' => $embarqueAgrupado[0]->temporada,
-        //         'transporte' => $embarqueAgrupado[0]->transporte,
-        //     ];
-        // });
-        // foreach ($lstEmbarque as $embarque) {
-
-        //     $objEmbarque = new Embarque();
-
-        //     $objEmbarque->temporada = $embarque["temporada"];
-        //     $objEmbarque->num_embarque = $embarque["num_embarque"];
-        //     $objEmbarque->id_cliente = $embarque["id_cliente"];
-        //     $objEmbarque->n_cliente = $embarque["n_cliente"];
-        //     $objEmbarque->semana = $embarque["semana"];
-        //     $objEmbarque->planta_carga = $embarque["planta_carga"];
-        //     $objEmbarque->n_naviera = isset($embarque["n_naviera"]) ? $embarque["n_naviera"] : 'sin información';
-        //     $objEmbarque->nave = (isset($embarque["nave"])) ? $embarque["nave"] : "sin información";
-        //     $objEmbarque->num_contenedor = $embarque["num_contenedor"];
-        //     $objEmbarque->especie = $embarque["especie"];
-        //     $objEmbarque->variedad = $embarque["variedad"];
-        //     $objEmbarque->embalajes = $embarque["embalajes"];
-        //     $objEmbarque->etiqueta = $embarque["etiqueta"];
-        //     $objEmbarque->cajas = $embarque["cajas"];
-        //     $objEmbarque->peso_neto = $embarque["peso_neto"];
-        //     $objEmbarque->puerto_embarque = $embarque["puerto_embarque"];
-        //     $objEmbarque->pais_destino = $embarque["pais_destino"];
-        //     $objEmbarque->puerto_destino = $embarque["puerto_destino"];
-        //     $objEmbarque->mercado = $embarque["mercado"];
-        //     $objEmbarque->etd_estimado = Carbon::parse($embarque["etd_estimado"])->format('d-m-Y H:i:s'); //$embarque["etd_estimado"];
-        //     $objEmbarque->eta_estimado = Carbon::parse($embarque["eta_estimado"])->format('d-m-Y H:i:s'); //$embarque["eta_estimado"];
-        //     $objEmbarque->numero_reserva_agente_naviero = $embarque["numero_reserva_agente_naviero"];
-        //     $objEmbarque->cant_pallets = $embarque["cant_pallets"];
-        //     $objEmbarque->transporte = $embarque["transporte"];
-
-        //     $objEmbarque->save();
-
-        // }
-
         $n_variedades = collect($embarques)->pluck('N_Variedad')->unique()->values();
         $n_etiqueta = collect($embarques)->pluck('n_etiqueta')->unique()->values();
         $cliente = collect($embarques)->pluck('n_destinatario')->unique()->values();
@@ -1213,6 +1111,7 @@ class ReporteriaController extends Controller
 
 
         Storage::disk('public')->put('datos.json', json_encode($embarques));
+
         //dd($lstEmbarque);
 
         return response()->json([
@@ -1238,170 +1137,31 @@ class ReporteriaController extends Controller
     {
         return view('admin.reporteria.detalleembarque');
     }
-    function SyncDatosCajas(Request $request)
+    function SyncDatosCajas()
     {
-        try {
-            $cajas = DB::connection("sqlsrv")->table('PKG_Stock_Cajas AS SC')
-                ->select([
-                    'SC.ncaja',
-                    'SCH.id_pkg_stock_det',
-                    DB::raw('ISNULL(AEN.CSG, \'\') AS csg_productor'),
-                    DB::raw('ISNULL(AEN.nombre, \'\') AS n_productor'),
-                    DB::raw('ISNULL(AEN.nombre_sucursal, \'\') AS ns_productor'),
-                    DB::raw('ISNULL(AEN.codigo_sag, \'\') AS codigo_sag_productor'),
-                    DB::raw('ISNULL(AEN.CP1, \'\') AS cp1_productor'),
-                    DB::raw('ISNULL(PES.nombre, \'Sin Especie\') AS n_especie'),
-                    DB::raw('ISNULL(PVA.nombre, \'Sin Variedad\') AS n_variedad'),
-                DB::raw('ISNULL(ACC.nombre, \'\') AS n_centrocosto'),
-                'COMU.nombre AS n_comuna',
-                'CIU.nombre AS n_ciudad',
-                'PROV.nombre AS n_provincia',
-                'PPN.nombre as nave',
-                'ETI.nombre as n_etiqueta',
-                'PGD.contenedor',
-                'SD.cantidad',
-                'SD.peso_neto',
-                'sd.fecha_cosecha',
-                'sd.fecha_produccion',
-                'pemb.fecha_despacho',
-                'pemb.etd',
-                'pemb.transporte',
-                DB::raw('CASE WHEN ISNULL(SD.peso_final, 0) = 0 THEN isnull(SD.peso_neto, 0) + ISNULL(AIT.tara_std, 0)
-                ELSE isnull(SD.peso_final, 0) + ISNULL(AIT.tara_std, 0) END AS peso_bruto'),
-                DB::raw('ISNULL(APE4.nombre_sucursal, \'\') AS ns_productor_rotulacion'),
-                DB::raw('ISNULL(dbo.ADM_Entidades_N_Comuna(APE4.id), \'\') AS comuna_productor_rotulacion'),
-                DB::raw('ISNULL(dbo.ADM_Entidades_N_Provincia(APE4.id), \'\') AS provincia_productor_rotulacion'),
-                DB::raw('ISNULL(dbo.ADM_Entidades_C_Region(APE4.id), \'\') AS C_Region_productor_rotulacion'),
-                DB::raw('ISNULL(dbo.ADM_Entidades_Direccion(APE4.id), \'\') AS Direccion_Productor_Rotulado'),
-                DB::raw('ISNULL(dbo.ADM_Entidades_N_Region(APE4.id), \'\') AS N_Region_Productor_Rotulado'),
-                DB::raw('ISNULL(APE4.nombre, \'\') AS n_productor_rotulacion'),
-                DB::raw('ISNULL(PPE.nombre, \'\') AS n_especie_rotulacion'),
-                DB::raw('ISNULL(PPE.Tipo_Produccion, \'\') as tipo_produccion'),
-                DB::raw('ISNULL(PPV.nombre, \'\') AS n_variedad_rotulacion'),
-                DB::raw('ISNULL(dbo.ADM_Entidades_nombre(APE5.id), \'\') AS n_empresa'),
-                DB::raw('(SELECT APE5.nombre from ADM_P_Entidades APE5 where APE5.id=pemb.id_adm_p_entidades_exportadora) as n_exportadora'),
-                DB::raw('(SELECT APE5.nombre from ADM_P_Entidades APE5 where APE5.id=pemb.id_adm_p_entidades_destinatario) as n_destinatario'),
-                ])
-                ->join('PKG_Stock_Cajas_Historial as SCH', 'SCH.id_pkg_stock_cajas', '=', 'SC.id')
-                ->join('PKG_Stock_Det as SD', 'SD.id', '=', 'SCH.id_pkg_stock_det')
-                ->leftJoin('PKG_G_Despacho as PGD', function ($join) {
-                    $join->on('SD.destruccion_tipo', '=', 'PGD.tipo')
-                        ->on('SD.destruccion_id', '=', 'PGD.id');
-                })
-                ->leftJoin('PKG_Embarques as pemb', 'pemb.id', '=', 'PGD.id_pkg_embarques')
-                ->leftJoin('PRO_P_Naves as PPN', 'PPN.id', '=', 'pemb.id_pro_p_naves')
-                ->leftJoin('ADM_P_CentrosCosto as ACC', 'SD.id_adm_p_centroscosto', '=', 'ACC.id')
-                ->leftJoin('ADM_P_Entidades as AEN', 'ACC.id_adm_p_entidades', '=', 'AEN.id')
-                ->leftJoin('PRO_P_Variedades as PVA', 'ACC.id_pro_p_variedades', '=', 'PVA.id')
-                ->leftJoin('PRO_P_Variedades as PVAR', 'PVAR.id', '=', 'PVA.Id_Pro_P_Variedades_Comercial')
-                ->leftJoin('PRO_P_Especies as PES', 'PVA.id_pro_p_especies', '=', 'PES.id')
-                ->leftJoin('PRO_P_Etiquetas as ETI', 'SD.id_pro_p_etiquetas', '=', 'ETI.id')
-                ->leftJoin('ADM_P_Entidades as APE', 'AEN.id_matriz', '=', 'APE.id')
-                ->leftJoin('ADM_P_Comunas as COMU', 'COMU.id', '=', 'AEN.id_adm_p_comunas')
-                ->leftJoin('ADM_P_Ciudades as CIU', 'CIU.id', '=', 'COMU.id_adm_p_ciudades')
-                ->leftJoin('ADM_P_Provincias as PROV', 'PROV.id', '=', 'CIU.id_adm_p_provincias')
-                ->leftJoin('PKG_Stock as ST', 'SD.id_pkg_stock', '=', 'ST.id')
-                ->leftJoin('ADM_P_Items as AIT', 'ST.id_adm_p_items_contenedor', '=', 'AIT.id')
-                ->leftJoin('ADM_P_Entidades as APE1', 'PGD.id_adm_p_entidades_destinatario', '=', 'APE1.id')
-                ->leftJoin('ADM_P_Entidades as APE2', 'PGD.id_adm_p_entidades_transportista', '=', 'APE2.id')
-                ->leftJoin('ADM_P_Entidades as APE3', 'APE3.id', '=', 'SD.id_adm_p_entidades_exportadora')
-                ->leftJoin('ADM_P_Entidades as APE4', 'SD.id_adm_p_entidades_productor_rotulacion', '=', 'APE4.id')
-                ->leftJoin('ADM_P_Entidades as APE5', 'PGD.id_adm_p_entidades_empresa', '=', 'APE5.id')
-                ->leftJoin('PRO_P_Variedades as PPV', 'SD.id_pro_p_variedades_rotulacion', '=', 'PPV.id')
-                ->rightJoin('PRO_P_Especies as PPE', 'PPV.id_pro_p_especies', '=', 'PPE.id')
-                ->leftJoin('PRO_P_Familias as PPF', 'PPE.id_pro_p_familias', '=', 'PPF.id')
-                ->whereIn('SD.destruccion_tipo', ['GDP', 'GDI', 'GDT'])
-                ->where('PPE.id', '=', 7)
-                ->where('SD.inventario', 1)
-                ->where('SC.ncaja', '>', $request->min)
-                ->where('SD.destruccion_id', '>=', 0)
-                ->orderBy('SC.ncaja')->take(100000)->get();
+        $compressedData = Storage::disk('public')->get('cajas.json.gz');
+        $jsonData = gzuncompress($compressedData);
+        Storage::disk('public')->put('datosCajas.json', $jsonData);
+            return response($jsonData)
+            ->header('Content-Type', 'application/json');
 
 
-            $min = collect($cajas)->pluck('ncaja')->max();
-        } catch (\Exception $e) {
-            return response()->json(['message' => $e], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-
-        return response()->json(['Cajas' => $cajas, 'min' => $min, 'message' => 'Se ha actualizado la información de las cajas'], 200);
     }
     function SyncDatosCajas2()
     {
         try {
-            $cajas = DB::connection("sqlsrv")->table('PKG_Stock_Cajas as SC')
-                ->select([
-                    'SC.ncaja',
-                    'SCH.id_pkg_stock_det',
-                    DB::raw('ISNULL(AEN.CSG, \'\') AS csg_productor'),
-                    DB::raw('ISNULL(AEN.nombre, \'\') AS n_productor'),
-                    DB::raw('ISNULL(AEN.nombre_sucursal, \'\') AS ns_productor'),
-                    DB::raw('ISNULL(AEN.codigo_sag, \'\') AS codigo_sag_productor'),
-                    DB::raw('ISNULL(AEN.CP1, \'\') AS cp1_productor'),
-                    DB::raw('ISNULL(PES.nombre, \'Sin Especie\') AS n_especie'),
-                    DB::raw('ISNULL(PVA.nombre, \'Sin Variedad\') AS n_variedad'),
-                    DB::raw('ISNULL(ACC.nombre, \'\') AS n_centrocosto'),
-                    'COMU.nombre AS n_comuna',
-                    'CIU.nombre AS n_ciudad',
-                    'PROV.nombre AS n_provincia',
-                    'PPN.nombre as nave',
-                    'ETI.nombre as n_etiqueta',
-                    'PGD.contenedor',
-                    'SD.cantidad',
-                    'SD.peso_neto',
+            // Despachar el Job en segundo plano
+            SyncCajasJob::dispatch();
 
-                    DB::raw('CASE WHEN ISNULL(SD.peso_final, 0) = 0 THEN isnull(SD.peso_neto, 0) + ISNULL(AIT.tara_std, 0)
-                    ELSE isnull(SD.peso_final, 0) + ISNULL(AIT.tara_std, 0) END AS peso_bruto'),
-                    DB::raw('ISNULL(APE4.nombre_sucursal, \'\') AS ns_productor_rotulacion'),
-                    DB::raw('ISNULL(dbo.ADM_Entidades_N_Comuna(APE4.id), \'\') AS comuna_productor_rotulacion'),
-                    DB::raw('ISNULL(dbo.ADM_Entidades_N_Provincia(APE4.id), \'\') AS provincia_productor_rotulacion'),
-                    DB::raw('ISNULL(dbo.ADM_Entidades_C_Region(APE4.id), \'\') AS C_Region_productor_rotulacion'),
-                    DB::raw('ISNULL(dbo.ADM_Entidades_Direccion(APE4.id), \'\') AS Direccion_Productor_Rotulado'),
-                    DB::raw('ISNULL(dbo.ADM_Entidades_N_Region(APE4.id), \'\') AS N_Region_Productor_Rotulado'),
-                    DB::raw('ISNULL(APE4.nombre, \'\') AS n_productor_rotulacion'),
-                    DB::raw('ISNULL(PPE.nombre, \'\') AS n_especie_rotulacion'),
-                    DB::raw('ISNULL(PPE.Tipo_Produccion, \'\') as tipo_produccion'),
-                    DB::raw('ISNULL(PPV.nombre, \'\') AS n_variedad_rotulacion')
-                ])
-                ->join('PKG_Stock_Cajas_Historial as SCH', 'SCH.id_pkg_stock_cajas', '=', 'SC.id')
-                ->join('PKG_Stock_Det as SD', 'SD.id', '=', 'SCH.id_pkg_stock_det')
-                ->leftJoin('PKG_G_Despacho as PGD', function ($join) {
-                    $join->on('SD.destruccion_tipo', '=', 'PGD.tipo')
-                        ->on('SD.destruccion_id', '=', 'PGD.id');
-                })
-                ->leftJoin('PKG_Embarques as pemb', 'pemb.id', '=', 'PGD.id_pkg_embarques')
-                ->leftJoin('PRO_P_Naves as PPN', 'PPN.id', '=', 'pemb.id_pro_p_naves')
-                ->leftJoin('ADM_P_CentrosCosto as ACC', 'SD.id_adm_p_centroscosto', '=', 'ACC.id')
-                ->leftJoin('ADM_P_Entidades as AEN', 'ACC.id_adm_p_entidades', '=', 'AEN.id')
-                ->leftJoin('PRO_P_Variedades as PVA', 'ACC.id_pro_p_variedades', '=', 'PVA.id')
-                ->leftJoin('PRO_P_Variedades as PVAR', 'PVAR.id', '=', 'PVA.Id_Pro_P_Variedades_Comercial')
-                ->leftJoin('PRO_P_Especies as PES', 'PVA.id_pro_p_especies', '=', 'PES.id')
-                ->leftJoin('PRO_P_Etiquetas as ETI', 'SD.id_pro_p_etiquetas', '=', 'ETI.id')
-                ->leftJoin('ADM_P_Entidades as APE', 'AEN.id_matriz', '=', 'APE.id')
-                ->leftJoin('ADM_P_Comunas as COMU', 'COMU.id', '=', 'AEN.id_adm_p_comunas')
-                ->leftJoin('ADM_P_Ciudades as CIU', 'CIU.id', '=', 'COMU.id_adm_p_ciudades')
-                ->leftJoin('ADM_P_Provincias as PROV', 'PROV.id', '=', 'CIU.id_adm_p_provincias')
-                ->leftJoin('PKG_Stock as ST', 'SD.id_pkg_stock', '=', 'ST.id')
-                ->leftJoin('ADM_P_Items as AIT', 'ST.id_adm_p_items_contenedor', '=', 'AIT.id')
-                ->leftJoin('ADM_P_Entidades as APE1', 'PGD.id_adm_p_entidades_destinatario', '=', 'APE1.id')
-                ->leftJoin('ADM_P_Entidades as APE2', 'PGD.id_adm_p_entidades_transportista', '=', 'APE2.id')
-                ->leftJoin('ADM_P_Entidades as APE3', 'APE3.id', '=', 'SD.id_adm_p_entidades_exportadora')
-                ->leftJoin('ADM_P_Entidades as APE4', 'SD.id_adm_p_entidades_productor_rotulacion', '=', 'APE4.id')
-                ->leftJoin('ADM_P_Entidades as APE5', 'PGD.id_adm_p_entidades_empresa', '=', 'APE5.id')
-                ->leftJoin('PRO_P_Variedades as PPV', 'SD.id_pro_p_variedades_rotulacion', '=', 'PPV.id')
-                ->rightJoin('PRO_P_Especies as PPE', 'PPV.id_pro_p_especies', '=', 'PPE.id')
-                ->leftJoin('PRO_P_Familias as PPF', 'PPE.id_pro_p_familias', '=', 'PPF.id')
-                ->whereIn('SD.destruccion_tipo', ['GDP', 'GDI', 'GDT'])
-                ->where('PPE.id', '=', 7)
-                ->where('SD.inventario', 1)
-                ->orderByDesc('SC.ncaja')->take(100000)->get();
-
-
-            $min = collect($cajas)->pluck('ncaja')->max();
+            return response()->json([
+                'message' => 'Sincronización iniciada correctamente. Los datos se guardarán en segundo plano.'
+            ], 200);
         } catch (\Exception $e) {
-            return response()->json(['message' => $e], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return response()->json([
+                'message' => 'Error al iniciar la sincronización',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        return response()->json(['Cajas' => $cajas, 'min' => $min, 'message' => 'Se ha actualizado la información de las cajas'], 200);
     }
 
     /**
