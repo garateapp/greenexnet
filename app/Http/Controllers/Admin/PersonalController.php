@@ -231,6 +231,7 @@ class PersonalController extends Controller
         return view('admin.personals.tratoembalaje');
     }
     public function ejecutatratoembalaje(Request $request){
+        
         $datos = DB::connection("sqlsrv")
         ->table('V_PKG_Embaladoras_MiniPC as A')
             ->select(
@@ -248,6 +249,8 @@ class PersonalController extends Controller
             )
             ->leftJoin('V_Maestro_Items as B', 'A.C_embalaje_Actual', '=', 'B.codigo')
             ->whereNotNull('A.C_Trabajador')
+            ->where('A.Creacion', '>=', $request->fechaInicio)
+            ->where('A.Creacion', '<=', $request->fechaFinal)
             ->groupBy(
                 'A.Creacion',
                 'A.C_Trabajador',
