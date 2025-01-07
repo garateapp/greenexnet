@@ -264,7 +264,7 @@
                     await getCajas();
                     async function getCajas() {
                         try {
-                            const response = await fetch('{{ route("admin.reporteria.SyncDatosCajas") }}');
+                            const response = await fetch('https://net.greenexweb.cl/storage/cajas2.json');
                              data = await response.json();
                             console.log(data);
 
