@@ -133,7 +133,8 @@
         <div class="card-header">
             Listado de Tratos
         </div>
-        <button id="exportExcel" class="btn btn-info" style="width: 10%;">Exportar a Excel</button>
+        <button id="exportExcel" class="btn btn-info" style="width: 10%;">Exportar a Excel BUK</button> &nbsp; &nbsp;
+        &nbsp;<button id="exportDetalleExcel" class="btn btn-info" style="width: 10%;">Exportar Detalle a Excel </button>
         <div id="exportContainer" style="display: none;">
             <table id="exportTable">
                 <thead>
@@ -141,6 +142,24 @@
                         <th>Número de Documento</th>
                         <th>Código de Ficha</th>
                         <th>Valor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Aquí se llenarán dinámicamente las filas -->
+                </tbody>
+            </table>
+
+        </div>
+        <div id="detalleExportContainer" style="display: none;">
+            <table id="exportDetalleTable" class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Trabajador</th>
+                        <th>Embalaje</th>
+                        <th>Cantidad</th>
+                        <th>Valor por Kilo</th>
+                        <th>Valor Ganado Diario</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -227,11 +246,43 @@
                                     tbody.append(row);
                                 });
                             }
+
+                            function generateExportDetalleTable(d) {
+                                console.log(d);
+                                const tbody = $('#exportDetalleTable tbody');
+                                tbody.empty(); // Limpia el contenido anterior
+                                d.forEach((item) => {
+                                    item.detalles.forEach((detalle) => {
+                                        const row = `
+                                    <tr>
+                                            <td>${detalle.Creacion}</td>
+                                            <td>${item.nombre}</td>
+                                            <td>${detalle.N_embalaje_Actual}</td>
+                                            <td>${detalle.Cantidad_Cajas}</td>
+                                            <td>${detalle.Valor_kilo}</td>
+                                            <td>${detalle.Valor_Ganado_diario}</td>
+                                        </tr>`;
+                                        tbody.append(row);
+                                    });
+                                });
+
+                            }
                             generateExportTable(data);
+                            generateExportDetalleTable(data);
                             // Función para exportar la tabla a Excel
                             $('#exportExcel').on('click', function() {
                                 const tableHTML = $('#exportTable').prop('outerHTML');
                                 const filename = 'tratoembalaje.xlsx';
+
+                                // Crear un archivo Excel con SheetJS
+                                const wb = XLSX.utils.book_new();
+                                const ws = XLSX.utils.table_to_sheet($(tableHTML)[0]);
+                                XLSX.utils.book_append_sheet(wb, ws, 'Exportación');
+                                XLSX.writeFile(wb, filename);
+                            });
+                            $('#exportDetalleExcel').on('click', function() {
+                                const tableHTML = $('#exportDetalleTable').prop('outerHTML');
+                                const filename = 'tratoembalajeDetalle.xlsx';
 
                                 // Crear un archivo Excel con SheetJS
                                 const wb = XLSX.utils.book_new();
@@ -278,5 +329,5 @@
             });
         </script>
         <!-- Incluye SheetJS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     @endsection
