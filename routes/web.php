@@ -178,6 +178,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('comex/capturadorexcel', 'ComexController@capturadorexcel')->name('comex.capturadorexcel');
     Route::post('comex/guardaliquidacion', 'ComexController@guardaliquidacion')->name('comex.guardaliquidacion');
     Route::post('comex/generacomparativa', 'ComexController@generacomparativa')->name('comex.generacomparativa');
+    Route::post('comex/eliminardatosExcel', 'ComexController@eliminardatosExcel')->name('comex.eliminardatosExcel');
+    
     // Metas Cliente Comex
     Route::delete('metas-cliente-comexes/destroy', 'MetasClienteComexController@massDestroy')->name('metas-cliente-comexes.massDestroy');
     Route::post('metas-cliente-comexes/parse-csv-import', 'MetasClienteComexController@parseCsvImport')->name('metas-cliente-comexes.parseCsvImport');

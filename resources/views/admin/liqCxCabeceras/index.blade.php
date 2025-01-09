@@ -1,5 +1,15 @@
 @extends('layouts.admin')
 @section('content')
+@if (session('message'))
+    <div class="alert alert-success">
+        {{ session('message') }}
+    </div>
+@endif
+@if (session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
     @can('liq_cx_cabecera_create')
         <div style="margin-bottom: 10px;" class="row">
             <div class="col-lg-12">

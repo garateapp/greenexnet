@@ -120,7 +120,7 @@ class ComexController extends Controller
 
                 $filaInicial = $estructura->coordenada; // Por ejemplo, A5
                 preg_match('/(\D+)(\d+)/', $filaInicial, $matches);
-              
+                
                 try{
                 $columna = $matches[1]; // A
                 $fila = (int)$matches[2]; // 5
@@ -176,7 +176,7 @@ class ComexController extends Controller
 
 
                 $valor = $hoja->getCell("{$columnaCostos}{$fila_costos}")->getValue();
-             
+                
                 $costos[] = [
                     'coordenada' => "{$columnaCostos}{$fila_costos}",
                     'propiedad' => $estructura->propiedad,
@@ -515,14 +515,14 @@ class ComexController extends Controller
             $naves            = Nafe::get();
             $message = 'Datos procesados y guardados correctamente.';
             $status = 'success';
-            return view('admin.liqCxCabeceras.index', compact('message', 'status', 'clientes_comexes', 'naves'));
+            return redirect()->route('admin.liq-cx-cabeceras.index')->with('message',$message);//view('admin.liqCxCabeceras.index', compact('message', 'status', 'clientes_comexes', 'naves'));
         } catch (\Exception $e) {
             $clientes_comexes = ClientesComex::get();
             $naves            = Nafe::get();
             Log::error('Error al procesar los datos: ' . $e->getMessage()."----".$e->getLine());
             $message = 'Error al procesar los datos: ' . $e->getMessage()."----".$e->getLine();
             $status = 'error';
-            return view('admin.liqCxCabeceras.index', compact('message', 'status', 'clientes_comexes', 'naves'));
+            return redirect()->route('admin.liq-cx-cabeceras.index')->with('error', 'Error al guardar los datos.');
         }
     }
     function formatDate2($date)
@@ -747,5 +747,10 @@ class ComexController extends Controller
 
             return $texto;
         }
+    }
+    public function eliminardatosExcel(Request $request){
+        $instructivo = $request->input('instructivo');
+        ExcelDato::where('instructivo', $instructivo)->delete();
+        return redirect()->route('admin.comex.capturador')->with('message', 'Datos eliminados correctamente.');
     }
 }

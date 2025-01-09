@@ -275,7 +275,9 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    
                                 @php
+                                
                                     preg_match('/(\D+)/',$items[0][0]['coordenada'], $matches);
                                     $letraInicial=$matches[1];
                                     $UltimaLetra= $matches[1];
@@ -405,7 +407,7 @@
             </div>
         </div>
     </div>
-    <div class="form-group">
+    <div class="form-group  d-flex align-items-center gap-2">
         <form action="{{ route('admin.comex.guardaliquidacion') }}" method="POST">
             @csrf
             <input type="hidden" name="instructivo" value="{{ $instructivo }}">
@@ -414,7 +416,14 @@
             <input type="hidden" name="fecha_venta" value="{{ $datosExcel->fecha_venta }}">
             <input type="hidden" name="fecha_liquidacion" value="{{ $datosExcel->fecha_liquidacion }}">
             <button type="submit" class="btn btn-primary">Guardar</button>
+
         </form>
+        <form action="{{ route('admin.comex.eliminardatosExcel') }}" method="POST">
+            @csrf
+            <input type="hidden" name="instructivo" value="{{ $instructivo }}">
+            <button type="submit" class="btn btn-danger">Eliminar</button>
+        </form>
+
     </div>
 @endsection
 @section('scripts')
