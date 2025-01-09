@@ -51,7 +51,7 @@
                 @endif
                 <span class="help-block">{{ trans('cruds.capturadorEstructura.fields.capturador_helper') }}</span>
             </div>
-            <div class="form-group">
+            <div class="form-group" id="propiedadesDiv">
                 <label class="required" for="propiedad">{{ trans('cruds.capturadorEstructura.fields.propiedad') }}</label>
                 <input class="form-control {{ $errors->has('propiedad') ? 'is-invalid' : '' }}" type="text" name="propiedad" id="propiedad" value="{{ old('propiedad', '') }}" required>
                 @if($errors->has('propiedad'))
@@ -121,17 +121,18 @@
             if(id==3){
                 $("#costosDiv").show();
                 $("#costos").attr("required", "required");
-                $("#propiedad").attr("disabled", "disabled");
+                $("#propiedadesDiv").hide();
 
             }
             else{
                 $("#costosDiv").hide();
                 $("#costos").removeAttr("required");
-                $("#propiedad").removeAttr("disabled");
+                $("#propiedadesDiv").show();
             }
         });
         $("#costos").on("change", function() {
             var id = $(this).val();
+            console.log(id);
             if(id!=""){
                 $("#propiedad").val(id);
             }

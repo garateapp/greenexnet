@@ -233,15 +233,31 @@
                                     </div>
                                     <div class="form-group">
                                         <label for="fecha">Instructivo</label>
-                                        <input type="text" name="instructivo" id="instructivo" required>
+                                        <input type="text" name="instructivo" id="instructivo" class="form-control" required>
                                     </div>
                                     <div class="form-group">
                                         <label for="fecha">Tasa de Cambio</label>
-                                        <input type="text" name="tasa" id="tasa" required>
+                                        <input type="text" name="tasa" id="tasa" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="fecha_arribo">Fecha de Arribo</label>
+                                        <input type="text" name="fecha_arribo" id="fecha_arribo"  class="form-control date" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="fecha_venta">Fecha de Venta</label>
+                                        <input type="text" name="fecha_venta" id="fecha_venta"  class="form-control date" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="fecha_venta">Fecha de Liquidación</label>
+                                        <input type="text" name="fecha_liquidacion" id="fecha_liquidacion"  class="form-control date" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="fila_costos">Fila en que inician los costos</label>
+                                        <input type="number" name="fila_costos" id="fila_costos" class="form-control" required>
                                     </div>
                                     <div class="form-group">
                                         <label for="file">Selecciona archivo</label>
-                                        <input type="file" name="file" id="file" required>
+                                        <input type="file" name="file" id="file" required class="form-control">
 
                                     </div>
                                     <div class="form-group">

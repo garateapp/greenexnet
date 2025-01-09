@@ -119,31 +119,33 @@
         if( $("#tipos_seccion_conversors_id").val()==3){
             $("#costosDiv").show();
             $("#costos").attr("required", "required");
-            $("#propiedad").attr("disabled", "disabled");
+            $("#propiedadesDiv").hide();
             $("#costos").val("{{$capturadorEstructura->propiedad}}");
         }
+       
+       
         $("#tipos_seccion_conversors_id").on("change", function() {
             var id = $(this).val();
             if(id==3){
                 $("#costosDiv").show();
                 $("#costos").attr("required", "required");
-                $("#propiedad").attr("disabled", "disabled");
+                $("#propiedadesDiv").hide();
 
             }
             else{
                 $("#costosDiv").hide();
                 $("#costos").removeAttr("required");
-                $("#propiedad").removeAttr("disabled");
+                $("#propiedadesDiv").show();
             }
         });
         $("#costos").on("change", function() {
             var id = $(this).val();
+            console.log(id);
             if(id!=""){
                 $("#propiedad").val(id);
             }
             
         });
-
     });
     </script>
 

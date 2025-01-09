@@ -21,6 +21,10 @@ class ExcelDato extends Model
         'instructivo',
         'tasa',
         'datos',
+        'fecha_arribo',
+        'fecha_venta',
+        'fecha_liquidacion',
+        'fila_costos',
     ];
 
     protected $casts = [

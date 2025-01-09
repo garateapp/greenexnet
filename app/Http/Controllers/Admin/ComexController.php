@@ -55,10 +55,18 @@ class ComexController extends Controller
         ]);
         $instructivo = $request->input('instructivo');
         $tasa = $request->input('tasa');
+       
         try {
             $archivo = $request->file('file');
             $capturadorId = $request->input('plantilla');
             $capturador = Capturador::find($capturadorId);
+            $fa=explode('/',$request->input('fecha_arribo'));
+            $fv=explode('/',$request->input('fecha_venta'));
+            $fl=explode('/',$request->input('fecha_liquidacion'));
+            $fecha_arribo=$fa[2].'-'.$fa[1].'-'.$fa[0];
+            $fecha_venta=$fv[2].'-'.$fv[1].'-'.$fv[0];
+            $fecha_liquidacion=$fl[2].'-'.$fl[1].'-'.$fl[0];
+            $fila_costos=$request->input('fila_costos');
 
             if (!$capturador) {
                 return response()->json(['message' => 'Capturador no encontrado.'], 404);
@@ -90,7 +98,7 @@ class ComexController extends Controller
             $fil = (int)$matches[2]; // 5
             $filaCostos = 0;
             $condicion = true;
-
+           
             foreach ($estructuras as $estructura) {
                 $tipoSeccion = $estructura->tipos_seccion_conversors_id; // Define el tipo de sección
 
@@ -104,83 +112,80 @@ class ComexController extends Controller
                     ];
                 }
             }
-            $estrItems = $estructuras->where('tipos_seccion_conversors_id', 2);
+           
+            $estrItems = $estructuras->where('tipos_seccion_conversors_id', 2)->sortBy(['coordenada', 'asc']);
+           
             foreach ($estrItems as $estructura) {
 
 
                 $filaInicial = $estructura->coordenada; // Por ejemplo, A5
                 preg_match('/(\D+)(\d+)/', $filaInicial, $matches);
+              
+                try{
                 $columna = $matches[1]; // A
                 $fila = (int)$matches[2]; // 5
+                }catch(\Exception $e){
+                    return response()->json(['message' => 'Ocurrió un error al procesar el archivo.',
+                'error' => $e->getMessage()."----". $estructura->coordenada,
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()]);
+                }
                 //$filaCostos=$fila;
-
+           
                 while (true) {
                     $valorCelda = $hoja->getCell("{$columna}{$fila}")->getValue();
-                    if ($filaCostos < $fila) {
-                        $filaCostos = $fila;
-                    }
-                    if ($hoja->getCell("A{$fila}")->getValue() == 'TOTAL SALES') {
+                    
+                    if ($fila == $fila_costos && $capturador->id!=7 ) {
+                        
+                        
                         break; // Encontramos el inicio de la sección de costos
                     }
-                    $item = [];
-                    if ($valorCelda = "") {
-                        Log::info('Fila vacía ' . $hoja->getCell("I{$fila}")->getValue() . " en la celda {$columna}{$fila}");
-
-                        break; // Fila vacía, fin de los ítems
+                    if($capturador->id==7 && $valorCelda==''){
+                        break;
                     }
+                    $item = [];
+                    
                     preg_match('/(\D+)/', $estructura->coordenada, $colMatch);
                     $col = $colMatch[1];
-                    if ($col == 'I') {
-                        Log::info('Columna I' . $hoja->getCell("{$col}{$fila}")->getValue());
-                    }
+                    Log::info('celdaItems('.$col.$fila.') :' . $hoja->getCell("{$col}{$fila}")->getValue());
                     $item[] = [
                         'coordenada' => "{$col}{$fila}",
                         'propiedad' => $estructura->propiedad,
                         'valor' => $this->normalizarTexto($hoja->getCell("{$col}{$fila}")->getValue()),
+                        'orden' => $estructura->orden,
                     ];
+                    //Log::info('Celda('.$col.$fila.') :' . $hoja->getCell("{$col}{$fila}")->getValue());
 
-
-
+                    Log::info('Item: ' . json_encode($item));
 
                     $items[] = $item;
                     $fila++;
                 }
             }
+          
+            
+            $estrItems = $estructuras->where('tipos_seccion_conversors_id', 3)->sortBy(['orden', 'asc']);
 
-            $estrItems = $estructuras->where('tipos_seccion_conversors_id', 3)->sortBy(['coordenada', 'asc']);
-
-            $limit = $filaCostos + 10;
-            Log::info('Fila Costo:' . $filaCostos);
-            for ($i = $filaCostos; $i < $limit; $i++) {
-                $valorCelda = $hoja->getCell("A{$filaCostos}")->getValue();
-                Log::info('Valor Celda:' . $valorCelda);
-                if ($valorCelda == "TOTAL SALES") {
-                    $filaCostos = $filaCostos + 1;
-                    break;
-                } else {
-                    $filaCostos = $filaCostos + 1;
-                }
-            }
-
+            
+           
             foreach ($estrItems as $estructura) {
-
-
+             
                 $filaInicialCostos = $estructura->coordenada;
                 preg_match('/(\D+)(\d+)/', $filaInicialCostos, $matchesCostos);
                 $columnaCostos = $matchesCostos[1]; // A
 
 
-                $valor = $hoja->getCell("{$columnaCostos}{$filaCostos}")->getValue();
-
+                $valor = $hoja->getCell("{$columnaCostos}{$fila_costos}")->getValue();
+             
                 $costos[] = [
-                    'coordenada' => "{$columnaCostos}{$filaCostos}",
+                    'coordenada' => "{$columnaCostos}{$fila_costos}",
                     'propiedad' => $estructura->propiedad,
                     'valor' => $this->normalizarTexto($valor),
                 ];
-                $filaCostos++;
+                $fila_costos++;
             }
             $datosExcel = ExcelDato::where('instructivo', $instructivo)->get();
-
+        //    dd($fecha_arribo,$fecha_venta,$fecha_liquidacion,$fila_costos);
             // Guardar en la base de datos
             if (count($datosExcel) == 0 || $datosExcel == null) {
                 ExcelDato::create([
@@ -191,18 +196,25 @@ class ComexController extends Controller
                     'nombre_archivo' => $this->normalizarTexto($archivo->getClientOriginalName()),
                     'instructivo' => $instructivo,
                     'tasa' => $tasa,
+                    'fecha_arribo' => Carbon::parse($fecha_arribo)->format('Y-m-d'), // Formatear la fecha $fecha_arribo,
+                    'fecha_venta' => Carbon::parse($fecha_venta)->format('Y-m-d'), // Formatear la fecha $fecha_venta,
+                    'fecha_liquidacion' => Carbon::parse($fecha_liquidacion)->format('Y-m-d'), // Formatear la fecha $fecha_liquidacion,
+                    'fila_costos' => $fila_costos,
                     'datos' => json_encode([
                         'cabecera' => $datos['cabecera'] ?? [],
                         'items' => $items,
                         'costos' => $costos,
                     ], JSON_UNESCAPED_UNICODE),
+                   
                 ]);
             }
         } catch (\Exception $e) {
-            Log::error('Error al procesar el archivo Excel: ' . $e->getMessage());
+            Log::error('Error al procesar el archivo Excel: ' . $e->getMessage()."----".$e->getLine()."----".$e->getTraceAsString());
             return response()->json([
                 'message' => 'Ocurrió un error al procesar el archivo.',
                 'error' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
             ], 500);
         }
         try {
@@ -214,12 +226,14 @@ class ComexController extends Controller
             $cabecera = $datos['cabecera'] ?? [];
             $items = $datos['items'] ?? [];
             $costos = $datos['costos'] ?? [];
-
+           
+            
+           
             $totalItems = 0;
             $totalCostos = 0;
 
             // 🧮 **Calcular Totales en Items**
-            foreach ($items as &$item) {
+            foreach ($items as $item) {
 
                 $cantidad = $item[0]['propiedad'] == "Cantidad" ? floatval($item[0]['valor']) : 0;
                 $precioUnitario = $item[0]['propiedad'] == "Precio Unitario" ? floatval($item[0]['valor']) : 0;
@@ -247,12 +261,15 @@ class ComexController extends Controller
                 'costos' => $datos['costos'],
                 'instructivo' => $instructivo,
                 'tasa' => $tasa,
+                'datosExcel' => $datosExcel,
             ]);
         } catch (\Exception $e) {
             Log::error('Error al mostrar los datos procesados: ' . $e->getMessage());
             return response()->json([
                 'message' => 'Ocurrió un error al mostrar los datos.',
                 'error' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
             ], 500);
         }
     }
@@ -324,11 +341,12 @@ class ComexController extends Controller
             $clltCabecera = collect($cabecera);
             $clltItems = collect($items);
             $clltCostos = collect($costos);
-
+      
             $cliente = $datosLiq->cliente;
             $master = $datosLiq->master_id;
 
             $LiqCabecera = new LiqCxCabecera();
+          // dd($cabecera);
             /*
          'instructivo',
         'cliente_id',
@@ -339,18 +357,25 @@ class ComexController extends Controller
         'total_bruto',
         'total_neto',
          */
+        
             $LiqCabecera->cliente_id = $cliente;
             $LiqCabecera->instructivo = $instructivo;
             $LiqCabecera->tasa_intercambio = $tasa;
             //nave
+
             $nave_id = $clltCabecera->first(function ($nave) {
                 return $nave['propiedad'] === 'Nave';
             });
-            $LiqCabecera->nave_id = $nave_id['valor'];
+            if(isset($nave_id['valor'])){
+                $LiqCabecera->nave_id = $nave_id['valor'];    
+            }
+            
             $etaFA = $clltCabecera->first(function ($eta) {
                 return $eta['propiedad'] === 'Fecha de Arribo';
             });
-            $LiqCabecera->eta = $this->formatDate2($etaFA['valor']);
+            
+            $LiqCabecera->eta = $request->input('fecha_arribo');
+            //dd($LiqCabecera->eta);
             $LiqCabecera->total_costo = 0;
             $LiqCabecera->total_bruto = 0;
             $LiqCabecera->total_neto = 0;
@@ -360,7 +385,7 @@ class ComexController extends Controller
                     'valor' => $costo['valor'],
                 ];
             });
-
+           
             $LiqCabecera->save();
             $registros = [];
 
@@ -377,7 +402,7 @@ class ComexController extends Controller
                     });
                 })
                 ->values();
-
+                //dd($registros);
             // Mostrar el resultado
             /*
             'contenedor',
@@ -396,6 +421,7 @@ class ComexController extends Controller
             'liqcabecera_id',
             */
             foreach ($registros as $fila) {
+                
                 $contenedor = isset($fila['Contenedor']) ? $fila['Contenedor'] : '';
                 $eta = $LiqCabecera->eta;
                 $variedad_id = $fila['Variedad'];
@@ -404,13 +430,14 @@ class ComexController extends Controller
                 $calibre = isset($fila['Calibre']) ? $fila['Calibre'] : '';
                 $embalaje_id = isset($fila['Embalaje']) ? $fila['Embalaje'] : '';
                 $cantidad = isset($fila['Cantidad']) ? $fila['Cantidad'] : 0;
-                $fecha_venta = isset($fila['Fecha de Venta']) ? $this->formatDate2($fila['Fecha de Venta']) : '';
+                $fecha_venta = $request->input('fecha_venta');
                 $ventas = isset($fila['Ventas']) ? $fila['Ventas'] : 0;
                 $precio_unitario = isset($fila['Precio Unitario']) ? $fila['Precio Unitario'] : 0;
                 $monto_rmb = isset($fila['Monto RMB']) ? $fila['Monto RMB'] : 0;
                 $observaciones = isset($fila['Observaciones']) ? $fila['Observaciones'] : '';
                 $liqcabecera_id = $LiqCabecera->id;
-                LiquidacionesCx::create([
+                try{
+                $result=LiquidacionesCx::create([
                     'contenedor' => $contenedor,
                     'eta' => $eta,
                     'variedad_id' => $variedad_id,
@@ -426,17 +453,30 @@ class ComexController extends Controller
                     'observaciones' => $observaciones,
                     'liqcabecera_id' => $liqcabecera_id
                 ]);
+                Log::info('Datos guardados correctamente'."----".$result);
+                }
+            catch(\Exception $e) {
+                Log::error('Error al guardar los datos: ' . $e->getMessage()."----".$e->getLine());
+
+            }
+            
             }
             foreach ($costos as $costo) {
                 $propiedad = $costo['propiedad'];
                 //$Costo::where('nombre', $propiedad)->first();
-                $valor = $costo['valor'];
+                $valor = $costo['valor']==""?0:$costo['valor'];
                 $c = new Costo();
+                try{
                 LiqCosto::create([
                     'nombre_costo' => $propiedad,
                     'valor' => $valor,
                     'liq_cabecera_id' => $liqcabecera_id
                 ]);
+                Log::info('Costos guardados correctamente');
+            }
+            catch(\Exception $e) {
+                Log::error('Error al guardar los costos: ' . $e->getMessage()."----".$e->getLine());
+            }
             }
 
             // Convertir los registros en un array de filas para la base de datos
@@ -450,6 +490,9 @@ class ComexController extends Controller
             $total_bruto = $total_items[0]->total_items;
             $total_neto = $total_bruto - $totcostos[0]->total_costos;
             $total_costos = $totcostos[0]->total_costos;
+            Log::info('Total Costos: ' . $total_costos);
+            Log::info('Total Bruto: ' . $total_bruto);
+            Log::info('Total Neto: ' . $total_neto);
             $LiqCabecera->total_costo = $total_costos;
             $LiqCabecera->total_bruto = $total_bruto;
             $LiqCabecera->total_neto = $total_neto;
@@ -464,8 +507,8 @@ class ComexController extends Controller
         } catch (\Exception $e) {
             $clientes_comexes = ClientesComex::get();
             $naves            = Nafe::get();
-            Log::error('Error al procesar los datos: ' . $e->getMessage());
-            $message = 'Error al procesar los datos: ' . $e->getMessage();
+            Log::error('Error al procesar los datos: ' . $e->getMessage()."----".$e->getLine());
+            $message = 'Error al procesar los datos: ' . $e->getMessage()."----".$e->getLine();
             $status = 'error';
             return view('admin.liqCxCabeceras.index', compact('message', 'status', 'clientes_comexes', 'naves'));
         }
@@ -483,7 +526,7 @@ class ComexController extends Controller
             //$timestamp->setTimezone('America/Santiago');
 
             // Devolver el formato esperado
-            return $timestamp->format('d-m-Y H:i');
+            return $timestamp->format('Y-m-d');
         } catch (\Exception $e) {
             Log::error("Error al formatear la fecha: " . $e->getMessage());
             return $date; // Si falla, devuelve la fecha original
@@ -492,18 +535,28 @@ class ComexController extends Controller
 
     //generar excel comparativo
     public function generacomparativa(Request $request)
-    {   
-        $ids =explode(',', $request->input('ids'));
-        
+    {
+        $ids = json_decode($request->ids, true);
         
         $liqCxCabeceras = LiqCxCabecera::whereIn('id', $ids)->get(); // LiqCxCabecera::find(request('ids'));
         $dataComparativa = collect();
-       
-        
+        $C_Logisticos = Costo::where('categoria', 'Costo Logístico')->get();
+        $C_Mercado = Costo::where('categoria', 'Costos Mercado')->get();
+        $C_Impuestos=Costo::where('categoria', 'Impuestos')->get();
+        $C_FleteInternacional=Costo::where('categoria', 'Flete Internacional')->get();
+        $C_FleteDomestico=Costo::where('categoria', 'Flete Doméstico')->get();
+       //Inicio los costos agrupados por categoria
+        $costosLogisticos = 0;
+        $costosMercado = 0;
+        $costosImpuestos = 0;
+        $costosFleteInternacional = 0;
+        $costosFleteDomestico = 0;
         foreach ($liqCxCabeceras as $liqCxCabecera) {
             $detalle = LiquidacionesCx::where('liqcabecera_id', $liqCxCabecera->id)->get();
+            $excelDato=ExcelDato::where('instructivo',$liqCxCabecera->instructivo)->first();
             $nombre_costo = Costo::pluck('nombre'); // Extraer solo los nombres de costos
-
+            
+            
             foreach ($detalle as $item) {
                 $costos = LiqCosto::where('liq_cabecera_id', $liqCxCabecera->id)->get();
 
@@ -521,7 +574,30 @@ class ComexController extends Controller
                         // Si el costo no existe en la lista de costos procesados, agregarlo con valor 0
                         $costo_procesado[$costo->nombre_costo] = 0;
                     }
+                    Log::info('Nombre Costo:'."----". $costo->nombre_costo);
+                    $CatCosto = Costo::where('nombre', $costo->nombre_costo)->first();
+
+                    switch ($CatCosto->categoria) {
+                        case 'Costo Logístico':
+                            $costosLogisticos += $costo->valor;
+                            break;
+                        case 'Costos Mercado':
+                            $costosMercado += $costo->valor;
+                            break;
+                        case 'Impuestos':
+                            $costosImpuestos += $costo->valor;
+                            break;
+                        case 'Flete Internacional':
+                            $costosFleteInternacional += $costo->valor;
+                            break;
+                        case 'Flete Doméstico':
+                            $costosFleteDomestico += $costo->valor;
+                            break;
+                        default:
+                            break;
+                    }
                 }
+
                 $calculos = [
                     "SANITIZING FEE" => '',
                     "DOMESTIC FREIGHT" => '',
@@ -548,35 +624,116 @@ class ComexController extends Controller
                     "Venta Kilo RMB" => 0,
                     "Tipo de embalaje" => $this->traducedatos($item->embalaje_id,'Embalaje'),
                 ];
+              //  dd($liqCxCabecera);
                 // Agregar los datos principales y los costos procesados al array
+                Log::info('Datos a procesar'."----". $liqCxCabecera->cliente->nombre_fantasia);
+                $i=2;
                 $dataComparativa->push(array_merge(
                     [
-                        'cliente' => $liqCxCabecera->cliente->nombre_fantasia,
-                        'nave' => $liqCxCabecera->nave->nombre,
-                        'eta' => $liqCxCabecera->eta,
-                        'variedad' => $item->variedad,
-                        'etiqueta' => $item->etiqueta_id,
-                        'calibre' => $this->traducedatos($item->calibre,'Calibre'),
-                        'embalaje' =>$this->traducedatos($item->embalaje_id,'Embalaje'),
-                        'cantidad' => $item->cantidad,
-                        'fecha_venta' => $item->fecha_venta,
-                        'ventas' => $item->ventas,
-                        'precio_unitario' => isset($item->precio_unitario)?$item->precio_unitario:0,
-                        'monto_rmb' => $item->monto_rmb,
-                        'observaciones' => $item->observaciones,
-                        'tasa_cambio' => $liqCxCabecera->tasa_cambio
+                        'Embarque' => '',  //A
+                        'cliente' => $liqCxCabecera->cliente->nombre_fantasia, //B
+                        'nave' => $liqCxCabecera->nave_id, //C
+                        'Puerto Destino'=>'', //D
+                        'AWB'=>'', //E
+                        'Contenedor'=>'', //F
+                        'Liquidación'=>'', //G
+                        'ETD'=>'', //H
+                        'ETD Week'=>'', //I
+                        'ETA' => $liqCxCabecera->eta, //J
+                        'ETA Week'=> Carbon::parse($liqCxCabecera->eta)->weekOfYear, //K
+                        'Fecha Venta'=> $item->fecha_venta, //L
+                        'Fecha Venta Week'=> Carbon::parse($excelDato->fecha_venta)->weekOfYear, //M
+                        'Fecha Liquidación'=> $excelDato->fecha_liquidacion, //N
+                        'Pallet'=> $item->pallet, //O
+                        'Peso neto'=> '',//P
+                        'Kilos total'=>'',//Q
+                        'embalaje' =>$this->traducedatos($item->embalaje_id,'Embalaje'),//R
+                        'etiqueta' => $item->etiqueta_id, //S
+                        'variedad' => $item->variedad, //T                     
+                        'Calibre Estandar'   => '', //U
+                        'calibre' => $this->traducedatos($item->calibre,'Calibre'), //V
+                        'color'=>'',//W
+                        'Observaciones'=>$item->observaciones, //X
+                        'Cajas' => $item->cantidad, //y
+                        'RMB Caja' => isset($item->precio_unitario)?$item->precio_unitario:0, //z
+                        'RMB Venta'=>$item->cantidad*$item->precio_unitario,//AA
+                        'Comision Caja'=>'=+AC'.$i.'*Z'.$i,//AB
+                        '% Comisión'=>'0,06',//AC
+                        'RMB Comisión'=>'=+AB'.$i.'*Y'.$i,//AD
+                        'Factor Imp destino'=>0,//AE                        
+                        'Imp destino caja RMB'=>'=+(AE'.$i.'*Z'.$i.')',//AF
+                        'RMB Imp destino TO'=>'=+AH'.$i.'*Y'.$i,//AG
+                        'Costo log. Caja RMB'=>'=+(9630/'.($costosLogisticos==0?1:$costosLogisticos).')*P'.$i,//AH
+                        'RMB Costo log. TO'=>'=+AH'.$i.'*Y'.$i,//AI
+                        'Ent. Al mercado Caja RMB'=>'=+(3400/'.($costosLogisticos==0?1:$costosLogisticos).')*P'.$i,//AJ Preguntar a Haydelin
+                        'RMB Ent. Al mercado TO'=>'=+AJ'.$i.'*Y'.$i,//AK
+                        'Costo mercado caja RMB'=>'=+(800/'.($costosMercado==0?1:$costosMercado).')*P'.$i,//AL
+                        'RMB Costos mercado TO'=>'=+AL'.$i.'*Y'.$i,//AM
+                        'Otros  costos dest. Caja RMB'=>0,//AN
+                        'RMB otros costos TO'=>0,//AO
+                        'Flete marit. Caja RMB'=>'=+(58008/'.($costosFleteInternacional==0?1:$costosFleteInternacional).')*P'.$i,//AP
+                        'RMB Flete Marit. TO'=>'=+AP'.$i.'*Y'.$i,//AQ
+                        'Costos cajas RMB'=>'=+AF'.$i.'+AH'.$i.'+AJ'.$i.'+AL'.$i.'+AN'.$i.'+AB'.$i.'+AP'.$i,//AR
+                        'RMB Costos TO'=>'=+AR'.$i.'*Y'.$i,//AS
+                        'Resultados caja RMB'=>0,//AT
+                        'RMB result. TO'=>0,//AU
+                        'TC'	=> $excelDato->tasa, //AV
+                        'Venta USD'=>'=+Z'.$i.'/AV'.$i,//AW
+                        'Ventas TO USD'=>'=+AW'.$i.'*Y'.$i,//AX
+                        'Com USD'=>'=+AB'.$i.'/AV'.$i,//AY	
+                        'Com TO USD'=>'=+AY'.$i.'*Y'.$i,//AZ
+                        'Imp destino USD'=>'=+AF'.$i.'/AV'.$i,//BA
+                        'Imp destino USD TO'=>'=+BA'.$i.'*Y'.$i,//BB
+                        'Costo log. USD'=>'=+AH'.$i.'/AV'.$i,//BC
+                        'Costo log. USD TO'=>'=+BC'.$i.'*Y'.$i,//BD
+                        'Ent. Al mercado USD'=>'=+AJ'.$i.'/AV'.$i,//BE
+                        'Ent. Al mercado USD TO'=>'=+BE'.$i.'*Y'.$i,//BF
+                        'Costo mercado USD'=>'=+AL'.$i.'/AV'.$i,//BG
+                        'Costos mercado USD TO'=>'=+BG'.$i.'*Y'.$i,//BH
+                        'Otros  costos dest. USD'=>'=+AN'.$i.'/AV'.$i,//BI	
+                        'Otros costos USD TO'=>'=+BI'.$i.'*Y'.$i,//BJ	
+                        'Flete marit. USD'	=>'=+AP'.$i.'/AV'.$i,//BK
+                        'Flete Marit. USD TO'=>'=+BK'.$i.'*Y'.$i,//BL
+                        'Costos cajas USD'=>'=+AR'.$i.'/AV'.$i,//BM	
+                        'Costos USD TO'=>'=+BM'.$i.'*Y'.$i,//BN	
+                        'Ajuste impuesto USD'=>0,//BO	
+                        'Ajuste TO USD'=>0,//BP	
+                        'Flete Aereo'=>0,//BQ	
+                        'Flete Aereo TO'=>0,//BR
+                        'FOB USD'=>'=+(AT'.$i.'/AV'.$i.')-BO'.$i,//BS	
+                        'FOB TO USD'=>'=+BS'.$i.'*Y'.$i,//BT
+                        'FOB kg'=>'=+BT'.$i.'/Q'.$i,//BU	
+                        'FOB Equivalente'=>'=+BU'.$i.'*5',//BV	
+                        'Flete Cliente'=>0,//BW	
+                        'Transporte'=>0,//BX	
+                        'CNY'=>'PRE',//BY	
+                        'Pais'=>'CHINA',//BZ
                     ],
                     $costo_procesado,$calculos
                     
                         // Incorporar los costos como columnas adicionales
                 ));
+                $i++;
             }
         }
         return Excel::download(new ComparativaExport($dataComparativa), 'comparativa-liquidaciones'.date('Y-m-d H:i:s').'.xlsx');
     }
     function traducedatos($texto,$tipo)
     {
+        try{
+            if($texto==null || $texto==''){
+                return $texto;
+            }
         $dato=Diccionario::where("tipo",$tipo)->where("variable",$texto)->first();
+        if($dato==null){
+            return $texto;
+        }
         return $dato->valor;
+        }
+        catch(\Exception $e){
+            Log::error("Error al traducir datos: " . $e->getMessage()."----".$texto."----".$tipo);
+
+            return $texto;
+        }
     }
 }

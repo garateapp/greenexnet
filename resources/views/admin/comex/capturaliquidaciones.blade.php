@@ -211,14 +211,17 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-header">
-                        Previsualización de Liquidación Instructivo - {{ $instructivo }}
+                        Previsualización de Liquidación Instructivo - {{ $instructivo }} 
+                        
                     </div>
 
                     <div class="card-body">
-                        
+                        <p>Fecha Arribo: {{ $datosExcel->fecha_arribo }}</p>
+                            <p>Fecha Venta: {{ $datosExcel->fecha_venta  }}</p>
+                            <p>Fecha Liquidación:{{ $datosExcel->fecha_liquidacion }}</p>
                         
                         <!-- Sección de Cabecera -->
-                       
+                     
                         <table border="1" cellpadding="5" cellspacing="0">
                             <thead>
                                 <tr>
@@ -249,8 +252,10 @@
                                 <thead>
                                     <tr>
                                         @php
+                                       
                                             $headers = [];
                                             $head = '';
+                                          
                                             if (count($items) > 0) {
                                                 foreach ($items as $header) {
                                                     foreach ($header as $th) {
@@ -271,7 +276,10 @@
                                 </thead>
                                 <tbody>
                                 @php
-                                    $UltimaLetra= 'A';
+                                    preg_match('/(\D+)/',$items[0][0]['coordenada'], $matches);
+                                    $letraInicial=$matches[1];
+                                    $UltimaLetra= $matches[1];
+                                    
                                     $tabla = [];
                                     $cantidades = [];
                                     $precios = [];
@@ -279,15 +287,16 @@
                                     $totalesColumna = [];
                                     
                                     // Procesar datos de los items
-                 
+                                   
                                     foreach ($items as $fila) {
                                         foreach ($fila as $columna) {
                                             $coordenada = $columna['coordenada'];
                                             $valor = $columna['valor'];
                                             $propiedad = $columna['propiedad'];
+                                            
                                             $col = preg_replace('/[0-9]/', '', $coordenada); // Extraer letras (columna)
                                             $row = preg_replace('/[A-Z]/', '', $coordenada); // Extraer números (fila)
-
+                                           
                                             $tabla[$row][$col][$propiedad] = $valor;
                                             // Determinar la última letra
                                             if (strcmp($col, $UltimaLetra) > 0) {
@@ -312,6 +321,7 @@
                                 @endphp
 
                                 {{-- Mostrar filas y calcular totales --}}
+                              
                                 @foreach ($tabla as $row => $columnas)
                                     @php
                                         $totalFila = 0;
@@ -321,16 +331,15 @@
                                         }
                                     @endphp
                                     <tr>
-                                        @foreach (range('A', $UltimaLetra) as $col)
-                                            <td>
-                                               
-                                                @if (isset($columnas[$col]))
-                                                    @foreach ($columnas[$col] as $propiedad => $valor)
-                                                        {{ $valor }}<br>
-                                                    @endforeach
-                                                @endif
-                                            </td>
-                                        @endforeach
+                                       
+                                        @foreach ($columnas as $col => $valores) {{-- Solo procesa columnas presentes en $columnas --}}
+                                        <td>
+                                            @foreach ($valores as $propiedad => $valor)
+                                                {{ Log::info($propiedad . "-- Col " . $col) }}
+                                                {{ $valor }}<br>
+                                            @endforeach
+                                        </td>
+                                    @endforeach
                                         <td><strong>{{ number_format($totalFila, 2) }}</strong></td>
                                         <td><strong>{{ number_format(($totalFila/$tasa), 2) }}</strong></td>
                                     </tr>
@@ -338,7 +347,7 @@
 
                                 {{-- Totales de columnas y total general --}}
                                 <tr>
-                                    <td colspan="{{ count(range('A', $UltimaLetra)) }}"><strong>Total Columnas</strong></td>
+                                    <td colspan="{{ count($columnas) }}"><strong>Total Columnas</strong></td>
                                     <td>
                                         <strong>{{ number_format($totalGeneral, 2) }}</strong>
                                     </td>
@@ -401,6 +410,9 @@
             @csrf
             <input type="hidden" name="instructivo" value="{{ $instructivo }}">
             <input type="hidden" name="tasa" value="{{ $tasa }}">
+            <input type="hidden" name="fecha_arribo" value="{{ $datosExcel->fecha_arribo }}">
+            <input type="hidden" name="fecha_venta" value="{{ $datosExcel->fecha_venta }}">
+            <input type="hidden" name="fecha_liquidacion" value="{{ $datosExcel->fecha_liquidacion }}">
             <button type="submit" class="btn btn-primary">Guardar</button>
         </form>
     </div>

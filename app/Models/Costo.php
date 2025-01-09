@@ -37,6 +37,10 @@ class Costo extends Model
         'Costos Mercado'       => 'Costos Mercado',
         'Otros Costos Destino' => 'Otros Costos Destino',
         'Flete'                => 'Flete',
+        'Costo Logistico'      => 'Costo Logistico',
+        'Flete Internacional'  => 'Flete Internacional',
+        'Flete Domestico'      => 'Flete Doméstico',
+        'Impuestos'            => 'Impuestos',
     ];
 
     protected function serializeDate(DateTimeInterface $date)
