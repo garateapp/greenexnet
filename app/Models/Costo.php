@@ -39,7 +39,7 @@ class Costo extends Model
         'Flete'                => 'Flete',
         'Costo Logistico'      => 'Costo Logistico',
         'Flete Internacional'  => 'Flete Internacional',
-        'Flete Domestico'      => 'Flete Doméstico',
+        'Flete Domestico'      => 'Flete Domestico',
         'Impuestos'            => 'Impuestos',
     ];
 
