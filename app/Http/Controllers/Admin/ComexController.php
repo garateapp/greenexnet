@@ -424,7 +424,19 @@ class ComexController extends Controller
                 
                 $contenedor = isset($fila['Contenedor']) ? $fila['Contenedor'] : '';
                 $eta = $LiqCabecera->eta;
+                if($master==8){
+                    $texto =$fila['Embalaje'];
+                    if (preg_match('/智利车厘子(.*?)5KG/', $texto, $matches)) {
+                        $resultado = trim($matches[1]); // Remueve espacios extra
+                        
+                    } else {
+                        $resultado="Sin Variedad.";
+                    }
+                    $variedad_id =  $resultado;
+                }
+                else{
                 $variedad_id = $fila['Variedad'];
+                }
                 $pallet = isset($fila['Pallet']) ? $fila['Pallet'] : '';
                 $etiqueta_id = isset($fila['Etiqueta']) ? $fila['Etiqueta'] : '';
                 $calibre = isset($fila['Calibre']) ? $fila['Calibre'] : '';
