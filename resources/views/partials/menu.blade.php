@@ -367,11 +367,11 @@
                                 <i class="fa-fw fas fa-address-card c-sidebar-nav-icon">
 
                                 </i>
-                                {{ trans('cruds.liqCxCabecera.title') }}
+                                Liquidaciones
                             </a>
                         </li>
                     @endcan
-                    @can('liquidaciones_cx_access')
+                    {{-- @can('liquidaciones_cx_access')
                         <li class="c-sidebar-nav-item">
                             <a href="{{ route('admin.liquidaciones-cxes.index') }}"
                                 class="c-sidebar-nav-link {{ request()->is('admin/liquidaciones-cxes') || request()->is('admin/liquidaciones-cxes/*') ? 'c-active' : '' }}">
@@ -392,7 +392,7 @@
                                 {{ trans('cruds.liqCosto.title') }}
                             </a>
                         </li>
-                    @endcan
+                    @endcan --}}
                 @endcan
 
             </ul>
