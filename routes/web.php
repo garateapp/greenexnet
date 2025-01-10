@@ -338,18 +338,26 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::delete('liq-cx-cabeceras/destroy', 'LiqCxCabeceraController@massDestroy')->name('liq-cx-cabeceras.massDestroy');
     Route::post('liq-cx-cabeceras/parse-csv-import', 'LiqCxCabeceraController@parseCsvImport')->name('liq-cx-cabeceras.parseCsvImport');
     Route::post('liq-cx-cabeceras/process-csv-import', 'LiqCxCabeceraController@processCsvImport')->name('liq-cx-cabeceras.processCsvImport');
+    Route::get('liq-cx-cabeceras/getDatosLiqItems', 'LiqCxCabeceraController@getDatosLiqItems')->name('liq-cx-cabeceras.getDatosLiqItems');
+    Route::get('liq-cx-cabeceras/getDatosLiqCostos', 'LiqCxCabeceraController@getDatosLiqCostos')->name('liq-cx-cabeceras.getDatosLiqCostos');
+    Route::post('liq-cx-cabeceras/update-inline', 'LiqCxCabeceraController@updateInline')->name('liq-cx-cabeceras.updateInline');
+    Route::get('liq-cx-cabeceras/destroyItem/{id}', 'LiqCxCabeceraController@destroyItem')->name('liq-cx-cabeceras.destroyItem');
+    Route::get('liq-cx-cabeceras/destroyCosto/{id}', 'LiqCxCabeceraController@destroyCosto')->name('liq-cx-cabeceras.destroyCosto');
+    
     Route::resource('liq-cx-cabeceras', 'LiqCxCabeceraController');
 
     // Liquidaciones Cx
     Route::delete('liquidaciones-cxes/destroy', 'LiquidacionesCxController@massDestroy')->name('liquidaciones-cxes.massDestroy');
     Route::post('liquidaciones-cxes/parse-csv-import', 'LiquidacionesCxController@parseCsvImport')->name('liquidaciones-cxes.parseCsvImport');
     Route::post('liquidaciones-cxes/process-csv-import', 'LiquidacionesCxController@processCsvImport')->name('liquidaciones-cxes.processCsvImport');
+    
     Route::resource('liquidaciones-cxes', 'LiquidacionesCxController');
 
     // Liq Costos
     Route::delete('liq-costos/destroy', 'LiqCostosController@massDestroy')->name('liq-costos.massDestroy');
     Route::post('liq-costos/parse-csv-import', 'LiqCostosController@parseCsvImport')->name('liq-costos.parseCsvImport');
     Route::post('liq-costos/process-csv-import', 'LiqCostosController@processCsvImport')->name('liq-costos.processCsvImport');
+    Route::post('liq-costos/updatecosto', 'LiqCostosController@updatecosto')->name('liq-costos.updatecosto');
     Route::resource('liq-costos', 'LiqCostosController');
 
     //Fin Liquidaciones de Cliente

@@ -420,24 +420,7 @@ class ComexController extends Controller
                     });
                 })
                 ->values();
-            //dd($registros);
-            // Mostrar el resultado
-            /*
-            'contenedor',
-            'eta',
-            'variedad_id',
-            'pallet',
-            'etiqueta_id',
-            'calibre',
-            'embalaje_id',
-            'cantidad',
-            'fecha_venta',
-            'ventas',
-            'precio_unitario',
-            'monto_rmb',
-            'observaciones',
-            'liqcabecera_id',
-            */
+       
             foreach ($registros as $fila) {
 
                 $contenedor = isset($fila['Contenedor']) ? $fila['Contenedor'] : '';
@@ -528,7 +511,7 @@ class ComexController extends Controller
             $naves            = Nafe::get();
             $message = 'Datos procesados y guardados correctamente.';
             $status = 'success';
-            return redirect()->route('admin.liq-cx-cabeceras.index')->with('message', $message); //view('admin.liqCxCabeceras.index', compact('message', 'status', 'clientes_comexes', 'naves'));
+            return redirect()->route('admin.liq-cx-cabeceras.edit', $liqcabecera_id)->with('message', $message); //view('admin.liqCxCabeceras.index', compact('message', 'status', 'clientes_comexes', 'naves'));
         } catch (\Exception $e) {
             $clientes_comexes = ClientesComex::get();
             $naves            = Nafe::get();

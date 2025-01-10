@@ -22,12 +22,12 @@ class StoreLiquidacionesCxRequest extends FormRequest
                 'nullable',
             ],
             'eta' => [
-                'date_format:' . config('panel.date_format'),
+                //'date_format:' . config('panel.date_format'),
                 'nullable',
             ],
             'variedad_id' => [
                 'required',
-                'integer',
+                'string',
             ],
             'pallet' => [
                 'string',
@@ -44,7 +44,7 @@ class StoreLiquidacionesCxRequest extends FormRequest
                 'max:2147483647',
             ],
             'fecha_venta' => [
-                'date_format:' . config('panel.date_format'),
+                //'date_format:' . config('panel.date_format'),
                 'nullable',
             ],
             'ventas' => [

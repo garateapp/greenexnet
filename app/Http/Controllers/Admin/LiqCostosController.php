@@ -130,4 +130,19 @@ class LiqCostosController extends Controller
 
         return response(null, Response::HTTP_NO_CONTENT);
     }
+    public function updatecosto(Request $request)
+    {
+        $validated = $request->validate([
+            'id' => 'required|exists:liq_costos,id',
+            'field' => 'required|string',
+            'value' => 'nullable|string|max:255',
+        ]);
+       
+        $costo = LiqCosto::where('id',$request->id)->first();
+        
+        $costo->{$validated['field']} = $validated['value'];
+        $costo->save();
+        return response()->json(['success' => true, 'message' => 'Campo actualizado con éxito']);
+
+    }
 }

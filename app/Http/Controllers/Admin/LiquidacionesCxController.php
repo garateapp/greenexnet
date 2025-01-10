@@ -122,6 +122,7 @@ class LiquidacionesCxController extends Controller
 
     public function store(StoreLiquidacionesCxRequest $request)
     {
+        
         $liquidacionesCx = LiquidacionesCx::create($request->all());
 
         return redirect()->route('admin.liquidaciones-cxes.index');

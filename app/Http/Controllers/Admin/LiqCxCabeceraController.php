@@ -8,7 +8,10 @@ use App\Http\Requests\MassDestroyLiqCxCabeceraRequest;
 use App\Http\Requests\StoreLiqCxCabeceraRequest;
 use App\Http\Requests\UpdateLiqCxCabeceraRequest;
 use App\Models\ClientesComex;
+use App\Models\LiqCosto;
 use App\Models\LiqCxCabecera;
+use App\Models\LiquidacionesCx;
+use App\Models\Costo;
 use App\Models\Nafe;
 use Gate;
 use Illuminate\Http\Request;
@@ -120,14 +123,44 @@ class LiqCxCabeceraController extends Controller
 
         return view('admin.liqCxCabeceras.edit', compact('clientes', 'liqCxCabecera', 'naves'));
     }
+    public function updateInline(Request $request)
+    {
+        $validated = $request->validate([
+            'id' => 'required|exists:liquidaciones_cxes,id',
+            'field' => 'required|string',
+            'value' => 'nullable|string|max:255',
+        ]);
 
+        $liquidacion = LiquidacionesCx::find($validated['id']);
+        $liquidacion->{$validated['field']} = $validated['value'];
+        $liquidacion->save();
+
+        return response()->json(['success' => true, 'message' => 'Campo actualizado con éxito']);
+    }
+ 
+    public function getDatosLiqItems(Request $request)
+    {
+
+        $liquidacion = LiquidacionesCx::where('liqcabecera_id', $request->id)->get();
+
+        return response()->json(['success' => true, 'message' => 'Campo actualizado con éxito', 'data' => $liquidacion]);
+    }
+    public function getDatosLiqCostos(Request $request)
+    {
+        $costos = LiqCosto::where('liq_cabecera_id', $request->id)->get();
+        foreach ($costos as $costo) {
+            $costo->categoria=(Costo::where("nombre",$costo->nombre_costo)->first()==null)?'Sin Categoría':Costo::where("nombre",$costo->nombre_costo)->first()->categoria;
+        }
+        
+        return response()->json(['success' => true, 'message' => 'Campo actualizado con éxito', 'data' => $costos]);
+    }
     public function update(UpdateLiqCxCabeceraRequest $request, LiqCxCabecera $liqCxCabecera)
     {
         $liqCxCabecera->update($request->all());
 
         return redirect()->route('admin.liq-cx-cabeceras.index');
     }
-
+   
     public function show(LiqCxCabecera $liqCxCabecera)
     {
         abort_if(Gate::denies('liq_cx_cabecera_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
@@ -136,7 +169,30 @@ class LiqCxCabeceraController extends Controller
 
         return view('admin.liqCxCabeceras.show', compact('liqCxCabecera'));
     }
+    public function destroyItem($id)
+    {
+        $liquidacion = LiquidacionesCx::find($id);
 
+        if (!$liquidacion) {
+            return response()->json(['success' => false, 'message' => 'Línea no encontrada.'], 404);
+        }
+
+        $liquidacion->delete();
+
+        return response()->json(['success' => true, 'message' => 'Línea eliminada correctamente.']);
+    }
+    public function destroyCosto($id)
+    {
+        $costo = LiqCosto::find($id);
+
+        if (!$costo) {
+            return response()->json(['success' => false, 'message' => 'costo no encontrado.'], 404);
+        }
+
+        $costo->delete();
+
+        return response()->json(['success' => true, 'message' => 'costo eliminada correctamente.']);
+    }
     public function destroy(LiqCxCabecera $liqCxCabecera)
     {
         abort_if(Gate::denies('liq_cx_cabecera_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
