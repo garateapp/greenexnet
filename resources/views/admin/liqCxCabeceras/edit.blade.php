@@ -232,8 +232,8 @@
         </div>
     </div>
 
-    //Modales para agregar o editar
-    <!-- Modal para agregar o editar un costo -->
+    
+    
     <div class="modal fade" id="addCostoModal" tabindex="-1" role="dialog" aria-labelledby="addCostoModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -280,6 +280,7 @@
             </div>
         </div>
     </div>
+    <!-- Modal para agregar o editar un item -->
     <div class="modal fade" id="addLiquidacionModal" tabindex="-1" aria-labelledby="addLiquidacionModalLabel"
         aria-hidden="true">
         <div class="modal-dialog">
