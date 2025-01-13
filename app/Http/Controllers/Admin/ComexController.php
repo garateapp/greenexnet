@@ -559,6 +559,7 @@ class ComexController extends Controller
         $costosImpuestos = 0;
         $costosFleteInternacional = 0;
         $costosFleteDomestico = 0;
+        $i = 2;
         foreach ($liqCxCabeceras as $liqCxCabecera) {
             $detalle = LiquidacionesCx::where('liqcabecera_id', $liqCxCabecera->id)->get();
             $excelDato = ExcelDato::where('instructivo', $liqCxCabecera->instructivo)->first();
@@ -636,7 +637,7 @@ class ComexController extends Controller
                 //  dd($liqCxCabecera);
                 // Agregar los datos principales y los costos procesados al array
                 Log::info('Datos a procesar' . "----" . $liqCxCabecera->cliente->nombre_fantasia);
-                $i = 2;
+                
                 $dataComparativa->push(array_merge(
                     [
                         'Embarque' => '',  //A
@@ -655,7 +656,7 @@ class ComexController extends Controller
                         'Fecha Liquidación' => $excelDato->fecha_liquidacion, //N
                         'Pallet' => $item->pallet, //O
                         'Peso neto' => '', //P
-                        'Kilos total' => '', //Q
+                        'Kilos total' => '=+P' . $i . '*Y' . $i, //Q
                         'embalaje' => $this->traducedatos($item->embalaje_id, 'Embalaje'), //R
                         'etiqueta' => $item->etiqueta_id, //S
                         'variedad' => $item->variedad_id, //T                     
@@ -669,7 +670,7 @@ class ComexController extends Controller
                         'Comision Caja' => '=+AC' . $i . '*Z' . $i, //AB
                         '% Comisión' => '0,06', //AC
                         'RMB Comisión' => '=+AB' . $i . '*Y' . $i, //AD
-                        'Factor Imp destino' => 0, //AE                        
+                        'Factor Imp destino' => 0, //AE  Esto no esta definido como para poder calcularlo                      
                         'Imp destino caja RMB' => '=+(AE' . $i . '*Z' . $i . ')', //AF
                         'RMB Imp destino TO' => '=+AH' . $i . '*Y' . $i, //AG
                         'Costo log. Caja RMB' => '=+(9630/' . ($costosLogisticos == 0 ? 1 : $costosLogisticos) . ')*P' . $i, //AH
@@ -678,14 +679,14 @@ class ComexController extends Controller
                         'RMB Ent. Al mercado TO' => '=+AJ' . $i . '*Y' . $i, //AK
                         'Costo mercado caja RMB' => '=+(800/' . ($costosMercado == 0 ? 1 : $costosMercado) . ')*P' . $i, //AL
                         'RMB Costos mercado TO' => '=+AL' . $i . '*Y' . $i, //AM
-                        'Otros  costos dest. Caja RMB' => 0, //AN
-                        'RMB otros costos TO' => 0, //AO
+                        'Otros  costos dest. Caja RMB' => 0, //AN  debemos configurar costos en categoría otros
+                        'RMB otros costos TO' => '=+AN'.$i.'*Y'.$i, //AO
                         'Flete marit. Caja RMB' => '=+(58008/' . ($costosFleteInternacional == 0 ? 1 : $costosFleteInternacional) . ')*P' . $i, //AP
                         'RMB Flete Marit. TO' => '=+AP' . $i . '*Y' . $i, //AQ
                         'Costos cajas RMB' => '=+AF' . $i . '+AH' . $i . '+AJ' . $i . '+AL' . $i . '+AN' . $i . '+AB' . $i . '+AP' . $i, //AR
                         'RMB Costos TO' => '=+AR' . $i . '*Y' . $i, //AS
-                        'Resultados caja RMB' => 0, //AT  Verificar con Haydelin
-                        'RMB result. TO' => 0, //AU  Verificar con Haydelin
+                        'Resultados caja RMB' => '=+Z' . $i . '-AR' . $i,  //AT  Verificar con Haydelin
+                        'RMB result. TO' => '=+AT'.$i.'*Y'.$i, //AU  Verificar con Haydelin
                         'TC'    => $excelDato->tasa, //AV
                         'Venta USD' => '=+Z' . $i . '/AV' . $i, //AW
                         'Ventas TO USD' => '=+AW' . $i . '*Y' . $i, //AX
