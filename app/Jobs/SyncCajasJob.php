@@ -106,7 +106,7 @@ class SyncCajasJob implements ShouldQueue
             ->where('PPE.id', '=', 7)
             ->where('SD.inventario', 1)
             //->where('SC.ncaja', '>', $request->min)
-            ->whereIn(DB::raw('DATEPART(WEEK, pemb.etd)'), [3])
+            ->whereIn(DB::raw('DATEPART(WEEK, pemb.eta)'), [3])
             ->where('SD.destruccion_id', '>=', 0)
             ->orderBy('SC.ncaja')->get();
                 //$jsonData = json_encode($cajasChunk);
