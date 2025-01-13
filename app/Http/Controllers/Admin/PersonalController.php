@@ -32,6 +32,7 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 use App\Exports\AsistenciaExport;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use App\Models\Configuracion;
 use DB;
 
 
@@ -230,10 +231,18 @@ class PersonalController extends Controller
     {
         return view('admin.personals.tratoembalaje');
     }
-    public function ejecutatratoembalaje(Request $request){
-        
+    public function ejecutatratoembalaje(Request $request)
+    {
+
+        // Obtener el valor de trato diario
+        $config = Configuracion::where('variable', 'ValorTratoDiario')->first();
+        if (!$config) {
+            return response()->json(['error' => 'Configuración ValorTratoDiario no encontrada.'], 500);
+        }
+
+        $valorTratoDiario = (float) $config->valor;
         $datos = DB::connection("sqlsrv")
-        ->table('V_PKG_Embaladoras_MiniPC as A')
+            ->table('V_PKG_Embaladoras_MiniPC as A')
             ->select(
                 'A.Creacion',
                 'A.C_Trabajador',
@@ -263,39 +272,40 @@ class PersonalController extends Controller
                 'B.peso_std',
                 'B.CP4'
             )
-            ->orderByDesc('A.Rut_Trabajador','A.Creacion')
+            ->orderByDesc('A.Rut_Trabajador', 'A.Creacion')
             ->get();
-            
-            // --b.CP4*b.peso_std as Valor_Kilo,
-            // --b.CP4*b.peso_std *count (a.caja) as Valor_Ganado_diario,
-            // --b.CP4*b.peso_std *count (a.caja)-12500 as Total_a_Pagar 
-            $resultado = $datos->groupBy('Rut_Trabajador')->map(function ($items, $rut) {
-                // Calcular el total a pagar por trabajador
-                $totalAPagar = $items->reduce(function ($carry, $item) {
-                    $valorPorCaja = ((float)$item->Valor) * ((float)$item->peso_std) * ((float)$item->Cantidad_Cajas);
-                    return $carry + ($valorPorCaja - 12500);
-                }, 0);
-        
-                // Formatear la estructura
-                return [
-                    'Rut_Trabajador' => $rut,
-                    'nombre' => $items[0]->nombre,
-                    'Total_a_pagar' => $totalAPagar,
-                    'detalles' => $items->map(function ($item) {
-                        return [
-                            'Creacion' =>Carbon::parse($item->Creacion)->format('d-m-Y'),
-                            'C_Trabajador' => $item->C_Trabajador,
-                            'N_embalaje_Actual' => $item->N_embalaje_Actual,
-                            'Cantidad_Cajas' => $item->Cantidad_Cajas,
-                            'Valor_kilo' => ((float)$item->Valor) * ((float)$item->peso_std),
-                            'Valor_Ganado_diario' => (((float)$item->Valor) * ((float)$item->peso_std) * ((float)$item->Cantidad_Cajas))-12500,
-                        ];
-                    }),
-                ];
-            })->values(); // Usamos values() para eliminar las claves asociativas y devolver un array numerado.
-        
-            // Retornar en formato JSON
-            return response()->json($resultado);
+
+        // --b.CP4*b.peso_std as Valor_Kilo,
+        // --b.CP4*b.peso_std *count (a.caja) as Valor_Ganado_diario,
+        // --b.CP4*b.peso_std *count (a.caja)-12500 as Total_a_Pagar 
+        $resultado = $datos->groupBy('Rut_Trabajador')->map(function ($items, $rut)  use ($valorTratoDiario){
+            // Calcular el total a pagar por trabajador
+            $totalAPagar = $items->reduce(function ($carry, $item)  use ($valorTratoDiario) {
+                $valorPorCaja = ((float)$item->Valor) * ((float)$item->peso_std) * ((float)$item->Cantidad_Cajas);
+                return $carry + ($valorPorCaja - $valorTratoDiario
+            );
+            }, 0);
+
+            // Formatear la estructura
+            return [
+                'Rut_Trabajador' => $rut,
+                'nombre' => $items[0]->nombre,
+                'Total_a_pagar' => $totalAPagar,
+                'detalles' => $items->map(function ($item)  use ($valorTratoDiario) {
+                    return [
+                        'Creacion' => Carbon::parse($item->Creacion)->format('d-m-Y'),
+                        'C_Trabajador' => $item->C_Trabajador,
+                        'N_embalaje_Actual' => $item->N_embalaje_Actual,
+                        'Cantidad_Cajas' => $item->Cantidad_Cajas,
+                        'Valor_kilo' => ((float)$item->Valor) * ((float)$item->peso_std),
+                        'Valor_Ganado_diario' => (((float)$item->Valor) * ((float)$item->peso_std) * ((float)$item->Cantidad_Cajas)) - ((float)$valorTratoDiario),
+                    ];
+                }),
+            ];
+        })->values(); // Usamos values() para eliminar las claves asociativas y devolver un array numerado.
+
+        // Retornar en formato JSON
+        return response()->json($resultado);
     }
     //Trato de embalaje
 
@@ -357,9 +367,9 @@ class PersonalController extends Controller
         $entradas = collect();
         $salidas = collect();
         $anulados = collect();
-        $unificados=collect();
+        $unificados = collect();
         $pareados = collect();
-        $fechaXls=$fecha[2] . '-' . $fecha[1] . '-' . $fecha[0];
+        $fechaXls = $fecha[2] . '-' . $fecha[1] . '-' . $fecha[0];
         foreach ($data as $entry) {
             if ($entry[5] == "Entrada") {
                 $entrada = new relojControl(); // Crear una nueva instancia para cada entrada
@@ -370,11 +380,11 @@ class PersonalController extends Controller
                 $entrada->setType($entry[5]);
                 $entrada->setLlave($entrada->getRut() . '-' . $entrada->getDateTime());
                 $entradas->push($entrada);
-                $personal=Personal::where('rut', $entry[0])->first();
-                if(!$personal){
-                    $personal=new Personal();
-                    $personal->rut=$entry[0];
-                    $personal->nombre=$entry[1];
+                $personal = Personal::where('rut', $entry[0])->first();
+                if (!$personal) {
+                    $personal = new Personal();
+                    $personal->rut = $entry[0];
+                    $personal->nombre = $entry[1];
                     $personal->save();
                 }
             }
@@ -401,8 +411,8 @@ class PersonalController extends Controller
         foreach ($entradas as $entrada) {
             $matchingSalida = $salidas->first(function ($salida) use ($entrada) {
                 return $salida->getRut() === $entrada->getRut() &&
-                       $salida->getName() === $entrada->getName() &&
-                       $salida->getDateTime() > $entrada->getDateTime();
+                    $salida->getName() === $entrada->getName() &&
+                    $salida->getDateTime() > $entrada->getDateTime();
             });
 
             if ($matchingSalida) {
@@ -425,8 +435,8 @@ class PersonalController extends Controller
             return $item->getRut() . '-' . $item->getName() . '-' . $item->getDateTime();
         });
 
-       //exportToExcel($pareados, $unificados,$fechaXls);
-       return Excel::download(new MultiSheetExport($pareados, $unificados), 'reporte_asistencia-depurado-'.$fechaXls.'.xlsx');
+        //exportToExcel($pareados, $unificados,$fechaXls);
+        return Excel::download(new MultiSheetExport($pareados, $unificados), 'reporte_asistencia-depurado-' . $fechaXls . '.xlsx');
 
 
 
@@ -685,7 +695,7 @@ class UnificadosSheet implements FromCollection, WithHeadings
                 'RUT' => $item->getRut(),
                 'Nombre' => $item->getName(),
                 'Departamento' => $item->getPuesto(),
-                'Fecha/Hora'=>$item->getDateTime(),
+                'Fecha/Hora' => $item->getDateTime(),
                 'Tipo' => $item->getType(),
             ];
         });
@@ -702,5 +712,4 @@ class UnificadosSheet implements FromCollection, WithHeadings
 
         ];
     }
-
 }
