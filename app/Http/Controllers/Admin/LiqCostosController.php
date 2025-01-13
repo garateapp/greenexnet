@@ -7,6 +7,7 @@ use App\Http\Controllers\Traits\CsvImportTrait;
 use App\Http\Requests\MassDestroyLiqCostoRequest;
 use App\Http\Requests\StoreLiqCostoRequest;
 use App\Http\Requests\UpdateLiqCostoRequest;
+use App\Models\Costo;
 use App\Models\LiqCosto;
 use App\Models\LiqCxCabecera;
 use Gate;
@@ -80,7 +81,14 @@ class LiqCostosController extends Controller
     public function store(StoreLiqCostoRequest $request)
     {
         $liqCosto = LiqCosto::create($request->all());
-
+        $costo = Costo::where('nombre_costo', $request->input('nombre_costo'))->first();
+        if (!$costo) {
+            Costo::create([
+                'nombre' => $request->input('nombre_costo'),
+                'valor_x_defecto' => 0,
+                'categoria' => $request->input('categoria')
+            ]);
+        }
         return redirect()->route('admin.liq-costos.index');
     }
 
@@ -137,12 +145,11 @@ class LiqCostosController extends Controller
             'field' => 'required|string',
             'value' => 'nullable|string|max:255',
         ]);
-       
-        $costo = LiqCosto::where('id',$request->id)->first();
-        
+
+        $costo = LiqCosto::where('id', $request->id)->first();
+
         $costo->{$validated['field']} = $validated['value'];
         $costo->save();
         return response()->json(['success' => true, 'message' => 'Campo actualizado con éxito']);
-
     }
 }

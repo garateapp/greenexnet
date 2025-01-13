@@ -574,6 +574,7 @@ class ComexController extends Controller
                 })->toArray();
 
                 // Procesar los costos reales
+                
                 foreach ($costos as $costo) {
                     if (array_key_exists($costo->nombre_costo, $costo_procesado)) {
                         $costo_procesado[$costo->nombre_costo] = $costo->valor;
@@ -583,7 +584,7 @@ class ComexController extends Controller
                     }
                     Log::info('Nombre Costo:' . "----" . $costo->nombre_costo);
                     $CatCosto = Costo::where('nombre', $costo->nombre_costo)->first();
-
+                    Log::info('Categoria Costo:' . "----" . $CatCosto->categoria."----".$costo->valor);
                     switch ($CatCosto->categoria) {
                         case 'Costo Logístico':
                             $costosLogisticos += $costo->valor;
@@ -601,6 +602,7 @@ class ComexController extends Controller
                             $costosFleteDomestico += $costo->valor;
                             break;
                         default:
+                            
                             break;
                     }
                 }
@@ -643,7 +645,7 @@ class ComexController extends Controller
                         'Puerto Destino' => '', //D
                         'AWB' => '', //E
                         'Contenedor' => '', //F
-                        'Liquidación' => '', //G
+                        'Liquidación' => $liqCxCabecera->instructivo, //G
                         'ETD' => '', //H
                         'ETD Week' => '', //I
                         'ETA' => $liqCxCabecera->eta, //J
@@ -656,7 +658,7 @@ class ComexController extends Controller
                         'Kilos total' => '', //Q
                         'embalaje' => $this->traducedatos($item->embalaje_id, 'Embalaje'), //R
                         'etiqueta' => $item->etiqueta_id, //S
-                        'variedad' => $item->variedad, //T                     
+                        'variedad' => $item->variedad_id, //T                     
                         'Calibre Estandar'   => '', //U
                         'calibre' => $this->traducedatos($item->calibre, 'Calibre'), //V
                         'color' => '', //W
@@ -682,8 +684,8 @@ class ComexController extends Controller
                         'RMB Flete Marit. TO' => '=+AP' . $i . '*Y' . $i, //AQ
                         'Costos cajas RMB' => '=+AF' . $i . '+AH' . $i . '+AJ' . $i . '+AL' . $i . '+AN' . $i . '+AB' . $i . '+AP' . $i, //AR
                         'RMB Costos TO' => '=+AR' . $i . '*Y' . $i, //AS
-                        'Resultados caja RMB' => 0, //AT
-                        'RMB result. TO' => 0, //AU
+                        'Resultados caja RMB' => 0, //AT  Verificar con Haydelin
+                        'RMB result. TO' => 0, //AU  Verificar con Haydelin
                         'TC'    => $excelDato->tasa, //AV
                         'Venta USD' => '=+Z' . $i . '/AV' . $i, //AW
                         'Ventas TO USD' => '=+AW' . $i . '*Y' . $i, //AX

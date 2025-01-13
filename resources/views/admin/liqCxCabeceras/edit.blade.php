@@ -14,7 +14,11 @@
         <div class="card-header">
             {{ trans('global.edit') }} {{ trans('cruds.liqCxCabecera.title_singular') }}
         </div>
-
+        <div class="col-md-6">
+        <a href={{ route('admin.liq-cx-cabeceras.index') }} class="btn btn-success mt-3 ">
+            Volver
+        </a>
+        </div>
         <div class="card-body">
             <form method="POST" action="{{ route('admin.liq-cx-cabeceras.update', [$liqCxCabecera->id]) }}"
                 enctype="multipart/form-data">
