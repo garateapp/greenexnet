@@ -415,7 +415,11 @@ class PersonalController extends Controller
             $tratoHP->factor_a_pagar=$factor;
             $tratoHP->cant_x_factor=$cant_x_factor;
 
-            $personal=Personal::firstOrCreate(['rut' => $rut, 'entidad_id' => $value["contratista"],'nombre' => $value["nombre"]]) ;
+            $personal=Personal::firstOrCreate(['rut' => $rut]);
+            if($personal){
+                $personal->entidad_id=$value["contratista"];
+                $personal->save();
+            }
             $tratoHP->personal_id=$personal->id;
             $tratoHP->save();
         }
