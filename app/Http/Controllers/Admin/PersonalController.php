@@ -330,6 +330,9 @@ class PersonalController extends Controller
         $tratoHP->monto_a_pagar=$request->monto_a_pagar;
         $tratoHP->factor_a_pagar=$request->factor_a_pagar;
         $tratoHP->cant_x_factor=$request->cant_x_factor;
+        if($tratoHP->monto_a_pagar<0){
+            $tratoHP->monto_a_pagar=0;
+         }
         $tratoHP->save();
         $tratoHP=TratoContratistas::where('fecha',$request->fecha)->with('personal')->get();
 
@@ -410,7 +413,9 @@ class PersonalController extends Controller
             }
 
 
-
+            if($montoTotal<0){
+               $montoTotal=0;
+            }
             $tratoHP->monto_a_pagar=round($montoTotal,0);
             $tratoHP->factor_a_pagar=$factor;
             $tratoHP->cant_x_factor=$cant_x_factor;
