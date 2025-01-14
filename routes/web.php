@@ -2,6 +2,9 @@
 
 //use Illuminate\Routing\Route;
 use App\Http\Controllers\Admin\ReporteriaController;
+use App\Models\TratoContratistas;
+//use Illuminate\Routing\Route;
+
 //use Illuminate\Routing\Route;
 
 //use Illuminate\Routing\Route;
@@ -105,6 +108,14 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('personals/ejecutaCuadratura', 'PersonalController@ejecutaCuadratura')->name('personals.ejecutaCuadratura');
     Route::get('personals/tratoembalaje', 'PersonalController@tratoembalaje')->name('personals.tratoembalaje');
     Route::post('personals/ejecutaTratoembalaje', 'PersonalController@ejecutaTratoembalaje')->name('personals.ejecutaTratoembalaje');
+    Route::get('personals/tratoContratista','PersonalController@tratoContratista')->name('personals.tratoContratista');
+    Route::post('personals/guardatratohandpack', 'PersonalController@guardatratohandpack')->name('personals.guardatratohandpack');
+    Route::get('personals/destroyhandpack/{id}', 'PersonalController@destroyhandpack')->name('personals.destroyhandpack');
+    Route::get('personals/downloadtrato', 'PersonalController@downloadtrato')->name('personals.downloadtrato');
+    Route::post('personals/uploadtrato', 'PersonalController@uploadtrato')->name('personals.uploadtrato');
+
+    Route::post('personals/consultahandpack', 'PersonalController@consultahandpack')->name('personals.consultahandpack');
+
     Route::resource('personals', 'PersonalController');
 
 
@@ -179,7 +190,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('comex/guardaliquidacion', 'ComexController@guardaliquidacion')->name('comex.guardaliquidacion');
     Route::post('comex/generacomparativa', 'ComexController@generacomparativa')->name('comex.generacomparativa');
     Route::post('comex/eliminardatosExcel', 'ComexController@eliminardatosExcel')->name('comex.eliminardatosExcel');
-    
+
     // Metas Cliente Comex
     Route::delete('metas-cliente-comexes/destroy', 'MetasClienteComexController@massDestroy')->name('metas-cliente-comexes.massDestroy');
     Route::post('metas-cliente-comexes/parse-csv-import', 'MetasClienteComexController@parseCsvImport')->name('metas-cliente-comexes.parseCsvImport');
@@ -288,7 +299,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
 
 
 
-   
+
 
 
 
@@ -321,7 +332,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
      Route::post('capturadors/parse-csv-import', 'CapturadorController@parseCsvImport')->name('capturadors.parseCsvImport');
      Route::post('capturadors/process-csv-import', 'CapturadorController@processCsvImport')->name('capturadors.processCsvImport');
      Route::resource('capturadors', 'CapturadorController');
- 
+
      // Capturador Estructura
      Route::delete('capturador-estructuras/destroy', 'CapturadorEstructuraController@massDestroy')->name('capturador-estructuras.massDestroy');
      Route::post('capturador-estructuras/parse-csv-import', 'CapturadorEstructuraController@parseCsvImport')->name('capturador-estructuras.parseCsvImport');
@@ -329,10 +340,11 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
      Route::resource('capturador-estructuras', 'CapturadorEstructuraController');
 
 
+
     //Liquidaciones de Cliente
 
     //Controlador Central de Liquidaciones de Cliente
-    
+
 
     // Liq Cx Cabecera
     Route::delete('liq-cx-cabeceras/destroy', 'LiqCxCabeceraController@massDestroy')->name('liq-cx-cabeceras.massDestroy');
@@ -343,14 +355,14 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('liq-cx-cabeceras/update-inline', 'LiqCxCabeceraController@updateInline')->name('liq-cx-cabeceras.updateInline');
     Route::get('liq-cx-cabeceras/destroyItem/{id}', 'LiqCxCabeceraController@destroyItem')->name('liq-cx-cabeceras.destroyItem');
     Route::get('liq-cx-cabeceras/destroyCosto/{id}', 'LiqCxCabeceraController@destroyCosto')->name('liq-cx-cabeceras.destroyCosto');
-    
+
     Route::resource('liq-cx-cabeceras', 'LiqCxCabeceraController');
 
     // Liquidaciones Cx
     Route::delete('liquidaciones-cxes/destroy', 'LiquidacionesCxController@massDestroy')->name('liquidaciones-cxes.massDestroy');
     Route::post('liquidaciones-cxes/parse-csv-import', 'LiquidacionesCxController@parseCsvImport')->name('liquidaciones-cxes.parseCsvImport');
     Route::post('liquidaciones-cxes/process-csv-import', 'LiquidacionesCxController@processCsvImport')->name('liquidaciones-cxes.processCsvImport');
-    
+
     Route::resource('liquidaciones-cxes', 'LiquidacionesCxController');
 
     // Liq Costos

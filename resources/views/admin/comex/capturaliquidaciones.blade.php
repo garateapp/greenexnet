@@ -211,40 +211,40 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-header">
-                        Previsualización de Liquidación Instructivo - {{ $instructivo }} 
-                        
+                        Previsualización de Liquidación Instructivo - {{ $instructivo }}
+
                     </div>
 
                     <div class="card-body">
                         <p>Fecha Arribo: {{ $datosExcel->fecha_arribo }}</p>
                             <p>Fecha Venta: {{ $datosExcel->fecha_venta  }}</p>
                             <p>Fecha Liquidación:{{ $datosExcel->fecha_liquidacion }}</p>
-                        
+
                         <!-- Sección de Cabecera -->
-                     
+
                         <table border="1" cellpadding="5" cellspacing="0">
                             <thead>
                                 <tr>
                                     @foreach ($cabecera as $item)
-                                                                                                                    
+
                                         <th>{{ $item['propiedad'] }}</th>
-                                        
+
                                     @endforeach
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
                                 @foreach ($cabecera as $item)
-                                
+
                                         <td>{{ $item['valor'] }}</td>
-                                
+
                                 @endforeach
                             </tr>
                             </tbody>
                         </table>
                         <hr/>
                         <!-- Sección de Items -->
-                      
+
                         <div style="overflow-x: auto;">
                             <table border="1" cellpadding="5" cellspacing="0"
                                 style="border-collapse: collapse; text-align: center;">
@@ -252,10 +252,10 @@
                                 <thead>
                                     <tr>
                                         @php
-                                       
+
                                             $headers = [];
                                             $head = '';
-                                          
+
                                             if (count($items) > 0) {
                                                 foreach ($items as $header) {
                                                     foreach ($header as $th) {
@@ -275,30 +275,30 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    
+
                                 @php
-                                
+
                                     preg_match('/(\D+)/',$items[0][0]['coordenada'], $matches);
                                     $letraInicial=$matches[1];
                                     $UltimaLetra= $matches[1];
-                                    
+
                                     $tabla = [];
                                     $cantidades = [];
                                     $precios = [];
                                     $totalGeneral = 0;
                                     $totalesColumna = [];
-                                    
+
                                     // Procesar datos de los items
-                                   
+
                                     foreach ($items as $fila) {
                                         foreach ($fila as $columna) {
                                             $coordenada = $columna['coordenada'];
                                             $valor = $columna['valor'];
                                             $propiedad = $columna['propiedad'];
-                                            
+
                                             $col = preg_replace('/[0-9]/', '', $coordenada); // Extraer letras (columna)
                                             $row = preg_replace('/[A-Z]/', '', $coordenada); // Extraer números (fila)
-                                           
+
                                             $tabla[$row][$col][$propiedad] = $valor;
                                             // Determinar la última letra
                                             if (strcmp($col, $UltimaLetra) > 0) {
@@ -319,11 +319,11 @@
                                             $totalesColumna[$col] += (float)$valor;
                                         }
                                     }
-                                   
+
                                 @endphp
 
                                 {{-- Mostrar filas y calcular totales --}}
-                              
+
                                 @foreach ($tabla as $row => $columnas)
                                     @php
                                         $totalFila = 0;
@@ -333,7 +333,7 @@
                                         }
                                     @endphp
                                     <tr>
-                                       
+
                                         @foreach ($columnas as $col => $valores) {{-- Solo procesa columnas presentes en $columnas --}}
                                         <td>
                                             @foreach ($valores as $propiedad => $valor)
@@ -387,7 +387,7 @@
                                     @php
                                     $TotalCostos =(float)$TotalCostos + (float)$costo['valor'];
                                     @endphp
-                                    
+
                                                                    @endforeach
                                                                    <tr>
                                                                     <td><strong>Total Costos</strong></td>
@@ -401,7 +401,7 @@
                             {{ number_format($totalGeneral - $TotalCostos, 2) }}</h2>
                             <h2>Total Liquidación USD
                             {{ number_format((($totalGeneral - $TotalCostos) /$tasa), 2) }}</h2>
-                            
+
                         </div>
                 </div>
             </div>

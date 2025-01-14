@@ -460,6 +460,7 @@
     </script>
     <script>
         $(document).ready(function() {
+
             $(".notifications-menu").on('click', function() {
                 if (!$(this).hasClass('open')) {
                     $('.notifications-menu .label-warning').hide();

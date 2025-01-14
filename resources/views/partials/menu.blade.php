@@ -237,6 +237,15 @@
                                 Trato Embalaje
                             </a>
                         </li>
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.personals.tratoContratista') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/personals') || request()->is('admin/personals/*') ? 'c-active' : '' }}">
+                                <i class="fa-fw fas fa-handshake c-sidebar-nav-icon">
+
+                                </i>
+                                Trato HandPack
+                            </a>
+                        </li>
                     @endcan
                 </ul>
             </li>
