@@ -270,6 +270,17 @@
                 </div>
             </div>
         </div>
+        <script>
+                document.getElementById('tasa').addEventListener('input', function (event) {
+        // Reemplazar comas con puntos
+        this.value = this.value.replace(',', '.');
+
+        // Opcional: Validar que la entrada sea un número válido
+        if (isNaN(this.value)) {
+            this.value = this.value.slice(0, -1); // Remover el último carácter no válido
+        }
+    });
+            </script>
     @endsection
     @section('scripts')
         @parent
