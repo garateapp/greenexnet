@@ -108,16 +108,16 @@
             /* Permite desplazamiento si el contenido es más grande */
         }
     </style>
-      @if (session('message'))
-      <div class="alert alert-success">
-          {{ session('message') }}
-      </div>
-  @endif
-  @if (session('error'))
-      <div class="alert alert-danger">
-          {{ session('error') }}
-      </div>
-  @endif
+    @if (session('message'))
+        <div class="alert alert-success">
+            {{ session('message') }}
+        </div>
+    @endif
+    @if (session('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+    @endif
     <div class="card">
         <div class="card-header">
             Trato Embalaje Contratistas
@@ -181,6 +181,7 @@
                             <th>Fecha</th>
                             <th>Cantidad</th>
                             <th>Total a Pagar</th>
+                            <th>Contratista</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -248,53 +249,57 @@
             // Configurar Select2
             $('.select2').select2();
             let table = $('#mainTable').DataTable({
-                                data:data,
-                                columns: [{
-                                        className: 'details-control',
-                                        orderable: false,
-                                        data: null,
-                                        defaultContent: '<button class="btn btn-info btn-sm">+</button>'
-                                    },
-                                    {
-                                        data: 'id',
-                                        title: 'ID'
-                                    },
-                                    {
-                                        data: 'personal.rut',
-                                        title: 'Rut'
-                                    },
-                                    {
-                                        data: 'personal.nombre',
-                                        title: 'Nombre'
-                                    },
-                                    {
-                                        data: 'fecha',
-                                        title: 'Fecha'
-                                    },
-                                    {
-                                        data: 'cantidad',
-                                        title: 'Cantidad'
-                                    },
-                                    {
-                                        data: 'monto_a_pagar',
-                                        title: 'Monto a Pagar',
-                                        render: $.fn.dataTable.render.number(',', '.', 0)
-                                    },
-                                    {
-                                        data: 'id',
-                                        render: function(data) {
-                                            return `<button class="btn btn-danger btn-sm delete-btn" data-id="${data}">Eliminar</button>`;
-                                        },
-                                        orderable: false,
-                                        searchable: false
-                                    }
-                                ],
-                                order: [
-                                    [4, 'asc']
-                                ],
-                                destroy: true
+                data: data,
+                columns: [{
+                        className: 'details-control',
+                        orderable: false,
+                        data: null,
+                        defaultContent: '<button class="btn btn-info btn-sm">+</button>'
+                    },
+                    {
+                        data: 'id',
+                        title: 'ID'
+                    },
+                    {
+                        data: 'personal.rut',
+                        title: 'Rut'
+                    },
+                    {
+                        data: 'personal.nombre',
+                        title: 'Nombre'
+                    },
+                    {
+                        data: 'fecha',
+                        title: 'Fecha'
+                    },
+                    {
+                        data: 'cantidad',
+                        title: 'Cantidad'
+                    },
+                    {
+                        data: 'monto_a_pagar',
+                        title: 'Monto a Pagar',
+                        render: $.fn.dataTable.render.number(',', '.', 0)
+                    },
+                    {
+                        data: 'contratista',
+                        title: 'Contratista',
+                    },
+                    {
+                        data: 'id',
+                        render: function(data) {
+                            return `<button class="btn btn-danger btn-sm delete-btn" data-id="${data}">Eliminar</button>`;
+                        },
+                        orderable: false,
+                        searchable: false
+                    }
+                ],
+                order: [
+                    [4, 'asc']
+                ],
+                destroy: true
 
-                            });
+            });
             $(document).on('click', '#calcTratoBtn', function() {
                 // Obtener los checkboxes seleccionados de la tabla 1
 
@@ -363,6 +368,10 @@
                                         data: 'monto_a_pagar',
                                         title: 'Monto a Pagar',
                                         render: $.fn.dataTable.render.number(',', '.', 0)
+                                    },
+                                    {
+                                        data: 'contratista',
+                                        title: 'Contratista',
                                     },
                                     {
                                         data: 'id',
@@ -437,6 +446,10 @@
                                         '.', 0)
                                 },
                                 {
+                                    data: 'contratista',
+                                    title: 'Contratista',
+                                },
+                                {
                                     data: 'id',
                                     render: function(data) {
                                         return `<button class="btn btn-danger btn-sm delete-btn" data-id="${data}">Eliminar</button>`;
@@ -471,72 +484,79 @@
                             if (response.success) {
                                 alert(response.message);
                                 var fechaInicio = formatDate($("#fecha_inicio").val());
-                    var fechaFin = formatDate($("#fecha_final").val());
-                    calculaMontos();
-                    $.ajax({
-                            headers: {
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                            },
-                            method: 'POST',
-                            url: "{{ route('admin.personals.consultahandpack') }}",
-                            data: {
-                                fecha: fechaInicio,
-                                fecha_fin: fechaFin,
-                                personal_id: $("#personal_id").val(),
-
-                            }
-                        })
-                        .done(function(data) {
-                            console.log(data);
-                            const table = $('#mainTable').DataTable({
-                                data: data,
-                                columns: [{
-                                        className: 'details-control',
-                                        orderable: false,
-                                        data: null,
-                                        defaultContent: '<button class="btn btn-info btn-sm">+</button>'
-                                    },
-                                    {
-                                        data: 'id',
-                                        title: 'ID'
-                                    },
-                                    {
-                                        data: 'personal.rut',
-                                        title: 'Rut'
-                                    },
-                                    {
-                                        data: 'personal.nombre',
-                                        title: 'Nombre'
-                                    },
-                                    {
-                                        data: 'fecha',
-                                        title: 'Fecha'
-                                    },
-                                    {
-                                        data: 'cantidad',
-                                        title: 'Cantidad'
-                                    },
-                                    {
-                                        data: 'monto_a_pagar',
-                                        title: 'Monto a Pagar',
-                                        render: $.fn.dataTable.render.number(',', '.', 0)
-                                    },
-                                    {
-                                        data: 'id',
-                                        render: function(data) {
-                                            return `<button class="btn btn-danger btn-sm delete-btn" data-id="${data}">Eliminar</button>`;
+                                var fechaFin = formatDate($("#fecha_final").val());
+                                calculaMontos();
+                                $.ajax({
+                                        headers: {
+                                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]')
+                                                .attr('content')
                                         },
-                                        orderable: false,
-                                        searchable: false
-                                    }
-                                ],
-                                order: [
-                                    [4, 'asc']
-                                ],
-                                destroy: true
+                                        method: 'POST',
+                                        url: "{{ route('admin.personals.consultahandpack') }}",
+                                        data: {
+                                            fecha: fechaInicio,
+                                            fecha_fin: fechaFin,
+                                            personal_id: $("#personal_id").val(),
 
-                            });
-                        });// Recargar la tabla
+                                        }
+                                    })
+                                    .done(function(data) {
+                                        console.log(data);
+                                        const table = $('#mainTable').DataTable({
+                                            data: data,
+                                            columns: [{
+                                                    className: 'details-control',
+                                                    orderable: false,
+                                                    data: null,
+                                                    defaultContent: '<button class="btn btn-info btn-sm">+</button>'
+                                                },
+                                                {
+                                                    data: 'id',
+                                                    title: 'ID'
+                                                },
+                                                {
+                                                    data: 'personal.rut',
+                                                    title: 'Rut'
+                                                },
+                                                {
+                                                    data: 'personal.nombre',
+                                                    title: 'Nombre'
+                                                },
+                                                {
+                                                    data: 'fecha',
+                                                    title: 'Fecha'
+                                                },
+                                                {
+                                                    data: 'cantidad',
+                                                    title: 'Cantidad'
+                                                },
+                                                {
+                                                    data: 'monto_a_pagar',
+                                                    title: 'Monto a Pagar',
+                                                    render: $.fn.dataTable
+                                                        .render.number(',', '.',
+                                                            0)
+                                                },
+                                                {
+                                                    data: 'contratista',
+                                                    title: 'Contratista',
+                                                },
+                                                {
+                                                    data: 'id',
+                                                    render: function(data) {
+                                                        return `<button class="btn btn-danger btn-sm delete-btn" data-id="${data}">Eliminar</button>`;
+                                                    },
+                                                    orderable: false,
+                                                    searchable: false
+                                                }
+                                            ],
+                                            order: [
+                                                [4, 'asc']
+                                            ],
+                                            destroy: true
+
+                                        });
+                                    }); // Recargar la tabla
                             } else {
                                 alert('Error al eliminar la línea.');
                             }
@@ -600,6 +620,10 @@
                                         '.', 0)
                                 },
                                 {
+                                    data: 'contratista',
+                                    title: 'Contratista',
+                                },
+                                {
                                     data: 'id',
                                     render: function(data) {
                                         return `<button class="btn btn-danger btn-sm delete-btn" data-id="${data}">Eliminar</button>`;
@@ -618,7 +642,7 @@
                         $("#tratoForm")[0].reset();
 
                     },
-                        // Aquí puedes agregar código para manejar la respuesta del servidor
+                    // Aquí puedes agregar código para manejar la respuesta del servidor
 
                     error: function(response) {
                         alert('Error al subir el archivo.');
