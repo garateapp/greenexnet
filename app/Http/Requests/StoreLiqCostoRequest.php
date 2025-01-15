@@ -28,7 +28,7 @@ class StoreLiqCostoRequest extends FormRequest
             'valor' => [
                 'numeric',
                 'required',
-                'unique:liq_costos,valor',
+
             ],
         ];
     }

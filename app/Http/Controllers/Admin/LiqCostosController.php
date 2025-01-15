@@ -81,14 +81,14 @@ class LiqCostosController extends Controller
     public function store(StoreLiqCostoRequest $request)
     {
         $liqCosto = LiqCosto::create($request->all());
-        $costo = Costo::where('nombre_costo', $request->input('nombre_costo'))->first();
-        if (!$costo) {
-            Costo::create([
-                'nombre' => $request->input('nombre_costo'),
-                'valor_x_defecto' => 0,
-                'categoria' => $request->input('categoria')
-            ]);
-        }
+        $costo = Costo::where('nombre', $request->input('nombre_costo'))->first();
+        // if (!$costo) {
+        //     Costo::create([
+        //         'nombre' => $request->input('nombre_costo'),
+        //         'valor_x_defecto' => 0,
+        //         'categoria' => $request->input('categoria')
+        //     ]);
+        // }
         return redirect()->route('admin.liq-costos.index');
     }
 
