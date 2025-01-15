@@ -82,13 +82,13 @@ class LiqCostosController extends Controller
     {
         $liqCosto = LiqCosto::create($request->all());
         $costo = Costo::where('nombre', $request->input('nombre_costo'))->first();
-        // if (!$costo) {
-        //     Costo::create([
-        //         'nombre' => $request->input('nombre_costo'),
-        //         'valor_x_defecto' => 0,
-        //         'categoria' => $request->input('categoria')
-        //     ]);
-        // }
+        if (!$costo) {
+            Costo::create([
+                'nombre' => $request->input('nombre_costo'),
+                'valor_x_defecto' => 0,
+                'categoria' => $request->input('categoria')
+            ]);
+        }
         return redirect()->route('admin.liq-costos.index');
     }
 
