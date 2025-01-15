@@ -420,7 +420,7 @@ class ComexController extends Controller
                     });
                 })
                 ->values();
-       
+
             foreach ($registros as $fila) {
 
                 $contenedor = isset($fila['Contenedor']) ? $fila['Contenedor'] : '';
@@ -575,7 +575,7 @@ class ComexController extends Controller
                 })->toArray();
 
                 // Procesar los costos reales
-                
+
                 foreach ($costos as $costo) {
                     if (array_key_exists($costo->nombre_costo, $costo_procesado)) {
                         $costo_procesado[$costo->nombre_costo] = $costo->valor;
@@ -585,7 +585,7 @@ class ComexController extends Controller
                     }
                     Log::info('Nombre Costo:' . "----" . $costo->nombre_costo);
                     $CatCosto = Costo::where('nombre', $costo->nombre_costo)->first();
-                    Log::info('Categoria Costo:' . "----" . $CatCosto->categoria."----".$costo->valor);
+                   // Log::info('Categoria Costo:' . "----" . $CatCosto->categoria."----".$costo->valor);
                     switch ($CatCosto->categoria) {
                         case 'Costo Logístico':
                             $costosLogisticos += $costo->valor;
@@ -603,7 +603,7 @@ class ComexController extends Controller
                             $costosFleteDomestico += $costo->valor;
                             break;
                         default:
-                            
+
                             break;
                     }
                 }
@@ -637,7 +637,7 @@ class ComexController extends Controller
                 //  dd($liqCxCabecera);
                 // Agregar los datos principales y los costos procesados al array
                 Log::info('Datos a procesar' . "----" . $liqCxCabecera->cliente->nombre_fantasia);
-                
+
                 $dataComparativa->push(array_merge(
                     [
                         'Embarque' => '',  //A
@@ -659,7 +659,7 @@ class ComexController extends Controller
                         'Kilos total' => '=+P' . $i . '*Y' . $i, //Q
                         'embalaje' => $this->traducedatos($item->embalaje_id, 'Embalaje'), //R
                         'etiqueta' => $item->etiqueta_id, //S
-                        'variedad' => $item->variedad_id, //T                     
+                        'variedad' => $item->variedad_id, //T
                         'Calibre Estandar'   => '', //U
                         'calibre' => $this->traducedatos($item->calibre, 'Calibre'), //V
                         'color' => '', //W
@@ -670,7 +670,7 @@ class ComexController extends Controller
                         'Comision Caja' => '=+AC' . $i . '*Z' . $i, //AB
                         '% Comisión' => '0,06', //AC
                         'RMB Comisión' => '=+AB' . $i . '*Y' . $i, //AD
-                        'Factor Imp destino' => 0, //AE  Esto no esta definido como para poder calcularlo                      
+                        'Factor Imp destino' => 0, //AE  Esto no esta definido como para poder calcularlo
                         'Imp destino caja RMB' => '=+(AE' . $i . '*Z' . $i . ')', //AF
                         'RMB Imp destino TO' => '=+AH' . $i . '*Y' . $i, //AG
                         'Costo log. Caja RMB' => '=+(9630/' . ($costosLogisticos == 0 ? 1 : $costosLogisticos) . ')*P' . $i, //AH
@@ -690,7 +690,7 @@ class ComexController extends Controller
                         'TC'    => $excelDato->tasa, //AV
                         'Venta USD' => '=+Z' . $i . '/AV' . $i, //AW
                         'Ventas TO USD' => '=+AW' . $i . '*Y' . $i, //AX
-                        'Com USD' => '=+AB' . $i . '/AV' . $i, //AY	
+                        'Com USD' => '=+AB' . $i . '/AV' . $i, //AY
                         'Com TO USD' => '=+AY' . $i . '*Y' . $i, //AZ
                         'Imp destino USD' => '=+AF' . $i . '/AV' . $i, //BA
                         'Imp destino USD TO' => '=+BA' . $i . '*Y' . $i, //BB
@@ -700,23 +700,23 @@ class ComexController extends Controller
                         'Ent. Al mercado USD TO' => '=+BE' . $i . '*Y' . $i, //BF
                         'Costo mercado USD' => '=+AL' . $i . '/AV' . $i, //BG
                         'Costos mercado USD TO' => '=+BG' . $i . '*Y' . $i, //BH
-                        'Otros  costos dest. USD' => '=+AN' . $i . '/AV' . $i, //BI	
-                        'Otros costos USD TO' => '=+BI' . $i . '*Y' . $i, //BJ	
+                        'Otros  costos dest. USD' => '=+AN' . $i . '/AV' . $i, //BI
+                        'Otros costos USD TO' => '=+BI' . $i . '*Y' . $i, //BJ
                         'Flete marit. USD'    => '=+AP' . $i . '/AV' . $i, //BK
                         'Flete Marit. USD TO' => '=+BK' . $i . '*Y' . $i, //BL
-                        'Costos cajas USD' => '=+AR' . $i . '/AV' . $i, //BM	
-                        'Costos USD TO' => '=+BM' . $i . '*Y' . $i, //BN	
-                        'Ajuste impuesto USD' => 0, //BO	
-                        'Ajuste TO USD' => 0, //BP	
-                        'Flete Aereo' => 0, //BQ	
+                        'Costos cajas USD' => '=+AR' . $i . '/AV' . $i, //BM
+                        'Costos USD TO' => '=+BM' . $i . '*Y' . $i, //BN
+                        'Ajuste impuesto USD' => 0, //BO
+                        'Ajuste TO USD' => 0, //BP
+                        'Flete Aereo' => 0, //BQ
                         'Flete Aereo TO' => 0, //BR
-                        'FOB USD' => '=+(AT' . $i . '/AV' . $i . ')-BO' . $i, //BS	
+                        'FOB USD' => '=+(AT' . $i . '/AV' . $i . ')-BO' . $i, //BS
                         'FOB TO USD' => '=+BS' . $i . '*Y' . $i, //BT
-                        'FOB kg' => '=+BT' . $i . '/Q' . $i, //BU	
-                        'FOB Equivalente' => '=+BU' . $i . '*5', //BV	
-                        'Flete Cliente' => 0, //BW	
-                        'Transporte' => 0, //BX	
-                        'CNY' => 'PRE', //BY	
+                        'FOB kg' => '=+BT' . $i . '/Q' . $i, //BU
+                        'FOB Equivalente' => '=+BU' . $i . '*5', //BV
+                        'Flete Cliente' => 0, //BW
+                        'Transporte' => 0, //BX
+                        'CNY' => 'PRE', //BY
                         'Pais' => 'CHINA', //BZ
                     ],
                     $costo_procesado,
