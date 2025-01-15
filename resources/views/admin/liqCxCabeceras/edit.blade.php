@@ -80,6 +80,15 @@
                             <span
                                 class="help-block">{{ trans('cruds.liqCxCabecera.fields.tasa_intercambio_helper') }}</span>
                         </div>
+                        <div class="form-group">
+                            <label class="">Flete EXportadora</label>
+                            <input class="form-control {{ $errors->has('flete_exportadora') ? 'is-invalid' : '' }}" type="text" name="flete_exportadora" id="flete_exportadora"
+                            value="{{ old('flete_exportadora', $liqCxCabecera->flete_exportadora) }}"/>
+                            @if ($errors->has('flete_exportadora'))
+                            <div class="invalid-feedback">{{ $errors->first('flete_exportadora') }}</div>
+                            @endif
+                            <span class="help-block"></span>
+                        </div>
                     </div>
 
                     <!-- Columna derecha -->
@@ -87,7 +96,7 @@
                         <div class="form-group">
                             <label class="required" for="nave_id">{{ trans('cruds.liqCxCabecera.fields.nave') }}</label>
                             <select class="form-control select2 {{ $errors->has('nave') ? 'is-invalid' : '' }}"
-                                name="nave_id" id="nave_id" required>
+                                name="nave_id" id="nave_id">
                                 @foreach ($naves as $id => $entry)
                                     <option value="{{ $id }}"
                                         {{ (old('nave_id') ? old('nave_id') : $liqCxCabecera->nave->id ?? '') == $id ? 'selected' : '' }}>
@@ -102,11 +111,11 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="required"
+                            <label class=""
                                 for="total_costo">{{ trans('cruds.liqCxCabecera.fields.total_costo') }}</label>
                             <input class="form-control {{ $errors->has('total_costo') ? 'is-invalid' : '' }}"
                                 type="number" name="total_costo" id="total_costo"
-                                value="{{ old('total_costo', $liqCxCabecera->total_costo) }}" step="0.01" required>
+                                value="{{ old('total_costo', $liqCxCabecera->total_costo) }}" step="0.01" >
                             @if ($errors->has('total_costo'))
                                 <div class="invalid-feedback">{{ $errors->first('total_costo') }}</div>
                             @endif
@@ -125,17 +134,26 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="required"
+                            <label class=""
                                 for="total_neto">{{ trans('cruds.liqCxCabecera.fields.total_neto') }}</label>
                             <input class="form-control {{ $errors->has('total_neto') ? 'is-invalid' : '' }}" type="number"
                                 name="total_neto" id="total_neto"
-                                value="{{ old('total_neto', $liqCxCabecera->total_neto) }}" step="0.01" required>
+                                value="{{ old('total_neto', $liqCxCabecera->total_neto) }}" step="0.01" >
                             @if ($errors->has('total_neto'))
                                 <div class="invalid-feedback">{{ $errors->first('total_neto') }}</div>
                             @endif
                             <span class="help-block">{{ trans('cruds.liqCxCabecera.fields.total_neto_helper') }}</span>
                         </div>
-                    </div>
+
+                        <div class="form-group">
+                            <label class="">Tipo Transporte</label>
+                            <select class="form-control {{ $errors->has('tipo_transporte') ? 'is-invalid' : '' }}" name="tipo_transporte" id="tipo_transporte">
+                                <option value="">Seleccione...</option>
+                                <option value="A" {{ $liqCxCabecera->tipo_transporte=='A'?'selected':'' }}>Aereo</option>
+                                <option value="M" {{ $liqCxCabecera->tipo_transporte=='M'?'selected':'' }}>Maritimo</option>
+                                <option value="T" {{ $liqCxCabecera->tipo_transporte=='T'?'selected':'' }}>Terrestre</option>
+                            </select>
+                        </div>
                 </div>
 
                 <div class="form-group mt-3">

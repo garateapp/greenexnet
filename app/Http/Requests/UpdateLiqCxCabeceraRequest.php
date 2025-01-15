@@ -26,28 +26,34 @@ class UpdateLiqCxCabeceraRequest extends FormRequest
                 'integer',
             ],
             'nave_id' => [
-                'required',
                 'integer',
+                'nullable',
             ],
             'eta' => [
                 'date_format:' . config('panel.date_format'),
-                'nullable',
+                'nullable'
             ],
             'tasa_intercambio' => [
                 'numeric',
-                'required',
+                'required'
             ],
             'total_costo' => [
-                'numeric',
-                'required',
+                'numeric'
             ],
             'total_bruto' => [
                 'numeric',
             ],
             'total_neto' => [
-                'numeric',
-                'required',
+                'numeric'
             ],
+
+            'flete_exportadora'=>[
+                'numeric'
+            ],
+            'tipo_transporte'=>[
+                'string',
+                'required'
+            ]
         ];
     }
 }

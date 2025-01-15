@@ -379,6 +379,7 @@ class ComexController extends Controller
             $LiqCabecera->cliente_id = $cliente;
             $LiqCabecera->instructivo = $instructivo;
             $LiqCabecera->tasa_intercambio = $tasa;
+            $LiqCabecera->flete_exportadora = $request->input('flete_exportadora');
             //nave
 
             $nave_id = $clltCabecera->first(function ($nave) {
@@ -547,6 +548,7 @@ class ComexController extends Controller
         $ids = json_decode($request->ids, true);
 
         $liqCxCabeceras = LiqCxCabecera::whereIn('id', $ids)->get(); // LiqCxCabecera::find(request('ids'));
+
         $dataComparativa = collect();
         $C_Logisticos = Costo::where('categoria', 'Costo Logístico')->get();
         $C_Mercado = Costo::where('categoria', 'Costos Mercado')->get();
@@ -564,7 +566,10 @@ class ComexController extends Controller
         $entradamercado = 0;
         $otroscostosdestino = 0;
         $i = 2;
+
         foreach ($liqCxCabeceras as $liqCxCabecera) {
+            $flete_exportadora = $liqCxCabecera->flete_exportadora;
+            $tipo_transporte = $liqCxCabecera->tipo_transporte;
             $detalle = LiquidacionesCx::where('liqcabecera_id', $liqCxCabecera->id)->get();
             $excelDato = ExcelDato::where('instructivo', $liqCxCabecera->instructivo)->first();
             $nombre_costo = Costo::pluck('nombre'); // Extraer solo los nombres de costos
@@ -722,14 +727,14 @@ class ComexController extends Controller
                         'Costos USD TO' => '=+BM' . $i . '*Y' . $i, //BN
                         'Ajuste impuesto USD' => 0, //BO
                         'Ajuste TO USD' => 0, //BP
-                        'Flete Aereo' => 0, //BQ
-                        'Flete Aereo TO' => 0, //BR
-                        'FOB USD' => '=+(AT' . $i . '/AV' . $i . ')-BO' . $i, //BS
+                        'Flete Aereo' => '=+(' . $flete_exportadora . '/' . $total_kilos . ')*P' . $i, //BQ
+                        'Flete Aereo TO' => '=+BQ' . $i . '*Y' . $i, //BR
+                        'FOB USD' => '=+(AT' . $i . '/AV' . $i . ')-BO' . $i.'-BQ'.$i, //BS
                         'FOB TO USD' => '=+BS' . $i . '*Y' . $i, //BT
                         'FOB kg' => '=+BT' . $i . '/Q' . $i, //BU
                         'FOB Equivalente' => '=+BU' . $i . '*5', //BV
-                        'Flete Cliente' => 0, //BW
-                        'Transporte' => 0, //BX
+                        'Flete Cliente' => $flete_exportadora > 0 ? 'NO' : 'SI', //BW
+                        'Transporte' => $tipo_transporte == "A" ? 'AEREO' : 'MARITIMO', //BX
                         'CNY' => 'PRE', //BY
                         'Pais' => 'CHINA', //BZ
                     ],

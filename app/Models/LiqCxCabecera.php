@@ -31,6 +31,8 @@ class LiqCxCabecera extends Model
         'total_costo',
         'total_bruto',
         'total_neto',
+        'flete_exportadora',
+        'tipo_transporte',
         'created_at',
         'updated_at',
         'deleted_at',
