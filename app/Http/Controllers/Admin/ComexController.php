@@ -553,18 +553,26 @@ class ComexController extends Controller
         $C_Impuestos = Costo::where('categoria', 'Impuestos')->get();
         $C_FleteInternacional = Costo::where('categoria', 'Flete Internacional')->get();
         $C_FleteDomestico = Costo::where('categoria', 'Flete Doméstico')->get();
+        $C_Comision = Costo::where('categoria', 'Comisión')->get();
         //Inicio los costos agrupados por categoria
         $costosLogisticos = 0;
         $costosMercado = 0;
         $costosImpuestos = 0;
         $costosFleteInternacional = 0;
         $costosFleteDomestico = 0;
+        $comision = 0;
+        $entradamercado = 0;
+        $otroscostosdestino = 0;
         $i = 2;
         foreach ($liqCxCabeceras as $liqCxCabecera) {
             $detalle = LiquidacionesCx::where('liqcabecera_id', $liqCxCabecera->id)->get();
             $excelDato = ExcelDato::where('instructivo', $liqCxCabecera->instructivo)->first();
             $nombre_costo = Costo::pluck('nombre'); // Extraer solo los nombres de costos
-
+            $total_kilos = 0;
+            foreach ($detalle as $item) {
+                $total_kilos = $total_kilos + (float)(str_replace(',', '.', $this->traducedatos($item->embalaje_id, 'Embalaje'))) * (float)(str_replace(',', '.', $item->cantidad));
+                Log::info("Total Kilos: " . $total_kilos);
+            }
 
             foreach ($detalle as $item) {
                 $costos = LiqCosto::where('liq_cabecera_id', $liqCxCabecera->id)->get();
@@ -577,20 +585,20 @@ class ComexController extends Controller
                 // Procesar los costos reales
 
                 foreach ($costos as $costo) {
-                    if (array_key_exists($costo->nombre_costo, $costo_procesado)) {
-                        $costo_procesado[$costo->nombre_costo] = $costo->valor;
-                    } else {
-                        // Si el costo no existe en la lista de costos procesados, agregarlo con valor 0
-                        $costo_procesado[$costo->nombre_costo] = 0;
-                    }
-                    Log::info('Nombre Costo:' . "----" . $costo->nombre_costo);
-                    $CatCosto = Costo::where('nombre', $costo->nombre_costo)->first();
-                   // Log::info('Categoria Costo:' . "----" . $CatCosto->categoria."----".$costo->valor);
-                    switch ($CatCosto->categoria) {
+                    // if (array_key_exists($costo->nombre_costo, $costo_procesado)) {
+                    //     $costo_procesado[$costo->nombre_costo] = $costo->valor;
+                    // } else {
+                    //     // Si el costo no existe en la lista de costos procesados, agregarlo con valor 0
+                    //     $costo_procesado[$costo->nombre_costo] = 0;
+                    // }
+                    // Log::info('Nombre Costo:' . "----" . $costo->nombre_costo);
+                    // $CatCosto = Costo::where('nombre', $costo->nombre_costo)->first();
+                    // // Log::info('Categoria Costo:' . "----" . $CatCosto->categoria."----".$costo->valor);
+                    switch ($costo->nombre_costo) {
                         case 'Costo Logístico':
                             $costosLogisticos += $costo->valor;
                             break;
-                        case 'Costos Mercado':
+                        case 'Costo Mercado':
                             $costosMercado += $costo->valor;
                             break;
                         case 'Impuestos':
@@ -601,6 +609,12 @@ class ComexController extends Controller
                             break;
                         case 'Flete Doméstico':
                             $costosFleteDomestico += $costo->valor;
+                            break;
+                        case 'Comisión':
+                            $comision += $costo->valor;
+                            break;
+                        case 'Entrada Mercado':
+                            $entradamercado += $costo->valor;
                             break;
                         default:
 
@@ -655,7 +669,7 @@ class ComexController extends Controller
                         'Fecha Venta Week' => Carbon::parse($excelDato->fecha_venta)->weekOfYear, //M
                         'Fecha Liquidación' => $excelDato->fecha_liquidacion, //N
                         'Pallet' => $item->pallet, //O
-                        'Peso neto' => '', //P
+                        'Peso neto' =>  $this->traducedatos($item->embalaje_id, 'Embalaje'), //P
                         'Kilos total' => '=+P' . $i . '*Y' . $i, //Q
                         'embalaje' => $this->traducedatos($item->embalaje_id, 'Embalaje'), //R
                         'etiqueta' => $item->etiqueta_id, //S
@@ -672,21 +686,21 @@ class ComexController extends Controller
                         'RMB Comisión' => '=+AB' . $i . '*Y' . $i, //AD
                         'Factor Imp destino' => 0, //AE  Esto no esta definido como para poder calcularlo
                         'Imp destino caja RMB' => '=+(AE' . $i . '*Z' . $i . ')', //AF
-                        'RMB Imp destino TO' => '=+AH' . $i . '*Y' . $i, //AG
-                        'Costo log. Caja RMB' => '=+(9630/' . ($costosLogisticos == 0 ? 1 : $costosLogisticos) . ')*P' . $i, //AH
+                        'RMB Imp destino TO' => '=+AF' . $i . '*Y' . $i, //AG
+                        'Costo log. Caja RMB' => '=+(' . ($costosLogisticos == 0 ? 0 : $costosLogisticos) . '/' . $total_kilos . ')*P' . $i, //AH
                         'RMB Costo log. TO' => '=+AH' . $i . '*Y' . $i, //AI
-                        'Ent. Al mercado Caja RMB' => '=+(3400/' . ($costosLogisticos == 0 ? 1 : $costosLogisticos) . ')*P' . $i, //AJ Preguntar a Haydelin
+                        'Ent. Al mercado Caja RMB' => '=+(' . ($entradamercado == 0 ? 0 : $entradamercado) . '/' . $total_kilos . ')*P' . $i, //AJ Preguntar a Haydelin
                         'RMB Ent. Al mercado TO' => '=+AJ' . $i . '*Y' . $i, //AK
-                        'Costo mercado caja RMB' => '=+(800/' . ($costosMercado == 0 ? 1 : $costosMercado) . ')*P' . $i, //AL
+                        'Costo mercado caja RMB' => '=+(' . ($costosMercado == 0 ? 0 : $costosMercado) . '/' . $total_kilos . ')*P' . $i, //AL
                         'RMB Costos mercado TO' => '=+AL' . $i . '*Y' . $i, //AM
-                        'Otros  costos dest. Caja RMB' => 0, //AN  debemos configurar costos en categoría otros
-                        'RMB otros costos TO' => '=+AN'.$i.'*Y'.$i, //AO
-                        'Flete marit. Caja RMB' => '=+(58008/' . ($costosFleteInternacional == 0 ? 1 : $costosFleteInternacional) . ')*P' . $i, //AP
+                        'Otros  costos dest. Caja RMB' => '=+(' . ($otroscostosdestino == 0 ? 0 : $otroscostosdestino) . '/' . $total_kilos . ')*P' . $i,  //AN  debemos configurar costos en categoría otros
+                        'RMB otros costos TO' => '=+AN' . $i . '*Y' . $i, //AO
+                        'Flete marit. Caja RMB' => '=+(' . ($costosFleteInternacional == 0 ? 0 : $costosFleteInternacional) . '/' . $total_kilos . ')*P' . $i, //AP
                         'RMB Flete Marit. TO' => '=+AP' . $i . '*Y' . $i, //AQ
                         'Costos cajas RMB' => '=+AF' . $i . '+AH' . $i . '+AJ' . $i . '+AL' . $i . '+AN' . $i . '+AB' . $i . '+AP' . $i, //AR
                         'RMB Costos TO' => '=+AR' . $i . '*Y' . $i, //AS
                         'Resultados caja RMB' => '=+Z' . $i . '-AR' . $i,  //AT  Verificar con Haydelin
-                        'RMB result. TO' => '=+AT'.$i.'*Y'.$i, //AU  Verificar con Haydelin
+                        'RMB result. TO' => '=+AT' . $i . '*Y' . $i, //AU  Verificar con Haydelin
                         'TC'    => $excelDato->tasa, //AV
                         'Venta USD' => '=+Z' . $i . '/AV' . $i, //AW
                         'Ventas TO USD' => '=+AW' . $i . '*Y' . $i, //AX
@@ -720,11 +734,19 @@ class ComexController extends Controller
                         'Pais' => 'CHINA', //BZ
                     ],
                     $costo_procesado,
-                    $calculos
+                    // $calculos
 
                     // Incorporar los costos como columnas adicionales
                 ));
                 $i++;
+                $costosLogisticos = 0;
+                $costosMercado = 0;
+                $costosImpuestos = 0;
+                $costosFleteInternacional = 0;
+                $costosFleteDomestico = 0;
+                $comision = 0;
+                $entradamercado = 0;
+                $otroscostosdestino = 0;
             }
         }
         return Excel::download(new ComparativaExport($dataComparativa), 'comparativa-liquidaciones' . date('Y-m-d H:i:s') . '.xlsx');

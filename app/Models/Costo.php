@@ -31,8 +31,6 @@ class Costo extends Model
 
     public const CATEGORIA_SELECT = [
         'Comisión'             => 'Comisión',
-        'VAT(iva)'             => 'VAT',
-        'Impuestos destino'    => 'Impuestos destino',
         'Entrada Mercado'      => 'Entrada Mercado',
         'Costos Mercado'       => 'Costos Mercado',
         'Otros Costos Destino' => 'Otros Costos Destino',

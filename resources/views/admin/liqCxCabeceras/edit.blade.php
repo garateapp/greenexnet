@@ -236,8 +236,8 @@
         </div>
     </div>
 
-    
-    
+
+
     <div class="modal fade" id="addCostoModal" tabindex="-1" role="dialog" aria-labelledby="addCostoModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -254,15 +254,10 @@
                             <label for="categoria">Categoría</label>
                             <select id="categoria" name="categoria" class="form-control">
                                 <option value="Comisión">Comisión</option>
-                                <option value="VAT(iva)">VAT(iva)</option>
-                                <option value="Impuestos destino">Impuestos destino</option>
-                                <option value="Entrada Mercado">Entrada Mercado</option>
                                 <option value="Costos Mercado">Costos Mercado</option>
-                                <option value="Otros Costos Destino">Otros Costos Destino</option>
-                                <option value="Flete">Flete</option>
-                                <option value="Costo Logistico">Costo Logistico</option>
+                                <option value="Costo Logístico">Costo Logistico</option>
                                 <option value="Flete Internacional">Flete Internacional</option>
-                                <option value="Flete Domestico">Flete Domestico</option>
+                                <option value="Flete Doméstico">Flete Domestico</option>
                                 <option value="Impuestos">Impuestos</option>
                             </select>
                         </div>
