@@ -32,10 +32,10 @@ class Costo extends Model
     public const CATEGORIA_SELECT = [
         'Comisión'             => 'Comisión',
         'Entrada Mercado'      => 'Entrada Mercado',
-        'Costos Mercado'       => 'Costos Mercado',
+        'Costo Mercado'       => 'Costo Mercado',
         'Otros Costos Destino' => 'Otros Costos Destino',
         'Flete'                => 'Flete',
-        'Costo Logistico'      => 'Costo Logistico',
+        'Costo Logístico'      => 'Costo Logístico',
         'Flete Internacional'  => 'Flete Internacional',
         'Flete Domestico'      => 'Flete Domestico',
         'Impuestos'            => 'Impuestos',

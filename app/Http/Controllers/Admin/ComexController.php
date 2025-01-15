@@ -577,10 +577,10 @@ class ComexController extends Controller
             foreach ($detalle as $item) {
                 $costos = LiqCosto::where('liq_cabecera_id', $liqCxCabecera->id)->get();
 
-                // Inicializar los costos procesados con valores por defecto (0)
-                $costo_procesado = $nombre_costo->mapWithKeys(function ($nombre) {
-                    return [$nombre => 0];
-                })->toArray();
+                // // Inicializar los costos procesados con valores por defecto (0)
+                // $costo_procesado = $nombre_costo->mapWithKeys(function ($nombre) {
+                //     return [$nombre => 0];
+                // })->toArray();
 
                 // Procesar los costos reales
 
