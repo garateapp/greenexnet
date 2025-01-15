@@ -733,7 +733,7 @@ class ComexController extends Controller
                         'CNY' => 'PRE', //BY
                         'Pais' => 'CHINA', //BZ
                     ],
-                    $costo_procesado,
+                    //$costo_procesado,
                     // $calculos
 
                     // Incorporar los costos como columnas adicionales
