@@ -53,6 +53,10 @@ class UpdateLiqCxCabeceraRequest extends FormRequest
             'tipo_transporte'=>[
                 'string',
                 'required'
+            ],
+            'factor_imp_destino'=>[
+                'numeric',
+                'required'
             ]
         ];
     }

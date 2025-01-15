@@ -89,7 +89,16 @@
                             @endif
                             <span class="help-block"></span>
                         </div>
+                        <div class="form-group">
+                            <label class="">Factor Imp Destino</label>
+                            <input class="form-control {{ $errors->has('factor_imp_destino') ? 'is-invalid' : '' }}" type="text" name="factor_imp_destino" id="factor_imp_destino" required value="{{ old('factor_imp_destino', $liqCxCabecera->factor_imp_destino) }}"/>
+                            @if ($errors->has('factor_imp_destino'))
+                            <div class="invalid-feedback">{{ $errors->first('factor_imp_destino') }}</div>
+                            @endif
+                            <span class="help-block"></span>
+                        </div>
                     </div>
+
 
                     <!-- Columna derecha -->
                     <div class="col-md-6">

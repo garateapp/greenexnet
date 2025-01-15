@@ -570,6 +570,7 @@ class ComexController extends Controller
         foreach ($liqCxCabeceras as $liqCxCabecera) {
             $flete_exportadora = $liqCxCabecera->flete_exportadora;
             $tipo_transporte = $liqCxCabecera->tipo_transporte;
+            $factor_imp_destino = $liqCxCabecera->factor_imp_destino;
             $detalle = LiquidacionesCx::where('liqcabecera_id', $liqCxCabecera->id)->get();
             $excelDato = ExcelDato::where('instructivo', $liqCxCabecera->instructivo)->first();
             $nombre_costo = Costo::pluck('nombre'); // Extraer solo los nombres de costos
@@ -689,7 +690,7 @@ class ComexController extends Controller
                         'Comision Caja' => '=+AC' . $i . '*Z' . $i, //AB
                         '% Comisión' => '0,06', //AC
                         'RMB Comisión' => '=+AB' . $i . '*Y' . $i, //AD
-                        'Factor Imp destino' => 0, //AE  Esto no esta definido como para poder calcularlo
+                        'Factor Imp destino' => $factor_imp_destino, //AE  Esto no esta definido como para poder calcularlo
                         'Imp destino caja RMB' => '=+(AE' . $i . '*Z' . $i . ')', //AF
                         'RMB Imp destino TO' => '=+AF' . $i . '*Y' . $i, //AG
                         'Costo log. Caja RMB' => '=+(' . ($costosLogisticos == 0 ? 0 : $costosLogisticos) . '/' . $total_kilos . ')*P' . $i, //AH
