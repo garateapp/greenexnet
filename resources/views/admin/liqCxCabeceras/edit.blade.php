@@ -46,7 +46,7 @@
                                 name="cliente_id" id="cliente_id" required>
                                 @foreach ($clientes as $id => $entry)
                                     <option value="{{ $id }}"
-                                        {{ (old('cliente_id') ? old('cliente_id') : $liqCxCabecera->cliente->id ?? '') == $id ? 'selected' : '' }}>
+                                        {{ (old('cliente_id') ? old('cliente_id') : $liqCxCabecera->cliente_id ?? '') == $id ? 'selected' : '' }}>
                                         {{ $entry }}
                                     </option>
                                 @endforeach

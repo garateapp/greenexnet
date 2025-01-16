@@ -267,6 +267,7 @@
                                                 }
                                             }
                                         @endphp
+
                                         @foreach ($headers as $header)
                                             <th>{{ $header }}</th>
                                         @endforeach
@@ -300,6 +301,7 @@
                                             $row = preg_replace('/[A-Z]/', '', $coordenada); // Extraer números (fila)
 
                                             $tabla[$row][$col][$propiedad] = $valor;
+                                            Log::info($col.$row.' Prop:'.$propiedad.' Val:'.$valor);
                                             // Determinar la última letra
                                             if (strcmp($col, $UltimaLetra) > 0) {
                                                 $UltimaLetra = $col;
@@ -337,8 +339,11 @@
                                         @foreach ($columnas as $col => $valores) {{-- Solo procesa columnas presentes en $columnas --}}
                                         <td>
                                             @foreach ($valores as $propiedad => $valor)
-                                                {{ Log::info($propiedad . "-- Col " . $col) }}
+
+
+
                                                 {{ $valor }}<br>
+
                                             @endforeach
                                         </td>
                                     @endforeach
