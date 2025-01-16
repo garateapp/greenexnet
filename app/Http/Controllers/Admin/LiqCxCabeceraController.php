@@ -188,16 +188,7 @@ class LiqCxCabeceraController extends Controller
         }
 
         $liquidacion->delete();
-        $liq = LiquidacionesCx::find($liquidacion->liqcabecera_id)
-            ->get();
-        $total_bruto = 0;
-        foreach ($liq as $l) {
-            $total_bruto = $total_bruto + ($l->cantidad * $l->precio_unitario);
-        }
-        $liqCxCabecera = LiqCxCabecera::find($liquidacion->liqcabecera_id);
-        $liqCxCabecera->total_bruto = $total_bruto;
-        $liqCxCabecera->total_neto = $total_bruto - $liqCxCabecera->total_costo;
-        $liqCxCabecera->save();
+
         return response()->json(['success' => true, 'message' => 'Línea eliminada correctamente.']);
     }
     public function destroyCosto($id)
