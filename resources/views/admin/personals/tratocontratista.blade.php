@@ -186,6 +186,13 @@
                         </tr>
                     </thead>
                     <tbody></tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="6"></th>
+                            <th>Total</th>
+                            <th colspan="2"></th>
+                        </tr>
+                    </tfoot>
                 </table>
 
             </div>
@@ -297,7 +304,40 @@
                 order: [
                     [4, 'asc']
                 ],
-                destroy: true
+                destroy: true,
+                footerCallback: function(row, data,
+                                                start, end, display) {
+                                                // Calculate the total and subtotal for the 'monto_a_pagar' column
+                                                let api = this.api();
+
+                                                // Helper function to parse float and handle null/undefined
+                                                const parseValue = (value) =>
+                                                    parseFloat(value) || 0;
+
+                                                // Total for all data
+                                                let total = api
+                                                    .column(6)
+                                                    .data()
+                                                    .reduce((a, b) =>
+                                                        parseValue(a) +
+                                                        parseValue(b), 0);
+
+                                                // Subtotal for visible rows
+                                                let subtotal = api
+                                                    .column(6, {
+                                                        page: 'current'
+                                                    })
+                                                    .data()
+                                                    .reduce((a, b) =>
+                                                        parseValue(a) +
+                                                        parseValue(b), 0);
+
+                                                // Update the footer with the calculated values
+                                                $(api.column(6).footer()).html(
+                                                 `<b>Subtotal: ${Math.round(subtotal).toLocaleString(undefined, { minimumFractionDigits: 0 })}<br>
+        Total: ${Math.round(total).toLocaleString(undefined, { minimumFractionDigits: 0 })}</b>`
+                                                );
+                                            }
 
             });
             $(document).on('click', '#calcTratoBtn', function() {
@@ -385,7 +425,39 @@
                                 order: [
                                     [4, 'asc']
                                 ],
-                                destroy: true
+                                destroy: true,footerCallback: function(row, data,
+                                                start, end, display) {
+                                                // Calculate the total and subtotal for the 'monto_a_pagar' column
+                                                let api = this.api();
+
+                                                // Helper function to parse float and handle null/undefined
+                                                const parseValue = (value) =>
+                                                    parseFloat(value) || 0;
+
+                                                // Total for all data
+                                                let total = api
+                                                    .column(6)
+                                                    .data()
+                                                    .reduce((a, b) =>
+                                                        parseValue(a) +
+                                                        parseValue(b), 0);
+
+                                                // Subtotal for visible rows
+                                                let subtotal = api
+                                                    .column(6, {
+                                                        page: 'current'
+                                                    })
+                                                    .data()
+                                                    .reduce((a, b) =>
+                                                        parseValue(a) +
+                                                        parseValue(b), 0);
+
+                                                // Update the footer with the calculated values
+                                                $(api.column(6).footer()).html(
+                                                 `<b>Subtotal: ${Math.round(subtotal).toLocaleString(undefined, { minimumFractionDigits: 0 })}<br>
+        Total: ${Math.round(total).toLocaleString(undefined, { minimumFractionDigits: 0 })}</b>`
+                                                );
+                                            }
 
                             });
                         });
@@ -461,7 +533,40 @@
                             order: [
                                 [4, 'asc']
                             ],
-                            destroy: true
+                            destroy: true,
+                            footerCallback: function(row, data,
+                                                start, end, display) {
+                                                // Calculate the total and subtotal for the 'monto_a_pagar' column
+                                                let api = this.api();
+
+                                                // Helper function to parse float and handle null/undefined
+                                                const parseValue = (value) =>
+                                                    parseFloat(value) || 0;
+
+                                                // Total for all data
+                                                let total = api
+                                                    .column(6)
+                                                    .data()
+                                                    .reduce((a, b) =>
+                                                        parseValue(a) +
+                                                        parseValue(b), 0);
+
+                                                // Subtotal for visible rows
+                                                let subtotal = api
+                                                    .column(6, {
+                                                        page: 'current'
+                                                    })
+                                                    .data()
+                                                    .reduce((a, b) =>
+                                                        parseValue(a) +
+                                                        parseValue(b), 0);
+
+                                                // Update the footer with the calculated values
+                                                $(api.column(6).footer()).html(
+                                               `<b>Subtotal: ${Math.round(subtotal).toLocaleString(undefined, { minimumFractionDigits: 0 })}<br>
+        Total: ${Math.round(total).toLocaleString(undefined, { minimumFractionDigits: 0 })}</b>`
+                                                );
+                                            }
 
                         });
                         $("#addTratoModal").modal('hide');
@@ -553,8 +658,40 @@
                                             order: [
                                                 [4, 'asc']
                                             ],
-                                            destroy: true
+                                            destroy: true,
+                                            footerCallback: function(row, data,
+                                                start, end, display) {
+                                                // Calculate the total and subtotal for the 'monto_a_pagar' column
+                                                let api = this.api();
 
+                                                // Helper function to parse float and handle null/undefined
+                                                const parseValue = (value) =>
+                                                    parseFloat(value) || 0;
+
+                                                // Total for all data
+                                                let total = api
+                                                    .column(6)
+                                                    .data()
+                                                    .reduce((a, b) =>
+                                                        parseValue(a) +
+                                                        parseValue(b), 0);
+
+                                                // Subtotal for visible rows
+                                                let subtotal = api
+                                                    .column(6, {
+                                                        page: 'current'
+                                                    })
+                                                    .data()
+                                                    .reduce((a, b) =>
+                                                        parseValue(a) +
+                                                        parseValue(b), 0);
+
+                                                // Update the footer with the calculated values
+                                                $(api.column(6).footer()).html(
+                                                    `<b>Subtotal: ${Math.round(subtotal).toLocaleString(undefined, { minimumFractionDigits: 0 })}<br>
+        Total: ${Math.round(total).toLocaleString(undefined, { minimumFractionDigits: 0 })}</b>`
+                                                );
+                                            }
                                         });
                                     }); // Recargar la tabla
                             } else {
@@ -635,7 +772,40 @@
                             order: [
                                 [4, 'asc']
                             ],
-                            destroy: true
+                            destroy: true,
+                            footerCallback: function(row, data,
+                                                start, end, display) {
+                                                // Calculate the total and subtotal for the 'monto_a_pagar' column
+                                                let api = this.api();
+
+                                                // Helper function to parse float and handle null/undefined
+                                                const parseValue = (value) =>
+                                                    parseFloat(value) || 0;
+
+                                                // Total for all data
+                                                let total = api
+                                                    .column(6)
+                                                    .data()
+                                                    .reduce((a, b) =>
+                                                        parseValue(a) +
+                                                        parseValue(b), 0);
+
+                                                // Subtotal for visible rows
+                                                let subtotal = api
+                                                    .column(6, {
+                                                        page: 'current'
+                                                    })
+                                                    .data()
+                                                    .reduce((a, b) =>
+                                                        parseValue(a) +
+                                                        parseValue(b), 0);
+
+                                                // Update the footer with the calculated values
+                                                $(api.column(6).footer()).html(
+                                                  `<b>Subtotal: ${Math.round(subtotal).toLocaleString(undefined, { minimumFractionDigits: 0 })}<br>
+        Total: ${Math.round(total).toLocaleString(undefined, { minimumFractionDigits: 0 })}</b>`
+                                                );
+                                            }
 
                         });
                         $("#addTratoModal").modal('hide');
