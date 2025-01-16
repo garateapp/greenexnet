@@ -103,7 +103,7 @@
                     <!-- Columna derecha -->
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="required" for="nave_id">{{ trans('cruds.liqCxCabecera.fields.nave') }}</label>
+                            <label class="" for="nave_id">{{ trans('cruds.liqCxCabecera.fields.nave') }}</label>
                             <select class="form-control select2 {{ $errors->has('nave') ? 'is-invalid' : '' }}"
                                 name="nave_id" id="nave_id">
                                 @foreach ($naves as $id => $entry)
