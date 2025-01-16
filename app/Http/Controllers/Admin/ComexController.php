@@ -576,12 +576,16 @@ class ComexController extends Controller
             $excelDato = ExcelDato::where('instructivo', $liqCxCabecera->instructivo)->first();
             $nombre_costo = Costo::pluck('nombre'); // Extraer solo los nombres de costos
             $total_kilos = 0;
+            $total_ventas = 0;
             foreach ($detalle as $item) {
                 $total_kilos = $total_kilos + (float)(str_replace(',', '.', $this->traducedatos($item->embalaje_id, 'Embalaje'))) * (float)(str_replace(',', '.', $item->cantidad));
-                Log::info("Total Kilos: " . $total_kilos);
-            }
 
+                $total_ventas = $total_ventas + $item->cantidad* (float)(str_replace(',', '.', $item->precio_unitario));
+                Log::info("Total Venta: " . $total_ventas);
+            }
+            $porcComision='0,06';
             foreach ($detalle as $item) {
+
                 $costos = LiqCosto::where('liq_cabecera_id', $liqCxCabecera->id)->get();
 
                 // // Inicializar los costos procesados con valores por defecto (0)
@@ -601,6 +605,7 @@ class ComexController extends Controller
                     // Log::info('Nombre Costo:' . "----" . $costo->nombre_costo);
                     // $CatCosto = Costo::where('nombre', $costo->nombre_costo)->first();
                     // // Log::info('Categoria Costo:' . "----" . $CatCosto->categoria."----".$costo->valor);
+
                     switch ($costo->nombre_costo) {
                         case 'Costo Logístico':
                             $costosLogisticos += $costo->valor;
@@ -619,6 +624,8 @@ class ComexController extends Controller
                             break;
                         case 'Comisión':
                             $comision += $costo->valor;
+                            $porcComision=$comision / $total_ventas;
+                            Log::info("Porcentaje Comision: " . $porcComision);
                             break;
                         case 'Entrada Mercado':
                             $entradamercado += $costo->valor;
@@ -693,7 +700,7 @@ class ComexController extends Controller
                         'RMB Caja' => isset($item->precio_unitario) ? $item->precio_unitario : 0, //z
                         'RMB Venta' => $item->cantidad * $item->precio_unitario, //AA
                         'Comision Caja' => '=+AC' . $i . '*Z' . $i, //AB
-                        '% Comisión' => '0,06', //AC
+                        '% Comisión' => $porcComision, //AC
                         'RMB Comisión' => '=+AB' . $i . '*Y' . $i, //AD
                         'Factor Imp destino' => $factor_imp_destino, //AE  Esto no esta definido como para poder calcularlo
                         'Imp destino caja RMB' => '=+(AE' . $i . '*Z' . $i . ')', //AF
