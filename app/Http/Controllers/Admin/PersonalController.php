@@ -315,12 +315,12 @@ class PersonalController extends Controller
 
     public function tratoContratista(){
 
-        $personal=Personal::whereIn('entidad_id',[2,3])->select(DB::raw("CONCAT(rut-nombre) as full_name"), 'id')
+        $personal=Personal::whereIn('entidad_id',[2,3])->select(DB::raw("CONCAT(rut, '-', nombre) as full_name"), 'id')
         ->pluck('full_name','id')->prepend(trans('global.pleaseSelect'), '');
         $data=TratoContratistas::whereBetween('fecha',[Carbon::now()->subDay()->format('Y-m-d'),Carbon::now()->format('Y-m-d')])->with('personal')->get();
         foreach($data as $t){
             $personals=Personal::where('id','=',$t->personal_id)->with("entidad")->first();
-            $t->contratista=$personals->entidad->nombre;
+            $t->contratista=$personal->entidad->nombre;
         }
         //$tratoHP=TratoContratistas::where('fecha',Carbon::now()->subDay()->format('Y-m-d'))->get();
         return view('admin.personals.tratocontratista',compact('personal','data'));
