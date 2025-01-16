@@ -134,7 +134,7 @@ class LiqCxCabeceraController extends Controller
         $liquidacion = LiquidacionesCx::find($validated['id']);
         $liquidacion->{$validated['field']} = $validated['value'];
         $liquidacion->save();
-        $liq = LiquidacionesCx::find($liquidacion->liqcabecera_id)
+        $liq = LiquidacionesCx::where('liqcabecera_id','=',$liquidacion->liqcabecera_id)
             ->get();
         $total_bruto = 0;
         foreach ($liq as $l) {
