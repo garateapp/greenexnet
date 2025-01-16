@@ -134,7 +134,16 @@ class LiqCxCabeceraController extends Controller
         $liquidacion = LiquidacionesCx::find($validated['id']);
         $liquidacion->{$validated['field']} = $validated['value'];
         $liquidacion->save();
-
+        $liq = LiquidacionesCx::find($liquidacion->liqcabecera_id)
+            ->get();
+        $total_bruto = 0;
+        foreach ($liq as $l) {
+            $total_bruto = $total_bruto + ($l->cantidad * $l->precio_unitario);
+        }
+        $liqCxCabecera = LiqCxCabecera::find($liquidacion->liqcabecera_id);
+        $liqCxCabecera->total_bruto = $total_bruto;
+        $liqCxCabecera->total_neto = $total_bruto - $liqCxCabecera->total_costo;
+        $liqCxCabecera->save();
         return response()->json(['success' => true, 'message' => 'Campo actualizado con éxito']);
     }
 
@@ -149,7 +158,7 @@ class LiqCxCabeceraController extends Controller
     {
         $costos = LiqCosto::where('liq_cabecera_id', $request->id)->get();
         foreach ($costos as $costo) {
-            $costo->categoria=(Costo::where("nombre",$costo->nombre_costo)->first()==null)?'Sin Categoría':Costo::where("nombre",$costo->nombre_costo)->first()->categoria;
+            $costo->categoria = (Costo::where("nombre", $costo->nombre_costo)->first() == null) ? 'Sin Categoría' : Costo::where("nombre", $costo->nombre_costo)->first()->categoria;
         }
 
         return response()->json(['success' => true, 'message' => 'Campo actualizado con éxito', 'data' => $costos]);
@@ -174,11 +183,21 @@ class LiqCxCabeceraController extends Controller
         $liquidacion = LiquidacionesCx::find($id);
 
         if (!$liquidacion) {
+
             return response()->json(['success' => false, 'message' => 'Línea no encontrada.'], 404);
         }
 
         $liquidacion->delete();
-
+        $liq = LiquidacionesCx::find($liquidacion->liqcabecera_id)
+            ->get();
+        $total_bruto = 0;
+        foreach ($liq as $l) {
+            $total_bruto = $total_bruto + ($l->cantidad * $l->precio_unitario);
+        }
+        $liqCxCabecera = LiqCxCabecera::find($liquidacion->liqcabecera_id);
+        $liqCxCabecera->total_bruto = $total_bruto;
+        $liqCxCabecera->total_neto = $total_bruto - $liqCxCabecera->total_costo;
+        $liqCxCabecera->save();
         return response()->json(['success' => true, 'message' => 'Línea eliminada correctamente.']);
     }
     public function destroyCosto($id)
@@ -190,7 +209,16 @@ class LiqCxCabeceraController extends Controller
         }
 
         $costo->delete();
-
+        $liq = Costo::find($costo->liq_cabecera_id)
+            ->get();
+        $total_costo = 0;
+        foreach ($liq as $l) {
+            $total_costo = $total_costo + $l->valor;
+        }
+        $liqCxCabecera = LiqCxCabecera::find($costo->liq_cabecera_id);
+        $liqCxCabecera->total_costo = $total_costo;
+        $liqCxCabecera->total_neto = $liqCxCabecera->total_bruto - $total_costo;
+        $liqCxCabecera->save();
         return response()->json(['success' => true, 'message' => 'costo eliminada correctamente.']);
     }
     public function destroy(LiqCxCabecera $liqCxCabecera)
@@ -198,12 +226,12 @@ class LiqCxCabeceraController extends Controller
         abort_if(Gate::denies('liq_cx_cabecera_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $liqCxCabecera->delete();
-        $liqCostos=LiqCosto::where('liq_cabecera_id','=',$liqCxCabecera->id)->get();
-        foreach($liqCostos as $item){
+        $liqCostos = LiqCosto::where('liq_cabecera_id', '=', $liqCxCabecera->id)->get();
+        foreach ($liqCostos as $item) {
             $item->delete();
         }
-        $liquidacion=LiquidacionesCx::where('liqcabecera_id','=',$liqCxCabecera->id)->get();
-        foreach($liquidacion as $liq){
+        $liquidacion = LiquidacionesCx::where('liqcabecera_id', '=', $liqCxCabecera->id)->get();
+        foreach ($liquidacion as $liq) {
             $liq->delete();
         }
 
@@ -217,6 +245,14 @@ class LiqCxCabeceraController extends Controller
 
         foreach ($liqCxCabeceras as $liqCxCabecera) {
             $liqCxCabecera->delete();
+            $liqCostos = LiqCosto::where('liq_cabecera_id', '=', $liqCxCabecera->id)->get();
+            foreach ($liqCostos as $item) {
+                $item->delete();
+            }
+            $liquidacion = LiquidacionesCx::where('liqcabecera_id', '=', $liqCxCabecera->id)->get();
+            foreach ($liquidacion as $liq) {
+                $liq->delete();
+            }
         }
 
         return response(null, Response::HTTP_NO_CONTENT);
