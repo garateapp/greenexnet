@@ -147,7 +147,7 @@
                 <input type="text" id="fecha_final" class="form-control date" name="fecha_final" value="" />
             </div>
             <div class="form-group">
-                {{ dd($personal) }}
+
                 <label for="trabajador">Trabajador</label>
                 <select id="personal_id" name="personal_id" class="form-control select2">
                     @foreach ($personal as $id => $entry)
