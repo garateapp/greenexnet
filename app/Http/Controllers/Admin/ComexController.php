@@ -380,6 +380,7 @@ class ComexController extends Controller
             $LiqCabecera->instructivo = $instructivo;
             $LiqCabecera->tasa_intercambio = $tasa;
             $LiqCabecera->flete_exportadora = $request->input('flete_exportadora');
+            $LiqCabecera->factor_imp_destino=0;
             //nave
 
             $nave_id = $clltCabecera->first(function ($nave) {
@@ -622,7 +623,11 @@ class ComexController extends Controller
                         case 'Entrada Mercado':
                             $entradamercado += $costo->valor;
                             break;
+                        case 'Otros Costos Destino':
+                            $otroscostosdestino += $costo->valor;
+                            break;
                         default:
+
 
                             break;
                     }

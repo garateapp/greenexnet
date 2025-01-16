@@ -55,8 +55,26 @@ class StoreLiqCxCabeceraRequest extends FormRequest
                 'required'
             ], 'factor_imp_destino'=>[
                 'numeric',
-                'required'
+                'required',
+                'default' => 0
             ]
         ];
+    }
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'factor_imp_destino' => $this->input('factor_imp_destino', 0),
+        ]);
+    }
+    public function validated()
+    {
+        $validated = parent::validated();
+
+        // Asignar un valor predeterminado si no está definido
+        if (!isset($validated['factor_imp_destino'])) {
+            $validated['factor_imp_destino'] = 0;
+        }
+
+        return $validated;
     }
 }
