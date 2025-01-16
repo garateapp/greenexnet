@@ -319,8 +319,8 @@ class PersonalController extends Controller
         ->pluck('full_name','id')->prepend(trans('global.pleaseSelect'), '');
         $data=TratoContratistas::whereBetween('fecha',[Carbon::now()->subDay()->format('Y-m-d'),Carbon::now()->format('Y-m-d')])->with('personal')->get();
         foreach($data as $t){
-            $personal=Personal::where('id','=',$t->personal_id)->with("entidad")->first();
-            $t->contratista=$personal->entidad->nombre;
+            $personals=Personal::where('id','=',$t->personal_id)->with("entidad")->first();
+            $t->contratista=$personals->entidad->nombre;
         }
         //$tratoHP=TratoContratistas::where('fecha',Carbon::now()->subDay()->format('Y-m-d'))->get();
         return view('admin.personals.tratocontratista',compact('personal','data'));
