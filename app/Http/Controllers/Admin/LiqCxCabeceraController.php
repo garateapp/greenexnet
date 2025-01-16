@@ -15,6 +15,7 @@ use App\Models\Costo;
 use App\Models\Nafe;
 use Gate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -140,10 +141,11 @@ class LiqCxCabeceraController extends Controller
         foreach ($liq as $l) {
             $total_bruto = $total_bruto + ($l->cantidad * $l->precio_unitario);
         }
-        $liqCxCabecera = LiqCxCabecera::find($liquidacion->liqcabecera_id);
-        $liqCxCabecera->total_bruto = $total_bruto;
-        $liqCxCabecera->total_neto = $total_bruto - $liqCxCabecera->total_costo;
-        $liqCxCabecera->save();
+        Log::info("....".$liquidacion->liqcabecera_id);
+        // $liqCxCabecera = LiqCxCabecera::find($liquidacion->liqcabecera_id);
+        // $liqCxCabecera->total_bruto = $total_bruto;
+        // $liqCxCabecera->total_neto = $total_bruto - $liqCxCabecera->total_costo;
+        // $liqCxCabecera->save();
         return response()->json(['success' => true, 'message' => 'Campo actualizado con éxito']);
     }
 
