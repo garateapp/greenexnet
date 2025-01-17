@@ -56,7 +56,7 @@ class StoreLiqCxCabeceraRequest extends FormRequest
             ], 'factor_imp_destino'=>[
                 'numeric',
                 'required',
-                'default' => 0
+
             ]
         ];
     }

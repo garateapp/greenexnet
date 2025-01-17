@@ -12,12 +12,15 @@ use App\Models\LiqCosto;
 use App\Models\LiqCxCabecera;
 use App\Models\LiquidacionesCx;
 use App\Models\Costo;
+use App\Models\ExcelDato;
 use App\Models\Nafe;
 use Gate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Ramsey\Uuid\Guid\Guid;
 use Symfony\Component\HttpFoundation\Response;
 use Yajra\DataTables\Facades\DataTables;
+use Carbon\Carbon;
 
 class LiqCxCabeceraController extends Controller
 {
@@ -107,11 +110,54 @@ class LiqCxCabeceraController extends Controller
 
     public function store(StoreLiqCxCabeceraRequest $request)
     {
-        $liqCxCabecera = LiqCxCabecera::create($request->all());
+
+        $liqCxCabecera =new LiqCxCabecera();//::create($request->all());
+        $liqCxCabecera->instructivo = $request->instructivo;
+        $liqCxCabecera->cliente_id = $request->cliente_id;
+        $liqCxCabecera->nave_id = $request->nave_id;
+        $liqCxCabecera->tasa_intercambio = $request->tasa_intercambio;
+        $liqCxCabecera->total_costo = $request->total_costo;
+        $liqCxCabecera->total_bruto= $request->total_bruto;
+        $liqCxCabecera->total_neto = $request->total_neto;
+        $liqCxCabecera->flete_exportadora = $request->flete_exportadora;
+        $liqCxCabecera->tipo_transporte = $request->tipo_transporte;
+        $liqCxCabecera->factor_imp_destino = $request->factor_imp_destino;
+        $liqCxCabecera->eta= $this->convertirFormatoFecha($request->eta);
+        $liqCxCabecera->save();
+        $excel=new ExcelDato();
+        $excel->fecha_arribo = $this->convertirFormatoFecha($request->eta);
+        $excel->fecha_liquidacion = $this->convertirFormatoFecha($request->fecha_liquidacion);
+        $excel->fecha_venta = $this->convertirFormatoFecha($request->fecha_venta);
+        $excel->archivo_id=$this->generateSimpleGuid();
+        $excel->master_id=99;
+        $excel->modulo=1;
+        $excel->cliente=$request->cliente_id; //SUNHOLA
+        $excel->nombre_archivo="Subida Manual";
+        $excel->tasa=$request->tasa_intercambio;
+        $excel->datos= json_encode(["sin datos"]);
+
+        $excel->save();
 
         return redirect()->route('admin.liq-cx-cabeceras.index');
     }
+    function convertirFormatoFecha(string $fecha): string {
+        // Crear un objeto DateTime a partir de la fecha en formato d/m/Y
+        $fechaObjeto = \DateTime::createFromFormat('d/m/Y', $fecha);
 
+        // Verificar si la conversión fue exitosa
+        if ($fechaObjeto === false) {
+            throw new \Exception("Formato de fecha inválido: $fecha");
+        }
+
+        // Retornar la fecha en el formato Y-m-d
+        return $fechaObjeto->format('Y-m-d');
+    }
+    function generateSimpleGuid(): string {
+        $uniqid = uniqid(mt_rand(), true);
+        return substr($uniqid, 0, 8) . '-' . substr($uniqid, 8, 4) . '-' .
+               substr($uniqid, 12, 4) . '-' . substr($uniqid, 16, 4) . '-' .
+               substr($uniqid, 20, 12);
+    }
     public function edit(LiqCxCabecera $liqCxCabecera)
     {
         abort_if(Gate::denies('liq_cx_cabecera_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');

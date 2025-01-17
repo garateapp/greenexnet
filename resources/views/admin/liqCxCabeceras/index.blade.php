@@ -14,9 +14,9 @@
         <div style="margin-bottom: 10px;" class="row">
             <div class="col-lg-12">
                 <form id="frmComparativa" action="{{ route('admin.comex.generacomparativa') }}" method="POST">
-                    {{-- <a class="btn btn-success" href="{{ route('admin.liq-cx-cabeceras.create') }}">
-                    {{ trans('global.add') }} Liquidac
-                </a> --}}
+                    <a class="btn btn-success" href="{{ route('admin.liq-cx-cabeceras.create') }}">
+                    {{ trans('global.add') }} Liquidación
+                </a>
                     <a class="btn btn-success" href="{{ route('admin.comex.capturador') }}">
                         Capturar Liquidación
                     </a>
@@ -203,7 +203,7 @@
 
                 }
             }
-        
+
         dtButtons.push(comparativaButton)
          let dtOverrideGlobals = {
             buttons: dtButtons,
