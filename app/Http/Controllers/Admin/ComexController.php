@@ -566,6 +566,7 @@ class ComexController extends Controller
         $comision = 0;
         $entradamercado = 0;
         $otroscostosdestino = 0;
+        $ajusteimpuesto=0;
         $i = 2;
 
         foreach ($liqCxCabeceras as $liqCxCabecera) {
@@ -633,6 +634,8 @@ class ComexController extends Controller
                         case 'Otros Costos Destino':
                             $otroscostosdestino += $costo->valor;
                             break;
+                        case 'Ajuste Impuesto':
+                            $ajusteimpuesto += $costo->valor;
                         default:
 
 
