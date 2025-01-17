@@ -671,7 +671,7 @@ class ComexController extends Controller
                 ];
                 //  dd($liqCxCabecera);
                 // Agregar los datos principales y los costos procesados al array
-                Log::info('Datos a procesar' . "----" . $liqCxCabecera->cliente->nombre_fantasia);
+
 
                 $dataComparativa->push(array_merge(
                     [
@@ -778,6 +778,7 @@ class ComexController extends Controller
             if ($texto == null || $texto == '') {
                 return $texto;
             }
+            Log::info("Traduciendo datos: " . $texto . "----" . $tipo);
             $dato = Diccionario::where("tipo", $tipo)->where("variable", $texto)->first();
             if ($dato == null) {
                 return $texto;
