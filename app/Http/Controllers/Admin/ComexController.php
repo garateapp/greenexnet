@@ -182,7 +182,7 @@ class ComexController extends Controller
             }
 
 
-            $estrItems = $estructuras->where('tipos_seccion_conversors_id', 3)->sortBy(['orden', 'asc']);
+            $estrItems = $estructuras->where('tipos_seccion_conversors_id', 3)->sortBy(['id', 'asc']);
 
 
 

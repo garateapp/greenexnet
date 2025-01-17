@@ -135,17 +135,17 @@ class LiqCxCabeceraController extends Controller
         $liquidacion = LiquidacionesCx::find($validated['id']);
         $liquidacion->{$validated['field']} = $validated['value'];
         $liquidacion->save();
-        $liq = LiquidacionesCx::where('liqcabecera_id','=',$liquidacion->liqcabecera_id)
+        $liq = LiquidacionesCx::where('liqcabecera_id','=',$validated['id'])
             ->get();
         $total_bruto = 0;
         foreach ($liq as $l) {
             $total_bruto = $total_bruto + ($l->cantidad * $l->precio_unitario);
         }
-        Log::info("....".$liquidacion->liqcabecera_id);
-        // $liqCxCabecera = LiqCxCabecera::find($liquidacion->liqcabecera_id);
-        // $liqCxCabecera->total_bruto = $total_bruto;
-        // $liqCxCabecera->total_neto = $total_bruto - $liqCxCabecera->total_costo;
-        // $liqCxCabecera->save();
+        Log::info("....".$liq->liqcabecera_id);
+        $liqCxCabecera = LiqCxCabecera::find($liq->liqcabecera_id);
+        $liqCxCabecera->total_bruto = $total_bruto;
+        $liqCxCabecera->total_neto = $total_bruto - $liqCxCabecera->total_costo;
+        $liqCxCabecera->save();
         return response()->json(['success' => true, 'message' => 'Campo actualizado con éxito']);
     }
 
