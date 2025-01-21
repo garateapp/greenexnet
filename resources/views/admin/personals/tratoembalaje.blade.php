@@ -288,25 +288,27 @@
                                 console.log(d);
                                 const tbody = $('#exportDetalleTable tbody');
                                 tbody.empty(); // Limpia el contenido anterior
-                                d.Detalles.forEach(function(detalleFecha) {
+                                d.forEach(function(detalleFecha) {
                                     // Dentro de cada `detalleFecha`, iterar sobre su array `Detalles`
                                     detalleFecha.Detalles.forEach(function(detalle) {
-                                        const row = `
+                                        console.log(detalle);
+                                            const row = `
                                     <tr>
-                                            <td>${detalle.Creacion}</td>
-                                            <td>${detalle.nombre}</td>
-                                            <td>${detalle.N_embalaje_Actual}</td>
-                                            <td>${detalle.Cantidad_Cajas}</td>
-                                            <td>${detalle.Valor_kilo}</td>
+                                            <td>${detalle.Fecha}</td>
+                        <td>${detalle.Detalles[0].C_Trabajador}</td>
+                        <td>${detalle.Detalles[0].N_embalaje_Actual}</td>
+                        <td>${detalle.Detalles[0].Cantidad_Cajas}</td>
+                        <td>${detalle.Detalles[0].Valor_Caja}</td>
 
                                         </tr>`;
                                         tbody.append(row);
+
                                     });
                                 });
 
                             }
                             generateExportTable(data);
-                            //generateExportDetalleTable(data);
+                            generateExportDetalleTable(data);
                             // Función para exportar la tabla a Excel
                             $('#exportExcel').on('click', function() {
                                 const tableHTML = $('#exportTable').prop('outerHTML');
@@ -339,6 +341,7 @@
                                 d.Detalles.forEach(function(detalleFecha) {
                                     // Dentro de cada `detalleFecha`, iterar sobre su array `Detalles`
                                     detalleFecha.Detalles.forEach(function(detalle) {
+
                                         html += `<tr>
                         <td>${detalleFecha.Fecha}</td>
                         <td>${detalle.C_Trabajador}</td>
