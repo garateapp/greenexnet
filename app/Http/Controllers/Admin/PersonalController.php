@@ -133,7 +133,7 @@ class PersonalController extends Controller
         $personal->cargo_id = $request->cargo_id;
         $personal->estado_id = $request->estado_id;
         $personal->entidad_id = $request->entidad_id;
-        if($request->foto != null){
+        if ($request->foto != null) {
             $base64Image = $request->input('foto');
             $fileData = explode(',', $base64Image);
             $imageData = base64_decode($fileData[1]);
@@ -243,8 +243,7 @@ class PersonalController extends Controller
         $config = Configuracion::where('variable', 'ValorTratoDiario')->first();
         if (!$config) {
             return response()->json(['error' => 'Configuración ValorTratoDiario no encontrada.'], 500);
-        }
-
+        };
         $valorTratoDiario = (float) $config->valor;
         $datos = DB::connection("sqlsrv")
             ->table('V_PKG_Embaladoras_MiniPC as A')
@@ -254,11 +253,8 @@ class PersonalController extends Controller
                 'A.nombre',
                 'A.Rut_Trabajador',
                 'A.N_embalaje_Actual',
-                'A.C_embalaje_Actual as codigo',
-                'A.N_Turno',
-                'A.n_linea',
                 'B.peso_std',
-                DB::raw('COUNT(A.caja) as Cantidad_Cajas'),
+                DB::raw('count(A.caja) as Cantidad_Cajas'),
                 'B.CP4 as Valor'
             )
             ->leftJoin('V_Maestro_Items as B', 'A.C_embalaje_Actual', '=', 'B.codigo')
@@ -271,180 +267,210 @@ class PersonalController extends Controller
                 'A.nombre',
                 'A.Rut_Trabajador',
                 'A.N_embalaje_Actual',
-                'A.C_embalaje_Actual',
-                'A.N_Turno',
-                'A.n_linea',
                 'B.peso_std',
                 'B.CP4'
             )
             ->orderByDesc('A.Rut_Trabajador', 'A.Creacion')
             ->get();
 
+
+
+
         // --b.CP4*b.peso_std as Valor_Kilo,
         // --b.CP4*b.peso_std *count (a.caja) as Valor_Ganado_diario,
         // --b.CP4*b.peso_std *count (a.caja)-12500 as Total_a_Pagar
-        $resultado = $datos->groupBy('Rut_Trabajador')->map(function ($items, $rut)  use ($valorTratoDiario){
-            // Calcular el total a pagar por trabajador
-            $totalAPagar = $items->reduce(function ($carry, $item)  use ($valorTratoDiario) {
-                $valorPorCaja = ((float)$item->Valor) * ((float)$item->peso_std) * ((float)$item->Cantidad_Cajas);
-                return $carry + ($valorPorCaja - $valorTratoDiario
-            );
-            }, 0);
+        $agrupadosPorTrabajador = $datos->sortBy([['Rut_Trabajador', 'asc']])
+        ->groupBy('Rut_Trabajador')
+        ->map(function ($items, $rut) use ($valorTratoDiario) {
+            // Obtener nombre
+            $nombre = $items->first()->nombre ?? '';
 
-            // Formatear la estructura
+            // Agrupar detalles por fecha y calcular totales diarios
+            $detallesPorFecha = $items->groupBy(function ($item) {
+                return Carbon::parse($item->Creacion)->format('Y-m-d');
+            })->map(function ($detalles, $fecha) use ($valorTratoDiario) {
+                // Calcular la suma de cajas y el total del valor diario
+                $totalCajasPorFecha = $detalles->sum('Cantidad_Cajas');
+                $totalValorPorFecha = $detalles->reduce(function ($carry, $item) {
+                    return $carry + ((float)$item->Valor * (float)$item->peso_std * (int)$item->Cantidad_Cajas);
+                }, 0);
+
+                // Restar el valor del trato diario y ajustar si es negativo
+                $totalValorPorFecha -= $valorTratoDiario;
+                $totalValorPorFecha = ($totalValorPorFecha < 0) ? 0 : $totalValorPorFecha;
+
+                return [
+                    'Fecha' => $fecha,
+                    'Detalles' => $detalles->map(function ($item) {
+                        return [
+                            'Creacion' => Carbon::parse($item->Creacion)->format('d-m-Y'),
+                            'C_Trabajador' => $item->C_Trabajador,
+                            'N_embalaje_Actual'=> $item->N_embalaje_Actual,
+                            'Nombre' => $item->nombre,
+                            'Cantidad_Cajas' => $item->Cantidad_Cajas,
+                            'Peso_Std' => $item->peso_std,
+                            'Valor_Caja' => $item->Valor,
+                        ];
+                    })->values(),
+                    'Total_Cajas' => $totalCajasPorFecha,
+                    'Total_Valor' => $totalValorPorFecha,
+                ];
+            })->values();
+
+            // Calcular totales generales por trabajador (suma de totales diarios)
+            $totalCajas = $detallesPorFecha->sum('Total_Cajas');
+            $totalValor = $detallesPorFecha->sum('Total_Valor');
+
             return [
                 'Rut_Trabajador' => $rut,
-                'nombre' => $items[0]->nombre,
-                'Total_a_pagar' => $totalAPagar,
-                'detalles' => $items->map(function ($item)  use ($valorTratoDiario) {
-                    return [
-                        'Creacion' => Carbon::parse($item->Creacion)->format('d-m-Y'),
-                        'C_Trabajador' => $item->C_Trabajador,
-                        'N_embalaje_Actual' => $item->N_embalaje_Actual,
-                        'Cantidad_Cajas' => $item->Cantidad_Cajas,
-                        'Valor_kilo' => ((float)$item->Valor) * ((float)$item->peso_std),
-                        'Valor_Ganado_diario' => (((float)$item->Valor) * ((float)$item->peso_std) * ((float)$item->Cantidad_Cajas)) - ((float)$valorTratoDiario),
-                    ];
-                }),
+                'Nombre' => $nombre,
+                'Total_Cajas' => $totalCajas,
+                'Total_a_pagar' => $totalValor,
+                'Detalles' => $detallesPorFecha,
             ];
-        })->values(); // Usamos values() para eliminar las claves asociativas y devolver un array numerado.
+        })->values();
+        Log::info("resultado",[$agrupadosPorTrabajador]);
+         // Usamos values() para eliminar las claves asociativas y devolver un array numerado.
+       // Log::info("resultado",[$agrupadosPorTrabajador]);
+
+
+
 
         // Retornar en formato JSON
-        return response()->json($resultado);
+
+        return response()->json($agrupadosPorTrabajador);
     }
 
-    public function tratoContratista(){
+    public function tratoContratista()
+    {
 
-        $personal=Personal::whereIn('entidad_id',[2,3])->select(DB::raw("CONCAT(rut, '-', nombre) as full_name"), 'id')
-        ->pluck('full_name','id')->prepend(trans('global.pleaseSelect'), '');
-        $data=TratoContratistas::whereBetween('fecha',[Carbon::now()->subDay()->format('Y-m-d'),Carbon::now()->format('Y-m-d')])->with('personal')->get();
-        foreach($data as $t){
-            $personals=Personal::where('id','=',$t->personal_id)->with("entidad")->first();
-            $t->contratista=$personals->entidad->nombre;
+        $personal = Personal::whereIn('entidad_id', [2, 3])->select(DB::raw("CONCAT(rut, '-', nombre) as full_name"), 'id')
+            ->pluck('full_name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $data = TratoContratistas::whereBetween('fecha', [Carbon::now()->subDay()->format('Y-m-d'), Carbon::now()->format('Y-m-d')])->with('personal')->get();
+        foreach ($data as $t) {
+            $personals = Personal::where('id', '=', $t->personal_id)->with("entidad")->first();
+            $t->contratista = $personals->entidad->nombre;
         }
         //$tratoHP=TratoContratistas::where('fecha',Carbon::now()->subDay()->format('Y-m-d'))->get();
-        return view('admin.personals.tratocontratista',compact('personal','data'));
+        return view('admin.personals.tratocontratista', compact('personal', 'data'));
     }
-    public function guardatratohandpack(Request $request){
-        $tratoHP=new TratoContratistas();
-        $tratoHP->fecha=Carbon::parse($request->fecha)->format('Y-m-d');//$request->fecha;
-        $tratoHP->personal_id=$request->personal_id;
-        $tratoHP->cantidad=$request->cantidad;
-        $tratoHP->monto_a_pagar=$request->monto_a_pagar;
-        $tratoHP->factor_a_pagar=$request->factor_a_pagar;
-        $tratoHP->cant_x_factor=$request->cant_x_factor;
-        if($tratoHP->monto_a_pagar<0){
-            $tratoHP->monto_a_pagar=0;
-         }
+    public function guardatratohandpack(Request $request)
+    {
+        $tratoHP = new TratoContratistas();
+        $tratoHP->fecha = Carbon::parse($request->fecha)->format('Y-m-d'); //$request->fecha;
+        $tratoHP->personal_id = $request->personal_id;
+        $tratoHP->cantidad = $request->cantidad;
+        $tratoHP->monto_a_pagar = $request->monto_a_pagar;
+        $tratoHP->factor_a_pagar = $request->factor_a_pagar;
+        $tratoHP->cant_x_factor = $request->cant_x_factor;
+        if ($tratoHP->monto_a_pagar < 0) {
+            $tratoHP->monto_a_pagar = 0;
+        }
         $tratoHP->save();
-        $tratoHP=TratoContratistas::where('fecha',$request->fecha)->with('personal')->get();
-        foreach($tratoHP as $t){
-            $personal=Personal::where('id','=',$t->personal_id)->with("entidad")->first();
-            $t->contratista=$personal->entidad->nombre;
+        $tratoHP = TratoContratistas::where('fecha', $request->fecha)->with('personal')->get();
+        foreach ($tratoHP as $t) {
+            $personal = Personal::where('id', '=', $t->personal_id)->with("entidad")->first();
+            $t->contratista = $personal->entidad->nombre;
         }
 
         return response()->json($tratoHP);
-
     }
     public function destroyhandpack(Request $request)
     {
-        try{
-        $tratoHP=TratoContratistas::find($request->id);
-        $tratoHP->delete();
-        $message='Eliminado con exito';
-        }catch(\Exception $e){
-            $message="Error:".$e->getMessage();
+        try {
+            $tratoHP = TratoContratistas::find($request->id);
+            $tratoHP->delete();
+            $message = 'Eliminado con exito';
+        } catch (\Exception $e) {
+            $message = "Error:" . $e->getMessage();
         }
 
 
-        return response()->json(['message'=>$message,'success'=>true],200);
+        return response()->json(['message' => $message, 'success' => true], 200);
     }
-    public function uploadtrato(Request $request){
-        try{
-        $request->validate([
-            'file' => 'required|file|mimes:xlsx,xls',
+    public function uploadtrato(Request $request)
+    {
+        try {
+            $request->validate([
+                'file' => 'required|file|mimes:xlsx,xls',
 
-        ]);
-        $archivo = $request->file('file');
-        $data = Excel::toArray(new ExcelImport, $archivo);
-        $data = collect($data[0]);
+            ]);
+            $archivo = $request->file('file');
+            $data = Excel::toArray(new ExcelImport, $archivo);
+            $data = collect($data[0]);
 
-        foreach ($data as $key => $value) {
+            foreach ($data as $key => $value) {
 
-            $tratoHP=new TratoContratistas();
-            $tratoHP->fecha=Carbon::parse($this->formatDate2($value["fecha"]))->format('Y-m-d');//$request->fecha;
-            $rut=$value["rut"];
-            $c9=$value["9"];
-            $c7=$value["7"];
-            $c6=$value["6"];
-            $c5=$value["5"];
-            $monto = 0;
-            $montoTotal = 0;
-            $maxVal=max([$c9,$c7,$c6,$c5]);
-            $t9 = $c9 * 9;
-            $t7 = $c7 * 7;
-            $t6 = $c6 * 6;
-            $t5 = $c5 * 5;
-            $monto = $t9 + $t7 + $t6 + $t5;
-            $valCajaResta = 315;
-            $valCaja9 = 613;
-            $valCaja7 = 477;
-            $valCaja6 = 405;
-            $valCaja5 = 341;
-            if ($c9 == $maxVal) {
-                $montoTotal = ((($t9 + $t7 + $t6 + $t5) - $valCajaResta) / 9) * $valCaja9;
-                $factor = $valCaja9;
-                $cant_x_factor = 9;
-                $tratoHP->cantidad=$c9;
-            } elseif ($c7 == $maxVal) {
-                $montoTotal = ((($t9 + $t7 + $t6 + $t5) - $valCajaResta) / 7) * $valCaja7;
-                $factor = $valCaja7;
-                $cant_x_factor = 7;
-                $tratoHP->cantidad=$c7;
-            } elseif ($c6 == $maxVal) {
-                $montoTotal = ((($t9 + $t7 + $t6 + $t5) - $valCajaResta) / 6) * $valCaja6;
-                $factor = $valCaja6;
-                $cant_x_factor = 6;
-                $tratoHP->cantidad=$c6;
-            } elseif ($c5 == $maxVal) {
-                $montoTotal = ((($t9 + $t7 + $t6 + $t5) - $valCajaResta) / 5) * $valCaja5;
-                $factor = $valCaja5;
-                $cant_x_factor = 5;
-                $tratoHP->cantidad=$c5;
-            } else {
+                $tratoHP = new TratoContratistas();
+                $tratoHP->fecha = Carbon::parse($this->formatDate2($value["fecha"]))->format('Y-m-d'); //$request->fecha;
+                $rut = $value["rut"];
+                $c9 = $value["9"];
+                $c7 = $value["7"];
+                $c6 = $value["6"];
+                $c5 = $value["5"];
+                $monto = 0;
                 $montoTotal = 0;
-                $factor = 0;
-                $cant_x_factor = 0;
-                $tratoHP->cantidad=0;
-            }
+                $maxVal = max([$c9, $c7, $c6, $c5]);
+                $t9 = $c9 * 9;
+                $t7 = $c7 * 7;
+                $t6 = $c6 * 6;
+                $t5 = $c5 * 5;
+                $monto = $t9 + $t7 + $t6 + $t5;
+                $valCajaResta = 315;
+                $valCaja9 = 613;
+                $valCaja7 = 477;
+                $valCaja6 = 405;
+                $valCaja5 = 341;
+                if ($c9 == $maxVal) {
+                    $montoTotal = ((($t9 + $t7 + $t6 + $t5) - $valCajaResta) / 9) * $valCaja9;
+                    $factor = $valCaja9;
+                    $cant_x_factor = 9;
+                    $tratoHP->cantidad = $c9;
+                } elseif ($c7 == $maxVal) {
+                    $montoTotal = ((($t9 + $t7 + $t6 + $t5) - $valCajaResta) / 7) * $valCaja7;
+                    $factor = $valCaja7;
+                    $cant_x_factor = 7;
+                    $tratoHP->cantidad = $c7;
+                } elseif ($c6 == $maxVal) {
+                    $montoTotal = ((($t9 + $t7 + $t6 + $t5) - $valCajaResta) / 6) * $valCaja6;
+                    $factor = $valCaja6;
+                    $cant_x_factor = 6;
+                    $tratoHP->cantidad = $c6;
+                } elseif ($c5 == $maxVal) {
+                    $montoTotal = ((($t9 + $t7 + $t6 + $t5) - $valCajaResta) / 5) * $valCaja5;
+                    $factor = $valCaja5;
+                    $cant_x_factor = 5;
+                    $tratoHP->cantidad = $c5;
+                } else {
+                    $montoTotal = 0;
+                    $factor = 0;
+                    $cant_x_factor = 0;
+                    $tratoHP->cantidad = 0;
+                }
 
 
-            if($montoTotal<0){
-               $montoTotal=0;
-            }
-            $tratoHP->monto_a_pagar=round($montoTotal,0);
-            $tratoHP->factor_a_pagar=$factor;
-            $tratoHP->cant_x_factor=$cant_x_factor;
+                if ($montoTotal < 0) {
+                    $montoTotal = 0;
+                }
+                $tratoHP->monto_a_pagar = round($montoTotal, 0);
+                $tratoHP->factor_a_pagar = $factor;
+                $tratoHP->cant_x_factor = $cant_x_factor;
 
-            $personal=Personal::firstOrCreate(['rut' => $rut]);
-            if($personal){
-                $personal->entidad_id=$value["contratista"];
-                $personal->save();
+                $personal = Personal::firstOrCreate(['rut' => $rut]);
+                if ($personal) {
+                    $personal->entidad_id = $value["contratista"];
+                    $personal->save();
+                }
+                $tratoHP->personal_id = $personal->id;
+                $tratoHP->save();
             }
-            $tratoHP->personal_id=$personal->id;
-            $tratoHP->save();
+            return redirect()->route('admin.personals.tratoContratista', ['message' => 'Tratos cargados correctamente']);
+        } catch (\Exception) {
+            return redirect()->route('admin.personals.tratoContratista', ['message' => 'Error al cargar los tratos']);
         }
-        return redirect()->route('admin.personals.tratoContratista',['message'=>'Tratos cargados correctamente']);
     }
-    catch(\Exception){
-        return redirect()->route('admin.personals.tratoContratista',['message'=>'Error al cargar los tratos']);
-    }
-
-
-
-
-    }
-    public function downloadtrato(){
+    public function downloadtrato()
+    {
         /*
         Fecha 2024-01-01
         rut 12345678-9
@@ -457,20 +483,21 @@ class PersonalController extends Controller
         return Excel::download(new TratoContratistasTemplateExport, 'trato_contratistas_template.xlsx');
     }
 
-    public function consultahandpack(Request $request){
+    public function consultahandpack(Request $request)
+    {
         $query = TratoContratistas::whereBetween('fecha', [$request->fecha, $request->fecha_fin])
-        ->with('personal');
+            ->with('personal');
 
-    if (!isset($request->personal_id) || $request->personal_id == null) {
-        // No agregar condición de personal_id
-    } else {
-        $query->where('personal_id', $request->personal_id);
-    }
+        if (!isset($request->personal_id) || $request->personal_id == null) {
+            // No agregar condición de personal_id
+        } else {
+            $query->where('personal_id', $request->personal_id);
+        }
 
-    $tratoHP = $query->get();
-        foreach($tratoHP as $t){
-            $personal=Personal::where('id','=',$t->personal_id)->with("entidad")->first();
-            $t->contratista=$personal->entidad->nombre;
+        $tratoHP = $query->get();
+        foreach ($tratoHP as $t) {
+            $personal = Personal::where('id', '=', $t->personal_id)->with("entidad")->first();
+            $t->contratista = $personal->entidad->nombre;
         }
         return response()->json($tratoHP);
     }

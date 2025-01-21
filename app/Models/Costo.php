@@ -40,6 +40,7 @@ class Costo extends Model
         'Flete Domestico'      => 'Flete Domestico',
         'Impuestos'            => 'Impuestos',
         'Ajuste Impuesto'     => 'Ajuste Impuesto',
+        'Otros Impuestos'     => 'Otros Impuestos',
     ];
 
     protected function serializeDate(DateTimeInterface $date)

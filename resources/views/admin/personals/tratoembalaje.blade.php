@@ -107,7 +107,32 @@
             overflow: auto;
             /* Permite desplazamiento si el contenido es más grande */
         }
+
+        .highlight {
+            background-color: green;
+            color: white;
+        }
+
+        #loading-animation {
+            display: flex;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+        }
+
+        video {
+            border-radius: 10px;
+        }
     </style>
+    <div id="loading-animation"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 9999; justify-content: center; align-items: center;">
+        <video autoplay loop muted style="width: 300px; height: auto;">
+            <source src="{{ asset('img/transito.webm') }}" type="video/webm">
+            Your browser does not support the video tag.
+        </video>
+        <br />
+        <div class="text-white text-opacity-75 text-end" id="loading-animation-text">Separando y Contando Cajas,
+            Espera por favor..... :)</div>
+    </div>
     <div class="card">
         <div class="card-header">
             Trato Embalaje
@@ -159,7 +184,7 @@
                         <th>Embalaje</th>
                         <th>Cantidad</th>
                         <th>Valor por Kilo</th>
-                        <th>Valor Ganado Diario</th>
+
                     </tr>
                 </thead>
                 <tbody>
@@ -175,6 +200,7 @@
                             <th></th> <!-- Para el botón de expansión -->
                             <th>Rut</th>
                             <th>Nombre</th>
+
                             <th>Total a Pagar</th>
                         </tr>
                     </thead>
@@ -185,9 +211,18 @@
         </div>
         <script>
             $(document).ready(function() {
+                function showLoading() {
+
+                    $("#loading-animation").fadeIn();
+                }
+
+                function hideLoading() {
+                    $("#loading-animation").fadeOut();
+                }
+
                 $(document).on('click', '#btnconsultar', function() {
                     // Obtener los checkboxes seleccionados de la tabla 1
-
+                    showLoading();
 
 
                     $.ajax({
@@ -202,7 +237,8 @@
                             }
                         })
                         .done(function(data) {
-                            console.log(data);
+
+                            hideLoading();
                             const table = $('#mainTable').DataTable({
                                 data: data,
                                 columns: [{
@@ -216,9 +252,10 @@
                                         title: 'Rut'
                                     },
                                     {
-                                        data: 'nombre',
+                                        data: 'Nombre',
                                         title: 'Nombre'
                                     },
+
                                     {
                                         data: 'Total_a_pagar',
                                         title: 'Total a Pagar',
@@ -251,16 +288,17 @@
                                 console.log(d);
                                 const tbody = $('#exportDetalleTable tbody');
                                 tbody.empty(); // Limpia el contenido anterior
-                                d.forEach((item) => {
-                                    item.detalles.forEach((detalle) => {
+                                d.Detalles.forEach(function(detalleFecha) {
+                                    // Dentro de cada `detalleFecha`, iterar sobre su array `Detalles`
+                                    detalleFecha.Detalles.forEach(function(detalle) {
                                         const row = `
                                     <tr>
                                             <td>${detalle.Creacion}</td>
-                                            <td>${item.nombre}</td>
+                                            <td>${detalle.nombre}</td>
                                             <td>${detalle.N_embalaje_Actual}</td>
                                             <td>${detalle.Cantidad_Cajas}</td>
                                             <td>${detalle.Valor_kilo}</td>
-                                            <td>${detalle.Valor_Ganado_diario}</td>
+
                                         </tr>`;
                                         tbody.append(row);
                                     });
@@ -268,7 +306,7 @@
 
                             }
                             generateExportTable(data);
-                            generateExportDetalleTable(data);
+                            //generateExportDetalleTable(data);
                             // Función para exportar la tabla a Excel
                             $('#exportExcel').on('click', function() {
                                 const tableHTML = $('#exportTable').prop('outerHTML');
@@ -293,21 +331,28 @@
                             // Formato de subtabla
                             function format(d) {
                                 // `d` es la fila con los datos principales
+                                console.log(d);
                                 let html =
-                                    '<table class="table table-bordered"><thead><tr><th>Fecha</th><th>Trabajador</th><th>Embalaje</th><th>Cantidad</th><th>Valor por Kilo</th><th>Valor Ganado Diario</th></tr></thead><tbody>';
-                                d.detalles.forEach(function(detalle) {
-                                    html += `<tr>
-                                            <td>${detalle.Creacion}</td>
-                                            <td>${detalle.C_Trabajador}</td>
-                                            <td>${detalle.N_embalaje_Actual}</td>
-                                            <td>${detalle.Cantidad_Cajas}</td>
-                                            <td>${detalle.Valor_kilo}</td>
-                                            <td>${detalle.Valor_Ganado_diario}</td>
-                                        </tr>`;
+                                    '<table class="table table-bordered"><thead><tr><th>Fecha</th><th>Trabajador</th><th>Embalaje</th><th>Cantidad</th><th>Valor por Kilo</th></tr></thead><tbody>';
+
+                                // Iterar sobre el array `Detalles` de `d`
+                                d.Detalles.forEach(function(detalleFecha) {
+                                    // Dentro de cada `detalleFecha`, iterar sobre su array `Detalles`
+                                    detalleFecha.Detalles.forEach(function(detalle) {
+                                        html += `<tr>
+                        <td>${detalleFecha.Fecha}</td>
+                        <td>${detalle.C_Trabajador}</td>
+                        <td>${detalle.N_embalaje_Actual}</td>
+                        <td>${detalle.Cantidad_Cajas}</td>
+                        <td>${detalle.Valor_Caja}</td>
+                    </tr>`;
+                                    });
                                 });
+
                                 html += '</tbody></table>';
                                 return html;
                             }
+
 
                             // Evento para mostrar/ocultar subtabla
                             $('#mainTable tbody').on('click', 'td.details-control button', function() {
@@ -331,5 +376,3 @@
         <!-- Incluye SheetJS -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     @endsection
-
-   
