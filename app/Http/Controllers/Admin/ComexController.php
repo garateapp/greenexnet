@@ -576,7 +576,7 @@ class ComexController extends Controller
             $tipo_transporte = $liqCxCabecera->tipo_transporte;
             $factor_imp_destino = $liqCxCabecera->factor_imp_destino;
             $detalle = LiquidacionesCx::where('liqcabecera_id', $liqCxCabecera->id)->get();
-            $excelDato = ExcelDato::where('instructivo', $liqCxCabecera->instructivo)->first();
+            $excelDato = ExcelDato::where('instructivo', $liqCxCabecera->instructivo)->whereNotNull('deleted_at')->first();
             $nombre_costo = Costo::pluck('nombre'); // Extraer solo los nombres de costos
             $total_kilos = 0;
             $total_ventas = 0;
