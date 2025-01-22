@@ -759,9 +759,9 @@ class ComexController extends Controller
                         'Transporte' => $tipo_transporte == "A" ? 'AEREO' : 'MARITIMO', //BX
                         'CNY' => 'PRE', //BY
                         'Pais' => 'CHINA', //BZ
-                        'Otros Impuestos (JWM) Impuestos' => '=+(' . $otrosimpuestos == 0 ? 0 : $otrosimpuestos . '/' . $total_kilos . ')*P' . $i, //CA
+                        'Otros Impuestos (JWM) Impuestos' => '=+(' . ($otrosimpuestos == 0 ? 0 : $otrosimpuestos) . '/' . $total_kilos . ')*P' . $i, //CA
                         'Otros Impuestos (JWM) TO USD' => '=+CA' . $i . '*Y' . $i, //CB
-                        'Otros Ingresos (abonos)'=>'=+(' . $otrosingresos == 0 ? 0 : $otrosingresos . '/' . $total_kilos . ')*P' . $i, //CC
+                        'Otros Ingresos (abonos)'=>'=+(' . ($otrosingresos == 0 ? 0 : $otrosingresos) . '/' . $total_kilos . ')*P' . $i, //CC
                         'Otros Ingresos (abonos) TO USD' => '=+CC' . $i . '*Y' . $i, //CD
 
                     ],

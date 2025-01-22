@@ -461,10 +461,20 @@ class PersonalController extends Controller
                     $personal->entidad_id = $value["contratista"];
                     $personal->save();
                 }
+                else
+                {
+                    $personal=Personal::where('rut','=',str_replace('.', '', $rut))->first();
+                    if($personal){
+                        $personal->entidad_id = $value["contratista"];
+                        $personal->save();
+                    }
+                }
                 $tratoHP->personal_id = $personal->id;
                 $tratoHP->save();
-            }
-            return redirect()->route('admin.personals.tratoContratista', ['message' => 'Tratos cargados correctamente']);
+                }
+
+                return redirect()->route('admin.personals.tratoContratista', ['message' => 'Tratos cargados correctamente']);
+
         } catch (\Exception) {
             return redirect()->route('admin.personals.tratoContratista', ['message' => 'Error al cargar los tratos']);
         }
