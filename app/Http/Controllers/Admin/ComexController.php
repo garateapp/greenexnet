@@ -380,7 +380,7 @@ class ComexController extends Controller
             $LiqCabecera->instructivo = $instructivo;
             $LiqCabecera->tasa_intercambio = $tasa;
             $LiqCabecera->flete_exportadora = $request->input('flete_exportadora');
-            $LiqCabecera->factor_imp_destino=0;
+            $LiqCabecera->factor_imp_destino = 0;
             //nave
 
             $nave_id = $clltCabecera->first(function ($nave) {
@@ -437,7 +437,7 @@ class ComexController extends Controller
                 //     }
                 //     $variedad_id =  $resultado;
                 // } else {
-                    $variedad_id = $fila['Variedad'];
+                $variedad_id = $fila['Variedad'];
                 //}
                 $pallet = isset($fila['Pallet']) ? $fila['Pallet'] : '';
                 $etiqueta_id = isset($fila['Etiqueta']) ? $fila['Etiqueta'] : '';
@@ -566,7 +566,9 @@ class ComexController extends Controller
         $comision = 0;
         $entradamercado = 0;
         $otroscostosdestino = 0;
-        $ajusteimpuesto=0;
+        $ajusteimpuesto = 0;
+        $otrosimpuestos = 0;
+        $otrosingresos=0;
         $i = 2;
 
         foreach ($liqCxCabeceras as $liqCxCabecera) {
@@ -581,10 +583,10 @@ class ComexController extends Controller
             foreach ($detalle as $item) {
                 $total_kilos = $total_kilos + (float)(str_replace(',', '.', $this->traducedatos($item->embalaje_id, 'Embalaje'))) * (float)(str_replace(',', '.', $item->cantidad));
 
-                $total_ventas = $total_ventas + $item->cantidad* (float)(str_replace(',', '.', $item->precio_unitario));
+                $total_ventas = $total_ventas + $item->cantidad * (float)(str_replace(',', '.', $item->precio_unitario));
                 Log::info("Total Venta: " . $total_ventas);
             }
-            $porcComision='0,06';
+            $porcComision = '0,06';
             foreach ($detalle as $item) {
 
                 $costos = LiqCosto::where('liq_cabecera_id', $liqCxCabecera->id)->get();
@@ -625,7 +627,7 @@ class ComexController extends Controller
                             break;
                         case 'Comisión':
                             $comision += $costo->valor;
-                            $porcComision=$comision / $total_ventas;
+                            $porcComision = $comision / $total_ventas;
                             Log::info("Porcentaje Comision: " . $porcComision);
                             break;
                         case 'Entrada Mercado':
@@ -636,6 +638,10 @@ class ComexController extends Controller
                             break;
                         case 'Ajuste Impuesto':
                             $ajusteimpuesto += $costo->valor;
+                        case 'Otros Impuestos':
+                            $otrosimpuestos += $costo->valor;
+                        case 'Otros Ingresos':
+                            $otrosingresos += $costo->valor;
                         default:
 
 
@@ -718,7 +724,7 @@ class ComexController extends Controller
                         'RMB otros costos TO' => '=+AN' . $i . '*Y' . $i, //AO
                         'Flete marit. Caja RMB' => '=+(' . ($costosFleteInternacional == 0 ? 0 : $costosFleteInternacional) . '/' . $total_kilos . ')*P' . $i, //AP
                         'RMB Flete Marit. TO' => '=+AP' . $i . '*Y' . $i, //AQ
-                        'Costos cajas RMB' => '=+AF' . $i . '+AH' . $i . '+AJ' . $i . '+AL' . $i . '+AN' . $i . '+AB' . $i . '+AP' . $i, //AR
+                        'Costos cajas RMB' => '=+AF' . $i . '+AH' . $i . '+AJ' . $i . '+AL' . $i . '+AN' . $i . '+AB' . $i . '+AP' . $i . '+CA' . $i, //AR
                         'RMB Costos TO' => '=+AR' . $i . '*Y' . $i, //AS
                         'Resultados caja RMB' => '=+Z' . $i . '-AR' . $i,  //AT  Verificar con Haydelin
                         'RMB result. TO' => '=+AT' . $i . '*Y' . $i, //AU  Verificar con Haydelin
@@ -742,10 +748,10 @@ class ComexController extends Controller
                         'Costos cajas USD' => '=+AR' . $i . '/AV' . $i, //BM
                         'Costos USD TO' => '=+BM' . $i . '*Y' . $i, //BN
                         'Ajuste impuesto USD' => '=+(' . ($ajusteimpuesto == 0 ? 0 : $ajusteimpuesto) . '/' . $total_kilos . ')*P' . $i, //BO
-                        'Ajuste TO USD' => '=+BO'.$i.'*Y'.$i, //BP
+                        'Ajuste TO USD' => '=+BO' . $i . '*Y' . $i, //BP
                         'Flete Aereo' => '=+(' . $flete_exportadora . '/' . $total_kilos . ')*P' . $i, //BQ
                         'Flete Aereo TO' => '=+BQ' . $i . '*Y' . $i, //BR
-                        'FOB USD' => '=+(AT' . $i . '/AV' . $i . ')-BO' . $i.'-BQ'.$i, //BS
+                        'FOB USD' => '=+(AT' . $i . '/AV' . $i . ')-BO' . $i . '-BQ' . $i, //BS
                         'FOB TO USD' => '=+BS' . $i . '*Y' . $i, //BT
                         'FOB kg' => '=+BT' . $i . '/Q' . $i, //BU
                         'FOB Equivalente' => '=+BU' . $i . '*5', //BV
@@ -753,6 +759,11 @@ class ComexController extends Controller
                         'Transporte' => $tipo_transporte == "A" ? 'AEREO' : 'MARITIMO', //BX
                         'CNY' => 'PRE', //BY
                         'Pais' => 'CHINA', //BZ
+                        'Otros Impuestos (JWM) Impuestos' => '=+(' . $otrosimpuestos == 0 ? 0 : $otrosimpuestos . '/' . $total_kilos . ')*P' . $i, //CA
+                        'Otros Impuestos (JWM) TO USD' => '=+CA' . $i . '*Y' . $i, //CB
+                        'Otros Ingresos (abonos)'=>'=+(' . $otrosingresos == 0 ? 0 : $otrosingresos . '/' . $total_kilos . ')*P' . $i, //CC
+                        'Otros Ingresos (abonos) TO USD' => '=+CC' . $i . '*Y' . $i, //CD
+
                     ],
                     //$costo_procesado,
                     // $calculos
