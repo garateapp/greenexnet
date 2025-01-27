@@ -692,7 +692,7 @@ class ComexController extends Controller
                         'ETD Week' => '', //I
                         'ETA' => $liqCxCabecera->eta, //J
                         'ETA Week' => Carbon::parse($liqCxCabecera->eta)->weekOfYear, //K
-                        'Fecha Venta' => $item->fecha_venta, //L
+                        'Fecha Venta' => $item->fecha_venta?Carbon::parse($item->fecha_venta):0, //L
                         'Fecha Venta Week' => ($excelDato->fecha_venta?Carbon::parse($excelDato->fecha_venta)->weekOfYear:0), //M
                         'Fecha Liquidación' => $excelDato->fecha_liquidacion, //N
                         'Pallet' => $item->pallet, //O
