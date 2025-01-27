@@ -689,10 +689,10 @@ class ComexController extends Controller
                         'AWB' => '', //E
                         'Contenedor' => '', //F
                         'Liquidación' => $liqCxCabecera->instructivo, //G
-                        'ETD' =>$excelDato->fecha_venta?Carbon::parse($excelDato->fecha_venta)->format('Y-m-d'):0) , //H
-                        'ETD Week' => $excelDato->fecha_venta?Carbon::parse($excelDato->fecha_venta)->weekOfYear:0), //I
-                        'ETA' => $liqCxCabecera->eta, //J
-                        'ETA Week' => Carbon::parse($liqCxCabecera->eta)->weekOfYear, //K
+                        'ETD' => '', //H
+                        'ETD Week' => '', //I
+                        'ETA' => $excelDato->fecha_arribo, //J
+                        'ETA Week' => ($excelDato->fecha_arribo?Carbon::parse($excelDato->fecha_arribo)->weekOfYear:0), //K
                         'Fecha Venta' => $item->fecha_venta?Carbon::parse($item->fecha_venta):0, //L
                         'Fecha Venta Week' => ($excelDato->fecha_venta?Carbon::parse($excelDato->fecha_venta)->weekOfYear:0), //M
                         'Fecha Liquidación' => $excelDato->fecha_liquidacion, //N
