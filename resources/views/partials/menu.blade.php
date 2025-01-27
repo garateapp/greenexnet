@@ -380,6 +380,17 @@
                             </a>
                         </li>
                     @endcan
+                    @can('costos_origen_access')
+                    <li class="c-sidebar-nav-item">
+                        <a href="{{ route('admin.costosorigen.costosorigen') }}"
+                            class="c-sidebar-nav-link {{ request()->is('admin/costosorigen') || request()->is('admin/costosorigen/*') ? 'c-active' : '' }}">
+                            <i class="fa-fw fas fa-address-card c-sidebar-nav-icon">
+
+                            </i>
+                            Costos Origen
+                        </a>
+                    </li>
+                    @endcan
                     {{-- @can('liquidaciones_cx_access')
                         <li class="c-sidebar-nav-item">
                             <a href="{{ route('admin.liquidaciones-cxes.index') }}"
@@ -456,6 +467,7 @@
                             </a>
                         </li>
                     @endcan
+
                     <li class="c-sidebar-nav-item">
                         <a href="{{ route('admin.embalajes.index') }}"
                             class="c-sidebar-nav-link {{ request()->is('admin/embalajes') || request()->is('admin/embalajes/*') ? 'c-active' : '' }}">

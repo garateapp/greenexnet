@@ -298,8 +298,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::resource('diccionarios', 'DiccionarioController');
 
 
-
-
+    Route::get('costosorigen/costosorigen', 'CostosOrigenController@costosorigen')->name('costosorigen.costosorigen');
+    Route::post('costosorigen/guardacostosorigen', 'CostosOrigenController@guardacostosorigen')->name('costosorigen.guardacostosorigen');
 
 
 
