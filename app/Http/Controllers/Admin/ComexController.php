@@ -647,10 +647,13 @@ class ComexController extends Controller
                             // if($liqCxCabecera->cliente_id == 5){
                             //     $ajusteimpuesto = $ajusteimpuesto * $excelDato->tasa;
                             // }
+                            break;
                         case 'Otros Impuestos':
                             $otrosimpuestos += $costo->valor;
+                            break;
                         case 'Otros Ingresos':
                             $otrosingresos += $costo->valor;
+                            break;
                         default:
 
 
