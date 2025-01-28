@@ -615,19 +615,19 @@ class ComexController extends Controller
 
                     switch ($costo->nombre_costo) {
                         case 'Costo Logístico':
-                            $costosLogisticos += $costo->valor;
+                            $costosLogisticos = $costo->valor;
                             break;
                         case 'Costo Mercado':
-                            $costosMercado += $costo->valor;
+                            $costosMercado = $costo->valor;
                             break;
                         case 'Impuestos':
-                            $costosImpuestos += $costo->valor;
+                            $costosImpuestos = $costo->valor;
                             break;
                         case 'Flete Internacional':
-                            $costosFleteInternacional += $costo->valor;
+                            $costosFleteInternacional = $costo->valor;
                             break;
                         case 'Flete Doméstico':
-                            $costosFleteDomestico += $costo->valor;
+                            $costosFleteDomestico = $costo->valor;
                             break;
                         case 'Comisión':
                             $comision += $costo->valor;
@@ -635,24 +635,24 @@ class ComexController extends Controller
                             Log::info("Porcentaje Comision: " . $porcComision);
                             break;
                         case 'Entrada Mercado':
-                            $entradamercado += $costo->valor;
+                            $entradamercado = $costo->valor;
                             break;
                         case 'Otros Costos Destino':
-                            $otroscostosdestino += $costo->valor;
+                            $otroscostosdestino = $costo->valor;
                             break;
                         case 'Ajuste Impuesto':
                             //Caso particular FruitLink el ajuste de impuesto esta en dolares
 
-                            $ajusteimpuesto += $costo->valor;
+                            $ajusteimpuesto = $costo->valor;
                             // if($liqCxCabecera->cliente_id == 5){
                             //     $ajusteimpuesto = $ajusteimpuesto * $excelDato->tasa;
                             // }
                             break;
                         case 'Otros Impuestos':
-                            $otrosimpuestos += $costo->valor;
+                            $otrosimpuestos = $costo->valor;
                             break;
                         case 'Otros Ingresos':
-                            $otrosingresos += $costo->valor;
+                            $otrosingresos = $costo->valor;
                             break;
                         default:
 
