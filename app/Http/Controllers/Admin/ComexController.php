@@ -476,7 +476,7 @@ class ComexController extends Controller
                 $propiedad = $costo['propiedad'];
                 //$Costo::where('nombre', $propiedad)->first();
                 $valor = $costo['valor'] == "" ? 0 : $costo['valor'];
-                if($datosLiq->maestro_id==7 && $propiedad=="Ajuste Impuesto"){
+                if($datosLiq->master_id==7 && $propiedad=="Ajuste Impuesto"){
                     $valor=$valor*$datosLiq->tasa;
                 }
                 $c = new Costo();
