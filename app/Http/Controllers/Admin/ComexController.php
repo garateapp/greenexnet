@@ -476,6 +476,9 @@ class ComexController extends Controller
                 $propiedad = $costo['propiedad'];
                 //$Costo::where('nombre', $propiedad)->first();
                 $valor = $costo['valor'] == "" ? 0 : $costo['valor'];
+                if($datosLiq->maestro_id==7 && $propiedad=="Ajuste Impuesto"){
+                    $valor=$valor*$datosLiq->tasa;
+                }
                 $c = new Costo();
                 try {
                     LiqCosto::create([
@@ -638,7 +641,12 @@ class ComexController extends Controller
                             $otroscostosdestino += $costo->valor;
                             break;
                         case 'Ajuste Impuesto':
+                            //Caso particular FruitLink el ajuste de impuesto esta en dolares
+
                             $ajusteimpuesto += $costo->valor;
+                            // if($liqCxCabecera->cliente_id == 5){
+                            //     $ajusteimpuesto = $ajusteimpuesto * $excelDato->tasa;
+                            // }
                         case 'Otros Impuestos':
                             $otrosimpuestos += $costo->valor;
                         case 'Otros Ingresos':
