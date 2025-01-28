@@ -301,7 +301,7 @@
                                             $row = preg_replace('/[A-Z]/', '', $coordenada); // Extraer números (fila)
 
                                             $tabla[$row][$col][$propiedad] = $valor;
-                                            Log::info($col.$row.' Prop:'.$propiedad.' Val:'.$valor);
+
                                             // Determinar la última letra
                                             if (strcmp($col, $UltimaLetra) > 0) {
                                                 $UltimaLetra = $col;
