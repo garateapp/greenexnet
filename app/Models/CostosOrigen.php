@@ -21,9 +21,9 @@ class CostosOrigen extends Model
     ];
 
     protected $fillable = [
-       'n_embarque',
-        'cliente',
-        'embarcadora',
+        'n_embarque',  //aéreo, Maritimo
+        'cliente',    //aéreo, Maritimo
+        'embarcadora', //aéreo es Freight Forwarded
         'agencia_aduana',
         'puerto_embarque',
         'planta_carga',

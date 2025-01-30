@@ -127,7 +127,14 @@
             <form name="frmUploadTrato" method="POST" action="{{ route('admin.costosorigen.guardacostosorigen') }}"
                 enctype="multipart/form-data">
                 @csrf
-
+                <div class="form-group">
+                    <select class="form-control select2" id="selTipo" name="selTipo">
+                        <option value="">Seleccione una opción</option>
+                        <option value="1">Maritimo</option>
+                        <option value="2">Aéreo</option>
+                        <option value="3">Terrestre</option>
+                    </select>
+                </div>
                 <div class="form-group">
                     <label for="file">Selecciona archivo</label>
                     <input type="file" name="file" id="file" required>
@@ -145,22 +152,22 @@
             <ul class="nav nav-tabs" id="liquidacionesTabs" role="tablist">
                 <!-- Pestaña de Liquidaciones -->
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="totales-tab" data-bs-toggle="tab" data-bs-target="#totales"
-                        type="button" role="tab" aria-controls="totales" aria-selected="true">
-                        Totales
+                    <button class="nav-link active" id="maritimo-tab" data-bs-toggle="tab" data-bs-target="#maritimo"
+                        type="button" role="tab" aria-controls="maritimo" aria-selected="true">
+                        Marítimo
                     </button>
                 </li>
                 <!-- Pestaña de Costos -->
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="contenedor-tab" data-bs-toggle="tab" data-bs-target="#contenedor"
-                        type="button" role="tab" aria-controls="contenedor" aria-selected="false">
-                        Contenedor
+                    <button class="nav-link" id="aereo-tab" data-bs-toggle="tab" data-bs-target="#aereo"
+                        type="button" role="tab" aria-controls="aereo" aria-selected="false">
+                        Aéreo
                     </button>
                 </li>
             </ul>
             <div class="tab-content" id="reporteTabsContent">
                 <!-- Contenido de la Pestaña de Liquidaciones -->
-                <div class="tab-pane fade show active" id="totales" role="tabpanel" aria-labelledby="totales-tab">
+                <div class="tab-pane fade show active" id="maritimo" role="tabpanel" aria-labelledby="maritimo-tab">
                     <div class="row">
                         <div class="table-responsive col-md-6">
                             <div class="card">
@@ -426,9 +433,233 @@
                         </div>
                     </div>
                 </div>
-                <div class="tab-pane fade" id="contenedor" role="tabpanel" aria-labelledby="contenedor-tab">
+                <div class="tab-pane fade" id="aereo" role="tabpanel" aria-labelledby="aereo-tab">
                     <div class="table-responsive mt-3">
-                        Contenedor
+                        <div class="row">
+                            <div class="table-responsive col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        COSTOS DE CARGA
+                                    </div>
+                                    <div class="card-body">
+
+                                        <table class="table table-bordered table-striped">
+
+
+                                            @foreach ($costosAereos as $costoaereo)
+                                            <thead>
+                                                <tr>
+                                                    <th>Costos de Carga</th>
+                                                    <th>Total CLP</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Termógrafos USD</td>
+                                                    <td>{{ number_format($costoaereo->termografos_usd, 2,  ',', '.') }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Mantas Térmicas</td>
+                                                    <td>{{ number_format($costoaereo->mantas_termicas_usd, 0,  ',', '.') }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Materiales Consolidación</td>
+                                                    <td>{{ number_format($costoaereo->flete_aeropuerto_clp, 0,  ',', '.') }}</td>
+                                                </tr>
+
+                                            </tbody>
+                                            <tfoot>
+                                                @php
+                                                    $totalCostosCarga = $costoaereo->flete_aeropuerto_clp + $costoaereo->termografos_usd + $costoaereo->mantas_termicas_usd;
+                                                @endphp
+                                                <tr>
+                                                    <td>Total</td>
+                                                    <td>{{ number_format($totalCostosCarga, 0,  ',', '.') }}</td>
+                                                </tr>
+                                            </tfoot>
+                                        @endforeach
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-header">
+                                        COSTOS DE FLETE
+                                    </div>
+                                    <div class="card-body">
+
+                                        <table class="table table-bordered table-striped">
+
+
+                                            @foreach ($costosAereos as $costoaereo)
+                                            <thead>
+                                                <tr>
+                                                    <th>Costos de Flete</th>
+                                                    <th>Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>AWB USD</td>
+                                                    <td>{{ number_format($costoaereo->awb_usd, 2,  ',', '.') }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>AWB CLP</td>
+                                                    <td>{{ number_format($costoaereo->awb_clp, 0,  ',', '.') }}</td>
+                                                </tr>
+
+
+                                            </tbody>
+                                            <tfoot>
+
+                                                <tr>
+                                                    <td>Total USD</td><td>{{ number_format($costoaereo->awb_usd, 2,  ',', '.') }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Total CLP</td>
+                                                    <td>{{ number_format($costoaereo->awb_clp, 0,  ',', '.') }}</td>
+                                                </tr>
+                                            </tfoot>
+                                        @endforeach
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="table-responsive col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        COSTOS DE EMBARQUE
+                                    </div>
+                                    <div class="card-body">
+
+                                        <table class="table table-bordered table-striped">
+
+
+                                            @foreach ($costosAereos as $costoaereo)
+                                            <thead>
+                                                <tr>
+                                                    <th>Costos de Embarque</th>
+                                                    <th>Total CLP</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Honorarios CLP</td>
+                                                    <td>{{ number_format($costoaereo->honorarios_clp, 0,  ',', '.') }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Certificados de Origen</td>
+                                                    <td>{{ number_format($costoaereo->certif_origen_clp, 0,  ',', '.') }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Gastos Bodegas</td>
+                                                    <td>{{ number_format($costoaereo->gastos_bodegas_clp, 0,  ',', '.') }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Handling</td>
+                                                    <td>{{ number_format($costoaereo->handling_clp, 0,  ',', '.') }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Otros Costos</td>
+                                                    <td>{{ number_format($costoaereo->otros_costos_clp, 0,  ',', '.') }}</td>
+                                                </tr>
+                                            </tbody>
+                                            <tfoot>
+                                                @php
+                                                    $totalCostosEmbarque = $costoaereo->honorarios_clp + $costoaereo->certif_origen_clp + $costoaereo->gastos_bodegas_clp + $costoaereo->handling_clp + $costoaereo->otros_costos_clp;
+                                                @endphp
+                                                <tr>
+                                                    <td>Total</td>
+                                                    <td>{{ number_format($totalCostosEmbarque, 0,  ',', '.') }}</td>
+                                                </tr>
+                                            </tfoot>
+                                        @endforeach
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-header">
+                                        COSTOS DOCUMENTALES
+                                    </div>
+                                    <div class="card-body">
+
+                                        <table class="table table-bordered table-striped">
+
+
+                                            @foreach ($costosAereos as $costoaereo)
+                                            <thead>
+                                                <tr>
+                                                    <th>Costos Documentales</th>
+                                                    <th>Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Reemisión C O</td>
+                                                    <td>{{ number_format($costoaereo->reemison_clp, 2,  ',', '.') }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Reemisión Fitosanitario</td>
+                                                    <td>{{ number_format($costoaereo->reemision_fito_clp, 0,  ',', '.') }}</td>
+                                                </tr>
+
+
+                                            </tbody>
+                                            <tfoot>
+
+
+                                                <tr>
+                                                    <td>Total CLP</td>
+                                                    <td>{{ number_format($costoaereo->reemision_fito_clp, 0,  ',', '.')+number_format($costoaereo->reemison_clp, 0,  ',', '.') }}</td>
+                                                </tr>
+                                            </tfoot>
+                                        @endforeach
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="table-responsive col-md-6">
+
+                                <div class="card">
+                                    <div class="card-header">
+                                        COSTOS SAG
+                                    </div>
+                                    <div class="card-body">
+
+                                        <table class="table table-bordered table-striped">
+
+
+                                            @foreach ($costosAereos as $costoaereo)
+                                            <thead>
+                                                <tr>
+                                                    <th>Costos SAG</th>
+                                                    <th>Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>SPS</td>
+                                                    <td>{{ number_format($costoaereo->sag_sps_clp, 0,  ',', '.') }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Otros Costos</td>
+                                                    <td>{{ number_format($costoaereo->sag_otros_costos_clp, 0,  ',', '.') }}</td>
+                                                </tr>
+
+
+                                            </tbody>
+                                            <tfoot>
+
+
+                                                <tr>
+                                                    <td>Total CLP</td>
+                                                    <td>{{ number_format($costoaereo->sag_sps_clp, 0,  ',', '.')+number_format($costoaereo->sag_otros_costos_clp, 0,  ',', '.') }}</td>
+                                                </tr>
+                                            </tfoot>
+                                        @endforeach
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                     </div>
                 </div>
             </div>
