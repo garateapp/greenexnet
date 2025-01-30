@@ -1192,4 +1192,32 @@ class ReporteriaController extends Controller
     {
         return view('admin.reporteria.detallecajas');
     }
+
+    public function getLiquidaciones(){
+        $datos = DB::table('greenexnet.liquidaciones_cxes as lc')
+        ->join('greenexnet.liq_cx_cabeceras as lcc', 'lc.liqcabecera_id', '=', 'lcc.id')
+        ->join('greenexnet.excel_datos as ed', 'lcc.instructivo', '=', 'ed.instructivo')
+        ->join('greenexnet.clientes_comexes as cc', 'lcc.cliente_id', '=', 'cc.id')
+        ->whereNull('lc.deleted_at')
+        ->select([
+            DB::raw('"" as `placeholder`'),
+            'cc.nombre_fantasia',
+            'lc.variedad_id',
+            'lc.calibre',
+            'lc.etiqueta_id',
+            'lc.embalaje_id',
+            'lc.cantidad',
+            'lc.precio_unitario',
+            DB::raw('lc.precio_unitario * lc.cantidad AS `monto RMB`'),
+            DB::raw('ed.tasa * lc.precio_unitario * lc.cantidad AS `monto USD`'),
+            DB::raw('WEEK(ed.fecha_arribo) AS `Semana_Arribo`'),
+            DB::raw('WEEK(ed.fecha_venta) AS `Semana_Venta`'),
+            'ed.tasa'
+        ])
+        ->get();
+        return $datos;
+    }
+    public function liquidacionesventa(){
+        return view("admin.reporteria.liquidacionesventa");
+    }
 }
