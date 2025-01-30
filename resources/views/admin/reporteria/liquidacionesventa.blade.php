@@ -502,6 +502,12 @@
                         <tbody id="tablaDatosBody"></tbody>
                         <tfoot>
                             <tr>
+                                <td colspan="10" style="text-align: right;">Subtotal:</td>
+                                <td id="subtotalCantidad"></td>
+                                <td id="subtotalMontoRMB"></td>
+                                <td id="subtotalMontoUSD"></td>
+                            </tr>
+                            <tr>
                                 <td colspan="10"><strong>Total</strong></td>
                                 <td id="totalCantidad">0</td>
                                 <td id="totalMontoRMB">0</td>
@@ -523,149 +529,198 @@
         </div>
     </div>
     <script>
-       document.addEventListener("DOMContentLoaded", async () => {
-    let originalData = []; // Datos originales sin filtrar
+        document.addEventListener("DOMContentLoaded", async () => {
+            let originalData = []; // Datos originales sin filtrar
 
-    // Función para obtener valores únicos de una columna específica
-    async function getUniqueValues(column) {
-        const uniqueValues = new Set();
-        originalData.forEach(item => {
-            const value = item[column];
-            if (value) uniqueValues.add(value);
-        });
-        return Array.from(uniqueValues).filter(value => value !== null && value !== "");
-    }
+            // Función para obtener valores únicos de una columna específica
+            async function getUniqueValues(column) {
+                const uniqueValues = new Set();
+                originalData.forEach(item => {
+                    const value = item[column];
+                    if (value) uniqueValues.add(value);
+                });
+                return Array.from(uniqueValues).filter(value => value !== null && value !== "");
+            }
 
-    // Función para llenar los selects dinámicamente
-    async function fillSelects() {
-        try {
-            const fields = {
-                variedad_id: "filtroVariedad",
-                calibre: "filtroCalibre",
-                etiqueta_id: "filtroEtiqueta",
-                Semana_Arribo: "filtroSemana",
-                nombre_fantasia: "filtroCliente"
-            };
+            // Función para llenar los selects dinámicamente
+            async function fillSelects() {
+                try {
+                    const fields = {
+                        variedad_id: "filtroVariedad",
+                        calibre: "filtroCalibre",
+                        etiqueta_id: "filtroEtiqueta",
+                        Semana_Arribo: "filtroSemana",
+                        nombre_fantasia: "filtroCliente"
+                    };
 
-            for (const [field, selectId] of Object.entries(fields)) {
-                const values = await getUniqueValues(field);
-                const selectElement = document.getElementById(selectId);
+                    for (const [field, selectId] of Object.entries(fields)) {
+                        const values = await getUniqueValues(field);
+                        const selectElement = document.getElementById(selectId);
 
-                // Limpiar opciones previas
-                selectElement.innerHTML = '<option value="">Todos</option>';
+                        // Limpiar opciones previas
+                        selectElement.innerHTML = '<option value="">Todos</option>';
 
-                values.forEach(value => {
-                    const option = document.createElement("option");
-                    option.value = value;
-                    option.textContent = value;
-                    selectElement.appendChild(option);
+                        values.forEach(value => {
+                            const option = document.createElement("option");
+                            option.value = value;
+                            option.textContent = value;
+                            selectElement.appendChild(option);
+                        });
+
+                        // Inicializar Select2 en el select si aún no está inicializado
+                        if (!$(selectElement).hasClass("select2-hidden-accessible")) {
+                            $(selectElement).select2();
+                        }
+
+                        // Escuchar cambios en cada select para filtrar la tabla
+                        $(selectElement).on("change", filterTable);
+                    }
+                } catch (error) {
+                    console.error("Error llenando los selectores:", error);
+                }
+            }
+
+            // Función para aplicar los filtros en la tabla
+            function filterTable() {
+                let filteredData = originalData;
+
+                const filters = {
+                    variedad_id: $("#filtroVariedad").val() || [],
+                    calibre: $("#filtroCalibre").val() || [],
+                    etiqueta_id: $("#filtroEtiqueta").val() || [],
+                    Semana_Arribo: $("#filtroSemana").val() || [],
+                    nombre_fantasia: $("#filtroCliente").val() || []
+                };
+
+                // Convertir valores en arrays en caso de que sean únicos
+                Object.keys(filters).forEach(key => {
+                    if (!Array.isArray(filters[key])) {
+                        filters[key] = [filters[key]];
+                    }
                 });
 
-                // Inicializar Select2 en el select si aún no está inicializado
-                if (!$(selectElement).hasClass("select2-hidden-accessible")) {
-                    $(selectElement).select2();
+                // Aplicar filtros solo si hay valores seleccionados
+                filteredData = originalData.filter(item => {
+                    return Object.entries(filters).every(([key, values]) => {
+                        return values.length === 0 || values.includes(item[key].toString());
+                    });
+                });
+
+                cargarTabla(filteredData);
+                calcularTotales(filteredData);
+            }
+
+            // Función para calcular totales
+            function calcularTotales(data) {
+                let totalCantidad = 0;
+                let totalMontoRMB = 0;
+                let totalMontoUSD = 0;
+
+                let subtotalCantidad = 0;
+                let subtotalMontoRMB = 0;
+                let subtotalMontoUSD = 0;
+
+                // Calcular totales sobre originalData
+                originalData.forEach(item => {
+                    totalCantidad += parseFloat(item.cantidad) || 0;
+                    totalMontoRMB += parseFloat(item["monto RMB"]) || 0;
+                    totalMontoUSD += parseFloat(item["monto USD"]) || 0;
+                });
+
+                // Calcular subtotales sobre filteredData
+                data.forEach(item => {
+                    subtotalCantidad += parseFloat(item.cantidad) || 0;
+                    subtotalMontoRMB += parseFloat(item["monto RMB"]) || 0;
+                    subtotalMontoUSD += parseFloat(item["monto USD"]) || 0;
+                });
+
+                // Actualizar la fila de totales (calculados con originalData)
+                document.getElementById("totalCantidad").textContent = totalCantidad.toLocaleString();
+                document.getElementById("totalMontoRMB").textContent = totalMontoRMB.toLocaleString();
+                document.getElementById("totalMontoUSD").textContent = totalMontoUSD.toLocaleString();
+
+                // Actualizar los subtotales (calculados con filteredData)
+                document.getElementById("subtotalCantidad").textContent = subtotalCantidad.toLocaleString();
+                document.getElementById("subtotalMontoRMB").textContent = subtotalMontoRMB.toLocaleString();
+                document.getElementById("subtotalMontoUSD").textContent = subtotalMontoUSD.toLocaleString();
+            }
+
+
+            // Función para cargar la tabla con DataTables
+            function cargarTabla(datos) {
+                $('#tabla-datos').DataTable({
+                    destroy: true, // Permite recargar la tabla sin errores
+                    data: datos,
+                    columns: [{
+                            data: 'placeholder',
+                            name: 'placeholder'
+                        },
+                        {
+                            data: "nombre_fantasia"
+                        },
+                        {
+                            data: "Semana_Arribo"
+                        },
+                        {
+                            data: "Semana_Venta"
+                        },
+                        {
+                            data: "variedad_id"
+                        },
+                        {
+                            data: "calibre"
+                        },
+                        {
+                            data: "etiqueta_id"
+                        },
+                        {
+                            data: "embalaje_id"
+                        },
+                        {
+                            data: "tasa"
+                        },
+                        {
+                            data: "precio_unitario"
+                        },
+                        {
+                            data: "cantidad"
+                        },
+                        {
+                            data: "monto RMB",
+                            render: function(data) {
+                                return parseFloat(data).toLocaleString();
+                            }
+                        },
+                        {
+                            data: "monto USD",
+                            render: function(data) {
+                                return parseFloat(data).toLocaleString();
+                            }
+                        }
+                    ],
+                    language: {
+                        url: "https://cdn.datatables.net/plug-ins/1.10.19/i18n/Spanish.json"
+                    }
+                });
+            }
+
+            // Función para cargar los datos desde la API
+            async function loadData() {
+                try {
+                    const response = await fetch("{{ route('admin.reporteria.getLiquidaciones') }}");
+                    originalData = await response.json(); // Guardar los datos originales
+
+                    cargarTabla(originalData); // Llenar la tabla con todos los datos
+                    calcularTotales(originalData); // Calcular totales iniciales
+                    await fillSelects(); // Llenar los selectores
+
+                } catch (error) {
+                    console.error("Error al cargar datos:", error);
                 }
-
-                // Escuchar cambios en cada select para filtrar la tabla
-                $(selectElement).on("change", filterTable);
             }
-        } catch (error) {
-            console.error("Error llenando los selectores:", error);
-        }
-    }
 
-    // Función para aplicar los filtros en la tabla
-    function filterTable() {
-        let filteredData = originalData;
-
-        const filters = {
-            variedad_id: $("#filtroVariedad").val() || [],
-            calibre: $("#filtroCalibre").val() || [],
-            etiqueta_id: $("#filtroEtiqueta").val() || [],
-            Semana_Arribo: $("#filtroSemana").val() || [],
-            nombre_fantasia: $("#filtroCliente").val() || []
-        };
-
-        // Convertir valores en arrays en caso de que sean únicos
-        Object.keys(filters).forEach(key => {
-            if (!Array.isArray(filters[key])) {
-                filters[key] = [filters[key]];
-            }
+            // Llamar a loadData() cuando la página cargue
+            loadData();
         });
-
-        // Aplicar filtros solo si hay valores seleccionados
-        filteredData = originalData.filter(item => {
-            return Object.entries(filters).every(([key, values]) => {
-                return values.length === 0 || values.includes(item[key].toString());
-            });
-        });
-
-        cargarTabla(filteredData);
-        calcularTotales(filteredData);
-    }
-
-    // Función para calcular totales
-    function calcularTotales(data) {
-        let totalCantidad = 0;
-        let totalMontoRMB = 0;
-        let totalMontoUSD = 0;
-
-        data.forEach(item => {
-            totalCantidad += parseFloat(item.cantidad) || 0;
-            totalMontoRMB += parseFloat(item["monto RMB"]) || 0;
-            totalMontoUSD += parseFloat(item["monto USD"]) || 0;
-        });
-
-        // Actualizar la fila de totales en la tabla
-        document.getElementById("totalCantidad").textContent = totalCantidad.toLocaleString();
-        document.getElementById("totalMontoRMB").textContent = totalMontoRMB.toLocaleString();
-        document.getElementById("totalMontoUSD").textContent = totalMontoUSD.toLocaleString();
-    }
-
-    // Función para cargar la tabla con DataTables
-    function cargarTabla(datos) {
-        $('#tabla-datos').DataTable({
-            destroy: true, // Permite recargar la tabla sin errores
-            data: datos,
-            columns: [
-                { data: 'placeholder', name: 'placeholder' },
-                { data: "nombre_fantasia" },
-                { data: "Semana_Arribo" },
-                { data: "Semana_Venta" },
-                { data: "variedad_id" },
-                { data: "calibre" },
-                { data: "etiqueta_id" },
-                { data: "embalaje_id" },
-                { data: "tasa" },
-                { data: "precio_unitario" },
-                { data: "cantidad" },
-                { data: "monto RMB" },
-                { data: "monto USD" },
-            ],
-            language: {
-                url: "https://cdn.datatables.net/plug-ins/1.10.19/i18n/Spanish.json"
-            }
-        });
-    }
-
-    // Función para cargar los datos desde la API
-    async function loadData() {
-        try {
-            const response = await fetch("{{ route('admin.reporteria.getLiquidaciones') }}");
-            originalData = await response.json(); // Guardar los datos originales
-
-            cargarTabla(originalData); // Llenar la tabla con todos los datos
-            calcularTotales(originalData); // Calcular totales iniciales
-            await fillSelects(); // Llenar los selectores
-
-        } catch (error) {
-            console.error("Error al cargar datos:", error);
-        }
-    }
-
-    // Llamar a loadData() cuando la página cargue
-    loadData();
-});
-
     </script>
 @endsection
