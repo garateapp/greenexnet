@@ -484,6 +484,8 @@
                         <thead>
                             <tr>
                                 <th></th>
+                                <th></th>
+                                <th>Instructivo</th>
                                 <th>Nombre Fantasía</th>
                                 <th>Semana Arribo</th>
                                 <th>Semana Venta</th>
@@ -491,8 +493,8 @@
                                 <th>Calibre</th>
                                 <th>Etiqueta</th>
                                 <th>Embalaje</th>
-                                <th>Precio Unitario</th>
                                 <th>Tasa</th>
+                                <th>Precio Unitario</th>
                                 <th>Cantidad</th>
                                 <th>Monto RMB</th>
                                 <th>Monto USD</th>
@@ -652,8 +654,17 @@
                     destroy: true, // Permite recargar la tabla sin errores
                     data: datos,
                     columns: [{
+                            data: null,
+                            className: 'dt-control',
+                            orderable: false,
+                            defaultContent: ''
+                        },
+                        {
                             data: 'placeholder',
                             name: 'placeholder'
+                        },
+                        {
+                            data: "instructivo"
                         },
                         {
                             data: "nombre_fantasia"
@@ -703,7 +714,61 @@
                     }
                 });
             }
+            $('#tabla-datos tbody').on('click', 'td.dt-control', function() {
+                var tr = $(this).closest('tr');
+                var row = $('#tabla-datos').DataTable().row(tr);
 
+                if (row.child.isShown()) {
+                    row.child.hide();
+                    tr.removeClass('shown');
+                } else {
+                    var instructivo = row.data().instructivo; // Obtener el instructivo de la fila
+                    var calibre = row.data().calibre; // Obtener el calibre de la fila
+                    var etiqueta = row.data().etiqueta_id; // Obtener la etiqueta de la fila
+                    var variedad = row.data().variedad_id; // Obtener la variedad de la fila
+
+                    // Llamar a la API de Laravel para obtener la subtabla
+                    $.ajax({
+                        url: "{{ route('admin.reporteria.getDetallesInstructivo') }}",
+                        type: "GET",
+                        data: {
+                            instructivo: instructivo
+                        },
+                        success: function(response) {
+                            row.child(formatearSubtabla(response))
+                                .show(); // Mostrar la subtabla
+                            tr.addClass('shown');
+                        },
+                        error: function(xhr) {
+                            console.error("Error al cargar detalles:", xhr);
+                        }
+                    });
+                }
+            });
+            // Función para formatear la subtabla
+            function formatearSubtabla(data) {
+                var table = '<table class="table table-sm table-bordered" style="width:100%;">';
+                table +=
+                    '<thead><tr><th>% Costos Asociado</th><th>Embalaje</th><th>Variedad</th><th>Calibre</th><th>Productor</th><th>CSG</th><th>Cantidad</th><th>Folio</th></tr></thead>';
+                table += '<tbody>';
+
+                data.forEach(item => {
+                    table += `<tr>
+                        <td>${item.folio}</td>
+            <td>${item.C_Embalaje}</td>
+            <td>${item.n_variedad}</td>
+            <td>${item.n_calibre}</td>
+            <td>${item.n_productor}</td>
+            <td>${item.CSG_Productor}</td>
+            <td>${item.cantidad}</td>
+            <td>${parseFloat(item.porcentaje).toFixed(2)}%</td>
+
+        </tr>`;
+                });
+
+                table += '</tbody></table>';
+                return table;
+            }
             // Función para cargar los datos desde la API
             async function loadData() {
                 try {

@@ -202,6 +202,13 @@ class ComexController extends Controller
                 ];
                 $fila_costos++;
             }
+            
+            foreach ($costos as &$costo) {
+                if ($costo["propiedad"] == "Ajuste Impuesto") {
+                    $costo["valor"] = (float)$costo["valor"] * (float)$tasa;
+                }
+            }
+            
             $datosExcel = ExcelDato::where('instructivo', $instructivo)->get();
             //    dd($fecha_arribo,$fecha_venta,$fecha_liquidacion,$fila_costos);
             // Guardar en la base de datos
@@ -475,10 +482,10 @@ class ComexController extends Controller
             foreach ($costos as $costo) {
                 $propiedad = $costo['propiedad'];
                 //$Costo::where('nombre', $propiedad)->first();
-                $valor = $costo['valor'] == "" ? 0 : $costo['valor'];
-                if($datosLiq->master_id==7 && $propiedad=="Ajuste Impuesto"){
-                    $valor=$valor*$datosLiq->tasa;
-                }
+               
+                    $valor = $costo['valor'] == "" ? 0 : $costo['valor'];
+               
+                
                 $c = new Costo();
                 try {
                     LiqCosto::create([
@@ -571,7 +578,7 @@ class ComexController extends Controller
         $otroscostosdestino = 0;
         $ajusteimpuesto = 0;
         $otrosimpuestos = 0;
-        $otrosingresos=0;
+        $otrosingresos = 0;
         $i = 2;
 
         foreach ($liqCxCabeceras as $liqCxCabecera) {
@@ -703,9 +710,9 @@ class ComexController extends Controller
                         'ETD' => '', //H
                         'ETD Week' => '', //I
                         'ETA' => $excelDato->fecha_arribo, //J
-                        'ETA Week' => ($excelDato->fecha_arribo?Carbon::parse($excelDato->fecha_arribo)->weekOfYear:0), //K
-                        'Fecha Venta' => $item->fecha_venta?Carbon::parse($item->fecha_venta):0, //L
-                        'Fecha Venta Week' => ($excelDato->fecha_venta?Carbon::parse($excelDato->fecha_venta)->weekOfYear:0), //M
+                        'ETA Week' => ($excelDato->fecha_arribo ? Carbon::parse($excelDato->fecha_arribo)->weekOfYear : 0), //K
+                        'Fecha Venta' => $item->fecha_venta ? Carbon::parse($item->fecha_venta) : 0, //L
+                        'Fecha Venta Week' => ($excelDato->fecha_venta ? Carbon::parse($excelDato->fecha_venta)->weekOfYear : 0), //M
                         'Fecha Liquidación' => $excelDato->fecha_liquidacion, //N
                         'Pallet' => $item->pallet, //O
                         'Peso neto' =>  $this->traducedatos($item->embalaje_id, 'Embalaje'), //P
@@ -736,7 +743,7 @@ class ComexController extends Controller
                         'RMB otros costos TO' => '=+AN' . $i . '*Y' . $i, //AO
                         'Flete marit. Caja RMB' => '=+(' . ($costosFleteInternacional == 0 ? 0 : $costosFleteInternacional) . '/' . $total_kilos . ')*P' . $i, //AP
                         'RMB Flete Marit. TO' => '=+AP' . $i . '*Y' . $i, //AQ
-                        'Costos cajas RMB' => '=+AF' . $i . '+AH' . $i . '+AJ' . $i . '+AL' . $i . '+AN' . $i . '+AB' . $i . '+AP' . $i . '+(CA' . $i.'/AV'.$i.')+(BO'.$i.'/AV'.$i.')', //AR
+                        'Costos cajas RMB' => '=+AF' . $i . '+AH' . $i . '+AJ' . $i . '+AL' . $i . '+AN' . $i . '+AB' . $i . '+AP' . $i . '+(CA' . $i . '/AV' . $i . ')+(BO' . $i . '/AV' . $i . ')', //AR
                         'RMB Costos TO' => '=+AR' . $i . '*Y' . $i, //AS
                         'Resultados caja RMB' => '=+Z' . $i . '-AR' . $i,  //AT  Verificar con Haydelin
                         'RMB result. TO' => '=+AT' . $i . '*Y' . $i, //AU  Verificar con Haydelin
@@ -759,7 +766,7 @@ class ComexController extends Controller
                         'Flete Marit. USD TO' => '=+BK' . $i . '*Y' . $i, //BL
                         'Costos cajas USD' => '=+AR' . $i . '/AV' . $i, //BM
                         'Costos USD TO' => '=+BM' . $i . '*Y' . $i, //BN
-                        'Ajuste impuesto USD' => '=+(' . ($ajusteimpuesto == 0 ? 0 : ($ajusteimpuesto/$excelDato->tasa)) . '/' . $total_kilos . ')*P' . $i, //BO
+                        'Ajuste impuesto USD' => '=+(' . ($ajusteimpuesto == 0 ? 0 : ($ajusteimpuesto)) . '/' . $total_kilos . ')*P' . $i, //BO
                         'Ajuste TO USD' => '=+BO' . $i . '*Y' . $i, //BP
                         'Flete Aereo' => '=+(' . $flete_exportadora . '/' . $total_kilos . ')*P' . $i, //BQ
                         'Flete Aereo TO' => '=+BQ' . $i . '*Y' . $i, //BR
@@ -771,9 +778,9 @@ class ComexController extends Controller
                         'Transporte' => $tipo_transporte == "A" ? 'AEREO' : 'MARITIMO', //BX
                         'CNY' => 'PRE', //BY
                         'Pais' => 'CHINA', //BZ
-                        'Otros Impuestos (JWM) Impuestos' => '=+(' . ($otrosimpuestos == 0 ? 0 : ($otrosimpuestos/$excelDato->tasa)) . '/' . $total_kilos . ')*P' . $i, //CA
+                        'Otros Impuestos (JWM) Impuestos' => '=+(' . ($otrosimpuestos == 0 ? 0 : ($otrosimpuestos / $excelDato->tasa)) . '/' . $total_kilos . ')*P' . $i, //CA
                         'Otros Impuestos (JWM) TO USD' => '=+CA' . $i . '*Y' . $i, //CB
-                        'Otros Ingresos (abonos)'=>'=+(' . ($otrosingresos == 0 ? 0 : ($otrosingresos/$excelDato->tasa)) . '/' . $total_kilos . ')*P' . $i, //CC
+                        'Otros Ingresos (abonos)' => '=+(' . ($otrosingresos == 0 ? 0 : ($otrosingresos / $excelDato->tasa)) . '/' . $total_kilos . ')*P' . $i, //CC
                         'Otros Ingresos (abonos) TO USD' => '=+CC' . $i . '*Y' . $i, //CD
 
                     ],
