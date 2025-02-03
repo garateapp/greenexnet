@@ -1208,6 +1208,7 @@ class ReporteriaController extends Controller
             'lc.embalaje_id',
             'lc.cantidad',
             'lc.precio_unitario',
+            'ed.instructivo',
             DB::raw('lc.precio_unitario * lc.cantidad AS `monto RMB`'),
             DB::raw('ed.tasa * lc.precio_unitario * lc.cantidad AS `monto USD`'),
             DB::raw('WEEK(ed.fecha_arribo) AS `Semana_Arribo`'),
@@ -1215,9 +1216,37 @@ class ReporteriaController extends Controller
             'ed.tasa'
         ])
         ->get();
+
         return $datos;
     }
     public function liquidacionesventa(){
         return view("admin.reporteria.liquidacionesventa");
+    }
+    public function getDetallesInstructivo(Request $request) {
+        $instructivo = $request->input('instructivo');
+        $variedad= $request->input('variedad');
+        $calibre= $request->input('calibre');
+
+        $query = "
+            SELECT
+                (SUM(peso_neto) / (SELECT SUM(peso_neto)
+                                   FROM [FX6_Packing_Garate_Operaciones].[dbo].[V_PKG_Embarques]
+                                   WHERE numero_referencia = ?)) * 100 as porcentaje,
+                [C_Embalaje],
+                n_variedad,
+                n_calibre,
+                n_productor,
+                [CSG_Productor],
+                cantidad,
+                folio
+            FROM [FX6_Packing_Garate_Operaciones].[dbo].[V_PKG_Embarques]
+            WHERE numero_referencia = ? and n_variedad = ? and n_calibre = ?
+            GROUP BY C_Embalaje, n_variedad, n_calibre, CSG_Productor, n_productor, cantidad, folio
+            ORDER BY folio
+        ";
+
+        $resultados = DB::connection('sqlsrv')->select($query, [$instructivo, $instructivo, $variedad, $calibre]);
+
+        return response()->json($resultados);
     }
 }

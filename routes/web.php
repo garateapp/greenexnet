@@ -108,7 +108,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('personals/ejecutaCuadratura', 'PersonalController@ejecutaCuadratura')->name('personals.ejecutaCuadratura');
     Route::get('personals/tratoembalaje', 'PersonalController@tratoembalaje')->name('personals.tratoembalaje');
     Route::post('personals/ejecutaTratoembalaje', 'PersonalController@ejecutaTratoembalaje')->name('personals.ejecutaTratoembalaje');
-    Route::get('personals/tratoContratista','PersonalController@tratoContratista')->name('personals.tratoContratista');
+    Route::get('personals/tratoContratista', 'PersonalController@tratoContratista')->name('personals.tratoContratista');
     Route::post('personals/guardatratohandpack', 'PersonalController@guardatratohandpack')->name('personals.guardatratohandpack');
     Route::get('personals/destroyhandpack/{id}', 'PersonalController@destroyhandpack')->name('personals.destroyhandpack');
     Route::get('personals/downloadtrato', 'PersonalController@downloadtrato')->name('personals.downloadtrato');
@@ -330,17 +330,17 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('modulos/process-csv-import', 'ModuloController@processCsvImport')->name('modulos.processCsvImport');
     Route::resource('modulos', 'ModuloController');
 
-     // Capturador
-     Route::delete('capturadors/destroy', 'CapturadorController@massDestroy')->name('capturadors.massDestroy');
-     Route::post('capturadors/parse-csv-import', 'CapturadorController@parseCsvImport')->name('capturadors.parseCsvImport');
-     Route::post('capturadors/process-csv-import', 'CapturadorController@processCsvImport')->name('capturadors.processCsvImport');
-     Route::resource('capturadors', 'CapturadorController');
+    // Capturador
+    Route::delete('capturadors/destroy', 'CapturadorController@massDestroy')->name('capturadors.massDestroy');
+    Route::post('capturadors/parse-csv-import', 'CapturadorController@parseCsvImport')->name('capturadors.parseCsvImport');
+    Route::post('capturadors/process-csv-import', 'CapturadorController@processCsvImport')->name('capturadors.processCsvImport');
+    Route::resource('capturadors', 'CapturadorController');
 
-     // Capturador Estructura
-     Route::delete('capturador-estructuras/destroy', 'CapturadorEstructuraController@massDestroy')->name('capturador-estructuras.massDestroy');
-     Route::post('capturador-estructuras/parse-csv-import', 'CapturadorEstructuraController@parseCsvImport')->name('capturador-estructuras.parseCsvImport');
-     Route::post('capturador-estructuras/process-csv-import', 'CapturadorEstructuraController@processCsvImport')->name('capturador-estructuras.processCsvImport');
-     Route::resource('capturador-estructuras', 'CapturadorEstructuraController');
+    // Capturador Estructura
+    Route::delete('capturador-estructuras/destroy', 'CapturadorEstructuraController@massDestroy')->name('capturador-estructuras.massDestroy');
+    Route::post('capturador-estructuras/parse-csv-import', 'CapturadorEstructuraController@parseCsvImport')->name('capturador-estructuras.parseCsvImport');
+    Route::post('capturador-estructuras/process-csv-import', 'CapturadorEstructuraController@processCsvImport')->name('capturador-estructuras.processCsvImport');
+    Route::resource('capturador-estructuras', 'CapturadorEstructuraController');
 
 
 
@@ -376,7 +376,11 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::resource('liq-costos', 'LiqCostosController');
 
     //Fin Liquidaciones de Cliente
-
+    // Proveedor
+    Route::delete('proveedors/destroy', 'ProveedorController@massDestroy')->name('proveedors.massDestroy');
+    Route::post('proveedors/parse-csv-import', 'ProveedorController@parseCsvImport')->name('proveedors.parseCsvImport');
+    Route::post('proveedors/process-csv-import', 'ProveedorController@processCsvImport')->name('proveedors.processCsvImport');
+    Route::resource('proveedors', 'ProveedorController');
 
 
     Route::get('messenger', 'MessengerController@index')->name('messenger.index');

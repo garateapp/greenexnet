@@ -732,7 +732,10 @@
                         url: "{{ route('admin.reporteria.getDetallesInstructivo') }}",
                         type: "GET",
                         data: {
-                            instructivo: instructivo
+                            instructivo: instructivo,
+                            calibre:calibre,
+                            etiqueta:etiqueta,
+                            variedad:variedad
                         },
                         success: function(response) {
                             row.child(formatearSubtabla(response))

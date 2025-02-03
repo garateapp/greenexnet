@@ -486,6 +486,16 @@
                             Embalajes
                         </a>
                     </li>
+                    @can('proveedor_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.proveedors.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/proveedors") || request()->is("admin/proveedors/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fas fa-user-tie c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.proveedor.title') }}
+                            </a>
+                        </li>
+                    @endcan
                     @can('country_access')
                         <li class="c-sidebar-nav-item">
                             <a href="{{ route('admin.countries.index') }}"
