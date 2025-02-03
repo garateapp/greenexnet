@@ -766,7 +766,7 @@ class ComexController extends Controller
                         'Flete Marit. USD TO' => '=+BK' . $i . '*Y' . $i, //BL
                         'Costos cajas USD' => '=+AR' . $i . '/AV' . $i, //BM
                         'Costos USD TO' => '=+BM' . $i . '*Y' . $i, //BN
-                        'Ajuste impuesto USD' => '=+(' . ($ajusteimpuesto == 0 ? 0 : ($ajusteimpuesto)) . '/' . $total_kilos . ')*P' . $i, //BO
+                        'Ajuste impuesto USD' => '=+(' . ($ajusteimpuesto == 0 ? 0 : ($ajusteimpuesto)/$excelDato->tasa) . '/' . $total_kilos . ')*P' . $i, //BO
                         'Ajuste TO USD' => '=+BO' . $i . '*Y' . $i, //BP
                         'Flete Aereo' => '=+(' . $flete_exportadora . '/' . $total_kilos . ')*P' . $i, //BQ
                         'Flete Aereo TO' => '=+BQ' . $i . '*Y' . $i, //BR
