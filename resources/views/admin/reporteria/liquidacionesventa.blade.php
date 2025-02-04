@@ -497,7 +497,7 @@
                                 <th>Precio Unitario</th>
                                 <th>Cantidad</th>
                                 <th>Monto RMB</th>
-                                <th>Monto USD</th>
+                                <th>~ FOB USD</th>
 
                             </tr>
                         </thead>
