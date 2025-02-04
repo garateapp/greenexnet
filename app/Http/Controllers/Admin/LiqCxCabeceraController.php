@@ -273,6 +273,9 @@ class LiqCxCabeceraController extends Controller
         foreach ($liquidacion as $liq) {
             $liq->delete();
         }
+        $exceldato=ExcelDato::where('instructivo','=',$liqCxCabecera->instructivo)->first();
+        $exceldato->delete();
+
 
 
         return back();
