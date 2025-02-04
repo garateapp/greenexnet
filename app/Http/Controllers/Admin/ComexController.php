@@ -202,13 +202,13 @@ class ComexController extends Controller
                 ];
                 $fila_costos++;
             }
-            
+
             foreach ($costos as &$costo) {
                 if ($costo["propiedad"] == "Ajuste Impuesto") {
                     $costo["valor"] = (float)$costo["valor"] * (float)$tasa;
                 }
             }
-            
+
             $datosExcel = ExcelDato::where('instructivo', $instructivo)->get();
             //    dd($fecha_arribo,$fecha_venta,$fecha_liquidacion,$fila_costos);
             // Guardar en la base de datos
@@ -482,10 +482,10 @@ class ComexController extends Controller
             foreach ($costos as $costo) {
                 $propiedad = $costo['propiedad'];
                 //$Costo::where('nombre', $propiedad)->first();
-               
+
                     $valor = $costo['valor'] == "" ? 0 : $costo['valor'];
-               
-                
+
+
                 $c = new Costo();
                 try {
                     LiqCosto::create([
@@ -826,4 +826,11 @@ class ComexController extends Controller
         ExcelDato::where('instructivo', $instructivo)->delete();
         return redirect()->route('admin.comex.capturador')->with('message', 'Datos eliminados correctamente.');
     }
+
+/**
+ * Genera una comparativa de liquidaciones en formato Excel.
+
+ * @param \Illuminate\Http\Request $request
+ */
+
 }
