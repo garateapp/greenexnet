@@ -24,6 +24,11 @@
                     @csrf
                     <input type="hidden" name="ids" id="comparativaIds">
                 </form>
+                <form id="frmComparativaGlobal" action="{{ route('admin.comex.generacomparativaglobal') }}" method="POST">
+                    
+                    @csrf
+                    
+                </form>
             </div>
         </div>
     @endcan
@@ -203,8 +208,25 @@
 
                 }
             }
+            let comparativaGlobalButtonTrans = 'Comparativa Global';
+            let comparativaGlobalButton = {
+                text: comparativaGlobalButtonTrans,
+                url: "{{ route('admin.comex.generacomparativaglobal') }}",
+                className: 'btn-primary',
+                action: function(e, dt, node, config) {
+                    
+
+                    if (confirm('{{ trans('global.areYouSure') }}')) {
+                      
+                        $("#frmComparativaGlobal").submit();
+                    }
+
+                }
+            }
+            
 
         dtButtons.push(comparativaButton)
+        dtButtons.push(comparativaGlobalButton)
          let dtOverrideGlobals = {
             buttons: dtButtons,
             processing: true,
