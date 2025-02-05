@@ -1209,7 +1209,7 @@ class ReporteriaController extends Controller
         ->whereNull('lc.deleted_at')
         ->select([
             DB::raw('"" as `placeholder`'),
-            
+
             'ed.instructivo',
             'ed.tasa',
             'lcc.id',
@@ -1217,7 +1217,7 @@ class ReporteriaController extends Controller
             DB::raw('(lc.precio_unitario * lc.cantidad/ed.tasa) AS `MONTO_USD`')
         ])
         ->get();
-        
+
         $datosAgrupados = collect($datos)->groupBy('instructivo')->map(function ($grupo) {
             return [
                 'placeholder'=>'',
@@ -1226,41 +1226,41 @@ class ReporteriaController extends Controller
                 'id' => $grupo->first()->id, // Suponiendo que el ID es el mismo para todos
                 'MONTO_RMB' => $grupo->sum('MONTO_RMB'),
                 'MONTO_USD' => $grupo->sum('MONTO_USD'),
-                
+
             ];
         })->values(); // Resetear los índices
-        
+
         // Ahora $datosAgrupados contiene los valores agrupados correctamente
-        
+
         $datosAgrupados = $datosAgrupados->map(function ($dato) {
             $costos = DB::table('greenexnet.liq_costos as lc')
                 ->select(DB::raw("valor,nombre_costo"))
                 ->where("liq_cabecera_id", $dato["id"])
                 ->get();
             $costoRMB=0;
-            foreach($costos in $costo){
+            foreach($costos as $costo){
                 if($costo->nombre_costo=="Otros Ingresos"){
-                    $costoRMB=$costoRMB-$costo->valor;    
+                    $costoRMB=$costoRMB-$costo->valor;
                 }
                 else{
                 $costoRMB=$costoRMB+$costo->valor;
                 }
             }
             $otros=DB::table('greenexnet.liq_cx_cabeceras')->select('flete_exportadora')->where('id',$dato["id"])->first();
-           
+
             $costo_usd = $costoRMB / $dato["tasa"];
             $costo_usd=$costo_usd+$otros->flete_exportadora;
-            
+
             return array_merge($dato, [
                 "costos" => $costo_usd,
                 "FOB_USD" => $dato["MONTO_USD"] - $costo_usd
             ]);
         });
-        
-        
-            
-            
-            
+
+
+
+
+
         return $datosAgrupados;
     }
     public function liquidacionesventa()
