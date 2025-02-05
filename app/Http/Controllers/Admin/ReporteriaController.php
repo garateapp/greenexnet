@@ -1204,29 +1204,52 @@ class ReporteriaController extends Controller
     {
         $datos = DB::table('greenexnet.liquidaciones_cxes as lc')
         ->join('greenexnet.liq_cx_cabeceras as lcc', 'lc.liqcabecera_id', '=', 'lcc.id')
-        ->join('greenexnet.liq_costos as lc2', 'lc2.liq_cabecera_id', '=', 'lcc.id')
         ->join('greenexnet.excel_datos as ed', 'lcc.instructivo', '=', 'ed.instructivo')
         ->join('greenexnet.clientes_comexes as cc', 'lcc.cliente_id', '=', 'cc.id')
         ->whereNull('lc.deleted_at')
         ->select([
             DB::raw('"" as `placeholder`'),
-            'lcc.id',
+            
             'ed.instructivo',
             'ed.tasa',
-            DB::raw('SUM(lc.precio_unitario * lc.cantidad) AS `MONTO_RMB`'), // Nueva columna
-            DB::raw('SUM(lc.precio_unitario * lc.cantidad)/ed.tasa AS `MONTO_USD`')
+            'lcc.id',
+            DB::raw('lc.precio_unitario * lc.cantidad AS `MONTO_RMB`'), // Nueva columna
+            DB::raw('(lc.precio_unitario * lc.cantidad/ed.tasa) AS `MONTO_USD`')
         ])
-        ->groupBy('ed.instructivo', 'lcc.id','ed.tasa') // Agrupación
         ->get();
-            foreach($datos as $dato){
-                $costos=DB::table('greenexnet.liq_costos as lc')->select(DB::raw("SUM(valor) as costos"))->where("liq_cabecera_id",$dato->id)->first();
-                $costo_usd=$costos->costos/$dato->tasa;
-                $dato->costos=$costo_usd;
-                $dato->FOB_USD=$dato->MONTO_USD-$costo_usd;
-            }
-
-
-        return $datos;
+        
+        $datosAgrupados = collect($datos)->groupBy('instructivo')->map(function ($grupo) {
+            return [
+                'instructivo' => $grupo->first()->instructivo,
+                'tasa' => $grupo->first()->tasa,
+                'id' => $grupo->first()->id, // Suponiendo que el ID es el mismo para todos
+                'MONTO_RMB' => $grupo->sum('MONTO_RMB'),
+                'MONTO_USD' => $grupo->sum('MONTO_USD'),
+                
+            ];
+        })->values(); // Resetear los índices
+        
+        // Ahora $datosAgrupados contiene los valores agrupados correctamente
+        
+        $datosAgrupados = $datosAgrupados->map(function ($dato) {
+            $costos = DB::table('greenexnet.liq_costos as lc')
+                ->select(DB::raw("SUM(valor) as costos"))
+                ->where("liq_cabecera_id", $dato["id"])
+                ->first();
+        
+            $costo_usd = $costos->costos / $dato["tasa"];
+            
+            return array_merge($dato, [
+                "costos" => $costo_usd,
+                "FOB_USD" => $dato["MONTO_USD"] - $costo_usd
+            ]);
+        });
+        
+        
+            
+            
+            
+        return $datosAgrupados;
     }
     public function liquidacionesventa()
     {
