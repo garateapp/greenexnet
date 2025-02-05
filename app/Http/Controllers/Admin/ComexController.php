@@ -780,9 +780,9 @@ class ComexController extends Controller
                         'Otros Impuestos (JWM) TO USD' => '=+CA' . $i . '*Y' . $i, //CB
                         'Otros Ingresos (abonos)' => '=+(' . ($otrosingresos == 0 ? 0 : ($otrosingresos / $excelDato->tasa)) . '/' . $total_kilos . ')*P' . $i, //CC
                         'Otros Ingresos (abonos) TO USD' => '=+CC' . $i . '*Y' . $i, //CD
-                        'Flete Domestico. Caja RMB' => '=+(' . ($costosFleteDomestico == 0 ? 0 : $costosFleteDomestico) . '/' . $total_kilos . ')*P' . $i, //CE
+                        'RMB Flete Domestico. Caja' => '=+(' . ($costosFleteDomestico == 0 ? 0 : $costosFleteDomestico) . '/' . $total_kilos . ')*P' . $i, //CE
                         'RMB Flete Domestico. TO' => '=+CE' . $i . '*Y' . $i, //CF
-                        'Flete marit. USD'    => '=+CF' . $i . '/AV' . $i, //CG
+                        'USD Flete Domestico. '    => '=+CF' . $i . '/AV' . $i, //CG
                         'USD Flete Domestico. TO' => '=+CG' . $i . '*Y' . $i, //CH
 
                     ],
@@ -1031,9 +1031,9 @@ class ComexController extends Controller
                         'Otros Impuestos (JWM) TO USD' => '=+CA' . $i . '*Y' . $i, //CB
                         'Otros Ingresos (abonos)' => '=+(' . ($otrosingresos == 0 ? 0 : ($otrosingresos / $excelDato->tasa)) . '/' . $total_kilos . ')*P' . $i, //CC
                         'Otros Ingresos (abonos) TO USD' => '=+CC' . $i . '*Y' . $i, //CD
-                        'Flete Domestico. Caja RMB' => '=+(' . ($costosFleteDomestico == 0 ? 0 : $costosFleteDomestico) . '/' . $total_kilos . ')*P' . $i, //CE
+                        'RMB Flete Domestico. Caja ' => '=+(' . ($costosFleteDomestico == 0 ? 0 : $costosFleteDomestico) . '/' . $total_kilos . ')*P' . $i, //CE
                         'RMB Flete Domestico. TO' => '=+CE' . $i . '*Y' . $i, //CF
-                        'Flete marit. USD'    => '=+CF' . $i . '/AV' . $i, //CG
+                        'USD Flete Domestico. '    => '=+CF' . $i . '/AV' . $i, //CG
                         'USD Flete Domestico. TO' => '=+CG' . $i . '*Y' . $i, //CH
 
                     ],
