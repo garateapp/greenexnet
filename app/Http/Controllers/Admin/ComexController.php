@@ -697,7 +697,6 @@ class ComexController extends Controller
                 //  dd($liqCxCabecera);
                 // Agregar los datos principales y los costos procesados al array
 
-
                 $dataComparativa->push(array_merge(
                     [
                         'Embarque' => '',  //A
@@ -709,7 +708,7 @@ class ComexController extends Controller
                         'Liquidación' => $liqCxCabecera->instructivo, //G
                         'ETD' => '', //H
                         'ETD Week' => '', //I
-                        'ETA' => $excelDato->fecha_arribo, //J
+                        'ETA' => ($excelDato->fecha_arribo ? Carbon::parse($excelDato->fecha_arribo)->format('Y-m-d'):''), //J
                         'ETA Week' => ($excelDato->fecha_arribo ? Carbon::parse($excelDato->fecha_arribo)->weekOfYear : 0), //K
                         'Fecha Venta' => $item->fecha_venta ? Carbon::parse($item->fecha_venta) : 0, //L
                         'Fecha Venta Week' => ($excelDato->fecha_venta ? Carbon::parse($excelDato->fecha_venta)->weekOfYear : 0), //M
@@ -782,6 +781,10 @@ class ComexController extends Controller
                         'Otros Impuestos (JWM) TO USD' => '=+CA' . $i . '*Y' . $i, //CB
                         'Otros Ingresos (abonos)' => '=+(' . ($otrosingresos == 0 ? 0 : ($otrosingresos / $excelDato->tasa)) . '/' . $total_kilos . ')*P' . $i, //CC
                         'Otros Ingresos (abonos) TO USD' => '=+CC' . $i . '*Y' . $i, //CD
+                        'Flete Domestico. Caja RMB' => '=+(' . ($costosFleteDomestico == 0 ? 0 : $costosFleteDomestico) . '/' . $total_kilos . ')*P' . $i, //CE
+                        'RMB Flete Domestico. TO' => '=+CE' . $i . '*Y' . $i, //CF
+                        'Flete marit. USD'    => '=+CF' . $i . '/AV' . $i, //CG
+                        'RMB Flete Domestico. TO' => '=+CG' . $i . '*Y' . $i, //CH
 
                     ],
                     //$costo_procesado,
@@ -1029,6 +1032,10 @@ class ComexController extends Controller
                         'Otros Impuestos (JWM) TO USD' => '=+CA' . $i . '*Y' . $i, //CB
                         'Otros Ingresos (abonos)' => '=+(' . ($otrosingresos == 0 ? 0 : ($otrosingresos / $excelDato->tasa)) . '/' . $total_kilos . ')*P' . $i, //CC
                         'Otros Ingresos (abonos) TO USD' => '=+CC' . $i . '*Y' . $i, //CD
+                        'Flete Domestico. Caja RMB' => '=+(' . ($costosFleteDomestico == 0 ? 0 : $costosFleteDomestico) . '/' . $total_kilos . ')*P' . $i, //CE
+                        'RMB Flete Domestico. TO' => '=+CE' . $i . '*Y' . $i, //CF
+                        'Flete marit. USD'    => '=+CF' . $i . '/AV' . $i, //CG
+                        'RMB Flete Domestico. TO' => '=+CG' . $i . '*Y' . $i, //CH
 
                     ],
                     //$costo_procesado,
