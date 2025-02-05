@@ -1213,6 +1213,7 @@ class ReporteriaController extends Controller
             'ed.instructivo',
             'ed.tasa',
             'lcc.id',
+            DB::raw('lc.precio_unitario * lcc.factor_imp_destino*lc.cantidad AS `factor`'),
             DB::raw('lc.precio_unitario * lc.cantidad AS `MONTO_RMB`'), // Nueva columna
             DB::raw('(lc.precio_unitario * lc.cantidad/ed.tasa) AS `MONTO_USD`')
         ])
@@ -1224,12 +1225,13 @@ class ReporteriaController extends Controller
                 'instructivo' => $grupo->first()->instructivo,
                 'tasa' => $grupo->first()->tasa,
                 'id' => $grupo->first()->id, // Suponiendo que el ID es el mismo para todos
+                'factor'=>$grupo->sum('factor')/$grupo->first()->tasa,
                 'MONTO_RMB' => $grupo->sum('MONTO_RMB'),
                 'MONTO_USD' => $grupo->sum('MONTO_USD'),
 
             ];
         })->values(); // Resetear los índices
-
+        
         // Ahora $datosAgrupados contiene los valores agrupados correctamente
 
         $datosAgrupados = $datosAgrupados->map(function ($dato) {
@@ -1238,9 +1240,14 @@ class ReporteriaController extends Controller
                 ->where("liq_cabecera_id", $dato["id"])
                 ->get();
             $costoRMB=0;
+            
+
             foreach($costos as $costo){
                 if($costo->nombre_costo=="Otros Ingresos"){
                     $costoRMB=$costoRMB-$costo->valor;
+                }
+                elseif($costo->nombre_costo=="Impuestos"){
+                    $costoRMB=$costoRMB;
                 }
                 else{
                 $costoRMB=$costoRMB+$costo->valor;
@@ -1248,7 +1255,7 @@ class ReporteriaController extends Controller
             }
             $otros=DB::table('greenexnet.liq_cx_cabeceras')->select('flete_exportadora')->where('id',$dato["id"])->first();
 
-            $costo_usd = $costoRMB / $dato["tasa"];
+            $costo_usd = ($costoRMB / $dato["tasa"])+$dato["factor"];
             $costo_usd=$costo_usd+$otros->flete_exportadora;
 
             return array_merge($dato, [
