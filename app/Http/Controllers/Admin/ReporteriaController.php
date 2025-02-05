@@ -1220,6 +1220,7 @@ class ReporteriaController extends Controller
         
         $datosAgrupados = collect($datos)->groupBy('instructivo')->map(function ($grupo) {
             return [
+                'placeholder'=>'',
                 'instructivo' => $grupo->first()->instructivo,
                 'tasa' => $grupo->first()->tasa,
                 'id' => $grupo->first()->id, // Suponiendo que el ID es el mismo para todos
@@ -1236,8 +1237,10 @@ class ReporteriaController extends Controller
                 ->select(DB::raw("SUM(valor) as costos"))
                 ->where("liq_cabecera_id", $dato["id"])
                 ->first();
-        
+            $otros=DB::table('greenexnet.liq_cx_cabeceras')->select('flete_exportadora')->where('id',$dato["id"])->first();
+           
             $costo_usd = $costos->costos / $dato["tasa"];
+            $costo_usd=$costo_usd+$otros->flete_exportadora;
             
             return array_merge($dato, [
                 "costos" => $costo_usd,

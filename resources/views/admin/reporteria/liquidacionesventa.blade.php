@@ -487,10 +487,10 @@
                                 
                                 <th>Instructivo</th>
                                 <th>Tasa</th>
-                                <th>MONTO_RMB</th>
-                                <th>MONTO_USD</th>
-                                <th>Costos</th>
-                                <th>FOB_USD</th>
+                                <th>MONTO RMB</th>
+                                <th>MONTO USD</th>
+                                <th>Costos USD</th>
+                                <th>FOB USD</th>
                             </tr>
                         </thead>
                         <tbody id="tablaDatosBody"></tbody>
@@ -646,10 +646,9 @@
                     destroy: true, // Permite recargar la tabla sin errores
                     data: datos,
                     columns: [
-                        {
-                            data: 'placeholder',
-                            name: 'placeholder'
-                        },
+                       {
+                            data:'placeholder',
+                       },
                         {
                             data: "instructivo"
                         },

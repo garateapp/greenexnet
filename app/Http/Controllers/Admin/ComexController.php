@@ -743,7 +743,7 @@ class ComexController extends Controller
                         'RMB otros costos TO' => '=+AN' . $i . '*Y' . $i, //AO
                         'Flete marit. Caja RMB' => '=+(' . ($costosFleteInternacional == 0 ? 0 : $costosFleteInternacional) . '/' . $total_kilos . ')*P' . $i, //AP
                         'RMB Flete Marit. TO' => '=+AP' . $i . '*Y' . $i, //AQ
-                        'Costos cajas RMB' => '=+AF' . $i . '+AH' . $i . '+AJ' . $i . '+AL' . $i . '+AN' . $i . '+AB' . $i . '+AP' . $i . '+(CA' . $i . ')+(BO' . $i . ')', //AR
+                        'Costos cajas RMB' => '=+AF' . $i . '+AH' . $i . '+AJ' . $i . '+AL' . $i . '+AN' . $i . '+AB' . $i . '+AP' . $i . '+(CA' . $i . ')+(BO' . $i . '*AV'.$i.')', //AR
                         'RMB Costos TO' => '=+AR' . $i . '*Y' . $i, //AS
                         'Resultados caja RMB' => '=+AA' . $i . '-AR' . $i,  //AT  Verificar con Haydelin
                         'RMB result. TO' => '=+AT' . $i . '*Y' . $i, //AU  Verificar con Haydelin
@@ -764,7 +764,7 @@ class ComexController extends Controller
                         'Otros costos USD TO' => '=+BI' . $i . '*Y' . $i, //BJ
                         'Flete marit. USD'    => '=+AP' . $i . '/AV' . $i, //BK
                         'Flete Marit. USD TO' => '=+BK' . $i . '*Y' . $i, //BL
-                        'Costos cajas USD' => '=+AR' . $i . '/AV' . $i, //BM
+                        'Costos cajas USD' => '=+(AR' . $i . '/AV' . $i.')+BQ'.$i, //BM
                         'Costos USD TO' => '=+BM' . $i . '*Y' . $i, //BN
                         'Ajuste impuesto USD' => '=+(' . ($ajusteimpuesto == 0 ? 0 : ($ajusteimpuesto)/$excelDato->tasa) . '/' . $total_kilos . ')*P' . $i, //BO
                         'Ajuste TO USD' => '=+BO' . $i . '*Y' . $i, //BP
