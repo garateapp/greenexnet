@@ -1231,7 +1231,7 @@ class ReporteriaController extends Controller
 
             ];
         })->values(); // Resetear los índices
-        
+
         // Ahora $datosAgrupados contiene los valores agrupados correctamente
 
         $datosAgrupados = $datosAgrupados->map(function ($dato) {
@@ -1240,9 +1240,12 @@ class ReporteriaController extends Controller
                 ->where("liq_cabecera_id", $dato["id"])->whereNull('deleted_at')
                 ->get();
             $costoRMB=0;
-            
+
 
             foreach($costos as $costo){
+                if($dato["instructivo"]=="I2425182"){
+                Log::info($costo->nombre_costo." --> ". $costo->valor);
+                }
                 if($costo->nombre_costo=="Otros Ingresos"){
                     $costoRMB=$costoRMB-$costo->valor;
                 }
@@ -1253,14 +1256,19 @@ class ReporteriaController extends Controller
                 $costoRMB=$costoRMB+$costo->valor;
                 }
             }
+            Log::info("Total Costos --> ". $costoRMB);
             $otros=DB::table('greenexnet.liq_cx_cabeceras')->select('flete_exportadora')->where('id',$dato["id"])->whereNull('deleted_at')->first();
-
+            if($dato["instructivo"]=="I2425182"){
+                Log::info("flete_exportadora --> ". $otros->flete_exportadora);
+                Log::info("Impuestos--> ".$dato["factor"]/$dato["tasa"]);
+                }
             $costo_usd = ($costoRMB / $dato["tasa"])+$dato["factor"];
             $costo_usd=$costo_usd+$otros->flete_exportadora;
+            $FOB_USD=$dato["MONTO_USD"] - $costo_usd;
 
             return array_merge($dato, [
                 "costos" => $costo_usd,
-                "FOB_USD" => $dato["MONTO_USD"] - $costo_usd
+                "FOB_USD" => $FOB_USD
             ]);
         });
 

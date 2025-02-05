@@ -745,7 +745,7 @@ class ComexController extends Controller
                         'RMB Flete Marit. TO' => '=+AP' . $i . '*Y' . $i, //AQ
                         'Costos cajas RMB' => '=+AF' . $i . '+AH' . $i . '+AJ' . $i . '+AL' . $i . '+AN' . $i . '+AB' . $i . '+AP' . $i . '+(CA' . $i . '*AV'.$i. ')+(BO' . $i . '*AV'.$i.')-(CC' . $i . '*AV'.$i.')+(BQ'.$i.'*AV'.$i.')', //AR
                         'RMB Costos TO' => '=+AR' . $i . '*Y' . $i, //AS
-                        'Resultados caja RMB' => '=+AA' . $i . '-AR' . $i,  //AT  Verificar con Haydelin
+                        'Resultados caja RMB' => '=+Z' . $i . '-AR' . $i,  //AT  Verificar con Haydelin
                         'RMB result. TO' => '=+AT' . $i . '*Y' . $i, //AU  Verificar con Haydelin
                         'TC'    => $excelDato->tasa, //AV
                         'Venta USD' => '=+Z' . $i . '/AV' . $i, //AW
@@ -992,7 +992,7 @@ class ComexController extends Controller
                         'RMB Flete Marit. TO' => '=+AP' . $i . '*Y' . $i, //AQ
                         'Costos cajas RMB' => '=+AF' . $i . '+AH' . $i . '+AJ' . $i . '+AL' . $i . '+AN' . $i . '+AB' . $i . '+AP' . $i . '+(CA' . $i . '*AV'.$i. ')+(BO' . $i . '*AV'.$i.')-(CC' . $i . '*AV'.$i.')+(BQ'.$i.'*AV'.$i.')', //AR
                         'RMB Costos TO' => '=+AR' . $i . '*Y' . $i, //AS
-                        'Resultados caja RMB' => '=+AA' . $i . '-AR' . $i,  //AT  Verificar con Haydelin
+                        'Resultados caja RMB' => '=+Z' . $i . '-AR' . $i,  //AT  Verificar con Haydelin
                         'RMB result. TO' => '=+AT' . $i . '*Y' . $i, //AU  Verificar con Haydelin
                         'TC'    => $excelDato->tasa, //AV
                         'Venta USD' => '=+Z' . $i . '/AV' . $i, //AW
