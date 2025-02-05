@@ -1237,7 +1237,7 @@ class ReporteriaController extends Controller
         $datosAgrupados = $datosAgrupados->map(function ($dato) {
             $costos = DB::table('greenexnet.liq_costos as lc')
                 ->select(DB::raw("valor,nombre_costo"))
-                ->where("liq_cabecera_id", $dato["id"])
+                ->where("liq_cabecera_id", $dato["id"])->whereNull('deleted_at')
                 ->get();
             $costoRMB=0;
             
@@ -1253,7 +1253,7 @@ class ReporteriaController extends Controller
                 $costoRMB=$costoRMB+$costo->valor;
                 }
             }
-            $otros=DB::table('greenexnet.liq_cx_cabeceras')->select('flete_exportadora')->where('id',$dato["id"])->first();
+            $otros=DB::table('greenexnet.liq_cx_cabeceras')->select('flete_exportadora')->where('id',$dato["id"])->whereNull('deleted_at')->first();
 
             $costo_usd = ($costoRMB / $dato["tasa"])+$dato["factor"];
             $costo_usd=$costo_usd+$otros->flete_exportadora;
