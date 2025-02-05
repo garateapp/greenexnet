@@ -1234,12 +1234,21 @@ class ReporteriaController extends Controller
         
         $datosAgrupados = $datosAgrupados->map(function ($dato) {
             $costos = DB::table('greenexnet.liq_costos as lc')
-                ->select(DB::raw("SUM(valor) as costos"))
+                ->select(DB::raw("valor,nombre_costo"))
                 ->where("liq_cabecera_id", $dato["id"])
-                ->first();
+                ->get();
+            $costoRMB=0;
+            foreach($costos in $costo){
+                if($costo->nombre_costo=="Otros Ingresos"){
+                    $costoRMB=$costoRMB-$costo->valor;    
+                }
+                else{
+                $costoRMB=$costoRMB+$costo->valor;
+                }
+            }
             $otros=DB::table('greenexnet.liq_cx_cabeceras')->select('flete_exportadora')->where('id',$dato["id"])->first();
            
-            $costo_usd = $costos->costos / $dato["tasa"];
+            $costo_usd = $costoRMB / $dato["tasa"];
             $costo_usd=$costo_usd+$otros->flete_exportadora;
             
             return array_merge($dato, [

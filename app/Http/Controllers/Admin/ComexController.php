@@ -743,7 +743,7 @@ class ComexController extends Controller
                         'RMB otros costos TO' => '=+AN' . $i . '*Y' . $i, //AO
                         'Flete marit. Caja RMB' => '=+(' . ($costosFleteInternacional == 0 ? 0 : $costosFleteInternacional) . '/' . $total_kilos . ')*P' . $i, //AP
                         'RMB Flete Marit. TO' => '=+AP' . $i . '*Y' . $i, //AQ
-                        'Costos cajas RMB' => '=+AF' . $i . '+AH' . $i . '+AJ' . $i . '+AL' . $i . '+AN' . $i . '+AB' . $i . '+AP' . $i . '+(CA' . $i . ')+(BO' . $i . '*AV'.$i.')', //AR
+                        'Costos cajas RMB' => '=+AF' . $i . '+AH' . $i . '+AJ' . $i . '+AL' . $i . '+AN' . $i . '+AB' . $i . '+AP' . $i . '+(CA' . $i . '*AV'.$i. ')+(BO' . $i . '*AV'.$i.')-(CC' . $i . '*AV'.$i.')+(BQ'.$i.'*AV'.$i.')', //AR
                         'RMB Costos TO' => '=+AR' . $i . '*Y' . $i, //AS
                         'Resultados caja RMB' => '=+AA' . $i . '-AR' . $i,  //AT  Verificar con Haydelin
                         'RMB result. TO' => '=+AT' . $i . '*Y' . $i, //AU  Verificar con Haydelin
@@ -764,13 +764,13 @@ class ComexController extends Controller
                         'Otros costos USD TO' => '=+BI' . $i . '*Y' . $i, //BJ
                         'Flete marit. USD'    => '=+AP' . $i . '/AV' . $i, //BK
                         'Flete Marit. USD TO' => '=+BK' . $i . '*Y' . $i, //BL
-                        'Costos cajas USD' => '=+(AR' . $i . '/AV' . $i.')+BQ'.$i, //BM
+                        'Costos cajas USD' => '=+AR' . $i . '/AV' . $i, //BM
                         'Costos USD TO' => '=+BM' . $i . '*Y' . $i, //BN
                         'Ajuste impuesto USD' => '=+(' . ($ajusteimpuesto == 0 ? 0 : ($ajusteimpuesto)/$excelDato->tasa) . '/' . $total_kilos . ')*P' . $i, //BO
                         'Ajuste TO USD' => '=+BO' . $i . '*Y' . $i, //BP
                         'Flete Aereo' => '=+(' . $flete_exportadora . '/' . $total_kilos . ')*P' . $i, //BQ
                         'Flete Aereo TO' => '=+BQ' . $i . '*Y' . $i, //BR
-                        'FOB USD' => '=+(AT' . $i . '/AV' . $i . ')-(BO' . $i .'/AV'.$i.')-(BQ' . $i.'/AV'.$i.')', //BS
+                        'FOB USD' => '=+(AT' . $i . '/AV' . $i . ')', //BS
                         'FOB TO USD' => '=+BS' . $i . '*Y' . $i, //BT
                         'FOB kg' => '=+BT' . $i . '/Q' . $i, //BU
                         'FOB Equivalente' => '=+BU' . $i . '*5', //BV
@@ -804,7 +804,7 @@ class ComexController extends Controller
     }
     public function generacomparativaglobal(Request $request)
     {
-       
+
         $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->get(); // LiqCxCabecera::find(request('ids'));
 
         $dataComparativa = collect();
@@ -990,7 +990,7 @@ class ComexController extends Controller
                         'RMB otros costos TO' => '=+AN' . $i . '*Y' . $i, //AO
                         'Flete marit. Caja RMB' => '=+(' . ($costosFleteInternacional == 0 ? 0 : $costosFleteInternacional) . '/' . $total_kilos . ')*P' . $i, //AP
                         'RMB Flete Marit. TO' => '=+AP' . $i . '*Y' . $i, //AQ
-                        'Costos cajas RMB' => '=+AF' . $i . '+AH' . $i . '+AJ' . $i . '+AL' . $i . '+AN' . $i . '+AB' . $i . '+AP' . $i . '+(CA' . $i . ')+(BO' . $i . ')', //AR
+                        'Costos cajas RMB' => '=+AF' . $i . '+AH' . $i . '+AJ' . $i . '+AL' . $i . '+AN' . $i . '+AB' . $i . '+AP' . $i . '+(CA' . $i . '*AV'.$i. ')+(BO' . $i . '*AV'.$i.')-(CC' . $i . '*AV'.$i.')+(BQ'.$i.'*AV'.$i.')', //AR
                         'RMB Costos TO' => '=+AR' . $i . '*Y' . $i, //AS
                         'Resultados caja RMB' => '=+AA' . $i . '-AR' . $i,  //AT  Verificar con Haydelin
                         'RMB result. TO' => '=+AT' . $i . '*Y' . $i, //AU  Verificar con Haydelin
@@ -1017,7 +1017,7 @@ class ComexController extends Controller
                         'Ajuste TO USD' => '=+BO' . $i . '*Y' . $i, //BP
                         'Flete Aereo' => '=+(' . $flete_exportadora . '/' . $total_kilos . ')*P' . $i, //BQ
                         'Flete Aereo TO' => '=+BQ' . $i . '*Y' . $i, //BR
-                        'FOB USD' => '=+(AT' . $i . '/AV' . $i . ')-(BO' . $i .'/AV'.$i.')-(BQ' . $i.'/AV'.$i.')', //BS
+                        'FOB USD' => '=+(AT' . $i . '/AV' . $i . ')', //BS
                         'FOB TO USD' => '=+BS' . $i . '*Y' . $i, //BT
                         'FOB kg' => '=+BT' . $i . '/Q' . $i, //BU
                         'FOB Equivalente' => '=+BU' . $i . '*5', //BV
