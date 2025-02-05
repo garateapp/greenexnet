@@ -649,7 +649,6 @@ class ComexController extends Controller
                             break;
                         case 'Ajuste Impuesto':
                             //Caso particular FruitLink el ajuste de impuesto esta en dolares
-
                             $ajusteimpuesto = $costo->valor;
                             // if($liqCxCabecera->cliente_id == 5){
                             //     $ajusteimpuesto = $ajusteimpuesto * $excelDato->tasa;
@@ -784,7 +783,7 @@ class ComexController extends Controller
                         'Flete Domestico. Caja RMB' => '=+(' . ($costosFleteDomestico == 0 ? 0 : $costosFleteDomestico) . '/' . $total_kilos . ')*P' . $i, //CE
                         'RMB Flete Domestico. TO' => '=+CE' . $i . '*Y' . $i, //CF
                         'Flete marit. USD'    => '=+CF' . $i . '/AV' . $i, //CG
-                        'RMB Flete Domestico. TO' => '=+CG' . $i . '*Y' . $i, //CH
+                        'USD Flete Domestico. TO' => '=+CG' . $i . '*Y' . $i, //CH
 
                     ],
                     //$costo_procesado,
@@ -1035,7 +1034,7 @@ class ComexController extends Controller
                         'Flete Domestico. Caja RMB' => '=+(' . ($costosFleteDomestico == 0 ? 0 : $costosFleteDomestico) . '/' . $total_kilos . ')*P' . $i, //CE
                         'RMB Flete Domestico. TO' => '=+CE' . $i . '*Y' . $i, //CF
                         'Flete marit. USD'    => '=+CF' . $i . '/AV' . $i, //CG
-                        'RMB Flete Domestico. TO' => '=+CG' . $i . '*Y' . $i, //CH
+                        'USD Flete Domestico. TO' => '=+CG' . $i . '*Y' . $i, //CH
 
                     ],
                     //$costo_procesado,
