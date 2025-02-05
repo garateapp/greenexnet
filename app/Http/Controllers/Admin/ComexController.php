@@ -944,7 +944,7 @@ class ComexController extends Controller
                 //  dd($liqCxCabecera);
                 // Agregar los datos principales y los costos procesados al array
 
-
+                Log::info("Instructivo: " . $liqCxCabecera->instructivo);
                 $dataComparativa->push(array_merge(
                     [
                         'Embarque' => '',  //A
