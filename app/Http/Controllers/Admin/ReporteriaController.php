@@ -1203,34 +1203,27 @@ class ReporteriaController extends Controller
     public function getLiquidaciones()
     {
         $datos = DB::table('greenexnet.liquidaciones_cxes as lc')
-            ->join('greenexnet.liq_cx_cabeceras as lcc', 'lc.liqcabecera_id', '=', 'lcc.id')
-            ->join('greenexnet.liq_costos as lc2' ,'lc2.liq_cabecera_id','=', 'lcc.id')
-            ->join('greenexnet.excel_datos as ed', 'lcc.instructivo', '=', 'ed.instructivo')
-            ->join('greenexnet.clientes_comexes as cc', 'lcc.cliente_id', '=', 'cc.id')
-            ->whereNull('lc.deleted_at')
-            ->select([
-                DB::raw('"" as `placeholder`'),
-                'lc.variedad_id',
-                'cc.nombre_fantasia',
-                'lc.calibre',
-                'lc.etiqueta_id',
-                'lc.embalaje_id',
-                'lc.cantidad',
-                'lc.precio_unitario',
-                'ed.instructivo',
-                DB::raw('SUM(lc2.valor)-(lc.precio_unitario * lc.cantidad) AS `monto RMB`'),
-                DB::raw('ed.tasa * (SUM(lc2.valor)-(lc.precio_unitario * lc.cantidad)) AS `monto USD`'),
-                DB::raw('WEEK(ed.fecha_arribo) AS `Semana_Arribo`'),
-                DB::raw('WEEK(ed.fecha_venta) AS `Semana_Venta`'),
-                'ed.tasa'
-                
-            ])->groupBy(["ed.instructivo","lc.cantidad", "lc.precio_unitario","ed.tasa","ed.fecha_arribo","ed.fecha_venta", 'cc.nombre_fantasia','lc.variedad_id',
-            'lc.calibre',
-            'lc.etiqueta_id',
-            'lc.embalaje_id',
-            'lc.cantidad',
-            'lc.precio_unitario',])
-            ->get();
+        ->join('greenexnet.liq_cx_cabeceras as lcc', 'lc.liqcabecera_id', '=', 'lcc.id')
+        ->join('greenexnet.liq_costos as lc2', 'lc2.liq_cabecera_id', '=', 'lcc.id')
+        ->join('greenexnet.excel_datos as ed', 'lcc.instructivo', '=', 'ed.instructivo')
+        ->join('greenexnet.clientes_comexes as cc', 'lcc.cliente_id', '=', 'cc.id')
+        ->whereNull('lc.deleted_at')
+        ->select([
+            DB::raw('"" as `placeholder`'),
+            'lcc.id',
+            'ed.instructivo',
+            'ed.tasa',
+            DB::raw('SUM(lc.precio_unitario * lc.cantidad) AS `MONTO_RMB`'), // Nueva columna
+            DB::raw('SUM(lc.precio_unitario * lc.cantidad)/ed.tasa AS `MONTO_USD`')
+        ])
+        ->groupBy('ed.instructivo', 'lcc.id','ed.tasa') // Agrupación
+        ->get();
+            foreach($datos as $dato){
+                $costos=DB::table('greenexnet.liq_costos as lc')->select(DB::raw("SUM(valor) as costos"))->where("liq_cabecera_id",$dato->id)->first();
+                $costo_usd=$costos->costos/$dato->tasa;
+                $dato->costos=$costo_usd;
+                $dato->FOB_USD=$dato->MONTO_USD-$costo_usd;
+            }
 
 
         return $datos;
@@ -1530,27 +1523,27 @@ class ReporteriaController extends Controller
             return  $item['nave'] . '|' . $item['ETA_Week'] . '|' . $item['variedad'] . '|' . $item['calibre'] . '|' .$item['etiqueta'] . '|' . $item["Embalaje_real"];
         })->map(function ($group) {
             return [
-                
+
                 'Embarque' => '',  // No cambia
                 'nave' => $group->first()['nave'],
                 'ETA_Week' => $group->first()['ETA_Week'],
                 'Peso_neto' => $group->first()['Embalaje_real'],
                 'Kilos_total' => $group->sum('Kilos_total'),
-                'etiqueta' => $group->first()['etiqueta'], 
-                'variedad' => $group->first()['variedad'], 
-                'calibre' => $group->first()['calibre'], 
+                'etiqueta' => $group->first()['etiqueta'],
+                'variedad' => $group->first()['variedad'],
+                'calibre' => $group->first()['calibre'],
                 'Cajas' => $group->sum('Cajas'),
                 'Venta_USD' => $group->sum('Venta_USD'),
                 'Ventas_TO_USD' => $group->sum('Ventas_TO_USD'),
                 'FOB_USD' => $group->sum('FOB_USD'),
                 'FOB_TO_USD' => $group->sum('FOB_TO_USD'),
-                'FOB_kg' => $group->avg('Costos_cajas_USD'), 
+                'FOB_kg' => $group->avg('Costos_cajas_USD'),
                 'FOB_Equivalente' => $group->avg('FOB_Equivalente'),
             ];
         })->values(); // Para resetear índices
-        
-        
-        
+
+
+
         return response()->json(["dataComparativa" => $dataComparativa, "agrupacionComparativa" => $groupedData]);
     }
 
@@ -1573,5 +1566,5 @@ class ReporteriaController extends Controller
         }
     }
 
-    
+
 }

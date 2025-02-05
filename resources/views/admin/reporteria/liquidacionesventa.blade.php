@@ -484,33 +484,25 @@
                         <thead>
                             <tr>
                                 <th></th>
-                                <th></th>
+                                
                                 <th>Instructivo</th>
-                                <th>Nombre Fantasía</th>
-                                <th>Semana Arribo</th>
-                                <th>Semana Venta</th>
-                                <th>Variedad</th>
-                                <th>Calibre</th>
-                                <th>Etiqueta</th>
-                                <th>Embalaje</th>
                                 <th>Tasa</th>
-                                <th>Precio Unitario</th>
-                                <th>Cantidad</th>
-                                <th>Monto RMB</th>
-                                <th>~ FOB USD</th>
-
+                                <th>MONTO_RMB</th>
+                                <th>MONTO_USD</th>
+                                <th>Costos</th>
+                                <th>FOB_USD</th>
                             </tr>
                         </thead>
                         <tbody id="tablaDatosBody"></tbody>
                         <tfoot>
                             <tr>
-                                <td colspan="10" style="text-align: right;">Subtotal:</td>
+                                <td colspan="3" style="text-align: right;">Subtotal:</td>
                                 <td id="subtotalCantidad"></td>
                                 <td id="subtotalMontoRMB"></td>
                                 <td id="subtotalMontoUSD"></td>
                             </tr>
                             <tr>
-                                <td colspan="10"><strong>Total</strong></td>
+                                <td colspan="3"><strong>Total</strong></td>
                                 <td id="totalCantidad">0</td>
                                 <td id="totalMontoRMB">0</td>
                                 <td id="totalMontoUSD">0</td>
@@ -625,15 +617,15 @@
                 // Calcular totales sobre originalData
                 originalData.forEach(item => {
                     totalCantidad += parseFloat(item.cantidad) || 0;
-                    totalMontoRMB += parseFloat(item["monto RMB"]) || 0;
-                    totalMontoUSD += parseFloat(item["monto USD"]) || 0;
+                    totalMontoRMB += parseFloat(item["MONTO_USD"]) || 0;
+                    totalMontoUSD += parseFloat(item["FOB_USD"]) || 0;
                 });
 
                 // Calcular subtotales sobre filteredData
                 data.forEach(item => {
                     subtotalCantidad += parseFloat(item.cantidad) || 0;
-                    subtotalMontoRMB += parseFloat(item["monto RMB"]) || 0;
-                    subtotalMontoUSD += parseFloat(item["monto USD"]) || 0;
+                    subtotalMontoRMB += parseFloat(item["MONTO_USD"]) || 0;
+                    subtotalMontoUSD += parseFloat(item["FOB_USD"]) || 0;
                 });
 
                 // Actualizar la fila de totales (calculados con originalData)
@@ -653,12 +645,7 @@
                 $('#tabla-datos').DataTable({
                     destroy: true, // Permite recargar la tabla sin errores
                     data: datos,
-                    columns: [{
-                            data: null,
-                            className: 'dt-control',
-                            orderable: false,
-                            defaultContent: ''
-                        },
+                    columns: [
                         {
                             data: 'placeholder',
                             name: 'placeholder'
@@ -666,112 +653,100 @@
                         {
                             data: "instructivo"
                         },
+                        
+                          
                         {
-                            data: "nombre_fantasia"
+                            data:"tasa"
                         },
                         {
-                            data: "Semana_Arribo"
-                        },
-                        {
-                            data: "Semana_Venta"
-                        },
-                        {
-                            data: "variedad_id"
-                        },
-                        {
-                            data: "calibre"
-                        },
-                        {
-                            data: "etiqueta_id"
-                        },
-                        {
-                            data: "embalaje_id"
-                        },
-                        {
-                            data: "tasa"
-                        },
-                        {
-                            data: "precio_unitario"
-                        },
-                        {
-                            data: "cantidad"
-                        },
-                        {
-                            data: "monto RMB",
+                            data:"MONTO_RMB",
                             render: function(data) {
                                 return parseFloat(data).toLocaleString();
                             }
                         },
                         {
-                            data: "monto USD",
+                            data:"MONTO_USD",
+                            render: function(data) {
+                                return parseFloat(data).toLocaleString();
+                            }
+                        },
+                        {
+                            data:"costos",
+                            render: function(data) {
+                                return parseFloat(data).toLocaleString();
+                            }
+                        },
+                        {
+                            data:"FOB_USD",
                             render: function(data) {
                                 return parseFloat(data).toLocaleString();
                             }
                         }
+                      
                     ],
                     language: {
                         url: "https://cdn.datatables.net/plug-ins/1.10.19/i18n/Spanish.json"
                     }
                 });
             }
-            $('#tabla-datos tbody').on('click', 'td.dt-control', function() {
-                var tr = $(this).closest('tr');
-                var row = $('#tabla-datos').DataTable().row(tr);
+            // $('#tabla-datos tbody').on('click', 'td.dt-control', function() {
+            //     var tr = $(this).closest('tr');
+            //     var row = $('#tabla-datos').DataTable().row(tr);
 
-                if (row.child.isShown()) {
-                    row.child.hide();
-                    tr.removeClass('shown');
-                } else {
-                    var instructivo = row.data().instructivo; // Obtener el instructivo de la fila
-                    var calibre = row.data().calibre; // Obtener el calibre de la fila
-                    var etiqueta = row.data().etiqueta_id; // Obtener la etiqueta de la fila
-                    var variedad = row.data().variedad_id; // Obtener la variedad de la fila
+            //     if (row.child.isShown()) {
+            //         row.child.hide();
+            //         tr.removeClass('shown');
+            //     } else {
+            //         var instructivo = row.data().instructivo; // Obtener el instructivo de la fila
+            //         var calibre = row.data().calibre; // Obtener el calibre de la fila
+            //         var etiqueta = row.data().etiqueta_id; // Obtener la etiqueta de la fila
+            //         var variedad = row.data().variedad_id; // Obtener la variedad de la fila
 
-                    // Llamar a la API de Laravel para obtener la subtabla
-                    $.ajax({
-                        url: "{{ route('admin.reporteria.getDetallesInstructivo') }}",
-                        type: "GET",
-                        data: {
-                            instructivo: instructivo,
-                            calibre:calibre,
-                            etiqueta:etiqueta,
-                            variedad:variedad
-                        },
-                        success: function(response) {
-                            row.child(formatearSubtabla(response))
-                                .show(); // Mostrar la subtabla
-                            tr.addClass('shown');
-                        },
-                        error: function(xhr) {
-                            console.error("Error al cargar detalles:", xhr);
-                        }
-                    });
-                }
-            });
+            //         // Llamar a la API de Laravel para obtener la subtabla
+            //         $.ajax({
+            //             url: "{{ route('admin.reporteria.getDetallesInstructivo') }}",
+            //             type: "GET",
+            //             data: {
+            //                 instructivo: instructivo,
+            //                 calibre:calibre,
+            //                 etiqueta:etiqueta,
+            //                 variedad:variedad
+            //             },
+            //             success: function(response) {
+            //                 row.child(formatearSubtabla(response))
+            //                     .show(); // Mostrar la subtabla
+            //                 tr.addClass('shown');
+            //             },
+            //             error: function(xhr) {
+            //                 console.error("Error al cargar detalles:", xhr);
+            //             }
+            //         });
+            //     }
+            // });
             // Función para formatear la subtabla
-            function formatearSubtabla(data) {
-                var table = '<table class="table table-sm table-bordered" style="width:100%;">';
-                table +=
-                    '<thead><tr><th>% Costos Asociado</th><th>Embalaje</th><th>Variedad</th><th>Calibre</th><th>Productor</th><th>CSG</th><th>Cantidad</th><th>Folio</th></tr></thead>';
-                table += '<tbody>';
+        //     function formatearSubtabla(data) {
+        //         var table = '<table class="table table-sm table-bordered" style="width:100%;">';
+        //         table +=
+        //             '<thead><tr><th>% Costos Asociado</th><th>Embalaje</th><th>Variedad</th><th>Calibre</th><th>Productor</th><th>CSG</th><th>Cantidad</th><th>Folio</th></tr></thead>';
+        //         table += '<tbody>';
 
-                data.forEach(item => {
-                    table += `<tr>
-                        <td>${item.folio}</td>
-            <td>${item.C_Embalaje}</td>
-            <td>${item.n_variedad}</td>
-            <td>${item.n_calibre}</td>
-            <td>${item.n_productor}</td>
-            <td>${item.CSG_Productor}</td>
-            <td>${item.cantidad}</td>
-            <td>${parseFloat(item.porcentaje).toFixed(2)}%</td>
+        //         data.forEach(item => {
+        //             table += `<tr>
+        //                 <td>${item.folio}</td>
+        //     <td>${item.C_Embalaje}</td>
+        //     <td>${item.n_variedad}</td>
+        //     <td>${item.n_calibre}</td>
+        //     <td>${item.n_productor}</td>
+        //     <td>${item.CSG_Productor}</td>
+        //     <td>${item.cantidad}</td>
+        //     <td>${parseFloat(item.porcentaje).toFixed(2)}%</td>
 
-        </tr>`;
-                });
+        // </tr>`;
+        //         });
 
-                table += '</tbody></table>';
-                return table;
-            }
+        //         table += '</tbody></table>';
+        //         return table;
+        //     }
             // Función para cargar los datos desde la API
             async function loadData() {
                 try {
@@ -780,7 +755,7 @@
 
                     cargarTabla(originalData); // Llenar la tabla con todos los datos
                     calcularTotales(originalData); // Calcular totales iniciales
-                    await fillSelects(); // Llenar los selectores
+                    //await fillSelects(); // Llenar los selectores
 
                 } catch (error) {
                     console.error("Error al cargar datos:", error);
