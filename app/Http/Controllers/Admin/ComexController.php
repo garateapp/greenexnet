@@ -595,30 +595,16 @@ class ComexController extends Controller
                 $total_kilos = $total_kilos + (float)(str_replace(',', '.', $this->traducedatos($item->embalaje_id, 'Embalaje'))) * (float)(str_replace(',', '.', $item->cantidad));
 
                 $total_ventas = $total_ventas + $item->cantidad * (float)(str_replace(',', '.', $item->precio_unitario));
-                Log::info("Total Venta: " . $total_ventas);
+
             }
             $porcComision = '0,06';
             foreach ($detalle as $item) {
 
                 $costos = LiqCosto::where('liq_cabecera_id', $liqCxCabecera->id)->get();
 
-                // // Inicializar los costos procesados con valores por defecto (0)
-                // $costo_procesado = $nombre_costo->mapWithKeys(function ($nombre) {
-                //     return [$nombre => 0];
-                // })->toArray();
-
                 // Procesar los costos reales
 
                 foreach ($costos as $costo) {
-                    // if (array_key_exists($costo->nombre_costo, $costo_procesado)) {
-                    //     $costo_procesado[$costo->nombre_costo] = $costo->valor;
-                    // } else {
-                    //     // Si el costo no existe en la lista de costos procesados, agregarlo con valor 0
-                    //     $costo_procesado[$costo->nombre_costo] = 0;
-                    // }
-                    // Log::info('Nombre Costo:' . "----" . $costo->nombre_costo);
-                    // $CatCosto = Costo::where('nombre', $costo->nombre_costo)->first();
-                    // // Log::info('Categoria Costo:' . "----" . $CatCosto->categoria."----".$costo->valor);
 
                     switch ($costo->nombre_costo) {
                         case 'Costo Logístico':
@@ -782,8 +768,9 @@ class ComexController extends Controller
                         'Otros Ingresos (abonos) TO USD' => '=+CC' . $i . '*Y' . $i, //CD
                         'RMB Flete Domestico. Caja' => '=+(' . ($costosFleteDomestico == 0 ? 0 : $costosFleteDomestico) . '/' . $total_kilos . ')*P' . $i, //CE
                         'RMB Flete Domestico. TO' => '=+CE' . $i . '*Y' . $i, //CF
-                        'USD Flete Domestico. '    => '=+CF' . $i . '/AV' . $i, //CG
+                        'USD Flete Domestico. '    => '=+CE' . $i . '/AV' . $i, //CG
                         'USD Flete Domestico. TO' => '=+CG' . $i . '*Y' . $i, //CH
+                        'embalaje_dato_origen'=>$item->embalaje_id, //CI
 
                     ],
                     //$costo_procesado,
@@ -1035,6 +1022,7 @@ class ComexController extends Controller
                         'RMB Flete Domestico. TO' => '=+CE' . $i . '*Y' . $i, //CF
                         'USD Flete Domestico. '    => '=+CF' . $i . '/AV' . $i, //CG
                         'USD Flete Domestico. TO' => '=+CG' . $i . '*Y' . $i, //CH
+                        'embalaje_dato_origen'=>$item->embalaje_id, //CI
 
                     ],
                     //$costo_procesado,
