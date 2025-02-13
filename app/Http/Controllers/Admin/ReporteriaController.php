@@ -2040,7 +2040,7 @@ class ReporteriaController extends Controller
         $otrosimpuestos = 0;
         $otrosingresos = 0;
         $i = 2;
-
+        Log::info("Inst.".$liqCxCabeceras->instructivo);
         foreach ($liqCxCabeceras as $liqCxCabecera) {
             $flete_exportadora = $liqCxCabecera->flete_exportadora;
             $tipo_transporte = $liqCxCabecera->tipo_transporte;
