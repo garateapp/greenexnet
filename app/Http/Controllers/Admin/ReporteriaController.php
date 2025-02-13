@@ -2019,8 +2019,8 @@ class ReporteriaController extends Controller
     {
         $fg = $this;
         $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->get(); // LiqCxCabecera::find(request('ids'));
-        dd($liqCxCabeceras);
-        //Log::info("Inst.".$liqCxCabeceras->instructivo);
+        
+        
         $dataComparativa = collect();
         $C_Logisticos = Costo::where('categoria', 'Costo Logístico')->get();
         $C_Mercado = Costo::where('categoria', 'Costos Mercado')->get();
@@ -2043,6 +2043,7 @@ class ReporteriaController extends Controller
         $i = 2;
         
         foreach ($liqCxCabeceras as $liqCxCabecera) {
+            Log::info("inst -> ".$liqCxCabecera->instructivo);
             $flete_exportadora = $liqCxCabecera->flete_exportadora;
             $tipo_transporte = $liqCxCabecera->tipo_transporte;
             $factor_imp_destino = $liqCxCabecera->factor_imp_destino;
