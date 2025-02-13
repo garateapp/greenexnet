@@ -2007,7 +2007,13 @@ class ReporteriaController extends Controller
 
         return $datos;
     }
-  
+    public function Liquidacionesagrupadas()
+    {
+
+        $datos = $this->ConsolidadoLiquidaciones();
+
+        return $datos;
+    }
 
     public function ConsolidadoLiquidaciones()
     {
