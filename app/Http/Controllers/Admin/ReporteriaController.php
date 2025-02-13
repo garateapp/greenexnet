@@ -2020,7 +2020,7 @@ class ReporteriaController extends Controller
         $fg = $this;
         $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->get(); // LiqCxCabecera::find(request('ids'));
         dd($liqCxCabeceras);
-        Log::info("Inst.".$liqCxCabeceras->instructivo);
+        //Log::info("Inst.".$liqCxCabeceras->instructivo);
         $dataComparativa = collect();
         $C_Logisticos = Costo::where('categoria', 'Costo Logístico')->get();
         $C_Mercado = Costo::where('categoria', 'Costos Mercado')->get();
