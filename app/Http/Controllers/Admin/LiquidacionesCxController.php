@@ -71,7 +71,9 @@ class LiquidacionesCxController extends Controller
             $table->addColumn('embalaje_nombre', function ($row) {
                 return $row->embalaje ? $row->embalaje->nombre : '';
             });
-
+            $table->addColumn('c_embalaje', function ($row) {
+                return $row->c_embalaje ? $row->c_embalaje : '';
+            });
             $table->editColumn('cantidad', function ($row) {
                 return $row->cantidad ? $row->cantidad : '';
             });

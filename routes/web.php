@@ -176,6 +176,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('reporteria/getDetallesInstructivo', 'ReporteriaController@getDetallesInstructivo')->name('reporteria.getDetallesInstructivo');
     Route::get('reporteria/compartivoliquidacionescx', 'ReporteriaController@compartivoliquidacionescx')->name('reporteria.compartivoliquidacionescx');
     Route::get('reporteria/DataLiquidaciones', 'ReporteriaController@DataLiquidaciones')->name('reporteria.DataLiquidaciones');
+    Route::get('reporteria/ObtieneDatosFOB', 'ReporteriaController@ObtieneDatosFOB')->name('reporteria.ObtieneDatosFOB');
+    Route::get('reporteria/obtieneFolio', 'ReporteriaController@obtieneFolio')->name('reporteria.obtieneFolio');
+    Route::get('reporteria/obtenerliquidacionesagrupadas', 'ReporteriaController@obtenerliquidacionesagrupadas')->name('reporteria.obtenerliquidacionesagrupadas');
     // Embalajes
     Route::delete('embalajes/destroy', 'EmbalajesController@massDestroy')->name('embalajes.massDestroy');
     Route::post('embalajes/parse-csv-import', 'EmbalajesController@parseCsvImport')->name('embalajes.parseCsvImport');
@@ -195,7 +198,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('comex/guardaliquidacion', 'ComexController@guardaliquidacion')->name('comex.guardaliquidacion');
     Route::post('comex/generacomparativa', 'ComexController@generacomparativa')->name('comex.generacomparativa');
     Route::post('comex/generacomparativaglobal', 'ComexController@generacomparativaglobal')->name('comex.generacomparativaglobal');
-    
+
     Route::post('comex/eliminardatosExcel', 'ComexController@eliminardatosExcel')->name('comex.eliminardatosExcel');
 
     // Metas Cliente Comex

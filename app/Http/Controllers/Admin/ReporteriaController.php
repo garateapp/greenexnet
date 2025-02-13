@@ -20,6 +20,7 @@ use App\Models\Costo;
 use App\Models\ExcelDato;
 use App\Models\Diccionario;
 use App\Models\Nafe;
+use App\Libs\Liquidaciones;
 use Log;
 use Carbon\Carbon;
 use App\Models\MetasClienteComex;
@@ -1203,29 +1204,29 @@ class ReporteriaController extends Controller
     public function getLiquidaciones()
     {
         $datos = DB::table('greenexnet.liquidaciones_cxes as lc')
-        ->join('greenexnet.liq_cx_cabeceras as lcc', 'lc.liqcabecera_id', '=', 'lcc.id')
-        ->join('greenexnet.excel_datos as ed', 'lcc.instructivo', '=', 'ed.instructivo')
-        ->join('greenexnet.clientes_comexes as cc', 'lcc.cliente_id', '=', 'cc.id')
-        ->whereNull('lc.deleted_at')
-        ->select([
-            DB::raw('"" as `placeholder`'),
+            ->join('greenexnet.liq_cx_cabeceras as lcc', 'lc.liqcabecera_id', '=', 'lcc.id')
+            ->join('greenexnet.excel_datos as ed', 'lcc.instructivo', '=', 'ed.instructivo')
+            ->join('greenexnet.clientes_comexes as cc', 'lcc.cliente_id', '=', 'cc.id')
+            ->whereNull('lc.deleted_at')
+            ->select([
+                DB::raw('"" as `placeholder`'),
 
-            'ed.instructivo',
-            'ed.tasa',
-            'lcc.id',
-            DB::raw('lc.precio_unitario * lcc.factor_imp_destino*lc.cantidad AS `factor`'),
-            DB::raw('lc.precio_unitario * lc.cantidad AS `MONTO_RMB`'), // Nueva columna
-            DB::raw('(lc.precio_unitario * lc.cantidad/ed.tasa) AS `MONTO_USD`')
-        ])
-        ->get();
+                'ed.instructivo',
+                'ed.tasa',
+                'lcc.id',
+                DB::raw('lc.precio_unitario * lcc.factor_imp_destino*lc.cantidad AS `factor`'),
+                DB::raw('lc.precio_unitario * lc.cantidad AS `MONTO_RMB`'), // Nueva columna
+                DB::raw('(lc.precio_unitario * lc.cantidad/ed.tasa) AS `MONTO_USD`')
+            ])
+            ->get();
 
         $datosAgrupados = collect($datos)->groupBy('instructivo')->map(function ($grupo) {
             return [
-                'placeholder'=>'',
+                'placeholder' => '',
                 'instructivo' => $grupo->first()->instructivo,
                 'tasa' => $grupo->first()->tasa,
                 'id' => $grupo->first()->id, // Suponiendo que el ID es el mismo para todos
-                'factor'=>$grupo->sum('factor')/$grupo->first()->tasa,
+                'factor' => $grupo->sum('factor') / $grupo->first()->tasa,
                 'MONTO_RMB' => $grupo->sum('MONTO_RMB'),
                 'MONTO_USD' => $grupo->sum('MONTO_USD'),
 
@@ -1239,32 +1240,30 @@ class ReporteriaController extends Controller
                 ->select(DB::raw("valor,nombre_costo"))
                 ->where("liq_cabecera_id", $dato["id"])->whereNull('deleted_at')
                 ->get();
-            $costoRMB=0;
+            $costoRMB = 0;
 
 
-            foreach($costos as $costo){
-                if($dato["instructivo"]=="I2425182"){
-                Log::info($costo->nombre_costo." --> ". $costo->valor);
+            foreach ($costos as $costo) {
+                if ($dato["instructivo"] == "I2425182") {
+                    Log::info($costo->nombre_costo . " --> " . $costo->valor);
                 }
-                if($costo->nombre_costo=="Otros Ingresos"){
-                    $costoRMB=$costoRMB-$costo->valor;
-                }
-                elseif($costo->nombre_costo=="Impuestos"){
-                    $costoRMB=$costoRMB;
-                }
-                else{
-                $costoRMB=$costoRMB+$costo->valor;
+                if ($costo->nombre_costo == "Otros Ingresos") {
+                    $costoRMB = $costoRMB - $costo->valor;
+                } elseif ($costo->nombre_costo == "Impuestos") {
+                    $costoRMB = $costoRMB;
+                } else {
+                    $costoRMB = $costoRMB + $costo->valor;
                 }
             }
-            Log::info("Total Costos --> ". $costoRMB);
-            $otros=DB::table('greenexnet.liq_cx_cabeceras')->select('flete_exportadora')->where('id',$dato["id"])->whereNull('deleted_at')->first();
-            if($dato["instructivo"]=="I2425182"){
-                Log::info("flete_exportadora --> ". $otros->flete_exportadora);
-                Log::info("Impuestos--> ".$dato["factor"]/$dato["tasa"]);
-                }
-            $costo_usd = ($costoRMB / $dato["tasa"])+$dato["factor"];
-            $costo_usd=$costo_usd+$otros->flete_exportadora;
-            $FOB_USD=$dato["MONTO_USD"] - $costo_usd;
+            Log::info("Total Costos --> " . $costoRMB);
+            $otros = DB::table('greenexnet.liq_cx_cabeceras')->select('flete_exportadora')->where('id', $dato["id"])->whereNull('deleted_at')->first();
+            if ($dato["instructivo"] == "I2425182") {
+                Log::info("flete_exportadora --> " . $otros->flete_exportadora);
+                Log::info("Impuestos--> " . $dato["factor"] / $dato["tasa"]);
+            }
+            $costo_usd = ($costoRMB / $dato["tasa"]) + $dato["factor"];
+            $costo_usd = $costo_usd + $otros->flete_exportadora;
+            $FOB_USD = $dato["MONTO_USD"] - $costo_usd;
 
             return array_merge($dato, [
                 "costos" => $costo_usd,
@@ -1346,7 +1345,7 @@ class ReporteriaController extends Controller
             $factor_imp_destino = $liqCxCabecera->factor_imp_destino;
             $detalle = LiquidacionesCx::where('liqcabecera_id', $liqCxCabecera->id)->get();
             $excelDato = ExcelDato::where('instructivo', $liqCxCabecera->instructivo)->first();
-            Log::info("Instructivo: " . $liqCxCabecera->instructivo);
+
             $nombre_costo = Costo::pluck('nombre'); // Extraer solo los nombres de costos
             $total_kilos = 0;
             $total_ventas = 0;
@@ -1354,9 +1353,9 @@ class ReporteriaController extends Controller
                 $total_kilos = $total_kilos + (float)(str_replace(',', '.', $this->traducedatos($item->embalaje_id, 'Embalaje'))) * (float)(str_replace(',', '.', $item->cantidad));
 
                 $total_ventas = $total_ventas + $item->cantidad * (float)(str_replace(',', '.', $item->precio_unitario));
-                // Log::info("Total Venta: " . $total_ventas);
+                Log::info("TV: " . $total_ventas . " TK: " . $total_kilos);
             }
-            $porcComision = '0,06';
+            $porcComision = '0.06';
             foreach ($detalle as $item) {
 
                 $costos = LiqCosto::where('liq_cabecera_id', $liqCxCabecera->id)->get();
@@ -1385,7 +1384,7 @@ class ReporteriaController extends Controller
                         case 'Comisión':
                             $comision = $costo->valor;
                             $porcComision = $comision / $total_ventas;
-                            Log::info("Porcentaje Comision: " . $porcComision);
+
                             break;
                         case 'Entrada Mercado':
                             $entradamercado = $costo->valor;
@@ -1417,16 +1416,17 @@ class ReporteriaController extends Controller
 
                 //  dd($liqCxCabecera);
                 // Agregar los datos principales y los costos procesados al array
-                $peso_neto = ((float)$this->traducedatos($item->embalaje_id, 'Embalaje'))?0:(float)$this->traducedatos($item->embalaje_id, 'Embalaje');
-                Log::info(" Factor Imp Destino: " . $factor_imp_destino . " Instructivo " . $liqCxCabecera->instructivo . " PRecio " . $item->precio_unitario . " Cantidad " . $item->cantidad . "Peso Neto: " . $peso_neto);
+                $peso_neto = (float)$this->traducedatos($item->embalaje_id, 'Embalaje');
+                Log::info("PESO NETO: " . $peso_neto);
+
 
                 $costoCajasRMB = ((float)$factor_imp_destino * (isset($item->precio_unitario) ? (float)$item->precio_unitario : 0));
-                    + (((float)$costosLogisticos == 0 ? 0 : (float)$costosLogisticos) / (float)$total_kilos) * $peso_neto +
+                + (((float)$costosLogisticos == 0 ? 0 : (float)$costosLogisticos) / (float)$total_kilos) * $peso_neto +
                     (((float)$entradamercado == 0 ? 0 : (float)$entradamercado) / (float)$total_kilos) * $peso_neto + (((float)$costosMercado == 0 ? 0 : (float)$costosMercado) / (float)$total_kilos) * $peso_neto +
                     (((float)$otroscostosdestino == 0 ? 0 : (float)$otroscostosdestino) / $total_kilos) * $peso_neto + ($porcComision * isset($item->precio_unitario) ? $item->precio_unitario : 0) +
                     (((float)$costosFleteInternacional == 0 ? 0 : (float)$costosFleteInternacional) / $total_kilos) * $peso_neto + (((float)$ajusteimpuesto == 0 ? 0 : ((float)$ajusteimpuesto) / $excelDato->tasa) / $total_kilos) * $peso_neto
                     + (((float)$otrosimpuestos == 0 ? 0 : ((float)$otrosimpuestos / $excelDato->tasa)) / $total_kilos) * $peso_neto;
-                $resultadoCajaRMB =  ($item->cantidad * $item->precio_unitario)- $costoCajasRMB;
+                $resultadoCajaRMB =  ($item->cantidad * $item->precio_unitario) - $costoCajasRMB;
                 $nave = Nafe::where('id', $liqCxCabecera->nave_id)->first();
                 $nombre_nave = "";
                 if ($nave) {
@@ -1434,120 +1434,125 @@ class ReporteriaController extends Controller
                 } else {
                     $nombre_nave = 'Sin Información';
                 }
-                $RMB_Caja=isset($item->precio_unitario) ? $item->precio_unitario : 0;
-        $RMB_Venta=$item->cantidad * $item->precio_unitario;
-        $comision_caja=$porcComision*$RMB_Caja;
-        $peso_neto=$this->traducedatos($item->embalaje_id, 'Embalaje');
-        $kilos_total=$peso_neto?0:$peso_neto*$item->cantidad;
-        $calibre= $this->traducedatos($item->calibre, 'Calibre');
-        $costos_logisticos_caja_RMB= (($costosLogisticos == 0 ? 0 : $costosLogisticos)/$total_kilos)*$peso_neto?0:$peso_neto;
-        $costos_logisticos_caja_RMB_TO=(($costosLogisticos == 0 ? 0 : $costosLogisticos)/$total_kilos)*$peso_neto?0:$peso_neto*$item->cantidad;
-        $entrada_mercado_caja_RMB=($entradamercado == 0 ? 0 : $entradamercado/$total_kilos)*$peso_neto?0:$peso_neto;
-        $entrada_mercado_caja_RMB_TO=($entradamercado == 0 ? 0 : $entradamercado/$total_kilos)*$peso_neto?0:$peso_neto*$item->cantidad;
-        $costo_mercado_caja_RMB=($costosMercado == 0 ? 0 : $costosMercado/$total_kilos)*$peso_neto?0:$peso_neto;
-        $costo_mercado_caja_RMB_TO=$costo_mercado_caja_RMB*$item->cantidad;
-        $otros_costos_destino_caja_RMB=($otroscostosdestino == 0 ? 0 : $otroscostosdestino/$total_kilos)*$peso_neto?0:$peso_neto;
-        $otros_costos_destino_caja_RMB_TO=$otros_costos_destino_caja_RMB*$item->cantidad;
-        $costosFleteInternacional_caja_RMB=($costosFleteInternacional == 0 ? 0 : $costosFleteInternacional/$total_kilos)*$peso_neto?0:$peso_neto;
-        $costosFleteInternacional_caja_RMB_TO=$costosFleteInternacional_caja_RMB*$item->cantidad;
-        $ajuste_impuesto_USD=(($ajusteimpuesto == 0 ? 0 : $ajusteimpuesto/$excelDato->tasa)/$total_kilos)*$peso_neto?0:$peso_neto;
-        $ajuste_impuesto_USD_TO=$ajuste_impuesto_USD*$item->cantidad;
-        $flete_aereo_USD=($flete_exportadora/$total_kilos)*$peso_neto;
-        $flete_aereo_USD_TO=$flete_aereo_USD*$item->cantidad;
-        $otros_impuestos_jwm=(($otrosimpuestos == 0 ? 0 : ($otrosimpuestos / $excelDato->tasa))/$total_kilos)*$peso_neto?0:$peso_neto;
-        $otros_impuestos_jwm_TO=$otros_impuestos_jwm*$item->cantidad;
-        $costos_caja_RMB=($factor_imp_destino*$item->cantidad*$RMB_Caja)+$costos_logisticos_caja_RMB+$entrada_mercado_caja_RMB+$costo_mercado_caja_RMB+$otros_costos_destino_caja_RMB+$comision_caja+$costosFleteInternacional_caja_RMB+$ajuste_impuesto_USD+$otros_impuestos_jwm;
-        $costos_caja_RMB_TO=$costos_caja_RMB*$item->cantidad;
+                $RMB_Caja = isset($item->precio_unitario) ? $item->precio_unitario : 0;
+                $RMB_Venta = $item->cantidad * $item->precio_unitario;
+                $comision_caja = $porcComision * $RMB_Caja;
+                $peso_neto = $this->traducedatos($item->embalaje_id, 'Embalaje');
+                $peso_neto = str_replace(",", ".", $peso_neto);
+                $kilos_total = $peso_neto ? 0 : $peso_neto * $item->cantidad;
+                $calibre = $this->traducedatos($item->calibre, 'Calibre');
+                Log::info("cL:" . $costosLogisticos . " TK:" . $total_kilos . " PN:" . $peso_neto);
+                $costos_logisticos_caja_RMB = (($costosLogisticos == 0 ? 0 : $costosLogisticos) / $total_kilos) * $peso_neto ? 0 : $peso_neto;
+                $costos_logisticos_caja_RMB_TO = (($costosLogisticos == 0 ? 0 : $costosLogisticos) / $total_kilos) * $peso_neto ? 0 : $peso_neto * $item->cantidad;
+                $entrada_mercado_caja_RMB = ($entradamercado == 0 ? 0 : $entradamercado / $total_kilos) * $peso_neto ? 0 : $peso_neto;
+                $entrada_mercado_caja_RMB_TO = ($entradamercado == 0 ? 0 : $entradamercado / $total_kilos) * $peso_neto ? 0 : $peso_neto * $item->cantidad;
+                $costo_mercado_caja_RMB = ($costosMercado == 0 ? 0 : $costosMercado / $total_kilos) * $peso_neto ? 0 : $peso_neto;
+                $costo_mercado_caja_RMB_TO = $costo_mercado_caja_RMB * $item->cantidad;
+                $otros_costos_destino_caja_RMB = ($otroscostosdestino == 0 ? 0 : $otroscostosdestino / $total_kilos) * $peso_neto ? 0 : $peso_neto;
+                $otros_costos_destino_caja_RMB_TO = $otros_costos_destino_caja_RMB * $item->cantidad;
+                $costosFleteInternacional_caja_RMB = ($costosFleteInternacional == 0 ? 0 : $costosFleteInternacional / $total_kilos) * $peso_neto ? 0 : $peso_neto;
+                $costosFleteInternacional_caja_RMB_TO = $costosFleteInternacional_caja_RMB * $item->cantidad;
+                $ajuste_impuesto_USD = (($ajusteimpuesto == 0 ? 0 : $ajusteimpuesto / $excelDato->tasa) / $total_kilos) * $peso_neto ? 0 : $peso_neto;
+                $ajuste_impuesto_USD_TO = $ajuste_impuesto_USD * $item->cantidad;
+                $flete_aereo_USD = ($flete_exportadora / $total_kilos) * $peso_neto;
+                $flete_aereo_USD_TO = $flete_aereo_USD * $item->cantidad;
+                $otros_impuestos_jwm = (($otrosimpuestos == 0 ? 0 : ($otrosimpuestos / $excelDato->tasa)) / $total_kilos) * $peso_neto ? 0 : $peso_neto;
+                $otros_impuestos_jwm_TO = $otros_impuestos_jwm * $item->cantidad;
+                $costos_caja_RMB = ($factor_imp_destino * $item->cantidad * $RMB_Caja) + $costos_logisticos_caja_RMB + $entrada_mercado_caja_RMB + $costo_mercado_caja_RMB + $otros_costos_destino_caja_RMB + $comision_caja + $costosFleteInternacional_caja_RMB + $ajuste_impuesto_USD + $otros_impuestos_jwm;
+                $costos_caja_RMB_TO = $costos_caja_RMB * $item->cantidad;
 
-        $dataComparativa->push(array_merge(
-            [
-                'Embarque' => '',  //A
-                'cliente' => $liqCxCabecera->cliente->nombre_fantasia, //B
-                'nave' => $nombre_nave, //C
-                'Puerto Destino' => '', //D
-                'AWB' => '', //E
-                'Contenedor' => '', //F
-                'Liquidación' => $liqCxCabecera->instructivo, //G
-                'ETD' => '', //H
-                'ETD Week' => '', //I
-                'ETA' => $excelDato->fecha_arribo, //J
-                'ETA Week' => ($excelDato->fecha_arribo ? Carbon::parse($excelDato->fecha_arribo)->weekOfYear : 0), //K
-                'Fecha Venta' => $item->fecha_venta ? Carbon::parse($item->fecha_venta) : 0, //L
-                'Fecha Venta Week' => ($excelDato->fecha_venta ? Carbon::parse($excelDato->fecha_venta)->weekOfYear : 0), //M
-                'Fecha Liquidación' => $excelDato->fecha_liquidacion, //N
-                'Pallet' => $item->pallet, //O
-                'Peso neto' =>  $peso_neto, //P
-                'Kilos total' => $total_kilos, //Q
-                'embalaje' => $peso_neto, //R
-                'etiqueta' => $item->etiqueta_id, //S
-                'variedad' => $item->variedad_id, //T
-                'Calibre Estandar'   => '', //U
-                'calibre' => $calibre, //V
-                'color' => '', //W
-                'Observaciones' => $item->observaciones, //X
-                'Cajas' => $item->cantidad, //y
-                'RMB Caja' => $RMB_Caja, //z
-                'RMB Venta' => $RMB_Venta, //AA
-                'Comision Caja' => $comision_caja, //AB
-                '% Comisión' => $porcComision, //AC
-                'RMB Comisión' => $comision_caja*$item->cantidad, //AD
-                'Factor Imp destino' => $factor_imp_destino, //AE  Esto no esta definido como para poder calcularlo
-                'Imp destino caja RMB' => $factor_imp_destino*$item->cantidad*$RMB_Caja, //AF
-                'RMB Imp destino TO' => $factor_imp_destino*$item->cantidad*$RMB_Caja*$item->cantidad, //AG
-                'Costo log. Caja RMB' => $costos_logisticos_caja_RMB, //AH
-                'RMB Costo log. TO' => $costos_logisticos_caja_RMB_TO, //AI
-                'Ent. Al mercado Caja RMB' => $entrada_mercado_caja_RMB, //AJ Preguntar a Haydelin
-                'RMB Ent. Al mercado TO' => $entrada_mercado_caja_RMB_TO, //AK
-                'Costo mercado caja RMB' => $costo_mercado_caja_RMB, //AL
-                'RMB Costos mercado TO' => $costo_mercado_caja_RMB_TO, //AM
-                'Otros  costos dest. Caja RMB' => $otros_costos_destino_caja_RMB ,  //AN  debemos configurar costos en categoría otros
-                'RMB otros costos TO' => $otros_costos_destino_caja_RMB_TO, //AO
-                'Flete marit. Caja RMB' =>$costosFleteInternacional_caja_RMB , //AP
-                'RMB Flete Marit. TO' => $costosFleteInternacional_caja_RMB_TO, //AQ
-                'Costos cajas RMB' => $costos_caja_RMB, //AR
-                'RMB Costos TO' => $costos_caja_RMB_TO, //AS
-                'Resultados caja RMB' => $RMB_Caja-$costos_caja_RMB,  //AT  Verificar con Haydelin
-                'RMB result. TO' => $RMB_Caja-$costos_caja_RMB*$item->cantidad, //AU  Verificar con Haydelin
-                'TC'    => $excelDato->tasa, //AV
-                'Venta USD' => $RMB_Caja/$excelDato->tasa, //AW
-                'Ventas TO USD' => ($RMB_Caja/$excelDato->tasa)*$item->cantidad, //AX
-                'Com USD' => $comision_caja/$excelDato->tasa, //AY
-                'Com TO USD' => ($comision_caja/$excelDato->tasa)*$item->cantidad, //AZ
-                'Imp destino USD' => ($factor_imp_destino*$item->cantidad*$RMB_Caja/$excelDato->tasa), //BA
-                'Imp destino USD TO' => ($factor_imp_destino*$item->cantidad*$RMB_Caja/$excelDato->tasa)*$item->cantidad, //BB
-                'Costo log. USD' => $costos_logisticos_caja_RMB/$excelDato->tasa, //BC
-                'Costo log. USD TO' => ($costos_logisticos_caja_RMB/$excelDato->tasa)*$item->cantidad, //BD
-                'Ent. Al mercado USD' => ($entrada_mercado_caja_RMB/$excelDato->tasa), //BE
-                'Ent. Al mercado USD TO' => ($entrada_mercado_caja_RMB/$excelDato->tasa)*$item->cantidad, //BF
-                'Costo mercado USD' =>($costo_mercado_caja_RMB/$excelDato->tasa), //BG
-                'Costos mercado USD TO' => ($costo_mercado_caja_RMB/$excelDato->tasa)*$item->cantidad, //BH
-                'Otros  costos dest. USD' => ($otros_costos_destino_caja_RMB/$excelDato->tasa), //BI
-                'Otros costos USD TO' => ($otros_costos_destino_caja_RMB/$excelDato->tasa)*$item->cantidad, //BJ
-                'Flete marit. USD'    => ($costosFleteInternacional_caja_RMB/$excelDato->tasa), //BK
-                'Flete Marit. USD TO' => ($costosFleteInternacional_caja_RMB/$excelDato->tasa)*$item->cantidad, //BL
-                'Costos cajas USD' =>($costos_caja_RMB/$excelDato->tasa) , //BM
-                'Costos USD TO' => ($costos_caja_RMB/$excelDato->tasa)*$item->cantidad, //BN
-                'Ajuste impuesto USD' => ($ajuste_impuesto_USD), //BO
-                'Ajuste TO USD' => $ajuste_impuesto_USD_TO, //BP
-                'Flete Aereo' => $flete_aereo_USD, //BQ
-                'Flete Aereo TO' => $flete_aereo_USD_TO, //BR
-                'FOB USD' =>($RMB_Caja-$costos_caja_RMB/$excelDato->tasa)-($ajuste_impuesto_USD)-($flete_aereo_USD), //BS
-                'FOB TO USD' => '=+BS' . $i . '*Y' . $i, //BT
-                'FOB kg' => '=+BT' . $i . '/Q' . $i, //BU
-                'FOB Equivalente' => '=+BU' . $i . '*5', //BV
-                'Flete Cliente' => $flete_exportadora > 0 ? 'NO' : 'SI', //BW
-                'Transporte' => $tipo_transporte == "A" ? 'AEREO' : 'MARITIMO', //BX
-                'CNY' => 'PRE', //BY
-                'Pais' => 'CHINA', //BZ
-                'Otros Impuestos (JWM) Impuestos' => (($otrosimpuestos == 0 ? 0 : ($otrosimpuestos / $excelDato->tasa))/$total_kilos)*$peso_neto?0:$peso_neto, //CA
-                'Otros Impuestos (JWM) TO USD' => '=+CA' . $i . '*Y' . $i, //CB
-                'Otros Ingresos (abonos)' => '=+(' . ($otrosingresos == 0 ? 0 : ($otrosingresos / $excelDato->tasa)) . '/' . $total_kilos . ')*P' . $i, //CC
-                'Otros Ingresos (abonos) TO USD' => '=+CC' . $i . '*Y' . $i, //CD
-                    //$costo_procesado,
-                    // $calculos
+                $dataComparativa->push(array_merge(
+                    [
+                        'Embarque' => '',  //A
+                        'cliente' => $liqCxCabecera->cliente->nombre_fantasia, //B
+                        'nave' => $nombre_nave, //C
+                        'Puerto_Destino' => '', //D
+                        'AWB' => '', //E
+                        'Contenedor' => '', //F
+                        'Liquidación' => $liqCxCabecera->instructivo, //G
+                        'ETD' => '', //H
+                        'ETD_Week' => '', //I
+                        'ETA' => $excelDato->fecha_arribo, //J
+                        'ETA_Week' => ($excelDato->fecha_arribo ? Carbon::parse($excelDato->fecha_arribo)->weekOfYear : 0), //K
+                        'Fecha_Venta' => $item->fecha_venta ? Carbon::parse($item->fecha_venta) : 0, //L
+                        'Fecha_Venta_Week' => ($excelDato->fecha_venta ? Carbon::parse($excelDato->fecha_venta)->weekOfYear : 0), //M
+                        'Fecha_Liquidación' => $excelDato->fecha_liquidacion, //N
+                        'Pallet' => $item->pallet, //O
+                        'Peso_neto' =>  $peso_neto, //P
+                        'Kilos_total' => $total_kilos, //Q
+                        'Embalaje_real' => $item->embalaje,
+                        'embalaje' => $peso_neto, //R
+                        'etiqueta' => $item->etiqueta_id, //S
+                        'variedad' => $item->variedad_id, //T
+                        'Calibre_Estandar'   => '', //U
+                        'calibre' => $calibre, //V
+                        'color' => '', //W
+                        'Observaciones' => $item->observaciones, //X
+                        'Cajas' => (float)$item->cantidad, //y
+                        'RMB_Caja' => $RMB_Caja, //z
+                        'RMB_Venta' => $RMB_Venta, //AA
+                        'Comision_Caja' => $comision_caja, //AB
+                        '%_Comisión' => $porcComision, //AC
+                        'RMB_Comisión' => $comision_caja * $item->cantidad, //AD
+                        'Factor_Imp_destino' => $factor_imp_destino, //AE  Esto no esta definido como para poder calcularlo
+                        'Imp_destino_caja_RMB' => $factor_imp_destino * $item->cantidad * $RMB_Caja, //AF
+                        'RMB_Imp_destino_TO' => $factor_imp_destino * $item->cantidad * $RMB_Caja * $item->cantidad, //AG
+                        'Costo_log_Caja_RMB' => $costos_logisticos_caja_RMB, //AH
+                        'RMB_Costo_log_TO' => $costos_logisticos_caja_RMB_TO, //AI
+                        'Ent_Al_mercado_Caja_RMB' => $entrada_mercado_caja_RMB, //AJ Preguntar a Haydelin
+                        'RMB Ent. Al mercado_TO' => $entrada_mercado_caja_RMB_TO, //AK
+                        'Costo_mercado_caja_RMB' => $costo_mercado_caja_RMB, //AL
+                        'RMB_Costos_mercado_TO' => $costo_mercado_caja_RMB_TO, //AM
+                        'Otros_costos_dest_Caja_RMB' => $otros_costos_destino_caja_RMB,  //AN  debemos configurar costos en categoría otros
+                        'RMB_otros_costos_TO' => $otros_costos_destino_caja_RMB_TO, //AO
+                        'Flete_marit_Caja_RMB' => $costosFleteInternacional_caja_RMB, //AP
+                        'RMB_Flete_Marit_TO' => $costosFleteInternacional_caja_RMB_TO, //AQ
+                        'Costos_cajas_RMB' => $costos_caja_RMB, //AR =+AF2+AH2+AJ2+AL2+AN2+AB2+AP2+(CA2*AV2)+(BO2*AV2)-(CC2*AV2)+(BQ2*AV2)
+                        'RMB_Costos_TO' => $costos_caja_RMB_TO, //AS
+                        'Resultados_caja_RMB' => $RMB_Caja - $costos_caja_RMB,  //AT  Verificar con Haydelin
+                        'RMB_result_TO' => $RMB_Caja - $costos_caja_RMB * $item->cantidad, //AU  Verificar con Haydelin
+                        'TC'    => $excelDato->tasa, //AV
+                        'Venta_USD' => $RMB_Caja / $excelDato->tasa, //AW
+                        'Ventas_TO_USD' => ($RMB_Caja / $excelDato->tasa) * $item->cantidad, //AX
+                        'Com_USD' => $comision_caja / $excelDato->tasa, //AY
+                        'Com_TO_USD' => ($comision_caja / $excelDato->tasa) * $item->cantidad, //AZ
+                        'Imp_destino_USD' => ($factor_imp_destino * $item->cantidad * $RMB_Caja / $excelDato->tasa), //BA
+                        'Imp_destino_USD_TO' => ($factor_imp_destino * $item->cantidad * $RMB_Caja / $excelDato->tasa) * $item->cantidad, //BB
+                        'Costo_log_USD' => $costos_logisticos_caja_RMB / $excelDato->tasa, //BC
+                        'Costo_log_USD_TO' => ($costos_logisticos_caja_RMB / $excelDato->tasa) * $item->cantidad, //BD
+                        'Ent_Al_mercado_USD' => ($entrada_mercado_caja_RMB / $excelDato->tasa), //BE
+                        'Ent_Al_mercado_USD_TO' => ($entrada_mercado_caja_RMB / $excelDato->tasa) * $item->cantidad, //BF
+                        'Costo_mercado_USD' => ($costo_mercado_caja_RMB / $excelDato->tasa), //BG
+                        'Costos_mercado_USD_TO' => ($costo_mercado_caja_RMB / $excelDato->tasa) * $item->cantidad, //BH
+                        'Otros_costos_dest_USD' => ($otros_costos_destino_caja_RMB / $excelDato->tasa), //BI
+                        'Otros_costos_USD_TO' => ($otros_costos_destino_caja_RMB / $excelDato->tasa) * $item->cantidad, //BJ
+                        'Flete_marit_USD'    => ($costosFleteInternacional_caja_RMB / $excelDato->tasa), //BK
+                        'Flete_Marit_USD_TO' => ($costosFleteInternacional_caja_RMB / $excelDato->tasa) * $item->cantidad, //BL
+                        'Costos_cajas_USD' => ($costos_caja_RMB / $excelDato->tasa), //BM
+                        'Costos_USD_TO' => ($costos_caja_RMB / $excelDato->tasa) * $item->cantidad, //BN
+                        'Ajuste_impuesto_USD' => ($ajuste_impuesto_USD), //BO
+                        'Ajuste_TO_USD' => $ajuste_impuesto_USD_TO, //BP
+                        'Flete_Aereo' => $flete_aereo_USD, //BQ
+                        'Flete_Aereo_TO' => $flete_aereo_USD_TO, //BR
+                        'FOB_USD' => (float)(($RMB_Caja - $costos_caja_RMB) / $excelDato->tasa) - ($ajuste_impuesto_USD / $excelDato->tasa) - ($flete_aereo_USD), //BS
+                        'FOB_TO_USD' => (float)(($RMB_Venta - $costos_caja_RMB_TO) / $excelDato->tasa), //BT
+                        'FOB_kg' => ((float)($RMB_Caja - $costos_caja_RMB / $excelDato->tasa) - ($ajuste_impuesto_USD) - ($flete_aereo_USD) * $item->cantidad) / $total_kilos, //BU
+                        'FOB_Equivalente' => (((float)($RMB_Caja - $costos_caja_RMB / $excelDato->tasa) - ($ajuste_impuesto_USD) - ($flete_aereo_USD) * $item->cantidad) / $total_kilos) * 5, //BV
+                        'Flete_Cliente' => $flete_exportadora > 0 ? 'NO' : 'SI', //BW
+                        'Transporte' => $tipo_transporte == "A" ? 'AEREO' : 'MARITIMO', //BX
+                        'CNY' => 'PRE', //BY
+                        'Pais' => 'CHINA', //BZ
+                        'Otros_Impuestos (JWM) Impuestos' => (($otrosimpuestos == 0 ? 0 : ($otrosimpuestos / $excelDato->tasa)) / $total_kilos) * $peso_neto ? 0 : $peso_neto, //CA
+                        'Otros_Impuestos (JWM) TO USD' => ((($otrosimpuestos == 0 ? 0 : ($otrosimpuestos / $excelDato->tasa)) / $total_kilos) * $peso_neto ? 0 : $peso_neto) * $item->cantidad, //CB
+                        'Otros_Ingresos (abonos)' => ($otrosingresos == 0 ? 0 : ($otrosingresos / $excelDato->tasa) / $total_kilos) * $peso_neto, //CC
+                        'Otros_Ingresos (abonos) TO USD' => '=+CC' . $i . '*Y' . $i, //CD
 
-                    // Incorporar los costos como columnas adicionales
-            ]));
+                        //$costo_procesado,
+                        // $calculos
+
+                        // Incorporar los costos como columnas adicionales
+                    ]
+                ));
                 $i++;
                 $costosLogisticos = 0;
                 $costosMercado = 0;
@@ -1570,7 +1575,7 @@ class ReporteriaController extends Controller
 
         //dd($dataComparativa);
         $groupedData = $dataComparativa->groupBy(function ($item) {
-            return  $item['nave'] . '|' . $item['ETA_Week'] . '|' . $item['variedad'] . '|' . $item['calibre'] . '|' .$item['etiqueta'] . '|' . $item["Embalaje_real"];
+            return  $item['nave'] . '|' . $item['ETA_Week'] . '|' . $item['variedad'] . '|' . $item['calibre'] . '|' . $item['etiqueta'] . '|' . $item["Embalaje_real"];
         })->map(function ($group) {
             return [
 
@@ -1615,6 +1620,343 @@ class ReporteriaController extends Controller
             return $texto;
         }
     }
+    public function ObtieneDatosFOB2()
+    {
+        $datos = DB::table('greenexnet.liq_cx_cabeceras')->select("instructivo")->whereNull('deleted_At')->get();
+        $Instructivos = collect();
+        foreach ($datos as $dato) {
+            $instructivo = $this->ObtieneDatosFOBxInstructivo($dato->instructivo);
+            $Instructivos->push($instructivo);
+        }
+        return response()->json($Instructivos);
+    }
+    public function ObtieneDatosFOB()
+    {
+        // $liq = new Liquidaciones();
+        // $datos = $liq->ConsolidadoLiquidaciones();
+        // return response()->json($datos);
 
+        $datos = LiqCxCabecera::join('greenexnet.liquidaciones_cxes as lc', 'lc.liqcabecera_id', '=', 'liq_cx_cabeceras.id')->select("instructivo", "liq_cx_cabeceras.id")
+            ->whereNull('liq_cx_cabeceras.deleted_at')
+            ->whereNull('lc.deleted_at')
+            ->whereNull('lc.c_embalaje')
+            ->groupBy('liq_cx_cabeceras.instructivo', 'liq_cx_cabeceras.id')->get();
+
+        foreach ($datos as $dato) {
+
+            $items = LiquidacionesCx::where('liqcabecera_id', $dato->id)->whereNull("c_embalaje")->get();
+            foreach ($items as $item) {
+                $resultados = DB::connection('sqlsrv')
+                    ->table('dbo.V_PKG_Embarques')
+                    ->selectRaw('
+                                n_variedad,
+                                C_Embalaje,
+                                c_calibre,
+                                n_etiqueta,
+                                SUM(Cantidad) as total_cantidad
+                            ')
+                    ->where(function ($query) use ($dato) {  // Seguridad para OR
+                        $query->where('numero_referencia', $dato->instructivo)
+                            ->orWhere('n_embarque', str_replace('I', '', $dato->instructivo));
+                    })
+                    ->where('n_variedad', $item->variedad_id)
+                    ->where('n_etiqueta', $item->etiqueta_id)
+                    ->where('c_calibre', $item->calibre)
+                    ->groupBy('n_variedad', 'C_Embalaje', 'c_calibre', 'n_etiqueta', 'n_embarque')
+                    ->get();
+
+                if (count($resultados) > 0) {
+
+                    //$liq=LiquidacionesCx::where('liqcabecera_id', $dato->id)->where('variedad_id', $item->variedad_id)->where('etiqueta_id', $item->etiqueta_id)->where('calibre', $item->calibre)->first();
+                    $item->c_embalaje = $resultados[0]->C_Embalaje;
+                    $item->save();
+                }
+                //dd($resultados, $dato->instructivo, $item->variedad_id, $item->etiqueta_id, $item->calibre);
+            }
+        }
+    }
+    public function obtieneFolio()
+    {
+        // $liq = new Liquidaciones();
+        // $datos = $liq->ConsolidadoLiquidaciones();
+        // return response()->json($datos);
+
+        $datos = LiqCxCabecera::join('greenexnet.liquidaciones_cxes as lc', 'lc.liqcabecera_id', '=', 'liq_cx_cabeceras.id')->select("instructivo", "liq_cx_cabeceras.id", 'lc.pallet')
+            ->whereNull('liq_cx_cabeceras.deleted_at')
+            ->whereNull('lc.deleted_at')
+            ->whereNull('lc.folio_fx')
+            ->groupBy('liq_cx_cabeceras.instructivo', 'liq_cx_cabeceras.id', 'lc.pallet')->get();
+
+        foreach ($datos as $dato) {
+
+            $items = LiquidacionesCx::where('liqcabecera_id', $dato->id)->whereNull("folio_fx")->get();
+           //
+            Log::info("instructivo: " . $dato->instructivo);
+            foreach ($items as $item) {
+                $resultados = DB::connection('sqlsrv')
+                    ->table('dbo.V_PKG_Embarques')
+                    ->selectRaw('   folio,
+                                n_variedad_rotulacion,
+                                c_calibre,
+                                n_etiqueta,
+                                SUM(Cantidad) as total_cantidad
+                            ')
+                    ->where(function ($query) use ($dato) {  // Seguridad para OR
+                        $query->where('numero_referencia', $dato->instructivo)
+                            ->orWhere('n_embarque', str_replace('i','',str_replace('I', '', $dato->instructivo)));
+                    })
+                    //  ->where('n_variedad_rotulacion', $item->variedad_id)
+                    //  ->where('n_etiqueta','like', $item->etiqueta_id.'%')
+                    //  ->where('c_calibre','like',$item->calibre.'%')
+                    ->where('folio', 'like', '%' . $item->pallet)
+                    ->groupBy('folio', 'n_variedad_rotulacion', 'c_calibre', 'n_etiqueta', 'n_embarque')
+                    ->get();
+               // Log::info("instructivo: " . $dato->instructivo . " Folio: " . $item->pallet . " - Variedad: " . $item->variedad_id . " - Etiqueta: " . $item->etiqueta_id . " - Calibre: " . $item->calibre . " - Resultados: " . count($resultados));
+
+
+                // Resultado final
+
+                if (count($resultados) == 1) {
+                    foreach ($resultados as $res) {
+                            $item->folio_fx = $res->folio;
+                            $item->save();
+                    }
+                } elseif(count($resultados) > 1) {
+                    $resultados = DB::connection('sqlsrv')
+                        ->table('dbo.V_PKG_Embarques')
+                        ->selectRaw('   folio,
+                                n_variedad_rotulacion,
+                                c_calibre,
+                                n_etiqueta,
+                                SUM(Cantidad) as total_cantidad
+                            ')
+                        ->where(function ($query) use ($dato) {  // Seguridad para OR
+                            $query->where('numero_referencia', $dato->instructivo)
+                                ->orWhere('n_embarque', str_replace('i','',str_replace('I', '', $dato->instructivo)));
+                        })
+                        ->where('folio', 'like', '%' . $item->pallet)
+                        ->where('n_variedad_rotulacion', 'like', $item->variedad_id . '%')
+                        ->where('n_etiqueta', 'like', $item->etiqueta_id . '%')
+                        ->where('c_calibre', 'like', $item->calibre . '%')
+
+                        ->groupBy('folio', 'n_variedad_rotulacion', 'c_calibre', 'n_etiqueta', 'n_embarque')
+                        ->get();
+                    if (count($resultados) > 0) {
+                        $i = 0;
+
+                        foreach ($resultados as $res) {
+                            if ($i == 0) {
+                                $item->folio_fx = $res->folio;
+                            } else {
+                                $item->folio_fx = $item->folio_fx . "," . $res->folio;
+                            }
+                            $i++;
+
+                        }
+                        $item->save();
+                    }
+                }
+                else {
+                    $resultados = DB::connection('sqlsrv')
+                        ->table('dbo.V_PKG_Embarques')
+                        ->selectRaw('   folio,
+                                n_variedad_rotulacion,
+                                c_calibre,
+                                n_etiqueta,
+                                SUM(Cantidad) as total_cantidad
+                            ')
+                        ->where(function ($query) use ($dato) {  // Seguridad para OR
+                            $query->where('numero_referencia', $dato->instructivo)
+                                ->orWhere('n_embarque', str_replace('i','',str_replace('I', '', $dato->instructivo)));
+                        })
+                        ->where('n_variedad_rotulacion', 'like', $item->variedad_id . '%')
+                        ->where('n_etiqueta', 'like', $item->etiqueta_id . '%')
+                        ->where('c_calibre', 'like', $item->calibre . '%')
+
+                        ->groupBy('folio', 'n_variedad_rotulacion', 'c_calibre', 'n_etiqueta', 'n_embarque')
+                        ->get();
+                    if (count($resultados) > 0) {
+                        $i = 0;
+
+                        foreach ($resultados as $res) {
+                            if ($i == 0) {
+                                $item->folio_fx = $res->folio;
+                            } else {
+                                $item->folio_fx = $item->folio_fx . "," . $res->folio;
+                            }
+                            $i++;
+
+                        }
+                        $item->save();
+                    }
+                }
+
+                //$liq=LiquidacionesCx::where('liqcabecera_id', $dato->id)->where('variedad_id', $item->variedad_id)->where('etiqueta_id', $item->etiqueta_id)->where('calibre', $item->calibre)->first();
+
+            }
+            //dd($resultados, $dato->instructivo, $item->variedad_id, $item->etiqueta_id, $item->calibre);
+        }
+    }
+
+    public function ObtieneDatosFOBxInstructivo(string $instructivo)
+    {
+        $datos = DB::table('greenexnet.liquidaciones_cxes as lc')
+            ->join('greenexnet.liq_cx_cabeceras as lcc', 'lc.liqcabecera_id', '=', 'lcc.id')
+            ->join('greenexnet.excel_datos as ed', 'lcc.instructivo', '=', 'ed.instructivo')
+            ->join('greenexnet.clientes_comexes as cc', 'lcc.cliente_id', '=', 'cc.id')
+            ->whereNull('lc.deleted_at')
+            ->select([
+                DB::raw('"" as `placeholder`'),
+                'lcc.nave_id',
+                'lc.variedad_id',
+                'lc.calibre',
+                'lc.etiqueta_id',
+                'lc.embalaje_id',
+                'pallet',
+                'ed.instructivo',
+                'ed.tasa',
+                'lcc.id',
+                'ed.fecha_arribo',
+                DB::raw('lc.precio_unitario * lcc.factor_imp_destino*lc.cantidad AS `factor`'),
+                DB::raw('lc.precio_unitario * lc.cantidad AS `MONTO_RMB`'), // Nueva columna
+                DB::raw('(lc.precio_unitario * lc.cantidad/ed.tasa) AS `MONTO_USD`')
+            ])->where('lcc.instructivo', $instructivo)
+            ->get();
+
+        $datosAgrupados = collect($datos)->groupBy('instructivo')->map(function ($grupo) {
+            return [
+                'placeholder' => '',
+                'instructivo' => $grupo->first()->instructivo,
+                'tasa' => $grupo->first()->tasa,
+                'id' => $grupo->first()->id, // Suponiendo que el ID es el mismo para todos
+                'nave' => $grupo->first()->nave_id,
+                'fecha_arribo' => $grupo->first()->fecha_arribo,
+                'variedad' => $grupo->first()->variedad_id,
+                'calibre' => $grupo->first()->calibre,
+                'etiqueta' => $grupo->first()->etiqueta_id,
+                'embalaje' => $grupo->first()->embalaje_id,
+                'pallet' => $grupo->first()->pallet,
+                'factor' => $grupo->sum('factor') / $grupo->first()->tasa,
+                'MONTO_RMB' => $grupo->sum('MONTO_RMB'),
+                'MONTO_USD' => $grupo->sum('MONTO_USD'),
+
+            ];
+        })->values(); // Resetear los índices
+
+        // Ahora $datosAgrupados contiene los valores agrupados correctamente
+
+        $datosAgrupados = $datosAgrupados->map(function ($dato) {
+            $costos = DB::table('greenexnet.liq_costos as lc')
+                ->select(DB::raw("valor,nombre_costo"))
+                ->where("liq_cabecera_id", $dato["id"])->whereNull('deleted_at')
+                ->get();
+            $costoRMB = 0;
+
+
+            foreach ($costos as $costo) {
+                if ($dato["instructivo"] == "I2425182") {
+                    Log::info($costo->nombre_costo . " --> " . $costo->valor);
+                }
+                if ($costo->nombre_costo == "Otros Ingresos") {
+                    $costoRMB = $costoRMB - $costo->valor;
+                } elseif ($costo->nombre_costo == "Impuestos") {
+                    $costoRMB = $costoRMB;
+                } else {
+                    $costoRMB = $costoRMB + $costo->valor;
+                }
+            }
+            Log::info("Total Costos --> " . $costoRMB);
+            $otros = DB::table('greenexnet.liq_cx_cabeceras')->select('flete_exportadora')->where('id', $dato["id"])->whereNull('deleted_at')->first();
+            if ($dato["instructivo"] == "I2425182") {
+                Log::info("flete_exportadora --> " . $otros->flete_exportadora);
+                Log::info("Impuestos--> " . $dato["factor"] / $dato["tasa"]);
+            }
+            $costo_usd = ($costoRMB / $dato["tasa"]) + $dato["factor"];
+            $costo_usd = $costo_usd + $otros->flete_exportadora;
+            $FOB_USD = $dato["MONTO_USD"] - $costo_usd;
+
+            return array_merge($dato, [
+                "costos" => $costo_usd,
+                "FOB_USD" => $FOB_USD
+            ]);
+        });
+
+
+
+
+
+        return $datosAgrupados;
+    }
+    public function obtenerliquidacionesagrupadas(){
+        $liq=new Liquidaciones();
+        $datos=$liq->Liquidacionesagrupadas();
+        $grouped = collect($datos)->groupBy(function ($item) {
+            return
+                    $item['nave'] .'|'.
+                    $item['ETA_Week'] . '|' .
+                    $item['cliente'] . '|' .
+                    $item['embalaje'] . '|' .
+                    $item['etiqueta'] . '|' .
+                    $item['variedad'] . '|' .
+                    $item['calibre'];
+        })->map(function ($grupo) {
+            $totalFobUsd = round($grupo->sum('FOB_TO_USD'),2);
+            $totalKilos = round($grupo->sum('Kilos_total'),2);
+            $cantidad=$grupo->sum('Cajas');
+
+            // Calcular FOB_kg basado en el total de FOB_TO_USD y Kilos_total
+            $XFOBCaja=round($totalFobUsd>0?$totalFobUsd/$cantidad:0,2);
+            return[
+
+                "cliente" => $grupo->first()['cliente'],
+                "nave"=>$grupo->first()['nave'],
+                "ETA_Week" => $grupo->first()['ETA_Week'],
+                "etiqueta" => $grupo->first()['etiqueta'],
+                "variedad" => $grupo->first()['variedad'],
+                "calibre" => $grupo->first()['calibre'],
+                "embalaje" => $grupo->first()['embalaje'],
+                "kilos_total"=>$totalKilos,
+                "FOB_TO_USD"=>$totalFobUsd,
+                "Cantidad"=>$cantidad,
+                "FOB_USD"=> round($grupo->sum('FOB_USD'),4),
+                "PromedioFOBxCaja"=>round($grupo->avg('FOB_USD'),2),
+                "FOB_kg"=>round($grupo->sum('FOB_kg'),2),
+
+            ];
+        });
+        $groupedGral = collect($datos)->groupBy(function ($item) {
+            return
+                    $item['nave'] .'|'.
+                    $item['embalaje'] . '|' .
+                    $item['etiqueta'] . '|' .
+                    $item['variedad'] . '|' .
+                    $item['calibre'];
+        })->map(function ($grupo) {
+            $totalFobUsd = round($grupo->sum('FOB_TO_USD'),2);
+            $totalKilos = round($grupo->sum('Kilos_total'),2);
+            $cantidad=$grupo->sum('Cajas');
+
+            // Calcular FOB_kg basado en el total de FOB_TO_USD y Kilos_total
+            $XFOBCaja=round($totalFobUsd>0?$totalFobUsd/$cantidad:0,2);
+            return[
+
+                "nave"=>$grupo->first()['nave'],
+                "ETA_Week" => $grupo->first()['ETA_Week'],
+                "etiqueta" => $grupo->first()['etiqueta'],
+                "variedad" => $grupo->first()['variedad'],
+                "calibre" => $grupo->first()['calibre'],
+                "embalaje" => $grupo->first()['embalaje'],
+                "kilos_total"=>$totalKilos,
+                "FOB_TO_USD"=>$totalFobUsd,
+                "Cantidad"=>$cantidad,
+                "FOB_USD"=> round($grupo->sum('FOB_USD'),4),
+                "PromedioFOBxCaja"=>round($grupo->avg('FOB_USD'),2),
+                "FOB_kg"=>round($grupo->sum('FOB_kg'),2),
+
+            ];
+        });
+
+        return response()->json(["data"=>$datos,"grouped"=>$grouped->values(),"groupedGral"=>$groupedGral->values()]);
+    }
 
 }

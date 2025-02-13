@@ -38,6 +38,8 @@ class LiquidacionesCx extends Model
         'monto_rmb',
         'observaciones',
         'liqcabecera_id',
+        'c_embalaje',
+        'folio_fx',
         'created_at',
         'updated_at',
         'deleted_at',

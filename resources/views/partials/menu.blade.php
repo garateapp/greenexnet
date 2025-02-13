@@ -341,6 +341,14 @@
                                 Liquidaciones Venta
                             </a>
                         </li>
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.reporteria.compartivoliquidacionescx') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/reporteria') || request()->is('admin/reporteria/*') ? 'c-active' : '' }}">
+                                <i class="fa-fw fas fa-box-open c-sidebar-nav-icon">
+                                </i>
+                                Compartivo Liquidaciones CX
+                            </a>
+                        </li>
                     @endcan
                 </ul>
             </li>
@@ -390,15 +398,15 @@
                         </li>
                     @endcan
                     @can('costos_origen_access')
-                    <li class="c-sidebar-nav-item">
-                        <a href="{{ route('admin.costosorigen.costosorigen') }}"
-                            class="c-sidebar-nav-link {{ request()->is('admin/costosorigen') || request()->is('admin/costosorigen/*') ? 'c-active' : '' }}">
-                            <i class="fa-fw fas fa-address-card c-sidebar-nav-icon">
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.costosorigen.costosorigen') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/costosorigen') || request()->is('admin/costosorigen/*') ? 'c-active' : '' }}">
+                                <i class="fa-fw fas fa-address-card c-sidebar-nav-icon">
 
-                            </i>
-                            Costos Origen
-                        </a>
-                    </li>
+                                </i>
+                                Costos Origen
+                            </a>
+                        </li>
                     @endcan
                     {{-- @can('liquidaciones_cx_access')
                         <li class="c-sidebar-nav-item">
@@ -488,7 +496,8 @@
                     </li>
                     @can('proveedor_access')
                         <li class="c-sidebar-nav-item">
-                            <a href="{{ route("admin.proveedors.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/proveedors") || request()->is("admin/proveedors/*") ? "c-active" : "" }}">
+                            <a href="{{ route('admin.proveedors.index') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/proveedors') || request()->is('admin/proveedors/*') ? 'c-active' : '' }}">
                                 <i class="fa-fw fas fa-user-tie c-sidebar-nav-icon">
 
                                 </i>

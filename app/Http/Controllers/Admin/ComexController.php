@@ -111,6 +111,7 @@ class ComexController extends Controller
                         'valor' => $this->normalizarTexto($valor),
                     ];
                 }
+                Log::info("Cabecera" . $estructura->coordenada . "----" . $estructura->propiedad . "----" . $estructura->propiedad);
             }
 
             $estrItems = $estructuras->where('tipos_seccion_conversors_id', 2)->sortBy(['coordenada', 'asc']);
@@ -125,6 +126,7 @@ class ComexController extends Controller
                     $columna = $matches[1]; // A
                     $fila = (int)$matches[2]; // 5
                 } catch (\Exception $e) {
+                    Log::info("Error" . $e->getMessage() . "----" . $estructura->coordenada."----" . $estructura->propiedad."----" . $e->getTraceAsString());
                     return response()->json([
                         'message' => 'Ocurrió un error al procesar el archivo.',
                         'error' => $e->getMessage() . "----" . $estructura->coordenada,
@@ -136,11 +138,11 @@ class ComexController extends Controller
 
                 while (true) {
                     $valorCelda = $hoja->getCell("{$columna}{$fila}")->getValue();
-
+                    Log::info('celdaItems1(' . $columna . $fila . ') :' . $hoja->getCell("{$columna}{$fila}")->getValue());
                     if ($fila == $fila_costos && $capturador->id != 7) {
 
 
-                        break; // Encontramos el inicio de la sección de costos
+                        break;
                     }
                     if ($capturador->id == 7 && $valorCelda == '') {
                         break;
@@ -148,6 +150,7 @@ class ComexController extends Controller
                     $item = [];
 
                     preg_match('/(\D+)/', $estructura->coordenada, $colMatch);
+                    Log::info('celdaItems2(' . $colMatch[1] . $fila . ') :' . $hoja->getCell("{$colMatch[1]}$fila")->getValue());
                     $col = $colMatch[1];
                     Log::info('celdaItems(' . $col . $fila . ') :' . $hoja->getCell("{$col}{$fila}")->getValue());
                     if ($estructura->propiedad == "Calibre") {
@@ -444,6 +447,7 @@ class ComexController extends Controller
                 //     }
                 //     $variedad_id =  $resultado;
                 // } else {
+
                 $variedad_id = $fila['Variedad'];
                 //}
                 $pallet = isset($fila['Pallet']) ? $fila['Pallet'] : '';
@@ -457,6 +461,28 @@ class ComexController extends Controller
                 $monto_rmb = isset($fila['Monto RMB']) ? $fila['Monto RMB'] : 0;
                 $observaciones = isset($fila['Observaciones']) ? $fila['Observaciones'] : '';
                 $liqcabecera_id = $LiqCabecera->id;
+                $resultados = DB::connection('sqlsrv')
+                    ->table('dbo.V_PKG_Embarques')
+                    ->selectRaw('
+                                    n_variedad,
+                                    C_Embalaje,
+                                    c_calibre,
+                                    n_etiqueta,
+                                    SUM(Cantidad) as total_cantidad
+                                ')
+                        ->where('numero_referencia', $instructivo)
+                        ->where('n_variedad', $variedad_id)
+                        ->where('n_etiqueta', $etiqueta_id)
+                        ->where('c_calibre', $calibre)
+                        ->groupBy('n_variedad', 'C_Embalaje', 'c_calibre', 'n_etiqueta')
+                        ->get();
+                $c_embalaje='';
+                        if(count($resultados)>0){
+
+                            //$liq=LiquidacionesCx::where('liqcabecera_id', $dato->id)->where('variedad_id', $item->variedad_id)->where('etiqueta_id', $item->etiqueta_id)->where('calibre', $item->calibre)->first();
+                            $c_embalaje=$resultados[0]->C_Embalaje;
+                        }
+
                 try {
                     $result = LiquidacionesCx::create([
                         'contenedor' => $contenedor,
@@ -472,7 +498,8 @@ class ComexController extends Controller
                         'precio_unitario' => $precio_unitario,
                         'monto_rmb' => $monto_rmb,
                         'observaciones' => $observaciones,
-                        'liqcabecera_id' => $liqcabecera_id
+                        'liqcabecera_id' => $liqcabecera_id,
+                        'c_embalaje'=>$c_embalaje,
                     ]);
                     Log::info('Datos guardados correctamente' . "----" . $result);
                 } catch (\Exception $e) {
@@ -587,7 +614,7 @@ class ComexController extends Controller
             $factor_imp_destino = $liqCxCabecera->factor_imp_destino;
             $detalle = LiquidacionesCx::where('liqcabecera_id', $liqCxCabecera->id)->get();
             $excelDato = ExcelDato::where('instructivo', $liqCxCabecera->instructivo)->first();
-            Log::info("Instructivo: " . $liqCxCabecera->instructivo);
+
             $nombre_costo = Costo::pluck('nombre'); // Extraer solo los nombres de costos
             $total_kilos = 0;
             $total_ventas = 0;
@@ -770,7 +797,7 @@ class ComexController extends Controller
                         'RMB Flete Domestico. TO' => '=+CE' . $i . '*Y' . $i, //CF
                         'USD Flete Domestico. '    => '=+CE' . $i . '/AV' . $i, //CG
                         'USD Flete Domestico. TO' => '=+CG' . $i . '*Y' . $i, //CH
-                        'embalaje_dato_origen'=>$item->embalaje_id, //CI
+                        'embalaje_dato_origen'=>$item->c_embalaje, //CI
 
                     ],
                     //$costo_procesado,
@@ -1022,7 +1049,7 @@ class ComexController extends Controller
                         'RMB Flete Domestico. TO' => '=+CE' . $i . '*Y' . $i, //CF
                         'USD Flete Domestico. '    => '=+CF' . $i . '/AV' . $i, //CG
                         'USD Flete Domestico. TO' => '=+CG' . $i . '*Y' . $i, //CH
-                        'embalaje_dato_origen'=>$item->embalaje_id, //CI
+                        'embalaje_dato_origen'=>$item->c_embalaje, //CI
 
                     ],
                     //$costo_procesado,

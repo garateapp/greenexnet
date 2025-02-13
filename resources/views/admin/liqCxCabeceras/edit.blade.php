@@ -215,8 +215,10 @@
                                         <th>Contenedor</th>
                                         <th>ETA</th>
                                         <th>Pallet</th>
+                                        <th>Folio FX</th>
                                         <th>Variedad</th>
                                         <th>Etiqueta</th>
+                                        <th>Peso</th>
                                         <th>Embalaje</th>
                                         <th>Calibre</th>
                                         <th>Cantidad</th>
@@ -330,6 +332,7 @@
                             <label for="pallet" class="form-label">Pallet</label>
                             <input type="text" class="form-control" id="pallet" name="pallet">
                         </div>
+
                         <div class="mb-3">
                             <label for="variedad" class="form-label">Variedad</label>
                             <input type="text" class="form-control" id="variedad_id" name="variedad_id">
@@ -428,6 +431,10 @@
                         render: makeEditable('pallet')
                     },
                     {
+                        data: 'folio_fx',
+                        render: makeEditable('folio_fx')
+                    },
+                    {
                         data: 'variedad_id',
                         render: makeEditable('variedad_id')
                     },
@@ -438,6 +445,10 @@
                     {
                         data: 'embalaje_id',
                         render: makeEditable('embalaje_id')
+                    },
+                    {
+                        data: 'c_embalaje',
+                        render: makeEditable('c_embalaje')
                     },
                     {
                         data: 'calibre',

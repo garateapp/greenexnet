@@ -23,6 +23,7 @@ class Diccionario extends Model
     public const TIPO_SELECT = [
         'Embalaje' => 'Embalaje',
         'Calibre'  => 'Calibre',
+        'Embalaje_real'=>'Embalaje_real'
     ];
 
     protected $fillable = [
