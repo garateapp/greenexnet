@@ -372,7 +372,8 @@ class Liquidaciones
                         'RMB_Flete_Domestico_TO' => $RMB_Flete_Domestico_TO, //CF
                         'USD_Flete_Domestico'    => $USD_Flete_Domestico, //CG
                         'USD_Flete_Domestico_TO' => $USD_Flete_Domestico_TO, //CH
-                        'embalaje' => $c_embalaje,
+                        'embalaje' => $c_embalaje, //agregado para obtener datos
+
 
 
                     ],
