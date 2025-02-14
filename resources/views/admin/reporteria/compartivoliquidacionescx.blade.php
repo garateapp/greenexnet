@@ -256,14 +256,14 @@
             <ul class="nav nav-tabs" id="ComparativaTabs" role="tablist">
                 <!-- Pestaña Comparativa General -->
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="ranking-tab" data-bs-toggle="tab" data-bs-target="#ranking" type="button"
+                    <button class="nav-link active" id="ranking-tab" data-bs-toggle="tab" data-bs-target="#ranking" type="button"
                         role="tab" aria-controls="ranking" aria-selected="false">
                         Comparativas Generales
                     </button>
                 </li>
                 <!-- Pestaña Comparativa x Cliente -->
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="comparativa-tab" data-bs-toggle="tab" data-bs-target="#comparativa"
+                    <button class="nav-link" id="comparativa-tab" data-bs-toggle="tab" data-bs-target="#comparativa"
                         type="button" role="tab" aria-controls="comparativa" aria-selected="true">
                         Comparativa por Clientes
                     </button>
@@ -470,7 +470,7 @@
                                     name: 'Cantidad'
                                 },
                                 {
-                                    data: 'FOB_TO_USD',
+                                    data: 'FOB_USD',
                                     name: 'FOB_USD',
                                     render: function(data) {
                                         return parseFloat(data).toLocaleString();
@@ -528,8 +528,8 @@
                                     colores = [];
 
                                 datosRelacionados.forEach(item => {
-                                    let costoOportunidad = parseFloat(item.FOB_TO_USD) - parseFloat(data
-                                        .FOB_TO_USD);
+                                    let costoOportunidad = parseFloat(data
+                                        .PromedioFOBxCaja)-parseFloat(item.PromedioFOBxCaja);
 
                                     // Guardar datos para el gráfico
                                     labels.push(item.cliente);
@@ -540,7 +540,7 @@
                                     // Añadir a la tabla
                                     subTable += `<tr>
                                 <td>${item.cliente}</td>
-                                <td>${parseFloat(item.FOB_TO_USD).toLocaleString()}</td>
+                                <td>${parseFloat(item.FOB_USD).toLocaleString()}</td>
                                 <td style="color:${costoOportunidad >= 0 ? 'green' : 'red'};">
                                     ${costoOportunidad.toLocaleString()}
                                 </td>

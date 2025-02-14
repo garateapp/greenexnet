@@ -1877,27 +1877,38 @@ class ReporteriaController extends Controller
     }
     public function obtenerliquidacionesagrupadas()
     {
-
         $datos = $this->Liquidacionesagrupadas();
-        $grouped = collect($datos)->groupBy(function ($item) {
-            return
-                $item['nave'] . '|' .
-                $item['ETA_Week'] . '|' .
-                $item['cliente'] . '|' .
-                $item['embalaje'] . '|' .
-                $item['etiqueta'] . '|' .
-                $item['variedad'] . '|' .
-                $item['calibre'];
-        })->map(function ($grupo) {
+        // $test=collect($datos)
+        // ->where('nave','=','Skagen Maersk')
+        // ->where('cliente','=','Yuhua')
+        // ->where('variedad','=','SANTINA')
+        // ->where('etiqueta','=','DIAMOND CHERRIES')
+        // ->where('embalaje','=','CEMADCAM5')
+        // ->where('calibre','=','3JD');
+
+        
+        // Function to create a grouped key from specified fields
+        $createGroupKey = function ($item, $includeCliente = true) {
+            $fields = ['nave', 'cliente', 'embalaje', 'etiqueta', 'variedad', 'calibre'];
+            if (!$includeCliente) {
+                unset($fields[array_search('cliente', $fields)]);
+            }
+            return implode('|', array_map(function ($field) use ($item) {
+                return $item[$field];
+            }, $fields));
+        };
+    
+        // Function to process grouped items
+        $processGroup = function ($grupo, $includeCliente = true) {
             $totalFobUsd = round($grupo->sum('FOB_TO_USD'), 2);
             $totalKilos = round($grupo->sum('Kilos_total'), 2);
+            $totalFOB_kg=round($grupo->sum('FOB_kg'), 2);
             $cantidad = $grupo->sum('Cajas');
-
-            // Calcular FOB_kg basado en el total de FOB_TO_USD y Kilos_total
-            $XFOBCaja = round($totalFobUsd > 0 ? $totalFobUsd / $cantidad : 0, 2);
-            return [
-
-                "cliente" => $grupo->first()['cliente'],
+    
+            $XFOBCaja = $cantidad > 0 ? $totalFobUsd / $cantidad : 0;
+            $FOB_kg = $totalKilos > 0 ? $totalFobUsd / $totalKilos : 0;
+    
+            $result = [
                 "nave" => $grupo->first()['nave'],
                 "ETA_Week" => $grupo->first()['ETA_Week'],
                 "etiqueta" => $grupo->first()['etiqueta'],
@@ -1907,45 +1918,37 @@ class ReporteriaController extends Controller
                 "kilos_total" => $totalKilos,
                 "FOB_TO_USD" => $totalFobUsd,
                 "Cantidad" => $cantidad,
-                "FOB_USD" => round($grupo->sum('FOB_USD'), 4),
-                "PromedioFOBxCaja" => round($grupo->avg('FOB_USD'), 2),
-                "FOB_kg" => round($grupo->sum('FOB_kg'), 2),
-
+                "FOB_USD" => round($grupo->sum('FOB_USD'), 2),
+                "PromedioFOBxCaja" => round($XFOBCaja, 2),
+                "FOB_kg" => $FOB_kg,
             ];
+    
+            if ($includeCliente) {
+                $result["cliente"] = $grupo->first()['cliente'];
+            }
+    
+            return $result;
+        };
+    
+        // Grouping for 'grouped' (includes cliente)
+        $grouped = collect($datos)->groupBy(function ($item) use ($createGroupKey) {
+            return $createGroupKey($item, true);
+        })->map(function ($grupo) use ($processGroup) {
+            return $processGroup($grupo, true);
         });
-        $groupedGral = collect($datos)->groupBy(function ($item) {
-            return
-                $item['nave'] . '|' .
-                $item['embalaje'] . '|' .
-                $item['etiqueta'] . '|' .
-                $item['variedad'] . '|' .
-                $item['calibre'];
-        })->map(function ($grupo) {
-            $totalFobUsd = round($grupo->sum('FOB_TO_USD'), 2);
-            $totalKilos = round($grupo->sum('Kilos_total'), 2);
-            $cantidad = $grupo->sum('Cajas');
-
-            // Calcular FOB_kg basado en el total de FOB_TO_USD y Kilos_total
-            $XFOBCaja = round($totalFobUsd > 0 ? $totalFobUsd / $cantidad : 0, 2);
-            return [
-
-                "nave" => $grupo->first()['nave'],
-                "ETA_Week" => $grupo->first()['ETA_Week'],
-                "etiqueta" => $grupo->first()['etiqueta'],
-                "variedad" => $grupo->first()['variedad'],
-                "calibre" => $grupo->first()['calibre'],
-                "embalaje" => $grupo->first()['embalaje'],
-                "kilos_total" => $totalKilos,
-                "FOB_TO_USD" => $totalFobUsd,
-                "Cantidad" => $cantidad,
-                "FOB_USD" => round($grupo->sum('FOB_USD'), 4),
-                "PromedioFOBxCaja" => round($grupo->avg('FOB_USD'), 2),
-                "FOB_kg" => round($grupo->sum('FOB_kg'), 2),
-
-            ];
+    
+        // Grouping for 'groupedGral' (excludes cliente)
+        $groupedGral = collect($datos)->groupBy(function ($item) use ($createGroupKey) {
+            return $createGroupKey($item, false);
+        })->map(function ($grupo) use ($processGroup) {
+            return $processGroup($grupo, false);
         });
-
-        return response()->json(["data" => $datos, "grouped" => $grouped->values(), "groupedGral" => $groupedGral->values()]);
+    
+        return response()->json([
+            "data" => $datos,
+            "grouped" => $grouped->values(),
+            "groupedGral" => $groupedGral->values()
+        ]);
     }
     public function obtenerDatosLiquidaciones()
     {
@@ -2036,7 +2039,7 @@ class ReporteriaController extends Controller
             $flete_exportadora = $liqCxCabecera->flete_exportadora;
             $tipo_transporte = $liqCxCabecera->tipo_transporte;
             $factor_imp_destino = $liqCxCabecera->factor_imp_destino;
-            $detalle = LiquidacionesCx::where('liqcabecera_id', $liqCxCabecera->id)->get();
+            $detalle = LiquidacionesCx::where('liqcabecera_id', $liqCxCabecera->id)->whereNull('deleted_at')->get();
             $excelDato = ExcelDato::where('instructivo', $liqCxCabecera->instructivo)->first();
             //Log::info("Instructivo: " . $liqCxCabecera->instructivo);
             $nombre_costo = Costo::pluck('nombre'); // Extraer solo los nombres de costos
