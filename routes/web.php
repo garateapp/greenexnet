@@ -3,6 +3,8 @@
 //use Illuminate\Routing\Route;
 use App\Http\Controllers\Admin\ReporteriaController;
 use App\Models\TratoContratistas;
+
+
 //use Illuminate\Routing\Route;
 
 //use Illuminate\Routing\Route;
@@ -179,6 +181,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('reporteria/ObtieneDatosFOB', 'ReporteriaController@ObtieneDatosFOB')->name('reporteria.ObtieneDatosFOB');
     Route::get('reporteria/obtieneFolio', 'ReporteriaController@obtieneFolio')->name('reporteria.obtieneFolio');
     Route::get('reporteria/obtenerliquidacionesagrupadas', 'ReporteriaController@obtenerliquidacionesagrupadas')->name('reporteria.obtenerliquidacionesagrupadas');
+    
     // Embalajes
     Route::delete('embalajes/destroy', 'EmbalajesController@massDestroy')->name('embalajes.massDestroy');
     Route::post('embalajes/parse-csv-import', 'EmbalajesController@parseCsvImport')->name('embalajes.parseCsvImport');
@@ -200,6 +203,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('comex/generacomparativaglobal', 'ComexController@generacomparativaglobal')->name('comex.generacomparativaglobal');
 
     Route::post('comex/eliminardatosExcel', 'ComexController@eliminardatosExcel')->name('comex.eliminardatosExcel');
+    Route::get('comex/actualizarValorGD_en_fx', 'ComexController@actualizarValorGD_en_fx')->name('comex.actualizarValorGD_en_fx');
 
     // Metas Cliente Comex
     Route::delete('metas-cliente-comexes/destroy', 'MetasClienteComexController@massDestroy')->name('metas-cliente-comexes.massDestroy');

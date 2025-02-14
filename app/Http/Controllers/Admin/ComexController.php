@@ -36,8 +36,12 @@ use App\Models\LiquidacionesCx;
 use App\Models\LiqCosto;
 use App\Models\Costo;
 use App\Models\Nafe;
+use App\Libs\Liquidaciones;
 use App\Exports\ComparativaExport;
 use App\Models\Diccionario;
+use Exception;
+use Psy\Readline\Hoa\Console;
+use Symfony\Component\Console\Logger\ConsoleLogger;
 
 class ComexController extends Controller
 {
@@ -1094,11 +1098,79 @@ class ComexController extends Controller
         ExcelDato::where('instructivo', $instructivo)->delete();
         return redirect()->route('admin.comex.capturador')->with('message', 'Datos eliminados correctamente.');
     }
-
-/**
- * Genera una comparativa de liquidaciones en formato Excel.
-
- * @param \Illuminate\Http\Request $request
- */
+    public function actualizarValorGD_en_fx(){
+        $output = new \Symfony\Component\Console\Output\ConsoleOutput();
+        $output->writeln("<info>".print_r(DB::connection('sqlsrv')->getPdo())."</info>");
+        dd(DB::connection('sqlsrv')->getPdo());
+        $resEjec = collect();
+        $liq = new Liquidaciones();
+    
+        // Obtener la sesión correctamente
+        if (session()->has('liqs')) {
+            $liqs = session('liqs');
+        } else {
+            $liqs = $liq->ConsolidadoLiquidaciones();
+            session(['liqs' => $liqs]);
+        }
+    
+        // Obtener cabeceras
+        $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->where('id', 67)->get();
+    
+        foreach ($liqCxCabeceras as $liqCxCabecera) {
+            try {
+                // Obtener despachos
+                $despachos = DB::connection('sqlsrv')->table("V_PKG_Despachos")
+                    ->select('folio','n_variedad','c_embalaje','n_calibre','n_etiqueta','id_pkg_stock_det')
+                    ->where('tipo_g_despacho', '=', 'GDP')
+                    ->where('numero_embarque', '=', str_replace('I', '', 'I2425003'))
+                    ->get();
+    
+                foreach ($despachos as $despacho) {
+                    $EFOB = 0;
+                    $ECCajas = 0;
+                    $valor = 0;
+    
+                    $items = $liqs->where('folio_fx', $despacho->folio)
+                    ->where('variedad', Str::upper($despacho->n_variedad))
+                    ->where('embalaje', Str::upper($despacho->c_embalaje))
+                    ->where('calibre', Str::upper($despacho->n_calibre))
+                    ->where('etiqueta',Str::upper($despacho->n_etiqueta));
+                    
+                    Log::info('Folio despacho: ' . ($despacho->folio ?? 'N/A'));
+                    
+                    foreach ($items as $item) {
+                        $EFOB += $item['FOB_TO_USD'];
+                        $ECCajas += $item['Cajas'];
+                    }
+    
+                    // Evitar división por cero
+                    $valor = ($ECCajas > 0) ? ($EFOB / $ECCajas) : 0;
+    
+                    $resEjec->push([
+                        'folio' => $despacho->folio,
+                        'valor' => $valor,
+                    ]);
+                    try {
+                     //   dd(DB::connection('sqlsrv')->getPdo());
+                    } catch (\Exception $e) {
+                        die("Could not connect to the database.  Please check your configuration. error:" . $e );
+                    }
+                    // Realizar el UPDATE en la base de datos
+                    DB::connection('sqlsrv')
+                        ->table('PKG_Stock_Det')
+                        ->where('folio', $despacho->folio)
+                    ->where('id', $despacho->id_pkg_stock_det)
+                        ->where('destruccion_tipo', 'GDP')
+                        ->update(['valor' => $valor]);
+                }
+            } catch (Exception $e) {
+                Log::error("Error al actualizar valor GD en FX: " . $e->getMessage());
+                return response()->json(['error' => $e->getMessage()], 500);
+            }
+        }
+    
+        return response()->json($resEjec);
+    }
+    
 
 }
