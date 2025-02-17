@@ -1639,22 +1639,19 @@ class ReporteriaController extends Controller
         $datos = LiqCxCabecera::join('greenexnet.liquidaciones_cxes as lc', 'lc.liqcabecera_id', '=', 'liq_cx_cabeceras.id')->select("instructivo", "liq_cx_cabeceras.id")
             ->whereNull('liq_cx_cabeceras.deleted_at')
             ->whereNull('lc.deleted_at')
-            ->whereNull('lc.c_embalaje')
             ->groupBy('liq_cx_cabeceras.instructivo', 'liq_cx_cabeceras.id')->get();
 
         foreach ($datos as $dato) {
 
-            $items = LiquidacionesCx::where('liqcabecera_id', $dato->id)->whereNull("c_embalaje")->get();
+            $items = LiquidacionesCx::where('liqcabecera_id', $dato->id)->get();
             foreach ($items as $item) {
                 if ($item->pallet != null && $item->pallet != "") {
-                    $item->c_embalaje = $item->pallet;
-                    $item->save();
-
 
                     $resultados = DB::connection('sqlsrv')->table("V_PKG_Despachos")
                         ->select('c_embalaje')
                         ->where('tipo_g_despacho', '=', 'GDP')
                         ->where('numero_embarque', str_replace('i', '', str_replace("I", "", $dato->instructivo)))
+                        ->where('folio',$item->pallet)
                         ->get();
 
                     if (count($resultados) > 0) {
@@ -1679,12 +1676,12 @@ class ReporteriaController extends Controller
         $datos = LiqCxCabecera::join('greenexnet.liquidaciones_cxes as lc', 'lc.liqcabecera_id', '=', 'liq_cx_cabeceras.id')->select("instructivo", "liq_cx_cabeceras.id", 'lc.pallet')
             ->whereNull('liq_cx_cabeceras.deleted_at')
             ->whereNull('lc.deleted_at')
-            ->whereNull('lc.folio_fx')
+            //->whereNull('lc.folio_fx')
             ->groupBy('liq_cx_cabeceras.instructivo', 'liq_cx_cabeceras.id', 'lc.pallet')->get();
 
         foreach ($datos as $dato) {
 
-            $items = LiquidacionesCx::where('liqcabecera_id', $dato->id)->whereNull("folio_fx")->get();
+            $items = LiquidacionesCx::where('liqcabecera_id', $dato->id)->get();
             //
             Log::info("instructivo: " . $dato->instructivo);
             foreach ($items as $item) {
@@ -1703,88 +1700,54 @@ class ReporteriaController extends Controller
                     ->where('n_variedad', $item->variedad_id)
                     ->where('n_etiqueta', $item->etiqueta_id)
                     ->where('c_calibre', $item->calibre)
-
+                    ->orderBy('folio')
                     ->get();
-                // Log::info("instructivo: " . $dato->instructivo . " Folio: " . $item->pallet . " - Variedad: " . $item->variedad_id . " - Etiqueta: " . $item->etiqueta_id . " - Calibre: " . $item->calibre . " - Resultados: " . count($resultados));
-
 
                 // Resultado final
-
+                Log::info("instructivo: " . $dato->instructivo . " Folio: " . $item->pallet . " Resultados: " . count($resultados));
                 if (count($resultados) == 1) {
                     foreach ($resultados as $res) {
                         $item->folio_fx = $res->folio;
                         $item->save();
                     }
                 } elseif (count($resultados) > 1) {
-                    $resultados = DB::connection('sqlsrv')
-                    ->table('dbo.V_PKG_Despachos')
-                    ->selectRaw('folio,
-                                n_variedad_rotulacion,
-                                c_calibre,
-                                n_etiqueta
-                            ')
-                            ->where('numero_embarque', str_replace('i', '', str_replace("I", "", $dato->instructivo)))
-                    //  ->where('n_variedad_rotulacion', $item->variedad_id)
-                    //  ->where('n_etiqueta','like', $item->etiqueta_id.'%')
-                    //  ->where('c_calibre','like',$item->calibre.'%')
-                    ->where('folio', 'like', '%' . $item->pallet)
-                    ->where('n_variedad', $item->variedad_id)
-                    ->where('n_etiqueta', $item->etiqueta_id)
-                    ->where('c_calibre', $item->calibre)
+                       $original='';
 
-                    ->get();
-                    if (count($resultados) > 0) {
-                        $i = 0;
+                       $i = 0;
 
                         foreach ($resultados as $res) {
+
                             if ($i == 0) {
+
                                 $item->folio_fx = $res->folio;
                             } else {
-                                $item->folio_fx = $item->folio_fx . "," . $res->folio;
+
+
+                                    $item->folio_fx = $item->folio_fx . "," . $res->folio;
+
                             }
                             $i++;
                         }
-                        $item->save();
-                    }
-                } else {
-                    $resultados = DB::connection('sqlsrv')
-                    ->table('dbo.V_PKG_Despachos')
-                    ->selectRaw('folio,
-                                n_variedad_rotulacion,
-                                c_calibre,
-                                n_etiqueta
-                            ')
-                            ->where('numero_embarque', str_replace('i', '', str_replace("I", "", $dato->instructivo)))
-                    //  ->where('n_variedad_rotulacion', $item->variedad_id)
-                    //  ->where('n_etiqueta','like', $item->etiqueta_id.'%')
-                    //  ->where('c_calibre','like',$item->calibre.'%')
-                    ->where('folio', 'like', '%' . $item->pallet)
-                    ->where('n_variedad', $item->variedad_id)
-                    ->where('n_etiqueta', $item->etiqueta_id)
-                    ->where('c_calibre', $item->calibre)
 
-                    ->get();
-                    if (count($resultados) > 0) {
-                        $i = 0;
+                        $array=explode(",",$item->folio_fx);
+                        $arrayUnicos = array_unique($array);
 
-                        foreach ($resultados as $res) {
-                            if ($i == 0) {
-                                $item->folio_fx = $res->folio;
-                            } else {
-                                $item->folio_fx = $item->folio_fx . "," . $res->folio;
-                            }
-                            $i++;
-                        }
+// Convertir el array de vuelta a una cadena
+                        $cadenaUnica = implode(',', $arrayUnicos);
+                        Log::info("instructivo: " . $dato->instructivo . " Folio: " . $item->pallet . " Folios: " . $item->folio_fx." Cadena entrada ".$item->folio_fx." Cadena salida ".$cadenaUnica);
+                        $item->folio_fx=$cadenaUnica;
+
                         $item->save();
                     }
                 }
+
 
                 //$liq=LiquidacionesCx::where('liqcabecera_id', $dato->id)->where('variedad_id', $item->variedad_id)->where('etiqueta_id', $item->etiqueta_id)->where('calibre', $item->calibre)->first();
 
             }
             //dd($resultados, $dato->instructivo, $item->variedad_id, $item->etiqueta_id, $item->calibre);
         }
-    }
+
 
     public function ObtieneDatosFOBxInstructivo(string $instructivo)
     {
@@ -1886,7 +1849,7 @@ class ReporteriaController extends Controller
         // ->where('embalaje','=','CEMADCAM5')
         // ->where('calibre','=','3JD');
 
-        
+
         // Function to create a grouped key from specified fields
         $createGroupKey = function ($item, $includeCliente = true) {
             $fields = ['nave', 'cliente', 'embalaje', 'etiqueta', 'variedad', 'calibre'];
@@ -1897,17 +1860,17 @@ class ReporteriaController extends Controller
                 return $item[$field];
             }, $fields));
         };
-    
+
         // Function to process grouped items
         $processGroup = function ($grupo, $includeCliente = true) {
             $totalFobUsd = round($grupo->sum('FOB_TO_USD'), 2);
             $totalKilos = round($grupo->sum('Kilos_total'), 2);
             $totalFOB_kg=round($grupo->sum('FOB_kg'), 2);
             $cantidad = $grupo->sum('Cajas');
-    
+
             $XFOBCaja = $cantidad > 0 ? $totalFobUsd / $cantidad : 0;
             $FOB_kg = $totalKilos > 0 ? $totalFobUsd / $totalKilos : 0;
-    
+
             $result = [
                 "nave" => $grupo->first()['nave'],
                 "ETA_Week" => $grupo->first()['ETA_Week'],
@@ -1922,28 +1885,28 @@ class ReporteriaController extends Controller
                 "PromedioFOBxCaja" => round($XFOBCaja, 2),
                 "FOB_kg" => $FOB_kg,
             ];
-    
+
             if ($includeCliente) {
                 $result["cliente"] = $grupo->first()['cliente'];
             }
-    
+
             return $result;
         };
-    
+
         // Grouping for 'grouped' (includes cliente)
         $grouped = collect($datos)->groupBy(function ($item) use ($createGroupKey) {
             return $createGroupKey($item, true);
         })->map(function ($grupo) use ($processGroup) {
             return $processGroup($grupo, true);
         });
-    
+
         // Grouping for 'groupedGral' (excludes cliente)
         $groupedGral = collect($datos)->groupBy(function ($item) use ($createGroupKey) {
             return $createGroupKey($item, false);
         })->map(function ($grupo) use ($processGroup) {
             return $processGroup($grupo, false);
         });
-    
+
         return response()->json([
             "data" => $datos,
             "grouped" => $grouped->values(),
@@ -2109,7 +2072,7 @@ class ReporteriaController extends Controller
                 }
                 //Variables
                 $nave = $liqCxCabecera->nave_id ? Nafe::find($liqCxCabecera->nave_id)->nombre : "";
-
+                Log::info("Instructivo FX(ConsolidadoLiquidaciones) - Ln 2075 : " . $liqCxCabecera->instructivo);
                 $Embarque = "";
                 $cliente = $liqCxCabecera->cliente->nombre_fantasia; //B
                 $nave = $nave; //C
