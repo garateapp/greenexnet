@@ -465,6 +465,7 @@ class ComexController extends Controller
                 $monto_rmb = isset($fila['Monto RMB']) ? $fila['Monto RMB'] : 0;
                 $observaciones = isset($fila['Observaciones']) ? $fila['Observaciones'] : '';
                 $liqcabecera_id = $LiqCabecera->id;
+                DB::statement('SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED');
                 $resultados = DB::connection('sqlsrv')
                     ->table('dbo.V_PKG_Embarques')
                     ->selectRaw('
@@ -487,8 +488,8 @@ class ComexController extends Controller
                             //$liq=LiquidacionesCx::where('liqcabecera_id', $dato->id)->where('variedad_id', $item->variedad_id)->where('etiqueta_id', $item->etiqueta_id)->where('calibre', $item->calibre)->first();
                             $c_embalaje=$resultados[0]->C_Embalaje;
                         }
-                        DB::statement('SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED');
-                $resultados = DB::connection('sqlsrv')
+                    DB::statement('SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED');
+                    $resultados = DB::connection('sqlsrv')
                     ->table('dbo.V_PKG_Despachos')
                     ->selectRaw('folio,
                                 n_variedad_rotulacion,
@@ -496,11 +497,11 @@ class ComexController extends Controller
                                 n_etiqueta
                             ')
                             ->where('numero_embarque', str_replace('i', '', str_replace("I", "", $instructivo)))
-                    //  ->where('n_variedad_rotulacion', $item->variedad_id)
+                    ->where('n_variedad_rotulacion', $variedad_id)
                     //  ->where('n_etiqueta','like', $item->etiqueta_id.'%')
                     //  ->where('c_calibre','like',$item->calibre.'%')
                     ->where('folio', 'like', '%' . $pallet)
-                    ->where('n_variedad', $variedad_id)
+                    //->where('n_variedad', $variedad_id)
                     ->where('n_etiqueta', $etiqueta_id)
                     ->where('c_calibre', $calibre)
                     ->orderBy('folio')

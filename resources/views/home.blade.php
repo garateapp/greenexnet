@@ -214,7 +214,7 @@
                     <div class="card-header">
                         Panel de Control
                     </div>
-                   
+
                     <div class="card-body">
                         <div class="row">
                             <div class="col-lg-6">
@@ -263,7 +263,7 @@
                                     <div class="card-body">
                                         <div class="row">
                                             <div class="col-lg-6">
-                                                <button class="btn btn-secondary" id="btn_" style="margin-bottom: 5px; width:200px; text-align: left;">
+                                                <button class="btn btn-secondary" id="btn_" style="margin-bottom: 5px; width:230px; text-align: left;">
                                                     <a href="{{ route('admin.reporteria.compartivoliquidacionescx') }}" style="color:white">
                                                         <i class="fa-fw fas fa-chart-line" aria-hidden="true"></i>
                                                         Comparativo Liquidaciones
@@ -298,7 +298,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                 </div>
                 @endcan
             </div>

@@ -101,7 +101,7 @@ return [
             'url' => env('DATABASE_URL', ''),
             'host' => env('DB_SQLSRV_HOST', '192.168.0.9'),
             'port' => env('DB_SQLSRV_PORT', '1433'),
-            'database' => env('DB_SQLSRV_DATABASE', 'FX6_Packing_Garate_Operaciones'),
+            'database' => env('DB_SQLSRV_DATABASE', 'FX6_Packing_Garate_Operaciones_251302'),
             'username' => env('DB_SQLSRV_USERNAME', 'fx'),
             'password' => env('DB_SQLSRV_PASSWORD', 'Primet3c1'),
             'charset' => 'utf8',
@@ -176,3 +176,4 @@ return [
     ],
 
 ];
+ 
