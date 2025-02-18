@@ -495,7 +495,7 @@ class ComexController extends Controller
                                 c_calibre,
                                 n_etiqueta
                             ')
-                            ->where('numero_embarque', str_replace('i', '', str_replace("I", "", $dato->instructivo)))
+                            ->where('numero_embarque', str_replace('i', '', str_replace("I", "", $instructivo)))
                     //  ->where('n_variedad_rotulacion', $item->variedad_id)
                     //  ->where('n_etiqueta','like', $item->etiqueta_id.'%')
                     //  ->where('c_calibre','like',$item->calibre.'%')
