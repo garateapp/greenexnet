@@ -1646,11 +1646,14 @@ class ReporteriaController extends Controller
             $items = LiquidacionesCx::where('liqcabecera_id', $dato->id)->get();
             foreach ($items as $item) {
                 if ($item->pallet != null && $item->pallet != "") {
-
+                    DB::statement('SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED');
                     $resultados = DB::connection('sqlsrv')->table("V_PKG_Despachos")
                         ->select('c_embalaje')
                         ->where('tipo_g_despacho', '=', 'GDP')
                         ->where('numero_embarque', str_replace('i', '', str_replace("I", "", $dato->instructivo)))
+                        ->where('n_variedad', $item->variedad_id)
+                        ->where('n_etiqueta', $item->etiqueta_id)
+                        ->where('n_calibre', $item->calibre)
                         ->where('folio',$item->pallet)
                         ->get();
 
@@ -1685,6 +1688,8 @@ class ReporteriaController extends Controller
             //
             Log::info("instructivo: " . $dato->instructivo);
             foreach ($items as $item) {
+                $retries=3;
+                DB::statement('SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED');
                 $resultados = DB::connection('sqlsrv')
                     ->table('dbo.V_PKG_Despachos')
                     ->selectRaw('folio,
