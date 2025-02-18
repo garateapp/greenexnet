@@ -1702,7 +1702,7 @@ class ReporteriaController extends Controller
                     //  ->where('n_etiqueta','like', $item->etiqueta_id.'%')
                     //  ->where('c_calibre','like',$item->calibre.'%')
                     ->where('folio', 'like', '%' . $item->pallet)
-                    ->where('n_variedad_rotulacion', $item->variedad_id)
+                    ->where('n_variedad', $item->variedad_id)
                     ->where('n_etiqueta', $item->etiqueta_id)
                     ->where('c_calibre', $item->calibre)
                     ->orderBy('folio')
