@@ -482,6 +482,7 @@ class ComexController extends Controller
                         ->groupBy('n_variedad', 'C_Embalaje', 'c_calibre', 'n_etiqueta')
                         ->get();
                 $c_embalaje='';
+
                 $folio_fx='';
                         if(count($resultados)>0){
 
