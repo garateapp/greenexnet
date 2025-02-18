@@ -481,12 +481,64 @@ class ComexController extends Controller
                         ->groupBy('n_variedad', 'C_Embalaje', 'c_calibre', 'n_etiqueta')
                         ->get();
                 $c_embalaje='';
+                $folio_fx='';
                         if(count($resultados)>0){
 
                             //$liq=LiquidacionesCx::where('liqcabecera_id', $dato->id)->where('variedad_id', $item->variedad_id)->where('etiqueta_id', $item->etiqueta_id)->where('calibre', $item->calibre)->first();
                             $c_embalaje=$resultados[0]->C_Embalaje;
                         }
+                        DB::statement('SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED');
+                $resultados = DB::connection('sqlsrv')
+                    ->table('dbo.V_PKG_Despachos')
+                    ->selectRaw('folio,
+                                n_variedad_rotulacion,
+                                c_calibre,
+                                n_etiqueta
+                            ')
+                            ->where('numero_embarque', str_replace('i', '', str_replace("I", "", $dato->instructivo)))
+                    //  ->where('n_variedad_rotulacion', $item->variedad_id)
+                    //  ->where('n_etiqueta','like', $item->etiqueta_id.'%')
+                    //  ->where('c_calibre','like',$item->calibre.'%')
+                    ->where('folio', 'like', '%' . $pallet)
+                    ->where('n_variedad', $variedad_id)
+                    ->where('n_etiqueta', $etiqueta_id)
+                    ->where('c_calibre', $calibre)
+                    ->orderBy('folio')
+                    ->get();
+                    if (count($resultados) == 1) {
+                        foreach ($resultados as $res) {
+                            $folio_fx = $res->folio;
 
+                        }
+                    } elseif (count($resultados) > 1) {
+                           $original='';
+
+                           $i = 0;
+
+                            foreach ($resultados as $res) {
+
+                                if ($i == 0) {
+
+                                    $folio_fx = $res->folio;
+                                } else {
+
+
+                                        $folio_fx = $folio_fx . "," . $res->folio;
+
+                                }
+                                $i++;
+                            }
+
+                            $array=explode(",",$folio_fx);
+                            $arrayUnicos = array_unique($array);
+
+    // Convertir el array de vuelta a una cadena
+                            $cadenaUnica = implode(',', $arrayUnicos);
+                            //Log::info("instructivo: " . $dato->instructivo . " Folio: " . $item->pallet . " Folios: " . $item->folio_fx." Cadena entrada ".$item->folio_fx." Cadena salida ".$cadenaUnica);
+                            $folio_fx=$cadenaUnica;
+
+
+                        }
                 try {
                     $result = LiquidacionesCx::create([
                         'contenedor' => $contenedor,
@@ -504,6 +556,7 @@ class ComexController extends Controller
                         'observaciones' => $observaciones,
                         'liqcabecera_id' => $liqcabecera_id,
                         'c_embalaje'=>$c_embalaje,
+                        'folio_fx'=>$folio_fx
                     ]);
                     Log::info('Datos guardados correctamente' . "----" . $result);
                 } catch (\Exception $e) {
