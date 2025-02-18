@@ -1679,7 +1679,7 @@ class ReporteriaController extends Controller
         $datos = LiqCxCabecera::join('greenexnet.liquidaciones_cxes as lc', 'lc.liqcabecera_id', '=', 'liq_cx_cabeceras.id')->select("instructivo", "liq_cx_cabeceras.id", 'lc.pallet')
             ->whereNull('liq_cx_cabeceras.deleted_at')
             ->whereNull('lc.deleted_at')
-            //->whereNull('lc.folio_fx')
+            ->whereNull('lc.folio_fx')
             ->groupBy('liq_cx_cabeceras.instructivo', 'liq_cx_cabeceras.id', 'lc.pallet')->get();
 
         foreach ($datos as $dato) {
