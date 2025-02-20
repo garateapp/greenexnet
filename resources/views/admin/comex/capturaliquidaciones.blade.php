@@ -391,7 +391,7 @@
                                         
                                     </tr>
                                     @php
-                                    if( $costo['propiedad'] =="Otros Impuestos"){
+                                    if( $costo['propiedad'] =="Otros Ingresos"){
                                         $TotalCostos =(float)$TotalCostos - (float)$costo['valor'];
                                     }
                                     else{
