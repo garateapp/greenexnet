@@ -384,13 +384,19 @@
                                 @endphp
                                 @foreach ($costos as $costo)
                                     <tr>
-
                                         <td>{{ $costo['propiedad'] }}</td>
+                                        
                                         <td>{{ number_format((float)$costo['valor']) }}</td>
                                         <td>{{ number_format((float)$costo['valor']/$tasa) }}</td>
+                                        
                                     </tr>
                                     @php
-                                    $TotalCostos =(float)$TotalCostos + (float)$costo['valor'];
+                                    if( $costo['propiedad'] =="Otros Impuestos"){
+                                        $TotalCostos =(float)$TotalCostos - (float)$costo['valor'];
+                                    }
+                                    else{
+                                        $TotalCostos =(float)$TotalCostos + (float)$costo['valor'];
+                                    }
                                     @endphp
 
                                                                    @endforeach
