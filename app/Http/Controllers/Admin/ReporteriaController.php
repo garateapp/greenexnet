@@ -1214,10 +1214,11 @@ class ReporteriaController extends Controller
                 'ed.instructivo',
                 'ed.tasa',
                 'lcc.id',
+                DB::raw('lc.cantidad*lc.embalaje_id as `Total_Kilos`'),
                 DB::raw('lc.precio_unitario * lcc.factor_imp_destino*lc.cantidad AS `factor`'),
                 DB::raw('lc.precio_unitario * lc.cantidad AS `MONTO_RMB`'), // Nueva columna
                 DB::raw('(lc.precio_unitario * lc.cantidad/ed.tasa) AS `MONTO_USD`')
-            ])
+            ])->orderBy('lcc.instructivo')
             ->get();
 
         $datosAgrupados = collect($datos)->groupBy('instructivo')->map(function ($grupo) {
@@ -1227,6 +1228,7 @@ class ReporteriaController extends Controller
                 'tasa' => $grupo->first()->tasa,
                 'id' => $grupo->first()->id, // Suponiendo que el ID es el mismo para todos
                 'factor' => $grupo->sum('factor') / $grupo->first()->tasa,
+                'total_kilos'=>$grupo->sum('Total_Kilos'),
                 'MONTO_RMB' => $grupo->sum('MONTO_RMB'),
                 'MONTO_USD' => $grupo->sum('MONTO_USD'),
 
@@ -1639,11 +1641,12 @@ class ReporteriaController extends Controller
         $datos = LiqCxCabecera::join('greenexnet.liquidaciones_cxes as lc', 'lc.liqcabecera_id', '=', 'liq_cx_cabeceras.id')->select("instructivo", "liq_cx_cabeceras.id")
             ->whereNull('liq_cx_cabeceras.deleted_at')
             ->whereNull('lc.deleted_at')
+            
             ->groupBy('liq_cx_cabeceras.instructivo', 'liq_cx_cabeceras.id')->get();
 
         foreach ($datos as $dato) {
 
-            $items = LiquidacionesCx::where('liqcabecera_id', $dato->id)->get();
+            $items = LiquidacionesCx::where('liqcabecera_id', $dato->id)->where('folio_fx', 'NOT LIKE', '%,%')->whereNotNull('folio_fx')->get();
             foreach ($items as $item) {
                 if ($item->pallet != null && $item->pallet != "") {
                     DB::statement('SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED');
@@ -1651,10 +1654,10 @@ class ReporteriaController extends Controller
                         ->select('c_embalaje')
                         ->where('tipo_g_despacho', '=', 'GDP')
                         ->where('numero_embarque', str_replace('i', '', str_replace("I", "", $dato->instructivo)))
-                        ->where('n_variedad', $item->variedad_id)
+                        ->where('n_variedad_rotulacion', $item->variedad_id)
                         ->where('n_etiqueta', $item->etiqueta_id)
                         ->where('n_calibre', $item->calibre)
-                        ->where('folio',$item->pallet)
+                        ->where('folio',$item->folio_fx)
                         ->get();
 
                     if (count($resultados) > 0) {
