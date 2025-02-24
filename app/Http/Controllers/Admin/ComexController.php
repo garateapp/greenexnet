@@ -1184,11 +1184,13 @@ class ComexController extends Controller
                     $ECCajas = 0;
                     $valor = 0;
 
-                    $items = $liqs->where('folio_fx', $despacho->folio)
-                    ->where('variedad', Str::upper($despacho->n_variedad))
-                    ->where('embalaje', Str::upper($despacho->c_embalaje))
-                    ->where('calibre', Str::upper($despacho->n_calibre))
-                    ->where('etiqueta',Str::upper($despacho->n_etiqueta));
+                    $items = $liqs->filter(fn($item) =>
+                    $item['folio_fx'] === $despacho->folio && // Comparación exacta
+                    strcasecmp($item['variedad'], $despacho->n_variedad) === 0 &&
+                    strcasecmp($item['embalaje'], $despacho->c_embalaje) === 0 &&
+                    strcasecmp($item['calibre'], $despacho->n_calibre) === 0 &&
+                    strcasecmp($item['etiqueta'], $despacho->n_etiqueta) === 0
+                );
 
                     Log::info('Folio despacho: ' . ($despacho->folio ?? 'N/A'));
 

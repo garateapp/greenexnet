@@ -16,6 +16,7 @@ class Embarque extends Model
     public $table = 'embarques';
 
     public const TEMPORADA_SELECT = [
+        '2023-2024' => '2023-2024',
         '2024-2025' => '2024-2025',
         '2025-2026' => '2025-2026',
         '2026-2027' => '2026-2027',

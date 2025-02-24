@@ -21,6 +21,11 @@ use Ramsey\Uuid\Guid\Guid;
 use Symfony\Component\HttpFoundation\Response;
 use Yajra\DataTables\Facades\DataTables;
 use Carbon\Carbon;
+use App\Libs\Liquidaciones;
+use App\Libs\Funciones_Globales;
+use DB;
+use Illuminate\Support\Str;
+
 
 class LiqCxCabeceraController extends Controller
 {
@@ -111,36 +116,37 @@ class LiqCxCabeceraController extends Controller
     public function store(StoreLiqCxCabeceraRequest $request)
     {
 
-        $liqCxCabecera =new LiqCxCabecera();//::create($request->all());
+        $liqCxCabecera = new LiqCxCabecera(); //::create($request->all());
         $liqCxCabecera->instructivo = $request->instructivo;
         $liqCxCabecera->cliente_id = $request->cliente_id;
         $liqCxCabecera->nave_id = $request->nave_id;
         $liqCxCabecera->tasa_intercambio = $request->tasa_intercambio;
         $liqCxCabecera->total_costo = $request->total_costo;
-        $liqCxCabecera->total_bruto= $request->total_bruto;
+        $liqCxCabecera->total_bruto = $request->total_bruto;
         $liqCxCabecera->total_neto = $request->total_neto;
         $liqCxCabecera->flete_exportadora = $request->flete_exportadora;
         $liqCxCabecera->tipo_transporte = $request->tipo_transporte;
         $liqCxCabecera->factor_imp_destino = $request->factor_imp_destino;
-        $liqCxCabecera->eta= $this->convertirFormatoFecha($request->eta);
+        $liqCxCabecera->eta = $this->convertirFormatoFecha($request->eta);
         $liqCxCabecera->save();
-        $excel=new ExcelDato();
+        $excel = new ExcelDato();
         $excel->fecha_arribo = $this->convertirFormatoFecha($request->eta);
         $excel->fecha_liquidacion = $this->convertirFormatoFecha($request->fecha_liquidacion);
         $excel->fecha_venta = $this->convertirFormatoFecha($request->fecha_venta);
-        $excel->archivo_id=$this->generateSimpleGuid();
-        $excel->master_id=99;
-        $excel->modulo=1;
-        $excel->cliente=$request->cliente_id; //SUNHOLA
-        $excel->nombre_archivo="Subida Manual";
-        $excel->tasa=$request->tasa_intercambio;
-        $excel->datos= json_encode(["sin datos"]);
+        $excel->archivo_id = $this->generateSimpleGuid();
+        $excel->master_id = 99;
+        $excel->modulo = 1;
+        $excel->cliente = $request->cliente_id; //SUNHOLA
+        $excel->nombre_archivo = "Subida Manual";
+        $excel->tasa = $request->tasa_intercambio;
+        $excel->datos = json_encode(["sin datos"]);
 
         $excel->save();
 
         return redirect()->route('admin.liq-cx-cabeceras.index');
     }
-    function convertirFormatoFecha(string $fecha): string {
+    function convertirFormatoFecha(string $fecha): string
+    {
         // Crear un objeto DateTime a partir de la fecha en formato d/m/Y
         $fechaObjeto = \DateTime::createFromFormat('d/m/Y', $fecha);
 
@@ -152,11 +158,12 @@ class LiqCxCabeceraController extends Controller
         // Retornar la fecha en el formato Y-m-d
         return $fechaObjeto->format('Y-m-d');
     }
-    function generateSimpleGuid(): string {
+    function generateSimpleGuid(): string
+    {
         $uniqid = uniqid(mt_rand(), true);
         return substr($uniqid, 0, 8) . '-' . substr($uniqid, 8, 4) . '-' .
-               substr($uniqid, 12, 4) . '-' . substr($uniqid, 16, 4) . '-' .
-               substr($uniqid, 20, 12);
+            substr($uniqid, 12, 4) . '-' . substr($uniqid, 16, 4) . '-' .
+            substr($uniqid, 20, 12);
     }
     public function edit(LiqCxCabecera $liqCxCabecera)
     {
@@ -181,15 +188,15 @@ class LiqCxCabeceraController extends Controller
         $liquidacion = LiquidacionesCx::find($validated['id']);
         $liquidacion->{$validated['field']} = $validated['value'];
         $liquidacion->save();
-        $liq = LiquidacionesCx::where('id','=',$validated['id'])
+        $liq = LiquidacionesCx::where('id', '=', $validated['id'])
             ->first();
 
         $total_bruto = 0;
-        
-            Log::info("liq. ".$liq);
-            //$total_bruto = $total_bruto + ((float)$l->cantidad * $l->precio_unitario);
-        
-        
+
+        Log::info("liq. " . $liq);
+        //$total_bruto = $total_bruto + ((float)$l->cantidad * $l->precio_unitario);
+
+
         // $liqCxCabecera = LiqCxCabecera::find($liq->liqcabecera_id);
         // $liqCxCabecera->total_bruto = $total_bruto;
         // $liqCxCabecera->total_neto = $total_bruto - $liqCxCabecera->total_costo;
@@ -275,7 +282,7 @@ class LiqCxCabeceraController extends Controller
         foreach ($liquidacion as $liq) {
             $liq->delete();
         }
-        $exceldato=ExcelDato::where('instructivo','=',$liqCxCabecera->instructivo)->first();
+        $exceldato = ExcelDato::where('instructivo', '=', $liqCxCabecera->instructivo)->first();
         $exceldato->delete();
 
 
@@ -300,5 +307,78 @@ class LiqCxCabeceraController extends Controller
         }
 
         return response(null, Response::HTTP_NO_CONTENT);
+    }
+    public function actualizarValorGD_Unitario(Request $request)
+    {
+
+        $id = $request->id;
+        $affectedRows = 0;
+        $resEjec = collect();
+        $liq = new Liquidaciones();
+
+        // Obtener la sesión correctamente
+        $liqs = $liq->ConsolidadoLiquidacionesUnitario($id);
+
+        // Obtener cabeceras
+        $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->where('id', $id)->get();
+
+        foreach ($liqCxCabeceras as $liqCxCabecera) {
+            try {
+                // Obtener despachos
+                $despachos = DB::connection('sqlsrv')->table("V_PKG_Despachos")
+                    ->select('folio', 'n_variedad', 'c_embalaje', 'n_calibre', 'n_etiqueta', 'id_pkg_stock_det')
+                    ->where('tipo_g_despacho', '=', 'GDP')
+                    ->where('numero_embarque', '=', str_replace('i', '', str_replace('I', '', $liqCxCabecera->instructivo)))
+                    ->get();
+
+                foreach ($despachos as $despacho) {
+                    $EFOB = 0;
+                    $ECCajas = 0;
+                    $valor = 0;
+
+                    $items = $liqs->filter(fn($item) =>
+                    $item['folio_fx'] === $despacho->folio && // Comparación exacta
+                    strcasecmp($item['variedad'], $despacho->n_variedad) === 0 &&
+                    strcasecmp($item['embalaje'], $despacho->c_embalaje) === 0 &&
+                    strcasecmp($item['calibre'], $despacho->n_calibre) === 0 &&
+                    strcasecmp($item['etiqueta'], $despacho->n_etiqueta) === 0
+                );
+
+
+
+                    Log::info('Folio despacho: ' . ($despacho->folio ?? 'N/A'));
+
+                    foreach ($items as $item) {
+                        $EFOB += $item['FOB_TO_USD'];
+                        $ECCajas += $item['Cajas'];
+                    }
+
+                    // Evitar división por cero
+                    $valor = ($ECCajas > 0) ? ($EFOB / $ECCajas) : 0;
+
+                    $resEjec->push([
+                        'folio' => $despacho->folio,
+                        'valor' => $valor,
+                    ]);
+                    try {
+                        //   dd(DB::connection('sqlsrv')->getPdo());
+                    } catch (\Exception $e) {
+                        die("Could not connect to the database.  Please check your configuration. error:" . $e);
+                    }
+                    // Realizar el UPDATE en la base de datos
+                    $affectedRows = DB::connection('sqlsrv')
+                        ->table('PKG_Stock_Det')
+                        ->where('folio', $despacho->folio)
+                        ->where('id', $despacho->id_pkg_stock_det)
+                        ->where('destruccion_tipo', 'GDP')
+                        ->update(['valor' => $valor]);
+                }
+            } catch (Exception $e) {
+                Log::error("Error al actualizar valor GD en FX: " . $e->getMessage());
+                return response()->json(['error' => $e->getMessage()], 500);
+            }
+        }
+
+        return response()->json(["message" => "Se modificaron $affectedRows registros", "data" => $affectedRows], 200);
     }
 }

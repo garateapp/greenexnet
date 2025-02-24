@@ -1059,7 +1059,7 @@
                         });
                         console.log(comparacionDatos);
                         // Actualizar el gráfico con los nuevos datos
-                        updateGraficoComparacion(comparacionDatos);
+                       // updateGraficoComparacion(comparacionDatos);
                     }
 
 
@@ -1080,54 +1080,54 @@
                     }
                     let graficoComparacionFOB = null;
 
-                    function updateGraficoComparacion(datos) {
-                        const ctx = document.getElementById("graficoComparacionFOB").getContext("2d");
+                    // function updateGraficoComparacion(datos) {
+                    //     const ctx = document.getElementById("graficoComparacionFOB").getContext("2d");
 
-                        // Eliminar instancia previa del gráfico si existe
-                        if (graficoComparacionFOB) {
-                            graficoComparacionFOB.destroy();
-                        }
+                    //     // Eliminar instancia previa del gráfico si existe
+                    //     if (graficoComparacionFOB) {
+                    //         graficoComparacionFOB.destroy();
+                    //     }
 
-                        const labels = datos.map(d => d.cliente);
-                        const data = datos.map(d => d.costoPorOportunidad);
+                    //     const labels = datos.map(d => d.cliente);
+                    //     const data = datos.map(d => d.costoPorOportunidad);
 
-                        // Colores: Cliente Principal (azul), Comparados (rojo pastel)
-                        const backgroundColors = datos.map(d => d.esPrincipal ? "rgba(54, 162, 235, 0.7)" :
-                            "rgba(255, 99, 132, 0.7)");
+                    //     // Colores: Cliente Principal (azul), Comparados (rojo pastel)
+                    //     const backgroundColors = datos.map(d => d.esPrincipal ? "rgba(54, 162, 235, 0.7)" :
+                    //         "rgba(255, 99, 132, 0.7)");
 
-                        graficoComparacionFOB = new Chart(ctx, {
-                            type: "bar",
-                            data: {
-                                labels: labels,
-                                datasets: [{
-                                    label: "Costo por Oportunidad",
-                                    data: data,
-                                    backgroundColor: backgroundColors,
-                                    borderColor: backgroundColors.map(c => c.replace("0.7",
-                                        "1")), // Más opaco en el borde
-                                    borderWidth: 1
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                scales: {
-                                    y: {
-                                        beginAtZero: true,
-                                        title: {
-                                            display: true,
-                                            text: "USD"
-                                        }
-                                    }
-                                },
-                                plugins: {
-                                    legend: {
-                                        display: false
-                                    }
-                                }
-                            }
-                        });
-                    }
+                    //     graficoComparacionFOB = new Chart(ctx, {
+                    //         type: "bar",
+                    //         data: {
+                    //             labels: labels,
+                    //             datasets: [{
+                    //                 label: "Costo por Oportunidad",
+                    //                 data: data,
+                    //                 backgroundColor: backgroundColors,
+                    //                 borderColor: backgroundColors.map(c => c.replace("0.7",
+                    //                     "1")), // Más opaco en el borde
+                    //                 borderWidth: 1
+                    //             }]
+                    //         },
+                    //         options: {
+                    //             responsive: true,
+                    //             maintainAspectRatio: false,
+                    //             scales: {
+                    //                 y: {
+                    //                     beginAtZero: true,
+                    //                     title: {
+                    //                         display: true,
+                    //                         text: "USD"
+                    //                     }
+                    //                 }
+                    //             },
+                    //             plugins: {
+                    //                 legend: {
+                    //                     display: false
+                    //                 }
+                    //             }
+                    //         }
+                    //     });
+                    // }
 
 
                     // Función para generar colores pastel para las barras

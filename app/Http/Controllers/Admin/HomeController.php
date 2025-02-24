@@ -13,8 +13,11 @@ class HomeController
     public function index()
     {
         $liqs=LiqCxCabecera::all()->count();
-        $total=DB::connection('sqlsrv')->table('dbo.PKG_Embarques')
-        ->where('numero', 'like', '2425%')->count();
+        $total=DB::connection('sqlsrv')->table('dbo.V_PKG_Embarques')
+        ->where('n_embarque', 'like', '2425%')
+        ->where('id_especie',7)
+        ->distinct('n_embarque')
+        ->count('n_embarque');
         $porCargar=$total-$liqs;
         return view('home', compact('liqs','total'));
     }

@@ -18,6 +18,9 @@
         <a href={{ route('admin.liq-cx-cabeceras.index') }} class="btn btn-success mt-3 ">
             Volver
         </a>
+        <button id="btnActualizaGD" class="btn btn-success mt-3 ">
+            Actualizar Valor FOB G. Despacho
+        </button>
         </div>
         <div class="card-body">
             <form method="POST" action="{{ route('admin.liq-cx-cabeceras.update', [$liqCxCabecera->id]) }}"
@@ -397,6 +400,21 @@
         }
     });
         $(document).ready(function() {
+
+            $("#btnActualizaGD").on('click',function(){
+                $.ajax({
+                    url: "{{ route('admin.liq-cx-cabeceras.actualizarValorGD_Unitario',[$liqCxCabecera->id]) }}",
+                    method: 'GET',
+                        // data: {
+                        //     _token: '{{ csrf_token() }}'
+                        // },
+                    success:{
+                        //alert('Datos actualizados');
+                    }
+                })
+            })
+
+
             let liqCxCabecera = '{{ $liqCxCabecera->id }}';
             let table = $('#liquidacionesTable').DataTable({
                 processing: true,
