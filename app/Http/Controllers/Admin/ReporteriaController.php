@@ -1652,8 +1652,7 @@ class ReporteriaController extends Controller
                     DB::statement('SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED');
                     $resultados = DB::connection('sqlsrv')->table("V_PKG_Despachos")
                         ->select('c_embalaje')
-                        ->where('tipo_g_despacho', '=', 'GDP')
-                        ->where('numero_embarque', str_replace('i', '', str_replace("I", "", $dato->instructivo)))
+                        //->where('tipo_g_despacho', '=', 'GDP')
                         ->where('n_variedad_rotulacion', $item->variedad_id)
                         ->where('n_etiqueta', $item->etiqueta_id)
                         ->where('n_calibre', $item->calibre)
