@@ -357,7 +357,7 @@ class LiqCxCabeceraController extends Controller
                         });
                     
                         
-                        Log::info('Elementos filtrados:', $items->toArray());
+                        Log::info('Elementos filtrados e:', $items->toArray());
                         
                    
                 
