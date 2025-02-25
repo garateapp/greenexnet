@@ -338,7 +338,7 @@ class LiqCxCabeceraController extends Controller
                     $valor = 0;
 
                     $items = $liqs->filter(function ($item) use ($despacho) {
-                        if($item['folio_fx'], $despacho->folio==$despacho->folio){
+                        if($item['folio_fx']==$despacho->folio){
                         Log::info('Comparando:', [
                             'folio_fx' => [$item['folio_fx'], $despacho->folio, $item['folio_fx'] === $despacho->folio],
                             'variedad' => [$item['variedad'], $despacho->n_variedad.Trim(), strcasecmp($item['variedad'], $despacho->n_variedad.Trim()) === 0],
