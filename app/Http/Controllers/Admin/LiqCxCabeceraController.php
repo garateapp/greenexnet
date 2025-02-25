@@ -337,7 +337,7 @@ class LiqCxCabeceraController extends Controller
                     $ECCajas = 0;
                     $valor = 0;
 
-                    $items = $liqs->filter(function ($item) use ($despacho) {
+                    
                         $items = $liqs->filter(function ($item) use ($despacho) {
                             if ($item['folio_fx'] === $despacho->folio) {
                                 Log::info('Comparando:', [
@@ -355,7 +355,7 @@ class LiqCxCabeceraController extends Controller
                                 strcasecmp($item['calibre'], trim($despacho->n_calibre)) === 0 &&
                                 strcasecmp($item['etiqueta'], trim($despacho->n_etiqueta)) === 0;
                         });
-                    });
+                    
                         
                         Log::info('Elementos filtrados:', $items->toArray());
                         
