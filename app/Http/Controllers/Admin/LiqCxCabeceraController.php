@@ -319,7 +319,7 @@ class LiqCxCabeceraController extends Controller
 
         // Obtener la sesión correctamente
         $liqs = $this->ConsolidadoLiquidacionesUnitario($id);
-        dd($liqs);
+       
         // Obtener cabeceras
         $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->where('id', $id)->get();
 
@@ -345,9 +345,12 @@ class LiqCxCabeceraController extends Controller
                     strcasecmp($item['etiqueta'], $despacho->n_etiqueta) === 0
                     
                 );
-                
+                    Log::info($item['variedad'].'='.$despacho->n_variedad);   
+                    Log::info($item['embalaje'].'='.$despacho->c_embalaje);
+                    Log::info($item['calibre'].'='.$despacho->n_calibre);
+                    Log::info($item['etiqueta'].'='.$despacho->n_etiqueta);
 
-                Log::info('item: ' . json_encode($item));
+                    Log::info('item: ' . json_encode($items));
                     
                     
                     foreach ($items as $item) {
