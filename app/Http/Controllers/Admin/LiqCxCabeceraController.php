@@ -588,6 +588,7 @@ class LiqCxCabeceraController extends Controller
                 $CNY = 'PRE'; //BY
                 $Pais = 'CHINA'; //BZ
                 $c_embalaje = $item->c_embalaje;
+                $folio_fx=$item->folio_fx;
 
                 //$embalaje_dato_origen'=>$item->embalaje_id, //CI
 
