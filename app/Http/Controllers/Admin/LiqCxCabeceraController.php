@@ -319,7 +319,7 @@ class LiqCxCabeceraController extends Controller
 
         // Obtener la sesión correctamente
         $liqs = $this->ConsolidadoLiquidacionesUnitario($id);
-        //dd($liqs);
+        dd($liqs);
         // Obtener cabeceras
         $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->where('id', $id)->get();
 
@@ -343,11 +343,12 @@ class LiqCxCabeceraController extends Controller
                     strcasecmp($item['embalaje'], $despacho->c_embalaje) === 0 &&
                     strcasecmp($item['calibre'], $despacho->n_calibre) === 0 &&
                     strcasecmp($item['etiqueta'], $despacho->n_etiqueta) === 0
+                    
                 );
+                
 
-
-
-                    Log::info('Folio despacho: ' . ($despacho->folio ?? 'N/A'));
+                Log::info('item: ' . json_encode($item));
+                    
                     
                     foreach ($items as $item) {
                         $EFOB += $item['FOB_TO_USD'];
