@@ -1654,7 +1654,7 @@ class ReporteriaController extends Controller
                         ->select('c_embalaje')
                         //->where('tipo_g_despacho', '=', 'GDP')
                         ->whereRaw('UPPER(n_variedad_rotulacion) = ?', [Str::upper($item->variedad_id)])
-                        ->whereRaw('UPPER(n_etiqueta)=?,', [Str::upper($item->etiqueta_id)])
+                        ->whereRaw('UPPER(n_etiqueta)=?', [Str::upper($item->etiqueta_id)])
                         ->where('n_calibre', $item->calibre)
                         ->where('folio',$item->folio_fx)
                         ->get();
