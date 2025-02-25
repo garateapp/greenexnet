@@ -337,18 +337,26 @@ class LiqCxCabeceraController extends Controller
                     $ECCajas = 0;
                     $valor = 0;
 
-                    $items = $liqs->filter(fn($item) =>
-                    $item['folio_fx'] === $despacho->folio && // Comparación exacta
-                    strcasecmp($item['variedad'], $despacho->n_variedad) === 0 &&
-                    strcasecmp($item['embalaje'], $despacho->c_embalaje) === 0 &&
-                    strcasecmp($item['calibre'], $despacho->n_calibre) === 0 &&
-                    strcasecmp($item['etiqueta'], $despacho->n_etiqueta) === 0
+                    $items = $liqs->filter(function ($item) use ($despacho) {
+                        Log::info('Comparando:', [
+                            'folio_fx' => [$item['folio_fx'], $despacho->folio, $item['folio_fx'] === $despacho->folio],
+                            'variedad' => [$item['variedad'], $despacho->n_variedad, strcasecmp($item['variedad'], $despacho->n_variedad) === 0],
+                            'embalaje' => [$item['embalaje'], $despacho->c_embalaje, strcasecmp($item['embalaje'], $despacho->c_embalaje) === 0],
+                            'calibre' => [$item['calibre'], $despacho->n_calibre, strcasecmp($item['calibre'], $despacho->n_calibre) === 0],
+                            'etiqueta' => [$item['etiqueta'], $despacho->n_etiqueta, strcasecmp($item['etiqueta'], $despacho->n_etiqueta) === 0],
+                        ]);
                     
-                );
-                    Log::info($item['variedad'].'='.$despacho->n_variedad);   
-                    Log::info($item['embalaje'].'='.$despacho->c_embalaje);
-                    Log::info($item['calibre'].'='.$despacho->n_calibre);
-                    Log::info($item['etiqueta'].'='.$despacho->n_etiqueta);
+                        return $item['folio_fx'] === $despacho->folio &&
+                            strcasecmp($item['variedad'], $despacho->n_variedad) === 0 &&
+                            strcasecmp($item['embalaje'], $despacho->c_embalaje) === 0 &&
+                            strcasecmp($item['calibre'], $despacho->n_calibre) === 0 &&
+                            strcasecmp($item['etiqueta'], $despacho->n_etiqueta) === 0;
+                    });
+                    
+                    Log::info('Elementos filtrados:', $items->toArray());
+                   
+                
+                    
 
                     Log::info('item: ' . json_encode($items));
                     
