@@ -338,24 +338,26 @@ class LiqCxCabeceraController extends Controller
                     $valor = 0;
 
                     $items = $liqs->filter(function ($item) use ($despacho) {
-                        if($item['folio_fx']==$despacho->folio){
-                        Log::info('Comparando:', [
-                            'folio_fx' => [$item['folio_fx'], $despacho->folio, $item['folio_fx'] === $despacho->folio],
-                            'variedad' => [$item['variedad'], $despacho->n_variedad.Trim(), strcasecmp($item['variedad'], $despacho->n_variedad.Trim()) === 0],
-                            'embalaje' => [$item['embalaje'], $despacho->c_embalaje, strcasecmp($item['embalaje'], $despacho->c_embalaje.Trim()) === 0],
-                            'calibre' => [$item['calibre'], $despacho->n_calibre, strcasecmp($item['calibre'], $despacho->n_calibre.Trim()) === 0],
-                            'etiqueta' => [$item['etiqueta'], $despacho->n_etiqueta, strcasecmp($item['etiqueta'], $despacho->n_etiqueta.Trim()) === 0],
-                        ]);
-                    }
-                    
-                        return $item['folio_fx'] === $despacho->folio &&
-                            strcasecmp($item['variedad'], $despacho->n_variedad.Trim()) === 0 &&
-                            strcasecmp($item['embalaje'], $despacho->c_embalaje.Trim()) === 0 &&
-                            strcasecmp($item['calibre'], $despacho->n_calibre.Trim()) === 0 &&
-                            strcasecmp($item['etiqueta'], $despacho->n_etiqueta.Trim()) === 0;
-                    });
-                    
-                    Log::info('Elementos filtrados:', $items->toArray());
+                        $items = $liqs->filter(function ($item) use ($despacho) {
+                            if ($item['folio_fx'] === $despacho->folio) {
+                                Log::info('Comparando:', [
+                                    'folio_fx' => [$item['folio_fx'], $despacho->folio, $item['folio_fx'] === $despacho->folio],
+                                    'variedad' => [$item['variedad'], trim($despacho->n_variedad), strcasecmp($item['variedad'], trim($despacho->n_variedad)) === 0],
+                                    'embalaje' => [$item['embalaje'], trim($despacho->c_embalaje), strcasecmp($item['embalaje'], trim($despacho->c_embalaje)) === 0],
+                                    'calibre' => [$item['calibre'], trim($despacho->n_calibre), strcasecmp($item['calibre'], trim($despacho->n_calibre)) === 0],
+                                    'etiqueta' => [$item['etiqueta'], trim($despacho->n_etiqueta), strcasecmp($item['etiqueta'], trim($despacho->n_etiqueta)) === 0],
+                                ]);
+                            }
+                        
+                            return $item['folio_fx'] === $despacho->folio &&
+                                strcasecmp($item['variedad'], trim($despacho->n_variedad)) === 0 &&
+                                strcasecmp($item['embalaje'], trim($despacho->c_embalaje)) === 0 &&
+                                strcasecmp($item['calibre'], trim($despacho->n_calibre)) === 0 &&
+                                strcasecmp($item['etiqueta'], trim($despacho->n_etiqueta)) === 0;
+                        });
+                        
+                        Log::info('Elementos filtrados:', $items->toArray());
+                        
                    
                 
                     
