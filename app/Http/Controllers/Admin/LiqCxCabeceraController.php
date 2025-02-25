@@ -348,10 +348,11 @@ class LiqCxCabeceraController extends Controller
 
 
                     Log::info('Folio despacho: ' . ($despacho->folio ?? 'N/A'));
-
+                    
                     foreach ($items as $item) {
                         $EFOB += $item['FOB_TO_USD'];
                         $ECCajas += $item['Cajas'];
+                        Log::info('Folio '.$item['folio_fx'].' EFOB: ' . $EFOB);
                     }
 
                     // Evitar división por cero
