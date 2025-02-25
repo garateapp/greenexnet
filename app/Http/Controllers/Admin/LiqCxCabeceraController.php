@@ -355,6 +355,7 @@ class LiqCxCabeceraController extends Controller
                                 strcasecmp($item['calibre'], trim($despacho->n_calibre)) === 0 &&
                                 strcasecmp($item['etiqueta'], trim($despacho->n_etiqueta)) === 0;
                         });
+                    });
                         
                         Log::info('Elementos filtrados:', $items->toArray());
                         
