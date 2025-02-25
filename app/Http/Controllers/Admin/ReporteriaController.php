@@ -1646,7 +1646,7 @@ class ReporteriaController extends Controller
 
         // foreach ($datos as $dato) {
 
-            $items = LiquidacionesCx::where('folio_fx', 'NOT LIKE', '%,%')->whereNotNull('folio_fx')->whereNotNull('c_embalaje')->get();
+            $items = LiquidacionesCx::where('folio_fx', 'NOT LIKE', '%,%')->whereNotNull('folio_fx')->whereNull('c_embalaje')->get();
             foreach ($items as $item) {
                 if ($item->pallet != null && $item->pallet != "") {
                     DB::statement('SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED');
