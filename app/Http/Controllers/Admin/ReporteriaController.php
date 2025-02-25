@@ -20,7 +20,7 @@ use App\Models\Costo;
 use App\Models\ExcelDato;
 use App\Models\Diccionario;
 use App\Models\Nafe;
-
+use Illuminate\Support\Str;
 use Log;
 use Carbon\Carbon;
 use App\Models\MetasClienteComex;
@@ -1653,8 +1653,8 @@ class ReporteriaController extends Controller
                     $resultados = DB::connection('sqlsrv')->table("V_PKG_Despachos")
                         ->select('c_embalaje')
                         //->where('tipo_g_despacho', '=', 'GDP')
-                        ->where('n_variedad_rotulacion', $item->variedad_id)
-                        ->where('n_etiqueta', $item->etiqueta_id)
+                        ->whereRaw('UPPER(n_variedad_rotulacion) = ?', [Str::upper($item->variedad_id)])
+                        ->whereRaw('UPPER(n_etiqueta)=?,', [Str::upper($item->etiqueta_id)])
                         ->where('n_calibre', $item->calibre)
                         ->where('folio',$item->folio_fx)
                         ->get();
