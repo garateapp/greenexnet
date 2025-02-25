@@ -10,17 +10,26 @@
             {{ session('error') }}
         </div>
     @endif
+
+    <div class="alert alert-success" id="msgOK" style="display:none;">
+
+    </div>
+
+    <div class="alert alert-danger" id="msgKO" style="display:none;">
+
+    </div>
+
     <div class="card">
         <div class="card-header">
             {{ trans('global.edit') }} {{ trans('cruds.liqCxCabecera.title_singular') }}
         </div>
         <div class="col-md-6">
-        <a href={{ route('admin.liq-cx-cabeceras.index') }} class="btn btn-success mt-3 ">
-            Volver
-        </a>
-        <button id="btnActualizaGD" class="btn btn-success mt-3 ">
-            Actualizar Valor FOB G. Despacho
-        </button>
+            <a href={{ route('admin.liq-cx-cabeceras.index') }} class="btn btn-success mt-3 ">
+                Volver
+            </a>
+            <button id="btnActualizaGD" class="btn btn-success mt-3 ">
+                Actualizar Valor FOB G. Despacho
+            </button>
         </div>
         <div class="card-body">
             <form method="POST" action="{{ route('admin.liq-cx-cabeceras.update', [$liqCxCabecera->id]) }}"
@@ -85,18 +94,21 @@
                         </div>
                         <div class="form-group">
                             <label class="">Flete EXportadora</label>
-                            <input class="form-control {{ $errors->has('flete_exportadora') ? 'is-invalid' : '' }}" type="text" name="flete_exportadora" id="flete_exportadora"
-                            value="{{ old('flete_exportadora', $liqCxCabecera->flete_exportadora) }}"/>
+                            <input class="form-control {{ $errors->has('flete_exportadora') ? 'is-invalid' : '' }}"
+                                type="text" name="flete_exportadora" id="flete_exportadora"
+                                value="{{ old('flete_exportadora', $liqCxCabecera->flete_exportadora) }}" />
                             @if ($errors->has('flete_exportadora'))
-                            <div class="invalid-feedback">{{ $errors->first('flete_exportadora') }}</div>
+                                <div class="invalid-feedback">{{ $errors->first('flete_exportadora') }}</div>
                             @endif
                             <span class="help-block"></span>
                         </div>
                         <div class="form-group">
                             <label class="">Factor Imp Destino</label>
-                            <input class="form-control {{ $errors->has('factor_imp_destino') ? 'is-invalid' : '' }}" type="text" name="factor_imp_destino" id="factor_imp_destino" required value="{{ old('factor_imp_destino', $liqCxCabecera->factor_imp_destino) }}"/>
+                            <input class="form-control {{ $errors->has('factor_imp_destino') ? 'is-invalid' : '' }}"
+                                type="text" name="factor_imp_destino" id="factor_imp_destino" required
+                                value="{{ old('factor_imp_destino', $liqCxCabecera->factor_imp_destino) }}" />
                             @if ($errors->has('factor_imp_destino'))
-                            <div class="invalid-feedback">{{ $errors->first('factor_imp_destino') }}</div>
+                                <div class="invalid-feedback">{{ $errors->first('factor_imp_destino') }}</div>
                             @endif
                             <span class="help-block"></span>
                         </div>
@@ -127,7 +139,7 @@
                                 for="total_costo">{{ trans('cruds.liqCxCabecera.fields.total_costo') }}</label>
                             <input class="form-control {{ $errors->has('total_costo') ? 'is-invalid' : '' }}"
                                 type="number" name="total_costo" id="total_costo"
-                                value="{{ old('total_costo', $liqCxCabecera->total_costo) }}" step="0.01" >
+                                value="{{ old('total_costo', $liqCxCabecera->total_costo) }}" step="0.01">
                             @if ($errors->has('total_costo'))
                                 <div class="invalid-feedback">{{ $errors->first('total_costo') }}</div>
                             @endif
@@ -148,9 +160,9 @@
                         <div class="form-group">
                             <label class=""
                                 for="total_neto">{{ trans('cruds.liqCxCabecera.fields.total_neto') }}</label>
-                            <input class="form-control {{ $errors->has('total_neto') ? 'is-invalid' : '' }}" type="number"
-                                name="total_neto" id="total_neto"
-                                value="{{ old('total_neto', $liqCxCabecera->total_neto) }}" step="0.01" >
+                            <input class="form-control {{ $errors->has('total_neto') ? 'is-invalid' : '' }}"
+                                type="number" name="total_neto" id="total_neto"
+                                value="{{ old('total_neto', $liqCxCabecera->total_neto) }}" step="0.01">
                             @if ($errors->has('total_neto'))
                                 <div class="invalid-feedback">{{ $errors->first('total_neto') }}</div>
                             @endif
@@ -159,20 +171,27 @@
 
                         <div class="form-group">
                             <label class="">Tipo Transporte</label>
-                            <select class="form-control {{ $errors->has('tipo_transporte') ? 'is-invalid' : '' }}" name="tipo_transporte" id="tipo_transporte">
+                            <select class="form-control {{ $errors->has('tipo_transporte') ? 'is-invalid' : '' }}"
+                                name="tipo_transporte" id="tipo_transporte">
                                 <option value="">Seleccione...</option>
-                                <option value="A" {{ $liqCxCabecera->tipo_transporte=='A'?'selected':'' }}>Aereo</option>
-                                <option value="M" {{ $liqCxCabecera->tipo_transporte=='M'?'selected':'' }}>Maritimo</option>
-                                <option value="T" {{ $liqCxCabecera->tipo_transporte=='T'?'selected':'' }}>Terrestre</option>
+                                <option value="A" {{ $liqCxCabecera->tipo_transporte == 'A' ? 'selected' : '' }}>
+                                    Aereo
+                                </option>
+                                <option value="M" {{ $liqCxCabecera->tipo_transporte == 'M' ? 'selected' : '' }}>
+                                    Maritimo
+                                </option>
+                                <option value="T" {{ $liqCxCabecera->tipo_transporte == 'T' ? 'selected' : '' }}>
+                                    Terrestre
+                                </option>
                             </select>
                         </div>
-                </div>
+                    </div>
 
-                <div class="form-group mt-3">
-                    <button class="btn btn-danger" type="submit">
-                        {{ trans('global.save') }}
-                    </button>
-                </div>
+                    <div class="form-group mt-3">
+                        <button class="btn btn-danger" type="submit">
+                            {{ trans('global.save') }}
+                        </button>
+                    </div>
             </form>
 
         </div>
@@ -390,29 +409,40 @@
 
 
     <script>
-        document.getElementById('factor_imp_destino').addEventListener('input', function (event) {
-        // Reemplazar comas con puntos
-        this.value = this.value.replace(',', '.');
+        document.getElementById('factor_imp_destino').addEventListener('input', function(event) {
+            // Reemplazar comas con puntos
+            this.value = this.value.replace(',', '.');
 
-        // Opcional: Validar que la entrada sea un número válido
-        if (isNaN(this.value)) {
-            this.value = this.value.slice(0, -1); // Remover el último carácter no válido
-        }
-    });
+            // Opcional: Validar que la entrada sea un número válido
+            if (isNaN(this.value)) {
+                this.value = this.value.slice(0, -1); // Remover el último carácter no válido
+            }
+        });
         $(document).ready(function() {
 
-            $("#btnActualizaGD").on('click',function(){
+            $("#btnActualizaGD").on("click", function(event) {
+                event.preventDefault(); // Evita recarga si el botón está dentro de un formulario
+
+                let btn = $(this); // Guardamos referencia al botón
+                btn.prop("disabled", true); // Deshabilitamos el botón
+
+                $("#msgOK, #msgKO").hide(); // Ocultamos mensajes previos
+
                 $.ajax({
-                    url: "{{ route('admin.liq-cx-cabeceras.actualizarValorGD_Unitario',[$liqCxCabecera->id]) }}",
-                    method: 'GET',
-                        // data: {
-                        //     _token: '{{ csrf_token() }}'
-                        // },
-                    success:{
-                        //alert('Datos actualizados');
+                    url: "{{ route('admin.liq-cx-cabeceras.actualizarValorGD_Unitario', [$liqCxCabecera->id]) }}",
+                    method: "GET",
+                    success: function(response) {
+                        $("#msgOK").html("Datos actualizados correctamente!!").show();
+                    },
+                    error: function() {
+                        $("#msgKO").html("Error al actualizar los datos!!").show();
+                    },
+                    complete: function() {
+                        btn.prop("disabled",
+                        false); // Volvemos a habilitar el botón al finalizar la petición
                     }
-                })
-            })
+                });
+            });
 
 
             let liqCxCabecera = '{{ $liqCxCabecera->id }}';
