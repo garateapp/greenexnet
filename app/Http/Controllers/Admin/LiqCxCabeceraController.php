@@ -319,7 +319,7 @@ class LiqCxCabeceraController extends Controller
 
         // Obtener la sesión correctamente
         $liqs = $this->ConsolidadoLiquidacionesUnitario($id);
-
+        dd($liqs);
         // Obtener cabeceras
         $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->where('id', $id)->get();
 
