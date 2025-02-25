@@ -1638,15 +1638,15 @@ class ReporteriaController extends Controller
         // $datos = $liq->ConsolidadoLiquidaciones();
         // return response()->json($datos);
         $resultado=collect();
-        $datos = LiqCxCabecera::join('greenexnet.liquidaciones_cxes as lc', 'lc.liqcabecera_id', '=', 'liq_cx_cabeceras.id')->select("instructivo", "liq_cx_cabeceras.id")
-            ->whereNull('liq_cx_cabeceras.deleted_at')
-            ->whereNull('lc.deleted_at')
+        // $datos = LiqCxCabecera::join('greenexnet.liquidaciones_cxes as lc', 'lc.liqcabecera_id', '=', 'liq_cx_cabeceras.id')->select("instructivo", "liq_cx_cabeceras.id")
+        //     ->whereNull('liq_cx_cabeceras.deleted_at')
+        //     ->whereNull('lc.deleted_at')
             
-            ->groupBy('liq_cx_cabeceras.instructivo', 'liq_cx_cabeceras.id')->get();
+        //     ->groupBy('liq_cx_cabeceras.instructivo', 'liq_cx_cabeceras.id')->get();
 
-        foreach ($datos as $dato) {
+        // foreach ($datos as $dato) {
 
-            $items = LiquidacionesCx::where('liqcabecera_id', $dato->id)->where('folio_fx', 'NOT LIKE', '%,%')->whereNotNull('folio_fx')->get();
+            $items = LiquidacionesCx::where('folio_fx', 'NOT LIKE', '%,%')->whereNotNull('folio_fx')->whereNotNull('c_embalaje')->get();
             foreach ($items as $item) {
                 if ($item->pallet != null && $item->pallet != "") {
                     DB::statement('SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED');
@@ -1670,7 +1670,7 @@ class ReporteriaController extends Controller
                 }
                 //dd($resultados, $dato->instructivo, $item->variedad_id, $item->etiqueta_id, $item->calibre);
             }
-        }
+        //}
         return response()->json($resultado);
     }
     public function obtieneFolio()
