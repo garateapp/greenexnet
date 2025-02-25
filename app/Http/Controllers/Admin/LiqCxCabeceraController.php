@@ -319,7 +319,7 @@ class LiqCxCabeceraController extends Controller
 
         // Obtener la sesión correctamente
         $liqs = $this->ConsolidadoLiquidacionesUnitario($id);
-        dd($liqs);
+        //dd($liqs);
         // Obtener cabeceras
         $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->where('id', $id)->get();
 
@@ -515,7 +515,7 @@ class LiqCxCabeceraController extends Controller
                 $Fecha_Venta = $item->fecha_venta ? Carbon::parse($item->fecha_venta) : 0; //L
                 $Fecha_Venta_Week = ($excelDato->fecha_venta ? Carbon::parse($excelDato->fecha_venta)->weekOfYear : 0); //M
                 $Fecha_Liquidación = $excelDato->fecha_liquidacion; //N
-                $Pallet = $item->pallet; //O
+                $Pallet = $item->folio_fx; //O
                 $Peso_neto = (float)(str_replace(',', '.', $fg->traducedatos($item->embalaje_id, 'Embalaje')));  //P
                 $Kilos_total = $Peso_neto * $item->cantidad; //Q
                 $embalaje = $fg->traducedatos($item->embalaje_id, 'Embalaje'); //R
