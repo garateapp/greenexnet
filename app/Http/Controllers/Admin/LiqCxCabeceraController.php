@@ -339,9 +339,13 @@ class LiqCxCabeceraController extends Controller
 
 
                         $items = $liqs->filter(function ($item) use ($despacho) {
-                            if ($item['folio_fx'] === $despacho->folio) {
+                            $folios = array_map('trim', explode(',', $item['folio_fx']));
+
+                            // Verificamos si el folio del despacho está en la lista
+                            $folioMatch = in_array($despacho->folio, $folios);
+                            if ($item['folio_fx'] === $despacho->folio || $folioMatch) {
                                 Log::info('Comparando:', [
-                                    'folio_fx' => [$item['folio_fx'], $despacho->folio, $item['folio_fx'] === $despacho->folio],
+                                    'folio_fx' => [$item['folio_fx'], $despacho->folio, $folioMatch],
                                     'variedad' => [$item['variedad'], trim($despacho->n_variedad_rotulacion), strcasecmp($item['variedad'], trim($despacho->n_variedad_rotulacion)) === 0],
                                     'embalaje' => [$item['embalaje'], trim($despacho->c_embalaje), strcasecmp($item['embalaje'], trim($despacho->c_embalaje)) === 0],
                                     'calibre' => [$item['calibre'], trim($despacho->n_calibre), strcasecmp($item['calibre'], trim($despacho->n_calibre)) === 0],
@@ -349,7 +353,7 @@ class LiqCxCabeceraController extends Controller
                                 ]);
                             }
 
-                            return $item['folio_fx'] === $despacho->folio &&
+                            return $folioMatch &&
                                 strcasecmp($item['variedad'], trim($despacho->n_variedad_rotulacion)) === 0 &&
                                 strcasecmp($item['embalaje'], trim($despacho->c_embalaje)) === 0 &&
                                 strcasecmp($item['calibre'], trim($despacho->n_calibre)) === 0 &&

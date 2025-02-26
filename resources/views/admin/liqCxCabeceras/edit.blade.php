@@ -439,7 +439,7 @@
                     },
                     complete: function() {
                         btn.prop("disabled",
-                        false); // Volvemos a habilitar el botón al finalizar la petición
+                            false); // Volvemos a habilitar el botón al finalizar la petición
                     }
                 });
             });
@@ -588,7 +588,11 @@
                             return `<span class="no-editable" data-id="${row.id}" data-field="${field}">${data}</span>`;
                         }
                         // Para el resto de los campos, se mantiene como input normal
-                        return `<span class="editable" data-id="${row.id}" data-field="${field}">${data}</span>`;
+                        if (data == "") {
+                            return `<span class="no-editable" data-id="${row.id}" data-field="${field}">S/I</span>`;
+                        } else {
+                            return `<span class="editable" data-id="${row.id}" data-field="${field}">${data}</span>`;
+                        }
                     }
 
                     return data;
