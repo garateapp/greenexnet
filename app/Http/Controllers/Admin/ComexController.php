@@ -1150,7 +1150,7 @@ class ComexController extends Controller
     }
     public function actualizarValorGD_en_fx()
     {
-       
+
         $affectedRows = 0;
         $resEjec = collect();
 
@@ -1160,7 +1160,7 @@ class ComexController extends Controller
             //     $liqs = session('liqs');
             // } else {
             $liqs = $this->ConsolidadoLiquidaciones();
-            
+
             //session(['liqs' => $liqs]);
             //}
             //dd($liqs);
@@ -1169,7 +1169,7 @@ class ComexController extends Controller
 
             $liqs = $this->ConsolidadoLiquidaciones();
             session(['liqs' => $liqs]);
-            
+
             $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->get();
 
             foreach ($liqCxCabeceras as $liqCxCabecera) {
@@ -1178,6 +1178,7 @@ class ComexController extends Controller
                         ->select('folio', 'n_variedad', 'c_embalaje', 'n_calibre', 'n_etiqueta', 'id_pkg_stock_det')
                         ->where('tipo_g_despacho', '=', 'GDP')
                         ->where('numero_embarque', '=', str_replace('i', '', str_replace('I', '', '' . $liqCxCabecera->instructivo)))
+                        //->where('valor_unitario', '=', 0)
                         ->get();
 
 
@@ -1190,7 +1191,7 @@ class ComexController extends Controller
                             if ($item['folio_fx'] === $despacho->folio) {
                                 Log::info('Comparando:', [
                                     'folio_fx' => [$item['folio_fx'], $despacho->folio, $item['folio_fx'] === $despacho->folio],
-                                    'variedad' => [$item['variedad'], trim($despacho->n_variedad), strcasecmp($item['variedad'], trim($despacho->n_variedad)) === 0],
+                                    'variedad' => [$item['variedad'], trim($despacho->n_variedad_rotulacion), strcasecmp($item['variedad'], trim($despacho->n_variedad_rotulacion)) === 0],
                                     'embalaje' => [$item['embalaje'], trim($despacho->c_embalaje), strcasecmp($item['embalaje'], trim($despacho->c_embalaje)) === 0],
                                     'calibre' => [$item['calibre'], trim($despacho->n_calibre), strcasecmp($item['calibre'], trim($despacho->n_calibre)) === 0],
                                     'etiqueta' => [$item['etiqueta'], trim($despacho->n_etiqueta), strcasecmp($item['etiqueta'], trim($despacho->n_etiqueta)) === 0],
@@ -1198,7 +1199,7 @@ class ComexController extends Controller
                             }
 
                             return $item['folio_fx'] === $despacho->folio &&
-                                strcasecmp($item['variedad'], trim($despacho->n_variedad)) === 0 &&
+                                strcasecmp($item['variedad'], trim($despacho->n_variedad_rotulacion)) === 0 &&
                                 strcasecmp($item['embalaje'], trim($despacho->c_embalaje)) === 0 &&
                                 strcasecmp($item['calibre'], trim($despacho->n_calibre)) === 0 &&
                                 strcasecmp($item['etiqueta'], trim($despacho->n_etiqueta)) === 0;
@@ -1222,15 +1223,15 @@ class ComexController extends Controller
                                 'folio' => $despacho->folio,
                                 'valor' => $valor,
                             ]);
-                     
-                        
+
+
                     }
                 } catch (Exception $e) {
                     Log::error("Error al actualizar valor GD en FX: " . $e->getMessage());
                     return response()->json(['error' => $e->getMessage()], 500);
                 }
             }
-    
+
             return response()->json(["message" => "Se modificaron $affectedRows registros", "data" => $affectedRows], 200);
     }
 
@@ -1268,7 +1269,7 @@ class ComexController extends Controller
             $tipo_transporte = $liqCxCabecera->tipo_transporte;
             $factor_imp_destino = $liqCxCabecera->factor_imp_destino;
             $detalle = LiquidacionesCx::where('liqcabecera_id', $liqCxCabecera->id)->whereNull('deleted_at')->where('folio_fx', 'not like', '%,%')->whereNotNull('folio_fx')->get();
-            
+
             $excelDato = ExcelDato::where('instructivo', $liqCxCabecera->instructivo)->first();
             //Log::info("Instructivo: " . $liqCxCabecera->instructivo);
             $nombre_costo = Costo::pluck('nombre'); // Extraer solo los nombres de costos
@@ -1338,7 +1339,7 @@ class ComexController extends Controller
                 }
                 //Variables
                 $nave = $liqCxCabecera->nave_id ? Nafe::find($liqCxCabecera->nave_id)->nombre : "";
-             
+
                 $Embarque = "";
                 $cliente = $liqCxCabecera->cliente->nombre_fantasia; //B
                 $nave = $nave; //C

@@ -319,7 +319,7 @@ class LiqCxCabeceraController extends Controller
 
         // Obtener la sesión correctamente
         $liqs = $this->ConsolidadoLiquidacionesUnitario($id);
-       
+
         // Obtener cabeceras
         $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->where('id', $id)->get();
 
@@ -327,7 +327,7 @@ class LiqCxCabeceraController extends Controller
             try {
                 // Obtener despachos
                 $despachos = DB::connection('sqlsrv')->table("V_PKG_Despachos")
-                    ->select('folio', 'n_variedad', 'c_embalaje', 'n_calibre', 'n_etiqueta', 'id_pkg_stock_det')
+                    ->select('folio', 'n_variedad_rotulacion', 'c_embalaje', 'n_calibre', 'n_etiqueta', 'id_pkg_stock_det')
                     ->where('tipo_g_despacho', '=', 'GDP')
                     ->where('numero_embarque', '=', str_replace('i', '', str_replace('I', '', $liqCxCabecera->instructivo)))
                     ->get();
@@ -337,35 +337,35 @@ class LiqCxCabeceraController extends Controller
                     $ECCajas = 0;
                     $valor = 0;
 
-                    
+
                         $items = $liqs->filter(function ($item) use ($despacho) {
                             if ($item['folio_fx'] === $despacho->folio) {
                                 Log::info('Comparando:', [
                                     'folio_fx' => [$item['folio_fx'], $despacho->folio, $item['folio_fx'] === $despacho->folio],
-                                    'variedad' => [$item['variedad'], trim($despacho->n_variedad), strcasecmp($item['variedad'], trim($despacho->n_variedad)) === 0],
+                                    'variedad' => [$item['variedad'], trim($despacho->n_variedad_rotulacion), strcasecmp($item['variedad'], trim($despacho->n_variedad_rotulacion)) === 0],
                                     'embalaje' => [$item['embalaje'], trim($despacho->c_embalaje), strcasecmp($item['embalaje'], trim($despacho->c_embalaje)) === 0],
                                     'calibre' => [$item['calibre'], trim($despacho->n_calibre), strcasecmp($item['calibre'], trim($despacho->n_calibre)) === 0],
                                     'etiqueta' => [$item['etiqueta'], trim($despacho->n_etiqueta), strcasecmp($item['etiqueta'], trim($despacho->n_etiqueta)) === 0],
                                 ]);
                             }
-                        
+
                             return $item['folio_fx'] === $despacho->folio &&
-                                strcasecmp($item['variedad'], trim($despacho->n_variedad)) === 0 &&
+                                strcasecmp($item['variedad'], trim($despacho->n_variedad_rotulacion)) === 0 &&
                                 strcasecmp($item['embalaje'], trim($despacho->c_embalaje)) === 0 &&
                                 strcasecmp($item['calibre'], trim($despacho->n_calibre)) === 0 &&
                                 strcasecmp($item['etiqueta'], trim($despacho->n_etiqueta)) === 0;
                         });
-                    
-                        
+
+
                         Log::info('Elementos filtrados e:', $items->toArray());
-                        
-                   
-                
-                    
+
+
+
+
 
                     Log::info('item: ' . json_encode($items));
-                    
-                    
+
+
                     foreach ($items as $item) {
                         $EFOB += $item['FOB_TO_USD'];
                         $ECCajas += $item['Cajas'];
