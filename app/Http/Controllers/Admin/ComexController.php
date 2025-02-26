@@ -1175,7 +1175,7 @@ class ComexController extends Controller
             foreach ($liqCxCabeceras as $liqCxCabecera) {
                 try {
                     $despachos = DB::connection('sqlsrv')->table("V_PKG_Despachos")
-                        ->select('folio', 'n_variedad', 'c_embalaje', 'n_calibre', 'n_etiqueta', 'id_pkg_stock_det')
+                        ->select('folio', 'n_variedad_rotulacion', 'c_embalaje', 'n_calibre', 'n_etiqueta', 'id_pkg_stock_det')
                         ->where('tipo_g_despacho', '=', 'GDP')
                         ->where('numero_embarque', '=', str_replace('i', '', str_replace('I', '', '' . $liqCxCabecera->instructivo)))
                         //->where('valor_unitario', '=', 0)
