@@ -589,7 +589,7 @@
                         }
                         // Para el resto de los campos, se mantiene como input normal
                         if (data == "") {
-                            return `<span class="no-editable" data-id="${row.id}" data-field="${field}">S/I</span>`;
+                            return `<span class="editable" data-id="${row.id}" data-field="${field}">S/I</span>`;
                         } else {
                             return `<span class="editable" data-id="${row.id}" data-field="${field}">${data}</span>`;
                         }
