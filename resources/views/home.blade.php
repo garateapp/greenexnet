@@ -333,12 +333,12 @@
                     btn.prop("disabled", true); // Deshabilitamos el botón
 
                     $("#msgOK, #msgKO").hide(); // Ocultamos mensajes previos
-                 
+
                     $.ajax({
                         url: "{{ route('admin.comex.actualizarValorGD_en_fx') }}",
                         method: "GET",
                         success: function(response) {
-
+                            $("#msgOK").html("Datos actualizados correctamente!!").show();
                         },
                         error: function() {
                             $("#msgKO").html("Error al actualizar los datos!!").show();
@@ -349,10 +349,10 @@
                                 ); // Volvemos a habilitar el botón al finalizar la petición
                         }
                     });
-                   
+
                 });
 
-                
+
                 // Manejar errores de conexión
 
             });
