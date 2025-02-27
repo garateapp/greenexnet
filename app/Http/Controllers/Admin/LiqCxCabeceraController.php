@@ -369,10 +369,14 @@ class LiqCxCabeceraController extends Controller
 
                     Log::info('item: ' . json_encode($items));
 
-
+                    $EFOB=0;
                     foreach ($items as $item) {
+                        Log::info("EFOB inicio ".$EFOB);
                         $EFOB += $item['FOB_TO_USD'];
+                        Log::info("EFOB Asignado  ".$EFOB);
+                        Log::info("CAJAS Inicio".$item['Cajas']);
                         $ECCajas += $item['Cajas'];
+                        Log::info("CAJAS Asignado".$item['Cajas']);
                         Log::info('Folio '.$item['folio_fx'].' EFOB: ' . $EFOB);
                     }
 
