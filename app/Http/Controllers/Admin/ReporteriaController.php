@@ -228,7 +228,7 @@ class ReporteriaController extends Controller
             )
             ->where('destruccion_tipo', '=', '')
             ->where('id_empresa', '=', '1')
-            ->where('id_especie', '=', '7')->groupBy('nota_calidad', 'id_especie')
+            //->where('id_especie', '=', '7')->groupBy('nota_calidad', 'id_especie')
             ->get();
 
         $pesoxFecha = DB::connection("sqlsrv")->table('dbo.V_PKG_Recepcion_FG')
@@ -251,7 +251,7 @@ class ReporteriaController extends Controller
             )
             ->where('destruccion_tipo', '=', '')
             ->where('id_empresa', '=', '1')
-            ->where('id_especie', '=', '7')
+           // ->where('id_especie', '=', '7')
             ->groupBy('destruccion_tipo', 'n_variedad')
             ->get();
 
@@ -262,7 +262,6 @@ class ReporteriaController extends Controller
             "nota_calidad" => $nota_calidad,
             "pesoxFecha" => $pesoxFecha,
             'variedadxCereza' => $variedadxCereza,
-
         ], 200);
     }
     public function obtieneDatosRecepcionProductor(Request $request)
@@ -1641,7 +1640,7 @@ class ReporteriaController extends Controller
         // $datos = LiqCxCabecera::join('greenexnet.liquidaciones_cxes as lc', 'lc.liqcabecera_id', '=', 'liq_cx_cabeceras.id')->select("instructivo", "liq_cx_cabeceras.id")
         //     ->whereNull('liq_cx_cabeceras.deleted_at')
         //     ->whereNull('lc.deleted_at')
-            
+
         //     ->groupBy('liq_cx_cabeceras.instructivo', 'liq_cx_cabeceras.id')->get();
 
         // foreach ($datos as $dato) {
@@ -2135,7 +2134,7 @@ class ReporteriaController extends Controller
                 $Ajuste_impuesto_USD = (($ajusteimpuesto == 0 ? 0 : ($ajusteimpuesto) / $excelDato->tasa) / $total_kilos) * $Peso_neto; //BO
                 $Flete_Aereo = ($flete_exportadora / $total_kilos) * $Peso_neto; //BQ
                 $Flete_Aereo_TO = $Flete_Aereo * $Cajas; //BR
-                $Costos_cajas_RMB = $Imp_destino_caja_RMB + $Costo_log_Caja_RMB + $Ent_Al_mercado_Caja_RMB + $Costo_mercado_caja_RMB + $Otros_costos_dest_Caja_RMB + $Comision_Caja + ($Otros_Impuestos_JWM_Impuestos * $TC) + ($Ajuste_impuesto_USD * $TC) - ($Otros_Ingresos_abonos * $TC) + ($Flete_Aereo * $TC); //AR
+                $Costos_cajas_RMB = $Imp_destino_caja_RMB + $Costo_log_Caja_RMB + $Ent_Al_mercado_Caja_RMB + $Costo_mercado_caja_RMB + $Otros_costos_dest_Caja_RMB + $Comision_Caja + $Flete_marit_Caja_RMB + ($Otros_Impuestos_JWM_Impuestos * $TC) + ($Ajuste_impuesto_USD * $TC) - ($Otros_Ingresos_abonos * $TC) + ($Flete_Aereo * $TC); //AR
                 $RMB_Costos_TO = $Costos_cajas_RMB * $Cajas; //AS
                 $Resultados_caja_RMB =  $RMB_Caja - $Costos_cajas_RMB;  //AT  Verificar con Haydelin
                 $RMB_result_TO = $Resultados_caja_RMB * $Cajas; //AU  Verificar con Haydelin
