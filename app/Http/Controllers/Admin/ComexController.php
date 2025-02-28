@@ -476,10 +476,10 @@ class ComexController extends Controller
                                     SUM(Cantidad) as total_cantidad
                                 ')
                     ->where('numero_referencia', $instructivo)
-                    ->where('n_variedad', $variedad_id)
+                    ->where('n_variedad_rotulacion', $variedad_id)
                     ->where('n_etiqueta', $etiqueta_id)
                     ->where('c_calibre', $calibre)
-                    ->groupBy('n_variedad', 'C_Embalaje', 'c_calibre', 'n_etiqueta')
+                    ->groupBy('n_variedad_rotulacion', 'C_Embalaje', 'c_calibre', 'n_etiqueta')
                     ->get();
                 $c_embalaje = '';
 
@@ -1242,7 +1242,7 @@ class ComexController extends Controller
     public function ConsolidadoLiquidaciones()
     {
         $fg = $this;
-        $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->get(); // LiqCxCabecera::find(request('ids'));
+        $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->where('id','>',58)->where('id','<',122)->get(); // LiqCxCabecera::find(request('ids'));
 
 
         $dataComparativa = collect();
