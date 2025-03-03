@@ -1242,7 +1242,7 @@ class ComexController extends Controller
     public function ConsolidadoLiquidaciones()
     {
         $fg = $this;
-        $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->where('id','>',123)->where('id','<',258)->get(); // LiqCxCabecera::find(request('ids'));
+        $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->where('id','>',220)->where('id','<',258)->get(); // LiqCxCabecera::find(request('ids'));
 
 
         $dataComparativa = collect();
