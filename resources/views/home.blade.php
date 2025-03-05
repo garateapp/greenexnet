@@ -270,7 +270,8 @@
                                                         <div
                                                             class="card-header d-flex justify-content-between align-items-center">
                                                             <span>Liquidaciones Cargadas</span>
-                                                            <span class="badge bg-primary" id="totalInstructivosBadge" style="color:#FFF;font-weight: bold;font-size: x-large;">0</span>
+                                                            <span class="badge bg-primary" id="totalInstructivosBadge"
+                                                                style="color:#FFF;font-weight: bold;font-size: x-large;">0</span>
                                                         </div>
                                                         <div class="card-body" style="height: 300px; overflow-y: scroll;">
                                                             <div id="lstLiquidacionesCargadas">
@@ -293,10 +294,11 @@
                                                 <div class="col-lg-6">
                                                     <div class="card">
                                                         <div
-                                                        class="card-header d-flex justify-content-between align-items-center">
-                                                        <span>Liquidaciones NO Cargadas</span>
-                                                        <span class="badge bg-primary" id="totalInstructivosNoCargadosBadge" style="color:#FFF;font-weight: bold;font-size: x-large;">0</span>
-                                                    </div>
+                                                            class="card-header d-flex justify-content-between align-items-center">
+                                                            <span>Liquidaciones NO Cargadas</span>
+                                                            <span class="badge bg-primary" id="totalInstructivosNoCargadosBadge"
+                                                                style="color:#FFF;font-weight: bold;font-size: x-large;">0</span>
+                                                        </div>
                                                         <div class="card-body" style="height: 300px; overflow-y: scroll;">
                                                             <div id="lstLiquidacionesNoCargadas">
                                                                 <table class="table table-bordered"
@@ -309,6 +311,59 @@
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody id="tbodyLiquidacionesNoCargadas">
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-lg-6">
+                                                    <div class="card">
+                                                        <div
+                                                            class="card-header d-flex justify-content-between align-items-center">
+                                                            <span>Liquidaciones Con FOB 100%</span>
+                                                            <span class="badge bg-primary" id="totalInstructivosConFOBBadge"
+                                                                style="color:#FFF;font-weight: bold;font-size: x-large;">0</span>
+                                                        </div>
+                                                        <div class="card-body" style="height: 300px; overflow-y: scroll;">
+                                                            <div id="lstLiquidacionesCargadasFOB">
+                                                                <table class="table table-bordered"
+                                                                    id="tblLiquidacionesCargadas">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>
+                                                                                Instructivos Con FOB
+                                                                            </th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody id="tbodyLiquidacionesCargadasConFOB">
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <div class="card">
+                                                        <div
+                                                            class="card-header d-flex justify-content-between align-items-center">
+                                                            <span>Liquidaciones Sin FOB o Con Problemas</span>
+                                                            <span class="badge bg-primary" id="totalInstructivosSinFOBsBadge"
+                                                                style="color:#FFF;font-weight: bold;font-size: x-large;">0</span>
+                                                        </div>
+                                                        <div class="card-body" style="height: 300px; overflow-y: scroll;">
+                                                            <div id="lstLiquidacionesNoCargadas">
+                                                                <table class="table table-bordered" id="tblLiquidacionesSinFOB">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>
+                                                                                Instructivos No Cargados
+                                                                            </th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody id="tbodyLiquidacionesSinFOB">
                                                                     </tbody>
                                                                 </table>
                                                             </div>
@@ -414,19 +469,29 @@
                             console.log(response.Instructivos);
                             let instructivoSubidos = response.Instructivos ||
                         []; // Aseguramos que haya datos
-                        let instructivosNoCargados = Object.values(response.InstructivosSinSubir ||
-                        {}); // Convertir en array
+                            let instructivosNoCargados = Object.values(response.InstructivosSinSubir ||
+                            {}); // Convertir en array
+
+                            let InstructivosFXNoProcesadosCompleto=Object.values(response.InstructivosFXNoProcesadosCompleto || {});
+                            let InstructivosFXProcesadosCompleto = Object.values(response.InstructivosFXProcesadosCompleto || {});
+
                             let tbodyNoCargados = $("#tbodyLiquidacionesNoCargadas");
                             let tbody = $("#tbodyLiquidacionesCargadas");
+                            let tbodySinFOB = $("#tbodyLiquidacionesSinFOB");
+                            let tbodyConFOB = $("#tbodyLiquidacionesCargadasConFOB");
                             tbody.empty(); // Limpiamos antes de agregar nuevos datos
                             tbodyNoCargados.empty();
+                          
                             // Contar los instructivos
                             let totalInstructivos = instructivoSubidos.length;
                             let totalInstructivosNoCargados = instructivosNoCargados.length;
                             let totalGeneral = totalInstructivos + totalInstructivosNoCargados;
+                            let totalSinFOB = InstructivosFXNoProcesadosCompleto.length;
+                            let totalConFOB = InstructivosFXProcesadosCompleto.length;
 
                             console.log("Total instructivos cargados:", totalInstructivos);
                             console.log("Total instructivos no cargados:", totalInstructivosNoCargados);
+
                             console.log("Total general:", totalGeneral);
 
                             instructivoSubidos.forEach(function(instructivo) {
@@ -437,7 +502,7 @@
                             });
 
 
-                           
+
 
                             // Iterar sobre los instructivos y agregarlos a la tabla
                             instructivosNoCargados.forEach(function(instructivo) {
@@ -446,10 +511,24 @@
                </tr>`;
                                 tbodyNoCargados.append(row);
                             });
+                            InstructivosFXNoProcesadosCompleto.forEach(function(instructivo) {
+                                let row = `<tr>
+                    <td>${instructivo.Numero_Embarque}</td>
+                    </tr>`;
+                                tbodySinFOB.append(row);
+                            });
+                            InstructivosFXProcesadosCompleto.forEach(function(instructivo) {
+                                let row = `<tr>
+                    <td>${instructivo.Numero_Embarque}</td>
+                    </tr>`;
+                                tbodyConFOB.append(row);
+                            });
 
                             // Actualizar el badge en el header
                             $("#totalInstructivosBadge").text(totalInstructivos);
                             $("#totalInstructivosNoCargadosBadge").text(totalInstructivosNoCargados);
+                            $("#totalInstructivosSinFOBsBadge").text(totalSinFOB);
+                            $("#totalInstructivosConFOBBadge").text(totalConFOB);
 
 
 
@@ -460,7 +539,7 @@
                             instructivoconfoliosmultiples = 0;
                         }
                     });
-                    
+
                 }
 
                 obtieneReporteInstructivo();
