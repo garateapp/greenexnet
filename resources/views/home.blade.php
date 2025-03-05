@@ -227,7 +227,7 @@
                                 <div class="col-lg-6">
                                     <div class="card">
                                         <div class="card-header">
-                                            Liquidaciones
+                                            Liquidaciones Cherries
                                         </div>
                                         <div class="card-body">
                                             <div class="row">
