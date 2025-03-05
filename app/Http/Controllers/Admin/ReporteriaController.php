@@ -2306,7 +2306,7 @@ class ReporteriaController extends Controller
         });
 
         $Instructivos = LiqCxCabecera::whereNull('deleted_at')->pluck('instructivo')->toArray();
-        dd($Instructivos);
+        
         $instructivosconfoliosmultiples=LiquidacionesCx::whereNull('liquidaciones_cxes.deleted_at')->join('liq_cx_cabeceras', 'liq_cx_cabeceras.id', '=', 'liquidaciones_cxes.liqcabecera_id')
             ->where('liquidaciones_cxes.folio_fx', 'LIKE', '%,%')
             ->selectRaw("Distinct liq_cx_cabeceras.instructivo as instructivo")->get();
