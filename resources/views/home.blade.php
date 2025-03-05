@@ -325,7 +325,7 @@
                                                                     <thead>
                                                                         <tr>
                                                                             <th>
-                                                                                Instructivos No Cargados
+                                                                                Instructivos Sin FOB Completo
                                                                             </th>
                                                                         </tr>
                                                                     </thead>
@@ -432,7 +432,7 @@
                         method: "GET",
                         success: function(response) {
                             let instructivoxsubir = response.InstructivosSinSubir || [];
-                            console.log(response.Instructivos);
+                            
                             let instructivoSubidos = response.Instructivos ||
                         []; // Aseguramos que haya datos
                             let instructivosNoCargados = Object.values(response.InstructivosSinSubir ||
@@ -440,7 +440,8 @@
 
                             let InstructivosFXNoProcesadosCompleto=Object.values(response.InstructivosFXNoProcesadosCompleto || {});
                             let InstructivosFXProcesadosCompleto = Object.values(response.InstructivosFXProcesadosCompleto || {});
-
+                            console.log(InstructivosFXNoProcesadosCompleto);
+                            console.log(InstructivosFXProcesadosCompleto);
                             let tbodyNoCargados = $("#tbodyLiquidacionesNoCargadas");
                             let tbody = $("#tbodyLiquidacionesCargadas");
                             let tbodySinFOB = $("#tbodyLiquidacionesSinFOB");
@@ -462,7 +463,7 @@
 
                             instructivoSubidos.forEach(function(instructivo) {
                                 let row = `<tr>
-                              <td>${instructivo}</td>
+                              <td><a target="_blank" href="admin/liq-cx-cabeceras/${instructivo.id}/edit">${instructivo.instructivo}</a></td>
                            </tr>`;
                                 tbody.append(row);
                             });
@@ -473,19 +474,19 @@
                             // Iterar sobre los instructivos y agregarlos a la tabla
                             instructivosNoCargados.forEach(function(instructivo) {
                                 let row = `<tr>
-                  <td>${instructivo.Numero_Embarque}</td>
+                  <td><a target="_blank" href="admin/liq-cx-cabeceras/${instructivo.id}/edit">${instructivo.Numero_Embarque}</a></td>
                </tr>`;
                                 tbodyNoCargados.append(row);
                             });
                             InstructivosFXNoProcesadosCompleto.forEach(function(instructivo) {
                                 let row = `<tr>
-                    <td>${instructivo.Numero_Embarque}</td>
+                          <td><a target="_blank" href="admin/liq-cx-cabeceras/${instructivo.id}/edit">${instructivo.Numero_Embarque}</a></td>
                     </tr>`;
                                 tbodySinFOB.append(row);
                             });
                             InstructivosFXProcesadosCompleto.forEach(function(instructivo) {
                                 let row = `<tr>
-                    <td>${instructivo.Numero_Embarque}</td>
+                          <td><a target="_blank" href="admin/liq-cx-cabeceras/${instructivo.id}/edit">${instructivo.Numero_Embarque}</a></td>
                     </tr>`;
                                 tbodyConFOB.append(row);
                             });

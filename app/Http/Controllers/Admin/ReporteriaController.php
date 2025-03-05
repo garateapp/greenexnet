@@ -251,7 +251,7 @@ class ReporteriaController extends Controller
             )
             ->where('destruccion_tipo', '=', '')
             ->where('id_empresa', '=', '1')
-           // ->where('id_especie', '=', '7')
+            // ->where('id_especie', '=', '7')
             ->groupBy('destruccion_tipo', 'n_variedad')
             ->get();
 
@@ -1227,7 +1227,7 @@ class ReporteriaController extends Controller
                 'tasa' => $grupo->first()->tasa,
                 'id' => $grupo->first()->id, // Suponiendo que el ID es el mismo para todos
                 'factor' => $grupo->sum('factor') / $grupo->first()->tasa,
-                'total_kilos'=>$grupo->sum('Total_Kilos'),
+                'total_kilos' => $grupo->sum('Total_Kilos'),
                 'MONTO_RMB' => $grupo->sum('MONTO_RMB'),
                 'MONTO_USD' => $grupo->sum('MONTO_USD'),
 
@@ -1636,7 +1636,7 @@ class ReporteriaController extends Controller
         // $liq = new Liquidaciones();
         // $datos = $liq->ConsolidadoLiquidaciones();
         // return response()->json($datos);
-        $resultado=collect();
+        $resultado = collect();
         // $datos = LiqCxCabecera::join('greenexnet.liquidaciones_cxes as lc', 'lc.liqcabecera_id', '=', 'liq_cx_cabeceras.id')->select("instructivo", "liq_cx_cabeceras.id")
         //     ->whereNull('liq_cx_cabeceras.deleted_at')
         //     ->whereNull('lc.deleted_at')
@@ -1645,29 +1645,29 @@ class ReporteriaController extends Controller
 
         // foreach ($datos as $dato) {
 
-            $items = LiquidacionesCx::where('folio_fx', 'NOT LIKE', '%,%')->whereNotNull('folio_fx')->whereNull('c_embalaje')->get();
-            foreach ($items as $item) {
-                if ($item->pallet != null && $item->pallet != "") {
-                    DB::statement('SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED');
-                    $resultados = DB::connection('sqlsrv')->table("V_PKG_Despachos")
-                        ->select('c_embalaje')
-                        //->where('tipo_g_despacho', '=', 'GDP')
-                        ->whereRaw('UPPER(n_variedad_rotulacion) = ?', [Str::upper($item->variedad_id)])
-                        ->whereRaw('UPPER(n_etiqueta)=?', [Str::upper($item->etiqueta_id)])
-                        ->where('n_calibre', $item->calibre)
-                        ->where('folio',$item->folio_fx)
-                        ->get();
+        $items = LiquidacionesCx::where('folio_fx', 'NOT LIKE', '%,%')->whereNotNull('folio_fx')->whereNull('c_embalaje')->get();
+        foreach ($items as $item) {
+            if ($item->pallet != null && $item->pallet != "") {
+                DB::statement('SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED');
+                $resultados = DB::connection('sqlsrv')->table("V_PKG_Despachos")
+                    ->select('c_embalaje')
+                    //->where('tipo_g_despacho', '=', 'GDP')
+                    ->whereRaw('UPPER(n_variedad_rotulacion) = ?', [Str::upper($item->variedad_id)])
+                    ->whereRaw('UPPER(n_etiqueta)=?', [Str::upper($item->etiqueta_id)])
+                    ->where('n_calibre', $item->calibre)
+                    ->where('folio', $item->folio_fx)
+                    ->get();
 
-                    if (count($resultados) > 0) {
+                if (count($resultados) > 0) {
 
-                        //$liq=LiquidacionesCx::where('liqcabecera_id', $dato->id)->where('variedad_id', $item->variedad_id)->where('etiqueta_id', $item->etiqueta_id)->where('calibre', $item->calibre)->first();
-                        $item->c_embalaje = $resultados[0]->c_embalaje;
-                        $item->save();
-                        $resultado->push($item);
-                    }
+                    //$liq=LiquidacionesCx::where('liqcabecera_id', $dato->id)->where('variedad_id', $item->variedad_id)->where('etiqueta_id', $item->etiqueta_id)->where('calibre', $item->calibre)->first();
+                    $item->c_embalaje = $resultados[0]->c_embalaje;
+                    $item->save();
+                    $resultado->push($item);
                 }
-                //dd($resultados, $dato->instructivo, $item->variedad_id, $item->etiqueta_id, $item->calibre);
             }
+            //dd($resultados, $dato->instructivo, $item->variedad_id, $item->etiqueta_id, $item->calibre);
+        }
         //}
         return response()->json($resultado);
     }
@@ -1689,7 +1689,7 @@ class ReporteriaController extends Controller
             //
             Log::info("instructivo: " . $dato->instructivo);
             foreach ($items as $item) {
-                $retries=3;
+                $retries = 3;
                 DB::statement('SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED');
                 $resultados = DB::connection('sqlsrv')
                     ->table('dbo.V_PKG_Despachos')
@@ -1698,7 +1698,7 @@ class ReporteriaController extends Controller
                                 c_calibre,
                                 n_etiqueta
                             ')
-                            ->where('numero_embarque', str_replace('i', '', str_replace("I", "", $dato->instructivo)))
+                    ->where('numero_embarque', str_replace('i', '', str_replace("I", "", $dato->instructivo)))
                     //  ->where('n_variedad_rotulacion', $item->variedad_id)
                     //  ->where('n_etiqueta','like', $item->etiqueta_id.'%')
                     //  ->where('c_calibre','like',$item->calibre.'%')
@@ -1717,42 +1717,41 @@ class ReporteriaController extends Controller
                         $item->save();
                     }
                 } elseif (count($resultados) > 1) {
-                       $original='';
+                    $original = '';
 
-                       $i = 0;
+                    $i = 0;
 
-                        foreach ($resultados as $res) {
+                    foreach ($resultados as $res) {
 
-                            if ($i == 0) {
+                        if ($i == 0) {
 
-                                $item->folio_fx = $res->folio;
-                            } else {
+                            $item->folio_fx = $res->folio;
+                        } else {
 
 
-                                    $item->folio_fx = $item->folio_fx . "," . $res->folio;
-
-                            }
-                            $i++;
+                            $item->folio_fx = $item->folio_fx . "," . $res->folio;
                         }
-
-                        $array=explode(",",$item->folio_fx);
-                        $arrayUnicos = array_unique($array);
-
-// Convertir el array de vuelta a una cadena
-                        $cadenaUnica = implode(',', $arrayUnicos);
-                        Log::info("instructivo: " . $dato->instructivo . " Folio: " . $item->pallet . " Folios: " . $item->folio_fx." Cadena entrada ".$item->folio_fx." Cadena salida ".$cadenaUnica);
-                        $item->folio_fx=$cadenaUnica;
-
-                        $item->save();
+                        $i++;
                     }
+
+                    $array = explode(",", $item->folio_fx);
+                    $arrayUnicos = array_unique($array);
+
+                    // Convertir el array de vuelta a una cadena
+                    $cadenaUnica = implode(',', $arrayUnicos);
+                    Log::info("instructivo: " . $dato->instructivo . " Folio: " . $item->pallet . " Folios: " . $item->folio_fx . " Cadena entrada " . $item->folio_fx . " Cadena salida " . $cadenaUnica);
+                    $item->folio_fx = $cadenaUnica;
+
+                    $item->save();
                 }
-
-
-                //$liq=LiquidacionesCx::where('liqcabecera_id', $dato->id)->where('variedad_id', $item->variedad_id)->where('etiqueta_id', $item->etiqueta_id)->where('calibre', $item->calibre)->first();
-
             }
-            //dd($resultados, $dato->instructivo, $item->variedad_id, $item->etiqueta_id, $item->calibre);
+
+
+            //$liq=LiquidacionesCx::where('liqcabecera_id', $dato->id)->where('variedad_id', $item->variedad_id)->where('etiqueta_id', $item->etiqueta_id)->where('calibre', $item->calibre)->first();
+
         }
+        //dd($resultados, $dato->instructivo, $item->variedad_id, $item->etiqueta_id, $item->calibre);
+    }
 
 
     public function ObtieneDatosFOBxInstructivo(string $instructivo)
@@ -1871,7 +1870,7 @@ class ReporteriaController extends Controller
         $processGroup = function ($grupo, $includeCliente = true) {
             $totalFobUsd = round($grupo->sum('FOB_TO_USD'), 2);
             $totalKilos = round($grupo->sum('Kilos_total'), 2);
-            $totalFOB_kg=round($grupo->sum('FOB_kg'), 2);
+            $totalFOB_kg = round($grupo->sum('FOB_kg'), 2);
             $cantidad = $grupo->sum('Cajas');
 
             $XFOBCaja = $cantidad > 0 ? $totalFobUsd / $cantidad : 0;
@@ -2298,24 +2297,57 @@ class ReporteriaController extends Controller
             ->groupBy('Numero_Embarque')
             ->get();
 
-        $InstructivosFXProcesadosCompleto= $InstructivosFX->reject(function ($item) {
-            return $item->sin_fob>0 && $item->con_fob>=0;
+        $InstructivosFXProcesadosCompleto = $InstructivosFX->reject(function ($item) {
+            return $item->sin_fob > 0 && $item->con_fob >= 0;
         });
-        $InstructivosFXNoProcesadosCompleto= $InstructivosFX->reject(function ($item) {
+        $InstructivosFXNoProcesadosCompleto = $InstructivosFX->reject(function ($item) {
             return $item->sin_fob == 0 && $item->con_fob > 0;
         });
 
-        $Instructivos = LiqCxCabecera::whereNull('deleted_at')->pluck('instructivo')->toArray();
-        
-        $instructivosconfoliosmultiples=LiquidacionesCx::whereNull('liquidaciones_cxes.deleted_at')->join('liq_cx_cabeceras', 'liq_cx_cabeceras.id', '=', 'liquidaciones_cxes.liqcabecera_id')
-            ->where('liquidaciones_cxes.folio_fx', 'LIKE', '%,%')
-            ->selectRaw("Distinct liq_cx_cabeceras.instructivo as instructivo")->get();
-        // Filtrar los instructivosFX que no están en instructivos
+        // Agregar el id desde LiqCxCabecera a los instructivos procesados
+        foreach ($InstructivosFXProcesadosCompleto as $item) {
+            $registro = LiqCxCabecera::whereNull('deleted_at')
+                ->where('instructivo', 'like', '%' . $item->Numero_Embarque . '%')
+                ->first();
+
+            $item->id = $registro ? $registro->id : null; // Evitar error si no se encuentra el id
+        }
+
+        // Agregar el id desde LiqCxCabecera a los instructivos no procesados
+        foreach ($InstructivosFXNoProcesadosCompleto as $item) {
+            $registro = LiqCxCabecera::whereNull('deleted_at')
+                ->where('instructivo', 'like', '%' . $item->Numero_Embarque . '%')
+                ->first();
+
+            $item->id = $registro ? $registro->id : null;
+        }
+        // Obtener instructivos con id e instructivo
+        $Instructivos = LiqCxCabecera::whereNull('deleted_at')
+            ->get(['id', 'instructivo']) // Obtener ambos valores
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'instructivo' => str_replace('I', '', $item->instructivo) // Limpiar el instructivo
+                ];
+            })->toArray();
+
+        // Filtrar instructivos que no están en LiqCxCabecera
         $InstructivosNoEnLiqCxCabecera = $InstructivosFX->reject(function ($item) use ($Instructivos) {
-            return in_array($item->Numero_Embarque, str_replace('I','',$Instructivos));
+            return collect($Instructivos)->contains('instructivo', $item->Numero_Embarque);
         });
-        return response()->json(["InstructivosSinSubir"=>$InstructivosNoEnLiqCxCabecera,"InstructivosConFoliosMultiples"=>$instructivosconfoliosmultiples,
-                                "InstructivosFXProcesadosCompleto"=>$InstructivosFXProcesadosCompleto,"InstructivosFXNoProcesadosCompleto"=>$InstructivosFXNoProcesadosCompleto,
-                                "Instructivos"=>$Instructivos]);
+
+        $instructivosconfoliosmultiples = LiquidacionesCx::whereNull('liquidaciones_cxes.deleted_at')->join('liq_cx_cabeceras', 'liq_cx_cabeceras.id', '=', 'liquidaciones_cxes.liqcabecera_id')
+            ->where('liquidaciones_cxes.folio_fx', 'LIKE', '%,%')
+            ->selectRaw("Distinct liq_cx_cabeceras.instructivo as instructivo,liq_cx_cabeceras.id")->get();
+        // Filtrar los instructivosFX que no están en instructivos
+
+
+        return response()->json([
+            "InstructivosSinSubir" => $InstructivosNoEnLiqCxCabecera,
+            "InstructivosConFoliosMultiples" => $instructivosconfoliosmultiples,
+            "InstructivosFXProcesadosCompleto" => $InstructivosFXProcesadosCompleto,
+            "InstructivosFXNoProcesadosCompleto" => $InstructivosFXNoProcesadosCompleto,
+            "Instructivos" => $Instructivos
+        ]);
     }
 }
