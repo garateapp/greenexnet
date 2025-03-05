@@ -255,13 +255,65 @@
                                                         </a>
                                                     </button>
                                                     <br>
-                                                    <button class="btn btn-secondary" id="btnActualizaGD"
+                                                    {{-- <button class="btn btn-secondary" id="btnActualizaGD"
                                                         style="margin-bottom: 5px; width:200px;text-align: left;">
 
                                                         <i class="fa-fw fas fa-hand-holding-usd" aria-hidden="true"></i>
                                                         Actualizar Valores FOB
 
-                                                    </button>
+                                                    </button> --}}
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-lg-6">
+                                                    <div class="card">
+                                                        <div
+                                                            class="card-header d-flex justify-content-between align-items-center">
+                                                            <span>Liquidaciones Cargadas</span>
+                                                            <span class="badge bg-primary" id="totalInstructivosBadge" style="color:#FFF;font-weight: bold;font-size: x-large;">0</span>
+                                                        </div>
+                                                        <div class="card-body" style="height: 300px; overflow-y: scroll;">
+                                                            <div id="lstLiquidacionesCargadas">
+                                                                <table class="table table-bordered"
+                                                                    id="tblLiquidacionesCargadas">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>
+                                                                                Instructivos
+                                                                            </th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody id="tbodyLiquidacionesCargadas">
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <div class="card">
+                                                        <div
+                                                        class="card-header d-flex justify-content-between align-items-center">
+                                                        <span>Liquidaciones NO Cargadas</span>
+                                                        <span class="badge bg-primary" id="totalInstructivosNoCargadosBadge" style="color:#FFF;font-weight: bold;font-size: x-large;">0</span>
+                                                    </div>
+                                                        <div class="card-body" style="height: 300px; overflow-y: scroll;">
+                                                            <div id="lstLiquidacionesNoCargadas">
+                                                                <table class="table table-bordered"
+                                                                    id="tblLiquidacionesNOCargadas">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>
+                                                                                Instructivos No Cargados
+                                                                            </th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody id="tbodyLiquidacionesNoCargadas">
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -303,14 +355,14 @@
                                                         </a>
                                                     </button>
                                                     <br>
-                                                    <button class="btn btn-secondary" id="btn_procesar"
+                                                    {{-- <button class="btn btn-secondary" id="btn_procesar"
                                                         style="margin-bottom: 5px; width:200px;text-align: left;">
                                                         <a href="{{ route('admin.comex.actualizarValorGD_en_fx') }}"
                                                             style="color:white">
                                                             <i class="fa-fw fas fa-hand-holding-usd" aria-hidden="true"></i>
                                                             Actualizar Valores FOB
                                                         </a>
-                                                    </button>
+                                                    </button> --}}
                                                 </div>
                                             </div>
                                         </div>
@@ -324,7 +376,7 @@
             </div>
         </div>
         <script>
-          document.addEventListener("DOMContentLoaded", function () {
+            document.addEventListener("DOMContentLoaded", function() {
 
                 $("#btnActualizaGD").on("click", function(event) {
                     event.preventDefault(); // Evita recarga si el botón está dentro de un formulario
@@ -346,13 +398,72 @@
                         complete: function() {
                             btn.prop("disabled",
                                 false
-                                ); // Volvemos a habilitar el botón al finalizar la petición
+                            ); // Volvemos a habilitar el botón al finalizar la petición
                         }
                     });
 
                 });
 
+                function obtieneReporteInstructivo() {
+                    let url = "{{ route('admin.reporteria.getReporteInstructivos') }}";
+                    $.ajax({
+                        url: url,
+                        method: "GET",
+                        success: function(response) {
+                            let instructivoxsubir = response.InstructivosSinSubir || [];
+                            console.log(response.Instructivos);
+                            let instructivoSubidos = response.Instructivos ||
+                        []; // Aseguramos que haya datos
+                        let instructivosNoCargados = Object.values(response.InstructivosSinSubir ||
+                        {}); // Convertir en array
+                            let tbodyNoCargados = $("#tbodyLiquidacionesNoCargadas");
+                            let tbody = $("#tbodyLiquidacionesCargadas");
+                            tbody.empty(); // Limpiamos antes de agregar nuevos datos
+                            tbodyNoCargados.empty();
+                            // Contar los instructivos
+                            let totalInstructivos = instructivoSubidos.length;
+                            let totalInstructivosNoCargados = instructivosNoCargados.length;
+                            let totalGeneral = totalInstructivos + totalInstructivosNoCargados;
 
+                            console.log("Total instructivos cargados:", totalInstructivos);
+                            console.log("Total instructivos no cargados:", totalInstructivosNoCargados);
+                            console.log("Total general:", totalGeneral);
+
+                            instructivoSubidos.forEach(function(instructivo) {
+                                let row = `<tr>
+                              <td>${instructivo}</td>
+                           </tr>`;
+                                tbody.append(row);
+                            });
+
+
+                           
+
+                            // Iterar sobre los instructivos y agregarlos a la tabla
+                            instructivosNoCargados.forEach(function(instructivo) {
+                                let row = `<tr>
+                  <td>${instructivo.Numero_Embarque}</td>
+               </tr>`;
+                                tbodyNoCargados.append(row);
+                            });
+
+                            // Actualizar el badge en el header
+                            $("#totalInstructivosBadge").text(totalInstructivos);
+                            $("#totalInstructivosNoCargadosBadge").text(totalInstructivosNoCargados);
+
+
+
+                            instructivoconfoliosmultiples = response.InstructivosConFoliosMultiples
+                        },
+                        error: function() {
+                            instructivoxsubir = 0;
+                            instructivoconfoliosmultiples = 0;
+                        }
+                    });
+                    
+                }
+
+                obtieneReporteInstructivo();
                 // Manejar errores de conexión
 
             });

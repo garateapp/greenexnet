@@ -22,6 +22,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('/datos-cajas/by-turn', 'DatosCajaController@getAttendanceByTurn')->name('datos-cajas.getAttendanceByTurn');
     Route::get('/datos-cajas/getAttendanceData', 'DatosCajaController@getAttendanceData')->name('datos-cajas.getAttendanceData');
     Route::get('/datos-cajas/getScatterPlotData', 'DatosCajaController@getScatterPlotData')->name('datos-cajas.getScatterPlotData');
+
+
     //Route::get('attendance-data', 'HomeController@getAttendanceData')->name('getAttendanceData');
     // Permissions
     Route::delete('permissions/destroy', 'PermissionsController@massDestroy')->name('permissions.massDestroy');
@@ -181,7 +183,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('reporteria/ObtieneDatosFOB', 'ReporteriaController@ObtieneDatosFOB')->name('reporteria.ObtieneDatosFOB');
     Route::get('reporteria/obtieneFolio', 'ReporteriaController@obtieneFolio')->name('reporteria.obtieneFolio');
     Route::get('reporteria/obtenerliquidacionesagrupadas', 'ReporteriaController@obtenerliquidacionesagrupadas')->name('reporteria.obtenerliquidacionesagrupadas');
-    
+    Route::get('reporteria/getReporteInstructivos','ReporteriaController@getReporteInstructivos')->name('reporteria.getReporteInstructivos');
+
     // Embalajes
     Route::delete('embalajes/destroy', 'EmbalajesController@massDestroy')->name('embalajes.massDestroy');
     Route::post('embalajes/parse-csv-import', 'EmbalajesController@parseCsvImport')->name('embalajes.parseCsvImport');

@@ -2282,4 +2282,40 @@ class ReporteriaController extends Controller
         }
         return $dataComparativa;
     }
+    public function getReporteInstructivos()
+    {
+        $InstructivosFX = DB::connection('sqlsrv')
+            ->table('V_PKG_Despachos')
+            ->selectRaw("
+            ROW_NUMBER() OVER (ORDER BY Numero_Embarque) AS id,
+        SUM(CASE WHEN valor_unitario = 0 THEN 1 ELSE 0 END) AS sin_fob,
+        SUM(CASE WHEN valor_unitario <> 0 THEN 1 ELSE 0 END) AS con_fob,
+        Numero_Embarque
+    ")
+            ->where('tipo_g_despacho', 'GDP')
+            ->where('id_especie', 7)
+            ->where('numero_embarque', 'like', '2425%')
+            ->groupBy('Numero_Embarque')
+            ->get();
+
+        $InstructivosFXProcesadosCompleto= $InstructivosFX->reject(function ($item) {
+            return $item->sin_fob>0 && $item->con_fob>=0;
+        });
+        $InstructivosFXNoProcesadosCompleto= $InstructivosFX->reject(function ($item) {
+            return $item->sin_fob == 0 && $item->con_fob > 0;
+        });
+
+        $Instructivos = LiqCxCabecera::whereNull('deleted_at')->pluck('instructivo')->toArray();
+        dd($Instructivos);
+        $instructivosconfoliosmultiples=LiquidacionesCx::whereNull('liquidaciones_cxes.deleted_at')->join('liq_cx_cabeceras', 'liq_cx_cabeceras.id', '=', 'liquidaciones_cxes.liqcabecera_id')
+            ->where('liquidaciones_cxes.folio_fx', 'LIKE', '%,%')
+            ->selectRaw("Distinct liq_cx_cabeceras.instructivo as instructivo")->get();
+        // Filtrar los instructivosFX que no están en instructivos
+        $InstructivosNoEnLiqCxCabecera = $InstructivosFX->reject(function ($item) use ($Instructivos) {
+            return in_array($item->Numero_Embarque, str_replace('I','',$Instructivos));
+        });
+        return response()->json(["InstructivosSinSubir"=>$InstructivosNoEnLiqCxCabecera,"InstructivosConFoliosMultiples"=>$instructivosconfoliosmultiples,
+                                "InstructivosFXProcesadosCompleto"=>$InstructivosFXProcesadosCompleto,"InstructivosFXNoProcesadosCompleto"=>$InstructivosFXNoProcesadosCompleto,
+                                "Instructivos"=>$Instructivos]);
+    }
 }
