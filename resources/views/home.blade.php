@@ -232,40 +232,6 @@
                                         <div class="card-body">
                                             <div class="row">
                                                 <div class="col-lg-6">
-                                                    Cantidad de Embarques : {{ $total }}<br>
-                                                    Cantidad de Liquidaciones Cargadas : {{ $liqs }}<br>
-                                                    Cantidad de Liquidaciones Sin Procesar : {{ $total - $liqs }}<br>
-                                                </div>
-                                                <div class="col-lg-6">
-                                                    <button class="btn btn-secondary" id="btn_procesar"
-                                                        style="margin-bottom: 5px; width:200px; text-align: left;">
-                                                        <a href="{{ route('admin.reporteria.ObtieneDatosFOB') }}"
-                                                            style="color:white">
-                                                            <i class="fa-fw fas fa-box" aria-hidden="true"></i>
-                                                            Capturar Embalajes
-                                                        </a>
-                                                    </button>
-                                                    <br>
-                                                    <button class="btn btn-secondary" id="btn_procesar"
-                                                        style="margin-bottom: 5px; width:200px; text-align: left;">
-                                                        <a href="{{ route('admin.reporteria.obtieneFolio') }}"
-                                                            style="color:white">
-                                                            <i class="fa-fw fas fa-file-excel-o" aria-hidden="true"></i>
-                                                            Capturar Folios
-                                                        </a>
-                                                    </button>
-                                                    <br>
-                                                    {{-- <button class="btn btn-secondary" id="btnActualizaGD"
-                                                        style="margin-bottom: 5px; width:200px;text-align: left;">
-
-                                                        <i class="fa-fw fas fa-hand-holding-usd" aria-hidden="true"></i>
-                                                        Actualizar Valores FOB
-
-                                                    </button> --}}
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-lg-6">
                                                     <div class="card">
                                                         <div
                                                             class="card-header d-flex justify-content-between align-items-center">
