@@ -200,7 +200,7 @@
                         useBarCodeDetectorIfSupported: true
                     },
                     //rememberLastUsedCamera: true,
-                    showTorchButtonIfSupported: true
+                    //showTorchButtonIfSupported: true
                 });
             html5QrcodeScanner.render(onScanSuccess);
         });
