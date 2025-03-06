@@ -39,8 +39,14 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/highlight.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js" type="text/javascript"></script>
 
     <script>
+        // Definir html5QrCode en el ámbito global
+        let html5QrCode;
+        let lastMessage = null;
+        let currentCameraId = null;
         //9.160.225'3]9 KGs]ddabb85d
 
         $(document).ready(function() {
@@ -103,9 +109,16 @@
                         );
                     });
 
-                    // Iniciar con la primera cámara por defecto (puedes preferir la trasera)
-                    currentCameraId = devices[0].id;
+                    // Preferir cámara trasera por defecto, si existe
+                    const backCamera = devices.find(device => 
+                        device.label.toLowerCase().includes("back") || 
+                        device.label.toLowerCase().includes("rear")
+                    );
+                    currentCameraId = backCamera ? backCamera.id : devices[0].id;
                     startScanner(currentCameraId);
+
+                    // Actualizar selección en el dropdown
+                    cameraSelect.val(currentCameraId);
                 } else {
                     $("#scanned-result").html("No se encontraron cámaras disponibles").addClass("alert alert-danger");
                 }
@@ -113,7 +126,7 @@
                 $("#scanned-result").html("Error al acceder a las cámaras: " + err).addClass("alert alert-danger");
             });
 
-            // Cambiar cámara al seleccionar una nueva
+            // Cambiar cámara
             $("#cameraSelect").on("change", function () {
                 const newCameraId = $(this).val();
                 if (newCameraId !== currentCameraId) {
@@ -122,11 +135,12 @@
                         startScanner(currentCameraId);
                     }).catch(err => {
                         console.log("Error al detener el escáner: ", err);
+                        $("#scanned-result").html("Error al cambiar cámara: " + err).addClass("alert alert-danger");
                     });
                 }
             });
 
-            // Función para iniciar el escáner
+            // Iniciar el escáner
             function startScanner(cameraId) {
                 html5QrCode.start(
                     cameraId,
