@@ -45,6 +45,8 @@
 
         $(document).ready(function() {
             $("#qr").focus();
+            let html5QrCode = new Html5Qrcode("reader");
+            let lastMessage = null;
                // Función para procesar el QR (manual o escaneado)
                function processQrCode(qrCodeValue) {
                 qrCodeValue = qrCodeValue.replace(/[\r\n]+/g, '').trim();
