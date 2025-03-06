@@ -132,7 +132,7 @@
             <ul class="c-sidebar-nav-dropdown-items">
                 
                 <li class="c-sidebar-nav-item">
-                    <a href="{{ route('admin.hand-packs') }}"
+                    <a href="{{ route('admin.hand-packs.index') }}"
                         class="c-sidebar-nav-link {{ request()->is('admin/hand-packs') || request()->is('admin/hand-packs/*') ? 'c-active' : '' }}">
                         <i class="fa-fw fas fa-hand c-box">
 
