@@ -199,7 +199,7 @@
                     experimentalFeatures: {
                         useBarCodeDetectorIfSupported: true
                     },
-                    rememberLastUsedCamera: true,
+                    //rememberLastUsedCamera: true,
                     showTorchButtonIfSupported: true
                 });
             html5QrcodeScanner.render(onScanSuccess);
