@@ -86,7 +86,9 @@ class HandPackController extends Controller
         $res=$handPack->save();
         return response()->json(['success' => 'success', 'data' => $handPack]);
         }
-        return response()->json(['error' => 'error', 'data' => $handPack]);
+        else{
+        return response()->json(['error' => 'error', 'data' => "CAJA REPETIDA"]);
+        }
         // if($handPack){
         //     return response()->json(['status' => 'success', 'data'
 

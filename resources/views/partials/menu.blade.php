@@ -134,7 +134,7 @@
                 <li class="c-sidebar-nav-item">
                     <a href="{{ route('admin.hand-packs.index') }}"
                         class="c-sidebar-nav-link {{ request()->is('admin/hand-packs') || request()->is('admin/hand-packs/*') ? 'c-active' : '' }}">
-                        <i class="fa-fw fas fa-hand c-box">
+                        <i class="fa-fw fas fa-boxes-open c-box">
 
                         </i>
                         HandPack
@@ -143,7 +143,7 @@
                     <li class="c-sidebar-nav-item">
                         <a href="{{ route('admin.hand-packs.lector') }}"
                             class="c-sidebar-nav-link {{ request()->is('admin/hand-packs') || request()->is('admin/hand-packs/*') ? 'c-active' : '' }}">
-                            <i class="fa-fw fas fa-hand c-box">
+                            <i class="fa-fw fas fa-hand-paper c-box">
     
                             </i>
                             Lector HandPack

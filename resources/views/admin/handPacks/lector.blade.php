@@ -48,7 +48,7 @@
                         success: function(response) {
                             console.log(response);
                             if (response.success) {
-                                $("#scanned-result").html("EMBALAJE PROCESADO").addClass("alert alert-success");
+                                $("#scanned-result").html("EMBALAJE PROCESADO").addClass("alert alert-success").removeClass("alert alert-danger");
 
                                 // Limpiar el campo QR y poner foco en él
                                 $("#qr").val("");
@@ -59,7 +59,11 @@
                                 }, 100);
                             } else {
                                 alert("EMBALAJE NO PROCESADO");
-                                $("#scanned-result").html("EMBALAJE NO PROCESADO").addClass("alert alert-danger");
+                                $("#scanned-result").html("EMBALAJE NO PROCESADO"+" "+response.data).addClass("alert alert-danger").removeClass("alert alert-success");
+                                $("#qr").val("");
+                                $("#qr")
+                                .focus(); // Asegura que el foco se dé después de limpiar el valor
+
                             }
                         },
                         error: function(xhr) {
