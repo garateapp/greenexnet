@@ -52,6 +52,8 @@ const embalaje = params.get("embalaje");
 const guid = params.get("guid");
             $("#qr").focus();
             $("#qr").val(rut+"]"+embalaje+"]"+guid);
+            var qrCodeValue = $("#qr").val();
+            processQrCode(qrCodeValue);
                // Función para procesar el QR (manual o escaneado)
                function processQrCode(qrCodeValue) {
                 qrCodeValue = qrCodeValue.replace(/[\r\n]+/g, '').trim();
