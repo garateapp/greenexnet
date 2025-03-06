@@ -96,9 +96,8 @@
       
 
            
-        });
-    </script>
-     <script>
+        
+    
         function docReady(fn) {
             // see if DOM is already available
             if (document.readyState === "complete" || document.readyState === "interactive") {
@@ -112,6 +111,7 @@
         function printScanResultPretty(codeId, decodedText, decodedResult) {
 
             ///const urlParams = new URL(`${decodedText}`).searchParams;
+            console.log(`${decodedText}`);
             $("#qr").val(`${decodedText}`);
             var qrCodeValue = $("#qr").val();
             processQrCode(qrCodeValue);
@@ -177,5 +177,6 @@
                 });
             html5QrcodeScanner.render(onScanSuccess);
         });
+    });
     </script>
 @endsection
