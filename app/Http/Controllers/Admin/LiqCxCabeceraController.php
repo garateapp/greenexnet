@@ -58,6 +58,9 @@ class LiqCxCabeceraController extends Controller
                 ));
             });
 
+            $table->editColumn('especie_nombre', function ($row) {
+                return $row->especie ? $row->especie->nombre : '';
+            });
             $table->editColumn('id', function ($row) {
                 return $row->id ? $row->id : '';
             });
@@ -109,9 +112,11 @@ class LiqCxCabeceraController extends Controller
 
         $clientes = ClientesComex::pluck('nombre_fantasia', 'id')->prepend(trans('global.pleaseSelect'), '');
 
+        $especies=Especy::pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
+
         $naves = Nafe::pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        return view('admin.liqCxCabeceras.create', compact('clientes', 'naves'));
+        return view('admin.liqCxCabeceras.create', compact('clientes', 'naves','especies'));
     }
 
     public function store(StoreLiqCxCabeceraRequest $request)

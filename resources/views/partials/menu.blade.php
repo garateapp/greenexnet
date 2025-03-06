@@ -93,7 +93,7 @@
         @can('datos_caja_calidad_access')
             <li class="c-sidebar-nav-dropdown {{ request()->is('admin/datos-cajas*') ? 'c-show' : '' }}">
                 <a class="c-sidebar-nav-dropdown-toggle" href="#">
-                    <i class="fa-fw fas fa-box-open c-sidebar-nav-icon">
+                    <i class="fa-fw fas fa-prescription-bottle c-sidebar-nav-icon">
 
                     </i>
                     Calidad
@@ -120,6 +120,38 @@
                     </li>
                 </ul>
             </li>
+        @endcan
+        @can("packing")
+        <li class="c-sidebar-nav-dropdown {{ request()->is("admin/hand-packs*") ? "c-show" : "" }}">
+            <a class="c-sidebar-nav-dropdown-toggle" href="#">
+                <i class="fa-fw fas fa-boxes c-sidebar-nav-icon">
+
+                </i>
+                Packing
+            </a>
+            <ul class="c-sidebar-nav-dropdown-items">
+                
+                <li class="c-sidebar-nav-item">
+                    <a href="{{ route('admin.hand-packs') }}"
+                        class="c-sidebar-nav-link {{ request()->is('admin/hand-packs') || request()->is('admin/hand-packs/*') ? 'c-active' : '' }}">
+                        <i class="fa-fw fas fa-hand c-box">
+
+                        </i>
+                        HandPack
+                    </a>
+                </li>
+                    <li class="c-sidebar-nav-item">
+                        <a href="{{ route('admin.hand-packs.lector') }}"
+                            class="c-sidebar-nav-link {{ request()->is('admin/hand-packs') || request()->is('admin/hand-packs/*') ? 'c-active' : '' }}">
+                            <i class="fa-fw fas fa-hand c-box">
+    
+                            </i>
+                            Lector HandPack
+                        </a>
+                    </li>
+                    
+            </ul>
+        </li>
         @endcan
         @can('greenex_net_access')
             <li

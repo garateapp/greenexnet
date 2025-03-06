@@ -55,6 +55,9 @@
                             {{ trans('cruds.liqCxCabecera.fields.id') }}
                         </th>
                         <th>
+                            Especie
+                        </th>
+                        <th>
                             {{ trans('cruds.liqCxCabecera.fields.instructivo') }}
                         </th>
                         <th>
@@ -93,6 +96,14 @@
                         </td>
                         <td>
                             <input class="search" type="text" placeholder="{{ trans('global.search') }}">
+                        </td>
+                        <td>
+                            <select class="search">
+                                <option value>{{ trans('global.all') }}</option>
+                                @foreach ($clientes_comexes as $key => $item)
+                                    <option value="{{ $item->nombre_fantasia }}">{{ $item->nombre_fantasia }}</option>
+                                @endforeach
+                            </select>
                         </td>
                         <td>
                             <input class="search" type="text" placeholder="{{ trans('global.search') }}">
@@ -241,6 +252,10 @@
                 {
                     data: 'id',
                     name: 'id'
+                },
+                {
+                    data:'especie_nombre',
+                    name: 'especie.nombre'
                 },
                 {
                     data: 'instructivo',

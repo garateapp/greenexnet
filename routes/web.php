@@ -183,7 +183,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('reporteria/ObtieneDatosFOB', 'ReporteriaController@ObtieneDatosFOB')->name('reporteria.ObtieneDatosFOB');
     Route::get('reporteria/obtieneFolio', 'ReporteriaController@obtieneFolio')->name('reporteria.obtieneFolio');
     Route::get('reporteria/obtenerliquidacionesagrupadas', 'ReporteriaController@obtenerliquidacionesagrupadas')->name('reporteria.obtenerliquidacionesagrupadas');
-    Route::get('reporteria/getReporteInstructivos','ReporteriaController@getReporteInstructivos')->name('reporteria.getReporteInstructivos');
+    Route::get('reporteria/getReporteInstructivos', 'ReporteriaController@getReporteInstructivos')->name('reporteria.getReporteInstructivos');
 
     // Embalajes
     Route::delete('embalajes/destroy', 'EmbalajesController@massDestroy')->name('embalajes.massDestroy');
@@ -318,7 +318,13 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('costosorigen/costosorigen', 'CostosOrigenController@costosorigen')->name('costosorigen.costosorigen');
     Route::post('costosorigen/guardacostosorigen', 'CostosOrigenController@guardacostosorigen')->name('costosorigen.guardacostosorigen');
 
-
+    // Hand Pack
+    Route::delete('hand-packs/destroy', 'HandPackController@massDestroy')->name('hand-packs.massDestroy');
+    Route::post('hand-packs/parse-csv-import', 'HandPackController@parseCsvImport')->name('hand-packs.parseCsvImport');
+    Route::post('hand-packs/process-csv-import', 'HandPackController@processCsvImport')->name('hand-packs.processCsvImport');
+    Route::get('hand-packs/lector','HandPackController@lector')->name('hand-packs.lector');
+    Route::post('hand-packs/lectorQr','HandPackController@lectorQr')->name('hand-packs.lectorQr');
+    Route::resource('hand-packs', 'HandPackController');
 
     // Conversor Xls
     Route::delete('conversor-xls/destroy', 'ConversorXlsController@massDestroy')->name('conversor-xls.massDestroy');

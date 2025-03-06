@@ -39,6 +39,7 @@ use App\Models\Nafe;
 use App\Libs\Liquidaciones;
 use App\Exports\ComparativaExport;
 use App\Models\Diccionario;
+use App\Models\Variedad;
 use Exception;
 use Psy\Readline\Hoa\Console;
 use Symfony\Component\Console\Logger\ConsoleLogger;
@@ -453,6 +454,7 @@ class ComexController extends Controller
                 // } else {
 
                 $variedad_id = $fila['Variedad'];
+                $especie_id=Variedad::where('nombre', $variedad_id)->first()->especie_id;
                 //}
                 $pallet = isset($fila['Pallet']) ? $fila['Pallet'] : '';
                 $etiqueta_id = isset($fila['Etiqueta']) ? $fila['Etiqueta'] : '';
@@ -465,11 +467,13 @@ class ComexController extends Controller
                 $monto_rmb = isset($fila['Monto RMB']) ? $fila['Monto RMB'] : 0;
                 $observaciones = isset($fila['Observaciones']) ? $fila['Observaciones'] : '';
                 $liqcabecera_id = $LiqCabecera->id;
+                $LiqCabecera->especie_id=$especie_id;
+                $LiqCabecera->save();
                 DB::statement('SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED');
                 $resultados = DB::connection('sqlsrv')
                     ->table('dbo.V_PKG_Embarques')
                     ->selectRaw('
-                                    n_variedad,
+                                    n_variedad_rotulacion,
                                     C_Embalaje,
                                     c_calibre,
                                     n_etiqueta,
@@ -555,6 +559,7 @@ class ComexController extends Controller
                         'liqcabecera_id' => $liqcabecera_id,
                         'c_embalaje' => $c_embalaje,
                         'folio_fx' => $folio_fx
+                      
                     ]);
                     Log::info('Datos guardados correctamente' . "----" . $result);
                 } catch (\Exception $e) {

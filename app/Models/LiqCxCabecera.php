@@ -37,6 +37,7 @@ class LiqCxCabecera extends Model
         'created_at',
         'updated_at',
         'deleted_at',
+        'especie_id',
     ];
 
     protected function serializeDate(DateTimeInterface $date)
@@ -52,6 +53,10 @@ class LiqCxCabecera extends Model
     public function nave()
     {
         return $this->belongsTo(Nafe::class, 'nave_id');
+    }
+    public function especie()
+    {
+        return $this->belongsTo(Especy::class, 'especie_id');
     }
 
     // public function getEtaAttribute($value)
