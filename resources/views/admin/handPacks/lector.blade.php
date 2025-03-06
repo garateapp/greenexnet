@@ -6,7 +6,7 @@
         </div>
 
         <div class="card-body">
-           
+
                 <div class="form-group">
                     <label class="required" for="rut">{{ trans('cruds.handPack.fields.rut') }}</label>
                     <input class="form-control" type="text" name="qr" id="qr" value="" required>
@@ -31,7 +31,7 @@
                         {{ trans('global.save') }}
                     </button>
                 </div>
-            
+
         </div>
     </div>
 
@@ -44,7 +44,14 @@
         //9.160.225'3]9 KGs]ddabb85d
 
         $(document).ready(function() {
+            const params = new URLSearchParams(window.location.search);
+
+// Extraer los valores de cada parámetro
+const rut = params.get("rut");
+const embalaje = params.get("embalaje");
+const guid = params.get("guid");
             $("#qr").focus();
+            $("#qr").val(rut+"]"+embalaje+"]"+guid);
                // Función para procesar el QR (manual o escaneado)
                function processQrCode(qrCodeValue) {
                 qrCodeValue = qrCodeValue.replace(/[\r\n]+/g, '').trim();
@@ -92,91 +99,6 @@
                 var qrCodeValue = $(this).val();
                 processQrCode(qrCodeValue);
             });
-            // Configuración del escáner de cámara
-      
-
-           
-        
-    
-        function docReady(fn) {
-            // see if DOM is already available
-            if (document.readyState === "complete" || document.readyState === "interactive") {
-                // call on next available tick
-                setTimeout(fn, 1);
-            } else {
-                document.addEventListener("DOMContentLoaded", fn);
-            }
-        }
-        /** Ugly function to write the results to a table dynamically. */
-        function printScanResultPretty(codeId, decodedText, decodedResult) {
-
-            ///const urlParams = new URL(`${decodedText}`).searchParams;
-            console.log(`${decodedText}`);
-            $("#qr").val(`${decodedText}`);
-            var qrCodeValue = $("#qr").val();
-            processQrCode(qrCodeValue);
-            // Formatear la fecha y hora como "YYYY-MM-DD HH:MM:SS"
-            
-
-        }
-        docReady(function() {
-            hljs.initHighlightingOnLoad();
-            var lastMessage;
-            var codeId = 0;
-
-            function onScanSuccess(decodedText, decodedResult) {
-                /**
-                 * If you following the code example of this page by looking at the
-                 * source code of the demo page - good job!!
-                 *
-                 * Tip: update this function with a success callback of your choise.
-                 */
-                if (lastMessage !== decodedText) {
-                    lastMessage = decodedText;
-                    printScanResultPretty(codeId, decodedText, decodedResult);
-                    ++codeId;
-                }
-            }
-            var qrboxFunction = function(viewfinderWidth, viewfinderHeight) {
-                // Square QR Box, with size = 80% of the min edge.
-                var minEdgeSizeThreshold = 250;
-                var edgeSizePercentage = 0.75;
-                var minEdgeSize = (viewfinderWidth > viewfinderHeight) ?
-                    viewfinderHeight : viewfinderWidth;
-                var qrboxEdgeSize = Math.floor(minEdgeSize * edgeSizePercentage);
-                if (qrboxEdgeSize < minEdgeSizeThreshold) {
-                    if (minEdgeSize < minEdgeSizeThreshold) {
-                        return {
-                            width: minEdgeSize,
-                            height: minEdgeSize
-                        };
-                    } else {
-                        return {
-                            width: minEdgeSizeThreshold,
-                            height: minEdgeSizeThreshold
-                        };
-                    }
-                }
-                return {
-                    width: qrboxEdgeSize,
-                    height: qrboxEdgeSize
-                };
-            }
-            let html5QrcodeScanner = new Html5QrcodeScanner(
-                "reader", {
-                    fps: 10,
-                    qrbox: qrboxFunction,
-                    // Important notice: this is experimental feature, use it at your
-                    // own risk. See documentation in
-                    // mebjas@/html5-qrcode/src/experimental-features.ts
-                    experimentalFeatures: {
-                        useBarCodeDetectorIfSupported: true
-                    },
-                    //rememberLastUsedCamera: true,
-                    //showTorchButtonIfSupported: true
-                });
-            html5QrcodeScanner.render(onScanSuccess);
-        });
     });
     </script>
 @endsection

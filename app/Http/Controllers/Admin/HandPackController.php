@@ -69,11 +69,11 @@ class HandPackController extends Controller
     }
     public function lectorQr(Request $request){
         $qr = $request->get('qr');
-        
+
         $data=explode("]",$qr);
-        
+
         $handPack = HandPack::where('guuid', $data[2])->count();
-        
+
         if($handPack==0){
         $handPack=new HandPack();
         $fecha=date('Y-m-d H:i:s');
