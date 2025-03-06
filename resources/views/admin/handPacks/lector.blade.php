@@ -93,30 +93,61 @@
                 processQrCode(qrCodeValue);
             });
             // Configuración del escáner de cámara
-            const html5QrcodeScanner = new Html5QrcodeScanner(
-                "reader",
-                {
-                    fps: 10,
-                    qrbox: { width: 250, height: 250 }, // Cuadro de escaneo cuadrado
-                    experimentalFeatures: {
-                        useBarCodeDetectorIfSupported: true
+           // Obtener cámaras disponibles
+           Html5Qrcode.getCameras().then(devices => {
+                if (devices && devices.length) {
+                    const cameraSelect = $("#cameraSelect");
+                    devices.forEach(device => {
+                        cameraSelect.append(
+                            `<option value="${device.id}">${device.label || "Cámara " + device.id}</option>`
+                        );
+                    });
+
+                    // Iniciar con la primera cámara por defecto (puedes preferir la trasera)
+                    currentCameraId = devices[0].id;
+                    startScanner(currentCameraId);
+                } else {
+                    $("#scanned-result").html("No se encontraron cámaras disponibles").addClass("alert alert-danger");
+                }
+            }).catch(err => {
+                $("#scanned-result").html("Error al acceder a las cámaras: " + err).addClass("alert alert-danger");
+            });
+
+            // Cambiar cámara al seleccionar una nueva
+            $("#cameraSelect").on("change", function () {
+                const newCameraId = $(this).val();
+                if (newCameraId !== currentCameraId) {
+                    html5QrCode.stop().then(() => {
+                        currentCameraId = newCameraId;
+                        startScanner(currentCameraId);
+                    }).catch(err => {
+                        console.log("Error al detener el escáner: ", err);
+                    });
+                }
+            });
+
+            // Función para iniciar el escáner
+            function startScanner(cameraId) {
+                html5QrCode.start(
+                    cameraId,
+                    {
+                        fps: 10,
+                        qrbox: { width: 250, height: 250 }
+                    },
+                    (decodedText) => {
+                        if (decodedText !== lastMessage) {
+                            lastMessage = decodedText;
+                            $("#qr").val(decodedText);
+                            processQrCode(decodedText);
+                        }
+                    },
+                    (error) => {
+                        console.warn("Error de escaneo: ", error);
                     }
-                }
-            );
-
-            let lastMessage = null;
-
-            // Callback al escanear con éxito
-            function onScanSuccess(decodedText, decodedResult) {
-                if (decodedText !== lastMessage) { // Evitar repeticiones
-                    lastMessage = decodedText;
-                    $("#qr").val(decodedText);
-                    processQrCode(decodedText);
-                }
+                ).catch(err => {
+                    $("#scanned-result").html("Error al iniciar el escáner: " + err).addClass("alert alert-danger");
+                });
             }
-
-            // Iniciar el escáner
-            html5QrcodeScanner.render(onScanSuccess);
         });
     </script>
      <script>
