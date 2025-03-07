@@ -80,7 +80,7 @@ class HandPackController extends Controller
         $rut=str_replace("'","-",$data[0]);
         $embalaje=$data[1];
         $handPack->rut=$rut;
-        $handPack->embalaje=$embalaje;
+        $handPack->embalaje=str_replace(" Kgs","",$embalaje);
         $handPack->fecha=$fecha;
         $handPack->guuid=$data[2];
         $res=$handPack->save();

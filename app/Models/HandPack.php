@@ -33,12 +33,14 @@ class HandPack extends Model
     ];
 
     public const EMBALAJE_SELECT = [
-        '9'   => '9 Kgs',
-        '7'   => '7 Kgs',
-        '6'   => '6 Kgs',
-        '5'   => '5 Kgs',
-        '4.4' => '4,4 Kgs',
-        '4'   => '4 Kgs',
+        '9'   => '9',
+        '7'   => '7',
+        '6'   => '6',
+        '5'   => '5',
+        '4.4' => '4,4',
+        '4'   => '4',
+
+
     ];
 
     protected function serializeDate(DateTimeInterface $date)
@@ -51,5 +53,5 @@ class HandPack extends Model
         return $value ? Carbon::parse($value)->format(config('panel.date_format')) : null;
     }
 
-    
+
 }
