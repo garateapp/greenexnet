@@ -13,17 +13,7 @@
 
                 </div>
                 <span id="result" class="center"></span>
-                <div id="reader" style="width:300px;height:250px"></div>
-                <div id="reader__scan_region"
-                style="width: 100%; min-height: 100px; text-align: center; position: relative;"><video muted="true"
-                    playsinline="" style="width: 640px; display: block;"></video><canvas id="qr-canvas" width="360"
-                    height="360" style="width: 360px; height: 360px; display: none;"></canvas>
 
-                <div
-                    style="display: none; position: absolute; top: 0px; z-index: 1; background: yellow; text-align: center; width: 100%;">
-                    Scanner paused</div>
-            </div>
-            <div id="scanned-result"></div>
             <div id="scanned-result2"></div>
                 <div id="scanned-result"></div>
                 <div class="form-group">
@@ -70,12 +60,12 @@ const guid = params.get("guid");
                         success: function (response) {
                             console.log(response);
                             if (response.success) {
-                                $("#scanned-result")
+                                $("#scanned-result2")
                                     .html("EMBALAJE PROCESADO")
                                     .addClass("alert alert-success")
                                     .removeClass("alert alert-danger");
                             } else {
-                                $("#scanned-result")
+                                $("#scanned-result2")
                                     .html("EMBALAJE NO PROCESADO: " + response.data)
                                     .addClass("alert alert-danger")
                                     .removeClass("alert alert-success");
@@ -87,7 +77,7 @@ const guid = params.get("guid");
                             }, 100);
                         },
                         error: function (xhr) {
-                            $("#scanned-result")
+                            $("#scanned-result2")
                                 .html("Error al procesar el QR")
                                 .addClass("alert alert-danger");
                             console.log(xhr.responseText);
