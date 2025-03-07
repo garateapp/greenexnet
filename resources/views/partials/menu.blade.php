@@ -130,11 +130,11 @@
                 Packing
             </a>
             <ul class="c-sidebar-nav-dropdown-items">
-                
+
                 <li class="c-sidebar-nav-item">
                     <a href="{{ route('admin.hand-packs.index') }}"
                         class="c-sidebar-nav-link {{ request()->is('admin/hand-packs') || request()->is('admin/hand-packs/*') ? 'c-active' : '' }}">
-                        <i class="fa-fw fas fa-boxes-open c-box">
+                        <i class="fa-fw fas fa-box-open c-box">
 
                         </i>
                         HandPack
@@ -144,12 +144,12 @@
                         <a href="{{ route('admin.hand-packs.lector') }}"
                             class="c-sidebar-nav-link {{ request()->is('admin/hand-packs') || request()->is('admin/hand-packs/*') ? 'c-active' : '' }}">
                             <i class="fa-fw fas fa-hand-paper c-box">
-    
+
                             </i>
                             Lector HandPack
                         </a>
                     </li>
-                    
+
             </ul>
         </li>
         @endcan
