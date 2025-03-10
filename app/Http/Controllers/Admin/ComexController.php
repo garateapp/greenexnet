@@ -454,7 +454,9 @@ class ComexController extends Controller
                 // } else {
 
                 $variedad_id = $fila['Variedad'];
-                $especie_id=Variedad::where('nombre', $variedad_id)->first()->especie_id;
+                if($variedad_id!=''){
+                    $especie_id=Variedad::where('nombre', $variedad_id)->first()->especie_id;
+                }
                 //}
                 $pallet = isset($fila['Pallet']) ? $fila['Pallet'] : '';
                 $etiqueta_id = isset($fila['Etiqueta']) ? $fila['Etiqueta'] : '';
@@ -559,7 +561,7 @@ class ComexController extends Controller
                         'liqcabecera_id' => $liqcabecera_id,
                         'c_embalaje' => $c_embalaje,
                         'folio_fx' => $folio_fx
-                      
+
                     ]);
                     Log::info('Datos guardados correctamente' . "----" . $result);
                 } catch (\Exception $e) {
