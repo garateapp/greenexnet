@@ -455,7 +455,11 @@ class ComexController extends Controller
 
                 $variedad_id = $fila['Variedad'];
                 if($variedad_id!=''){
-                    $especie_id=Variedad::where('nombre', $variedad_id)->first()->especie_id;
+                    $especie=Variedad::where('nombre', $variedad_id)->first();
+                    if($especie){
+                        $especie_id=$especie->especie_id;
+                    }
+
                 }
                 //}
                 $pallet = isset($fila['Pallet']) ? $fila['Pallet'] : '';
