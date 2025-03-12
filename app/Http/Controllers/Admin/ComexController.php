@@ -1162,6 +1162,9 @@ class ComexController extends Controller
     public function actualizarValorGD_en_fx()
     {
 
+
+
+
         $affectedRows = 0;
         $resEjec = collect();
 
@@ -1170,13 +1173,13 @@ class ComexController extends Controller
         // if (session()->has('liqs')) {
         //     $liqs = session('liqs');
         // } else {
-        $liqs = $this->ConsolidadoLiquidaciones();
+        //$liqs = $this->ConsolidadoLiquidaciones();
 
         //session(['liqs' => $liqs]);
         //}
         //dd($liqs);
         // Obtener cabeceras
-        $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->get();
+        //$liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->get();
 
         $liqs = $this->ConsolidadoLiquidaciones();
         session(['liqs' => $liqs]);
@@ -1252,8 +1255,11 @@ class ComexController extends Controller
 
     public function ConsolidadoLiquidaciones()
     {
+
+
+
         $fg = $this;
-        $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->where('id','>',220)->where('id','<',258)->get(); // LiqCxCabecera::find(request('ids'));
+        $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->where('id','>',470)->get(); // LiqCxCabecera::find(request('ids'));
 
 
         $dataComparativa = collect();
