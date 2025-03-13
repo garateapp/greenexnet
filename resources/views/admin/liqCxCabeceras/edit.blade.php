@@ -420,474 +420,507 @@
         });
         $(document).ready(function() {
 
-            $("#btnActualizaGD").on("click", function(event) {
-                event.preventDefault(); // Evita recarga si el botón está dentro de un formulario
+                    $("#btnActualizaGD").on("click", function(event) {
+                        event.preventDefault(); // Evita recarga si el botón está dentro de un formulario
 
-                let btn = $(this); // Guardamos referencia al botón
-                btn.prop("disabled", true); // Deshabilitamos el botón
+                        let btn = $(this); // Guardamos referencia al botón
+                        btn.prop("disabled", true); // Deshabilitamos el botón
 
-                $("#msgOK, #msgKO").hide(); // Ocultamos mensajes previos
+                        $("#msgOK, #msgKO").hide(); // Ocultamos mensajes previos
 
-                $.ajax({
-                    url: "{{ route('admin.liq-cx-cabeceras.actualizarValorGD_Unitario', [$liqCxCabecera->id]) }}",
-                    method: "GET",
-                    success: function(response) {
-                        $("#msgOK").html("Datos actualizados correctamente!!").show();
-                    },
-                    error: function() {
-                        $("#msgKO").html("Error al actualizar los datos!!").show();
-                    },
-                    complete: function() {
-                        btn.prop("disabled",
-                            false); // Volvemos a habilitar el botón al finalizar la petición
-                    }
-                });
-            });
-
-
-            let liqCxCabecera = '{{ $liqCxCabecera->id }}';
-            let table = $('#liquidacionesTable').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: {
-                    url: '{{ route('admin.liq-cx-cabeceras.getDatosLiqItems') }}',
-                    data: function(d) {
-                        d.id = liqCxCabecera; // Pasar instructivo como parámetro
-                    }
-                },
-                fixedColumns: true,
-                fixedHeader: true,
-                responsive: true,
-                language: {
-
-                    url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-CL.json'
-                },
-                columns: [{
-                        data: 'id'
-                    },
-                
-
-                    {
-                        data: 'contenedor',
-                        render: makeEditable('contenedor')
-                    },
-                    {
-                        data: 'eta',
-                        render: makeEditable('eta')
-                    },
-                    {
-                        data: 'pallet',
-                        render: makeEditable('pallet')
-                    },
-                    {
-                        data: 'folio_fx',
-                        render: makeEditable('folio_fx')
-                    },
-                    {
-                        data: 'variedad_id',
-                        render: makeEditable('variedad_id')
-                    },
-                    {
-                        data: 'etiqueta_id',
-                        render: makeEditable('etiqueta_id')
-                    },
-                    {
-                        data: 'embalaje_id',
-                        render: makeEditable('embalaje_id')
-                    },
-                    {
-                        data: 'c_embalaje',
-                        render: makeEditable('c_embalaje')
-                    },
-                    {
-                        data: 'calibre',
-                        render: makeEditable('calibre')
-                    },
-                    {
-                        data: 'cantidad',
-                        render: makeEditable('cantidad')
-                    },
-                    {
-                        data: 'fecha_venta',
-                        render: makeEditable('fecha_venta')
-                    },
-                    {
-                        data: 'ventas',
-                        render: makeEditable('ventas')
-                    },
-                    {
-                        data: 'precio_unitario',
-                        render: makeEditable('precio_unitario')
-                    },
-                    {
-                        data: 'monto_rmb',
-                        render: makeEditable('monto_rmb')
-                    },
-                    {
-                        data: 'observaciones',
-                        render: makeEditable('observaciones')
-                    },
-                    {
-                        data: 'id',
-                        render: function(data) {
-                            return `<button class="btn btn-danger btn-sm delete-btn" data-id="${data}">Eliminar</button>`;
-                        },
-                        orderable: false,
-                        searchable: false
-                    }
-                ]
-            });
-            let tableCosto = $('#costosTable').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: {
-                    url: '{{ route('admin.liq-cx-cabeceras.getDatosLiqCostos') }}',
-                    data: function(d) {
-                        d.id = liqCxCabecera; // Pasar instructivo como parámetro
-                    }
-                },
-                fixedColumns: true,
-                fixedHeader: true,
-                responsive: true,
-                language: {
-
-                    url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-CL.json'
-                },
-                columns: [{
-                        data: 'id'
-                    },
-
-                    {
-                        data: 'categoria',
-                        render: makeEditable('categoria')
-                    },
-                    {
-                        data: 'nombre_costo',
-                        render: makeEditable('nombre_costo')
-                    },
-                    {
-                        data: 'valor',
-                        render: makeEditable('valor')
-                    },
-
-                    {
-                        data: 'id',
-                        render: function(data) {
-                            return `<button class="btn btn-danger btn-sm delete-btn" data-id="${data}">Eliminar</button>`;
-                        },
-                        orderable: false,
-                        searchable: false
-                    }
-                ]
-            });
-            // Función para permitir la edición inline
-            function makeEditable(field) {
-                return function(data, type, row, meta) {
-                    if (type === 'display') {
-                        if (field === 'categoria') {
-                            // Para el campo "categoria", mostrar un <select>
-                            return `<span class="no-editable" data-id="${row.id}" data-field="${field}">${data}</span>`;
-                        }
-                        // Para el resto de los campos, se mantiene como input normal
-                        if (data == "") {
-                            return `<span class="editable" data-id="${row.id}" data-field="${field}">S/I</span>`;
-                        } else {
-                            return `<span class="editable" data-id="${row.id}" data-field="${field}">${data}</span>`;
-                        }
-                    }
-
-                    return data;
-                }
-            }
-            // Evento para detectar clic en campos editables
-            $('#liquidacionesTable').on('click', '.editable', function() {
-                let span = $(this);
-                let currentValue = span.text();
-                let field = span.data('field');
-                let id = span.data('id');
-
-                // Reemplazar contenido con un input
-                let input = $(`<input type="text" class="form-control" value="${currentValue}">`);
-                span.replaceWith(input);
-
-                // Enfocar y manejar cambios
-                input.focus().blur(function() {
-                    let newValue = $(this).val();
-                    if (newValue !== currentValue) {
                         $.ajax({
-                            url: '{{ route('admin.liq-cx-cabeceras.updateInline') }}',
-                            method: 'POST',
-                            data: {
-                                _token: '{{ csrf_token() }}',
-                                id: id,
-                                field: field,
-                                value: newValue
-                            },
+                            url: "{{ route('admin.liq-cx-cabeceras.actualizarValorGD_Unitario', [$liqCxCabecera->id]) }}",
+                            method: "GET",
                             success: function(response) {
-                                if (response.success) {
-                                    input.replaceWith(
-                                        `<span class="editable" data-id="${id}" data-field="${field}">${newValue}</span>`
-                                    );
+                                $("#msgOK").html("Datos actualizados correctamente!!").show();
+                            },
+                            error: function() {
+                                $("#msgKO").html("Error al actualizar los datos!!").show();
+                            },
+                            complete: function() {
+                                btn.prop("disabled",
+                                    false); // Volvemos a habilitar el botón al finalizar la petición
+                            }
+                        });
+                    });
+
+
+                    let liqCxCabecera = '{{ $liqCxCabecera->id }}';
+                    let table = $('#liquidacionesTable').DataTable({
+                        processing: true,
+                        serverSide: true,
+                        ajax: {
+                            url: '{{ route('admin.liq-cx-cabeceras.getDatosLiqItems') }}',
+                            data: function(d) {
+                                d.id = liqCxCabecera; // Pasar instructivo como parámetro
+                            }
+                        },
+                        fixedColumns: true,
+                        fixedHeader: true,
+                        responsive: true,
+                        language: {
+
+                            url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-CL.json'
+                        },
+                        columns: [{
+                                data: 'id'
+                            },
+
+
+                            {
+                                data: 'contenedor',
+                                render: makeEditable('contenedor')
+                            },
+                            {
+                                data: 'eta',
+                                render: makeEditable('eta')
+                            },
+                            {
+                                data: 'pallet',
+                                render: makeEditable('pallet')
+                            },
+                            {
+                                data: 'folio_fx',
+                                render: makeEditable('folio_fx')
+                            },
+                            {
+                                data: 'variedad_id',
+                                render: makeEditable('variedad_id')
+                            },
+                            {
+                                data: 'etiqueta_id',
+                                render: makeEditable('etiqueta_id')
+                            },
+                            {
+                                data: 'embalaje_id',
+                                render: makeEditable('embalaje_id')
+                            },
+                            {
+                                data: 'c_embalaje',
+                                render: makeEditable('c_embalaje')
+                            },
+                            {
+                                data: 'calibre',
+                                render: makeEditable('calibre')
+                            },
+                            {
+                                data: 'cantidad',
+                                render: makeEditable('cantidad')
+                            },
+                            {
+                                data: 'fecha_venta',
+                                render: makeEditable('fecha_venta')
+                            },
+                            {
+                                data: 'ventas',
+                                render: makeEditable('ventas')
+                            },
+                            {
+                                data: 'precio_unitario',
+                                render: makeEditable('precio_unitario')
+                            },
+                            {
+                                data: 'monto_rmb',
+                                render: makeEditable('monto_rmb')
+                            },
+                            {
+                                data: 'observaciones',
+                                render: makeEditable('observaciones')
+                            },
+                            {
+                                data: 'id',
+                                render: function(data) {
+                                    return `<button class="btn btn-danger btn-sm delete-btn" data-id="${data}">Eliminar</button><button class="btn btn-primary btn-sm clone-btn" data-id="${data}">Clonar</button>`;
+                                },
+                                orderable: false,
+                                searchable: false
+                            }
+                        ]
+                    });
+                    // Evento para el botón clonar
+                    $('#liquidacionesTable tbody').on('click', '.clone-btn', function() {
+                        let id = $(this).data('id');
+
+                        // Confirmación opcional
+                        if (confirm('¿Está seguro de que desea clonar este registro?')) {
+                            $.ajax({
+                                url: '{{ route('admin.liq-cx-cabeceras.cloneItem') }}', // Necesitarás crear esta ruta
+                                method: 'POST',
+                                data: {
+                                    id: id,
+                                    liqCxCabecera: liqCxCabecera,
+                                    _token: '{{ csrf_token() }}' // Token CSRF para Laravel
+                                },
+                                success: function(response) {
+                                    if (response.success) {
+                                        table.ajax.reload(); // Recarga la tabla
+                                        alert('Registro clonado exitosamente');
+                                    } else {
+                                        alert('Error al clonar: ' + response.message);
+                                    }
+                                },
+                                error: function(xhr) {
+                                    alert('Error al procesar la solicitud');
+                                    console.log(xhr.responseText);
+                                }
+                            });
+                        }
+                    });
+                        let tableCosto = $('#costosTable').DataTable({
+                            processing: true,
+                            serverSide: true,
+                            ajax: {
+                                url: '{{ route('admin.liq-cx-cabeceras.getDatosLiqCostos') }}',
+                                data: function(d) {
+                                    d.id = liqCxCabecera; // Pasar instructivo como parámetro
+                                }
+                            },
+                            fixedColumns: true,
+                            fixedHeader: true,
+                            responsive: true,
+                            language: {
+
+                                url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-CL.json'
+                            },
+                            columns: [{
+                                    data: 'id'
+                                },
+
+                                {
+                                    data: 'categoria',
+                                    render: makeEditable('categoria')
+                                },
+                                {
+                                    data: 'nombre_costo',
+                                    render: makeEditable('nombre_costo')
+                                },
+                                {
+                                    data: 'valor',
+                                    render: makeEditable('valor')
+                                },
+
+                                {
+                                    data: 'id',
+                                    render: function(data) {
+                                        return `<button class="btn btn-danger btn-sm delete-btn" data-id="${data}">Eliminar</button>`;
+                                    },
+                                    orderable: false,
+                                    searchable: false
+                                }
+                            ]
+                        });
+                        // Función para permitir la edición inline
+                        function makeEditable(field) {
+                            return function(data, type, row, meta) {
+                                if (type === 'display') {
+                                    if (field === 'categoria') {
+                                        // Para el campo "categoria", mostrar un <select>
+                                        return `<span class="no-editable" data-id="${row.id}" data-field="${field}">${data}</span>`;
+                                    }
+                                    // Para el resto de los campos, se mantiene como input normal
+                                    if (data == "") {
+                                        return `<span class="editable" data-id="${row.id}" data-field="${field}">S/I</span>`;
+                                    } else {
+                                        return `<span class="editable" data-id="${row.id}" data-field="${field}">${data}</span>`;
+                                    }
+                                }
+
+                                return data;
+                            }
+                        }
+                        // Evento para detectar clic en campos editables
+                        $('#liquidacionesTable').on('click', '.editable', function() {
+                            let span = $(this);
+                            let currentValue = span.text();
+                            let field = span.data('field');
+                            let id = span.data('id');
+
+                            // Reemplazar contenido con un input
+                            let input = $(
+                                `<input type="text" class="form-control" value="${currentValue}">`);
+                            span.replaceWith(input);
+
+                            // Enfocar y manejar cambios
+                            input.focus().blur(function() {
+                                let newValue = $(this).val();
+                                if (newValue !== currentValue) {
+                                    $.ajax({
+                                        url: '{{ route('admin.liq-cx-cabeceras.updateInline') }}',
+                                        method: 'POST',
+                                        data: {
+                                            _token: '{{ csrf_token() }}',
+                                            id: id,
+                                            field: field,
+                                            value: newValue
+                                        },
+                                        success: function(response) {
+                                            if (response.success) {
+                                                input.replaceWith(
+                                                    `<span class="editable" data-id="${id}" data-field="${field}">${newValue}</span>`
+                                                );
+                                            } else {
+                                                alert('Error al actualizar el campo.');
+                                                input.replaceWith(
+                                                    `<span class="editable" data-id="${id}" data-field="${field}">${currentValue}</span>`
+                                                );
+                                            }
+                                        },
+                                        error: function() {
+                                            alert('Error al conectar con el servidor.');
+                                            input.replaceWith(
+                                                `<span class="editable" data-id="${id}" data-field="${field}">${currentValue}</span>`
+                                            );
+                                        }
+                                    });
                                 } else {
-                                    alert('Error al actualizar el campo.');
                                     input.replaceWith(
                                         `<span class="editable" data-id="${id}" data-field="${field}">${currentValue}</span>`
                                     );
                                 }
-                            },
-                            error: function() {
-                                alert('Error al conectar con el servidor.');
-                                input.replaceWith(
-                                    `<span class="editable" data-id="${id}" data-field="${field}">${currentValue}</span>`
-                                );
+                            });
+                        });
+                        $('#liquidacionesTable').on('click', '.delete-btn', function() {
+                            let id = $(this).data('id');
+
+                            if (confirm('¿Estás seguro de que deseas eliminar esta línea?')) {
+                                $.ajax({
+                                    url: `/admin/liq-cx-cabeceras/destroyItem/${id}`,
+                                    method: 'GET',
+                                    data: {
+                                        _token: '{{ csrf_token() }}'
+                                    },
+                                    success: function(response) {
+                                        if (response.success) {
+                                            alert(response.message);
+                                            table.ajax.reload(); // Recargar la tabla
+                                        } else {
+                                            alert('Error al eliminar la línea.');
+                                        }
+                                    },
+                                    error: function() {
+                                        alert(
+                                        'Ocurrió un error al intentar eliminar la línea.');
+                                    }
+                                });
                             }
                         });
-                    } else {
-                        input.replaceWith(
-                            `<span class="editable" data-id="${id}" data-field="${field}">${currentValue}</span>`
-                        );
-                    }
-                });
-            });
-            $('#liquidacionesTable').on('click', '.delete-btn', function() {
-                let id = $(this).data('id');
+                        $('#costosTable').on('click', '.editable', function() {
+                            let span = $(this);
+                            let currentValue = span.text();
+                            let field = span.data('field');
+                            let id = span.data('id');
 
-                if (confirm('¿Estás seguro de que deseas eliminar esta línea?')) {
-                    $.ajax({
-                        url: `/admin/liq-cx-cabeceras/destroyItem/${id}`,
-                        method: 'GET',
-                        data: {
-                            _token: '{{ csrf_token() }}'
-                        },
-                        success: function(response) {
-                            if (response.success) {
-                                alert(response.message);
-                                table.ajax.reload(); // Recargar la tabla
-                            } else {
-                                alert('Error al eliminar la línea.');
-                            }
-                        },
-                        error: function() {
-                            alert('Ocurrió un error al intentar eliminar la línea.');
-                        }
-                    });
-                }
-            });
-            $('#costosTable').on('click', '.editable', function() {
-                let span = $(this);
-                let currentValue = span.text();
-                let field = span.data('field');
-                let id = span.data('id');
+                            // Reemplazar contenido con un input
+                            let input = $(
+                                `<input type="text" class="form-control" value="${currentValue}">`);
+                            span.replaceWith(input);
 
-                // Reemplazar contenido con un input
-                let input = $(`<input type="text" class="form-control" value="${currentValue}">`);
-                span.replaceWith(input);
-
-                // Enfocar y manejar cambios
-                input.focus().blur(function() {
-                    let newValue = $(this).val();
-                    if (newValue !== currentValue) {
-                        $.ajax({
-                            url: '{{ route('admin.liq-costos.updatecosto') }}',
-                            method: 'POST',
-                            data: {
-                                _token: '{{ csrf_token() }}',
-                                id: id,
-                                field: field,
-                                value: newValue
-                            },
-                            success: function(response) {
-                                if (response.success) {
-                                    input.replaceWith(
-                                        `<span class="editable" data-id="${id}" data-field="${field}">${newValue}</span>`
-                                    );
+                            // Enfocar y manejar cambios
+                            input.focus().blur(function() {
+                                let newValue = $(this).val();
+                                if (newValue !== currentValue) {
+                                    $.ajax({
+                                        url: '{{ route('admin.liq-costos.updatecosto') }}',
+                                        method: 'POST',
+                                        data: {
+                                            _token: '{{ csrf_token() }}',
+                                            id: id,
+                                            field: field,
+                                            value: newValue
+                                        },
+                                        success: function(response) {
+                                            if (response.success) {
+                                                input.replaceWith(
+                                                    `<span class="editable" data-id="${id}" data-field="${field}">${newValue}</span>`
+                                                );
+                                            } else {
+                                                alert('Error al actualizar el campo.');
+                                                input.replaceWith(
+                                                    `<span class="editable" data-id="${id}" data-field="${field}">${currentValue}</span>`
+                                                );
+                                            }
+                                        },
+                                        error: function() {
+                                            alert('Error al conectar con el servidor.');
+                                            input.replaceWith(
+                                                `<span class="editable" data-id="${id}" data-field="${field}">${currentValue}</span>`
+                                            );
+                                        }
+                                    });
                                 } else {
-                                    alert('Error al actualizar el campo.');
                                     input.replaceWith(
                                         `<span class="editable" data-id="${id}" data-field="${field}">${currentValue}</span>`
                                     );
                                 }
-                            },
-                            error: function() {
-                                alert('Error al conectar con el servidor.');
-                                input.replaceWith(
-                                    `<span class="editable" data-id="${id}" data-field="${field}">${currentValue}</span>`
-                                );
+                            });
+                        });
+
+
+                        $('#costosTable').on('click', '.delete-btn', function() {
+                            let id = $(this).data('id');
+
+                            if (confirm('¿Estás seguro de que deseas eliminar esta línea?')) {
+                                $.ajax({
+                                    url: `/admin/liq-cx-cabeceras/destroyCosto/${id}`,
+                                    method: 'GET',
+                                    data: {
+                                        _token: '{{ csrf_token() }}'
+                                    },
+                                    success: function(response) {
+                                        if (response.success) {
+                                            alert(response.message);
+                                            tableCosto.ajax.reload(); // Recargar la tabla
+                                        } else {
+                                            alert('Error al eliminar la línea.');
+                                        }
+                                    },
+                                    error: function() {
+                                        alert(
+                                        'Ocurrió un error al intentar eliminar la línea.');
+                                    }
+                                });
                             }
                         });
-                    } else {
-                        input.replaceWith(
-                            `<span class="editable" data-id="${id}" data-field="${field}">${currentValue}</span>`
-                        );
-                    }
-                });
-            });
+                        // Función para agregar una fila a Liquidaciones
 
 
-            $('#costosTable').on('click', '.delete-btn', function() {
-                let id = $(this).data('id');
+                        $("#saveLiquidacion").click(function() {
+                            var liqcabecera_id = liqCxCabecera;
+                            var contenedor = $('#contenedor').val();
+                            var eta = $('#eta').val();
+                            var pallet = $('#pallet').val();
+                            var variedad_id = $('#variedad_id').val();
+                            var etiqueta_id = $('#etiqueta_id').val();
+                            var embalaje_id = $('#embalaje_id').val();
+                            var calibre = $('#calibre').val();
+                            var cantidad = $('#cantidad').val();
+                            var fecha_venta = $('#fecha_venta').val();
+                            var ventas = $('#ventas').val();
+                            var precio_unitario = $('#precio_unitario').val();
+                            var monto_rmb = $('#monto_rmb').val();
+                            var observaciones = $('#observaciones').val();
+                            $.ajax({
+                                url: '{{ route('admin.liquidaciones-cxes.store') }}',
+                                method: 'POST',
+                                data: {
+                                    liqcabecera_id: liqcabecera_id,
+                                    contenedor: contenedor,
+                                    eta: eta,
+                                    pallet: pallet,
+                                    variedad_id: variedad_id,
+                                    etiqueta_id: etiqueta_id,
+                                    embalaje_id: embalaje_id,
+                                    calibre: calibre,
+                                    cantidad: cantidad,
+                                    fecha_venta: fecha_venta,
+                                    ventas: ventas,
+                                    precio_unitario: precio_unitario,
+                                    monto_rmb: monto_rmb,
+                                    observaciones: observaciones,
+                                    _token: $('meta[name="csrf-token"]').attr('content')
+                                },
+                                success: function(response) {
+                                    if (response.success) {
+                                        alert(response.message);
+                                        // Cierra el modal
+                                        $("#addLiquidacionModal").modal('hide');
+                                        // Limpia el formulario
+                                        document.getElementById('liquidacionForm').reset();
+                                        // Actualiza la tabla
+                                        $('#liquidacionesTable').DataTable().ajax.reload();
+                                    } else {
+                                        alert('Error al guardar el item: ' + response.message);
+                                    }
+                                },
+                                error: function() {
+                                    alert('Ocurrio un error al intentar guardar el item.');
+                                }
+                            });
+                        });
+                        $('#saveCostoBtn').click(function() {
+                            var categoria = $('#categoria').val();
+                            var nombre_costo = $('#nombre_costo').val();
+                            var valor = $('#valor').val();
 
-                if (confirm('¿Estás seguro de que deseas eliminar esta línea?')) {
-                    $.ajax({
-                        url: `/admin/liq-cx-cabeceras/destroyCosto/${id}`,
-                        method: 'GET',
-                        data: {
-                            _token: '{{ csrf_token() }}'
-                        },
-                        success: function(response) {
-                            if (response.success) {
-                                alert(response.message);
-                                tableCosto.ajax.reload(); // Recargar la tabla
+                            // Validar los campos antes de enviar
+                            if (categoria && nombre_costo && valor) {
+                                // Agregar la nueva fila al DataTable
+                                $.ajax({
+                                    url: '{{ route('admin.liq-costos.store') }}', // Ruta para guardar los datos
+                                    method: 'POST',
+                                    data: {
+                                        liq_cabecera_id: liqCxCabecera,
+                                        categoria: categoria,
+                                        nombre_costo: nombre_costo,
+                                        valor: valor,
+                                        _token: $('meta[name="csrf-token"]').attr('content')
+                                    },
+                                    success: function(response) {
+                                        // Recargar la tabla después de guardar
+                                        tableCosto.ajax.reload();
+
+                                        //closeModal('addCostoModal');
+                                        var modal = new bootstrap.Modal(document.getElementById(
+                                            'addCostoModal'));
+                                        modal.hide();
+
+                                        $('#addCostoForm')[0].reset();
+                                    },
+                                    error: function(error) {
+                                        alert('Hubo un error al guardar los datos.');
+                                    }
+                                });
+
                             } else {
-                                alert('Error al eliminar la línea.');
+                                alert("Por favor complete todos los campos.");
                             }
-                        },
-                        error: function() {
-                            alert('Ocurrió un error al intentar eliminar la línea.');
+                        });
+
+                        // Guardar una fila editada
+                        $('#liquidacionesTable, #costosTable').on('click', '.save-btn', function() {
+                            let row = $(this).closest('tr');
+                            let data = row.find('input').map(function() {
+                                return $(this).val();
+                            }).get();
+
+                        });
+                        // Guardar una fila editada
+                        $('#costosTable').on('click', '.save-btn', function() {
+                            let row = $(this).closest('tr');
+                            let data = row.find('input').map(function() {
+                                return $(this).val();
+                            }).get();
+
+                            // Aquí puedes hacer una llamada AJAX para guardar los datos
+
+                            // Ejemplo de solicitud AJAX:
+                            // $.ajax({
+                            //     url: '/ruta/a/guardar',
+                            //     method: 'POST',
+                            //     data: {
+                            //         _token: '{{ csrf_token() }}',
+                            //         data: data
+                            //     },
+                            //     success: function(response) {
+                            //         alert('Fila guardada');
+                            //         liquidacionesTable.ajax.reload();
+                            //         costosTable.ajax.reload();
+                            //     },
+                            //     error: function() {
+                            //         alert('Hubo un error al guardar la fila');
+                            //     }
+                            // });
+                        });
+
+                        function openModal(id) {
+                            document.getElementById(id).setAttribute('aria-hidden', 'false');
+                            document.getElementById(id).focus();
                         }
+
+                        function closeModal(id) {
+                            document.getElementById(id).setAttribute('aria-hidden', 'true');
+                        }
+
                     });
-                }
-            });
-            // Función para agregar una fila a Liquidaciones
-
-
-            $("#saveLiquidacion").click(function() {
-                var liqcabecera_id = liqCxCabecera;
-                var contenedor = $('#contenedor').val();
-                var eta = $('#eta').val();
-                var pallet = $('#pallet').val();
-                var variedad_id = $('#variedad_id').val();
-                var etiqueta_id = $('#etiqueta_id').val();
-                var embalaje_id = $('#embalaje_id').val();
-                var calibre = $('#calibre').val();
-                var cantidad = $('#cantidad').val();
-                var fecha_venta = $('#fecha_venta').val();
-                var ventas = $('#ventas').val();
-                var precio_unitario = $('#precio_unitario').val();
-                var monto_rmb = $('#monto_rmb').val();
-                var observaciones = $('#observaciones').val();
-                $.ajax({
-                    url: '{{ route('admin.liquidaciones-cxes.store') }}',
-                    method: 'POST',
-                    data: {
-                        liqcabecera_id: liqcabecera_id,
-                        contenedor: contenedor,
-                        eta: eta,
-                        pallet: pallet,
-                        variedad_id: variedad_id,
-                        etiqueta_id: etiqueta_id,
-                        embalaje_id: embalaje_id,
-                        calibre: calibre,
-                        cantidad: cantidad,
-                        fecha_venta: fecha_venta,
-                        ventas: ventas,
-                        precio_unitario: precio_unitario,
-                        monto_rmb: monto_rmb,
-                        observaciones: observaciones,
-                        _token: $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            alert(response.message);
-                            // Cierra el modal
-                            $("#addLiquidacionModal").modal('hide');
-                            // Limpia el formulario
-                            document.getElementById('liquidacionForm').reset();
-                            // Actualiza la tabla
-                            $('#liquidacionesTable').DataTable().ajax.reload();
-                        } else {
-                            alert('Error al guardar el item: ' + response.message);
-                        }
-                    },
-                    error: function() {
-                        alert('Ocurrio un error al intentar guardar el item.');
-                    }
-                });
-            });
-            $('#saveCostoBtn').click(function() {
-                var categoria = $('#categoria').val();
-                var nombre_costo = $('#nombre_costo').val();
-                var valor = $('#valor').val();
-
-                // Validar los campos antes de enviar
-                if (categoria && nombre_costo && valor) {
-                    // Agregar la nueva fila al DataTable
-                    $.ajax({
-                        url: '{{ route('admin.liq-costos.store') }}', // Ruta para guardar los datos
-                        method: 'POST',
-                        data: {
-                            liq_cabecera_id: liqCxCabecera,
-                            categoria: categoria,
-                            nombre_costo: nombre_costo,
-                            valor: valor,
-                            _token: $('meta[name="csrf-token"]').attr('content')
-                        },
-                        success: function(response) {
-                            // Recargar la tabla después de guardar
-                            tableCosto.ajax.reload();
-
-                            //closeModal('addCostoModal');
-                            var modal = new bootstrap.Modal(document.getElementById(
-                                'addCostoModal'));
-                            modal.hide();
-
-                            $('#addCostoForm')[0].reset();
-                        },
-                        error: function(error) {
-                            alert('Hubo un error al guardar los datos.');
-                        }
-                    });
-
-                } else {
-                    alert("Por favor complete todos los campos.");
-                }
-            });
-
-            // Guardar una fila editada
-            $('#liquidacionesTable, #costosTable').on('click', '.save-btn', function() {
-                let row = $(this).closest('tr');
-                let data = row.find('input').map(function() {
-                    return $(this).val();
-                }).get();
-
-            });
-            // Guardar una fila editada
-            $('#costosTable').on('click', '.save-btn', function() {
-                let row = $(this).closest('tr');
-                let data = row.find('input').map(function() {
-                    return $(this).val();
-                }).get();
-
-                // Aquí puedes hacer una llamada AJAX para guardar los datos
-
-                // Ejemplo de solicitud AJAX:
-                // $.ajax({
-                //     url: '/ruta/a/guardar',
-                //     method: 'POST',
-                //     data: {
-                //         _token: '{{ csrf_token() }}',
-                //         data: data
-                //     },
-                //     success: function(response) {
-                //         alert('Fila guardada');
-                //         liquidacionesTable.ajax.reload();
-                //         costosTable.ajax.reload();
-                //     },
-                //     error: function() {
-                //         alert('Hubo un error al guardar la fila');
-                //     }
-                // });
-            });
-
-            function openModal(id) {
-                document.getElementById(id).setAttribute('aria-hidden', 'false');
-                document.getElementById(id).focus();
-            }
-
-            function closeModal(id) {
-                document.getElementById(id).setAttribute('aria-hidden', 'true');
-            }
-
-        });
     </script>
 @endsection

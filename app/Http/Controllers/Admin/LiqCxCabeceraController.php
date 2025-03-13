@@ -26,7 +26,7 @@ use App\Libs\Liquidaciones;
 use App\Libs\Funciones_Globales;
 use DB;
 use Illuminate\Support\Str;
-
+use League\CommonMark\Extension\CommonMark\Parser\Block\ListItemParser;
 
 class LiqCxCabeceraController extends Controller
 {
@@ -232,7 +232,40 @@ class LiqCxCabeceraController extends Controller
 
         return redirect()->route('admin.liq-cx-cabeceras.index');
     }
+    public function cloneItem(Request $request){
+        try {
+            // Validar la solicitud
+            // $request->validate([
+            //     'id' => 'required|exists:liquidaciones_cxes,id', // Cambia 'tu_tabla' por el nombre real
+            //     'liqCxCabecera' => 'required|exists:liq_cx_cabeceras,id'
+            // ]);
 
+            // Buscar el registro original
+            $original = LiquidacionesCx::findOrFail($request->id); // Cambia TuModelo por tu modelo real
+
+            // Crear una nueva instancia clonando los datos
+            $clonado = $original->replicate();
+            $clonado->liqcabecera_id = $request->liqCxCabecera; // Asegura la relación
+
+            // Opcional: Modificar algunos campos si es necesario
+            $clonado->created_at = now();
+            $clonado->updated_at = now();
+
+            // Guardar el nuevo registro
+            $clonado->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Registro clonado exitosamente'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
     public function show(LiqCxCabecera $liqCxCabecera)
     {
         abort_if(Gate::denies('liq_cx_cabecera_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
