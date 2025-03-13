@@ -383,7 +383,7 @@ class LiqCxCabeceraController extends Controller
                         // Verificamos si el folio del despacho está en la lista
                         $folioMatch = in_array($despacho->folio, $folios);
                         if ($item['folio_fx'] === $despacho->folio || $folioMatch) {
-                            if ($item['folio_fx'] == 24017598) {
+                            if ($item['folio_fx'] == '24017087') {
 
 
                                 Log::info('Comparando:', [
