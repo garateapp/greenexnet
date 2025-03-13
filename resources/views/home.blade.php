@@ -395,37 +395,40 @@
         </div>
         <script>
             document.addEventListener("DOMContentLoaded", function() {
-                $("#btnActualizaGD").on("click", function(event) {
+                $("#btnActualizaGD").on("click", async function(event) {
                     event.preventDefault(); // Evita recarga si el botón está dentro de un formulario
 
                     let btn = $(this); // Guardamos referencia al botón
                     btn.prop("disabled", true); // Deshabilitamos el botón
 
                     $("#msgOK, #msgKO").hide(); // Ocultamos mensajes previos
-                    console.log(InstructivosFXNoProcesadosCompleto);
 
-                    InstructivosFXNoProcesadosCompleto.forEach(function(instructivo) {
+                    for (const instructivo of InstructivosFXNoProcesadosCompleto) {
+                        await actualizaFOB(instructivo.id, instructivo.Numero_Embarque);
+                    }
 
-                     await actualizaFOB(instructivo.id,instructivo.Numero_Embarque);
-                    });
                     btn.prop("disabled",
-                    false); // Volvemos a habilitar el botón al finalizar la petición
+                    false); // Volvemos a habilitar el botón al finalizar todas las peticiones
                 });
 
-                async function actualizaFOB(id,numero_embarque) {
+                async function actualizaFOB(id, numero_embarque) {
                     const url = `/admin/liq-cx-cabeceras/actualizarValorGD_Unitario/${id}`;
-                    $.ajax({
-                        url: url,
-                        method: "GET",
-                        success: function(response) {
-                            $("#msgOK").html("Datos embarque "+numero_embarque+" actualizados !! ").show();
-                        },
-                        error: function() {
-                            $("#msgKO").html("Error al actualizar los datos  embarque "+numero_embarque+"!!").show();
-                        },
-                        complete: function() {
 
-                        }
+                    return new Promise((resolve, reject) => {
+                        $.ajax({
+                            url: url,
+                            method: "GET",
+                            success: function(response) {
+                                $("#msgOK").html("Datos embarque " + numero_embarque +
+                                    " actualizados !! ").show();
+                                resolve();
+                            },
+                            error: function() {
+                                $("#msgKO").html("Error al actualizar los datos embarque " +
+                                    numero_embarque + "!!").show();
+                                reject();
+                            }
+                        });
                     });
                 }
 
