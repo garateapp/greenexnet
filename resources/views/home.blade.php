@@ -406,7 +406,7 @@
 
                     InstructivosFXNoProcesadosCompleto.forEach(function(instructivo) {
 
-                       // actualizaFOB(instructivo.id);
+                       actualizaFOB(instructivo.id);
                     });
                 });
 
