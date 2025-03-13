@@ -499,7 +499,7 @@
                                 tbodyNoCargados.append(row);
                             });
                             InstructivosFXNoProcesadosCompleto.forEach(function(instructivo) {
-                                if (instructivo.id == null) {
+                                if (instructivo.id != null) {
                                     let row = `<tr>
                           <td><a target="_blank" href="admin/liq-cx-cabeceras/${instructivo.id}/edit">${instructivo.Numero_Embarque}</a></td>
                     </tr>`;
