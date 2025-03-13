@@ -498,8 +498,10 @@
                </tr>`;
                                 tbodyNoCargados.append(row);
                             });
+                            totalSinFOB=0;
                             InstructivosFXNoProcesadosCompleto.forEach(function(instructivo) {
                                 if (instructivo.id != null) {
+                                    totalSinFOB++;
                                     let row = `<tr>
                           <td><a target="_blank" href="admin/liq-cx-cabeceras/${instructivo.id}/edit">${instructivo.Numero_Embarque}</a></td>
                     </tr>`;
