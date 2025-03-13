@@ -819,7 +819,7 @@ class ComexController extends Controller
                         'RMB otros costos TO' => '=+AN' . $i . '*Y' . $i, //AO
                         'Flete marit. Caja RMB' => '=+(' . ($costosFleteInternacional == 0 ? 0 : $costosFleteInternacional) . '/' . $total_kilos . ')*P' . $i, //AP
                         'RMB Flete Marit. TO' => '=+AP' . $i . '*Y' . $i, //AQ
-                        'Costos cajas RMB' => '=+AF' . $i . '+AH' . $i . '+AJ' . $i . '+AL' . $i . '+AN' . $i . '+AB' . $i . '+AP' . $i . '+(CA' . $i . '*AV' . $i . ')+(BO' . $i . '*AV' . $i . ')-(CC' . $i . '*AV' . $i . ')+(BQ' . $i . '*AV' . $i . ')', //AR
+                        'Costos cajas RMB' => '=+AF' . $i . '+AH' . $i . '+AJ' . $i . '+AL' . $i . '+AN' . $i . '+AB' . $i . '+AP' . $i . '+(CA' . $i . '*AV' . $i . ')+(BO' . $i . '*AV' . $i . ')+(BQ' . $i . '*AV' . $i . ')', //AR -(CC' . $i . '*AV' . $i . ') Se elimina por que no incide
                         'RMB Costos TO' => '=+AR' . $i . '*Y' . $i, //AS
                         'Resultados caja RMB' => '=+Z' . $i . '-AR' . $i,  //AT  Verificar con Haydelin
                         'RMB result. TO' => '=+AT' . $i . '*Y' . $i, //AU  Verificar con Haydelin
@@ -1071,7 +1071,7 @@ class ComexController extends Controller
                         'RMB otros costos TO' => '=+AN' . $i . '*Y' . $i, //AO
                         'Flete marit. Caja RMB' => '=+(' . ($costosFleteInternacional == 0 ? 0 : $costosFleteInternacional) . '/' . $total_kilos . ')*P' . $i, //AP
                         'RMB Flete Marit. TO' => '=+AP' . $i . '*Y' . $i, //AQ
-                        'Costos cajas RMB' => '=+AF' . $i . '+AH' . $i . '+AJ' . $i . '+AL' . $i . '+AN' . $i . '+AB' . $i . '+AP' . $i . '+(CA' . $i . '*AV' . $i . ')+(BO' . $i . '*AV' . $i . ')-(CC' . $i . '*AV' . $i . ')+(BQ' . $i . '*AV' . $i . ')', //AR
+                        'Costos cajas RMB' => '=+AF' . $i . '+AH' . $i . '+AJ' . $i . '+AL' . $i . '+AN' . $i . '+AB' . $i . '+AP' . $i . '+(CA' . $i . '*AV' . $i . ')+(BO' . $i . '*AV' . $i . ')+(BQ' . $i . '*AV' . $i . ')', //AR -(CC' . $i . '*AV' . $i . ')
                         'RMB Costos TO' => '=+AR' . $i . '*Y' . $i, //AS
                         'Resultados caja RMB' => '=+Z' . $i . '-AR' . $i,  //AT  Verificar con Haydelin
                         'RMB result. TO' => '=+AT' . $i . '*Y' . $i, //AU  Verificar con Haydelin
@@ -1296,7 +1296,7 @@ class ComexController extends Controller
             $total_kilos = 0;
             $total_ventas = 0;
             foreach ($detalle as $item) {
-                $total_kilos = $total_kilos + (float)(str_replace(',', '.', $fg->traducedatos($item->embalaje_id, 'Embalaje')>0 ? $fg->traducedatos($item->embalaje_id, 'Embalaje') : $item->embalaje)) * (float)(str_replace(',', '.', $item->cantidad));
+                $total_kilos = $total_kilos + (float)(str_replace(',', '.', $fg->traducedatos($item->embalaje_id, 'Embalaje') ? $fg->traducedatos($item->embalaje_id, 'Embalaje') : $item->embalaje)) * (float)(str_replace(',', '.', $item->cantidad));
 
                 $total_ventas = $total_ventas + $item->cantidad * (float)(str_replace(',', '.', $item->precio_unitario));
                 // Log::info("Total Venta: " . $total_ventas);
@@ -1416,7 +1416,7 @@ class ComexController extends Controller
                 $Flete_Aereo = ($flete_exportadora / $total_kilos) * $Peso_neto; //BQ
                 $Flete_Aereo_TO = $Flete_Aereo * $Cajas; //BR
                 $Costos_cajas_RMB = $Imp_destino_caja_RMB + $Costo_log_Caja_RMB + $Ent_Al_mercado_Caja_RMB + $Costo_mercado_caja_RMB + $Otros_costos_dest_Caja_RMB +
-                $Comision_Caja + $Flete_marit_Caja_RMB + ($Otros_Impuestos_JWM_Impuestos * $TC) + ($Ajuste_impuesto_USD * $TC) - ($Otros_Ingresos_abonos * $TC) + ($Flete_Aereo * $TC); //AR
+                $Comision_Caja + $Flete_marit_Caja_RMB + ($Otros_Impuestos_JWM_Impuestos * $TC) + ($Ajuste_impuesto_USD * $TC)  + ($Flete_Aereo * $TC); //AR - ($Otros_Ingresos_abonos * $TC)
                 $RMB_Costos_TO = $Costos_cajas_RMB * $Cajas; //AS
                 $Resultados_caja_RMB =  $RMB_Caja - $Costos_cajas_RMB;  //AT  Verificar con Haydelin
                 $RMB_result_TO = $Resultados_caja_RMB * $Cajas; //AU  Verificar con Haydelin

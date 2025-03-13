@@ -402,15 +402,16 @@
                     btn.prop("disabled", true); // Deshabilitamos el botón
 
                     $("#msgOK, #msgKO").hide(); // Ocultamos mensajes previos
+                    console.log(InstructivosFXNoProcesadosCompleto);
 
                     InstructivosFXNoProcesadosCompleto.forEach(function(instructivo) {
 
-                        actualizaFOB(instructivo.id);
+                       // actualizaFOB(instructivo.id);
                     });
                 });
 
                 function actualizaFOB(id,numero_embarque) {
-                    const url = `/admin/liq-cx-cabeceras/${id}/actualizar-valor-gd-unitario`;
+                    const url = `/admin/liq-cx-cabeceras/actualizarValorGD_Unitario/${id}`;
                     $.ajax({
                         url: url,
                         method: "GET",
