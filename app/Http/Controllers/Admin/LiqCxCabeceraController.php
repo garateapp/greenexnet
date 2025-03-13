@@ -393,10 +393,10 @@ class LiqCxCabeceraController extends Controller
                             }
 
                             return $folioMatch &&
-                                strcasecmp($item['variedad'], trim($despacho->n_variedad_rotulacion)) === 0 &&
-                                strcasecmp($item['embalaje'], trim($despacho->c_embalaje)) === 0 &&
-                                strcasecmp($item['calibre'], trim($despacho->n_calibre)) === 0 &&
-                                strcasecmp($item['etiqueta'], trim($despacho->n_etiqueta)) === 0;
+                                strcasecmp(trim($item['variedad']), trim($despacho->n_variedad_rotulacion)) === 0 &&
+                                strcasecmp(trim($item['embalaje']), trim($despacho->c_embalaje)) === 0 &&
+                                strcasecmp(trim($item['calibre']), trim($despacho->n_calibre)) === 0 &&
+                                strcasecmp(trim($item['etiqueta']), trim($despacho->n_etiqueta)) === 0;
                         });
 
 
