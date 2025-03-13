@@ -112,11 +112,11 @@ class LiqCxCabeceraController extends Controller
 
         $clientes = ClientesComex::pluck('nombre_fantasia', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        $especies=Especy::pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $especies = Especy::pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
 
         $naves = Nafe::pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        return view('admin.liqCxCabeceras.create', compact('clientes', 'naves','especies'));
+        return view('admin.liqCxCabeceras.create', compact('clientes', 'naves', 'especies'));
     }
 
     public function store(StoreLiqCxCabeceraRequest $request)
@@ -232,7 +232,8 @@ class LiqCxCabeceraController extends Controller
 
         return redirect()->route('admin.liq-cx-cabeceras.index');
     }
-    public function cloneItem(Request $request){
+    public function cloneItem(Request $request)
+    {
         try {
             // Validar la solicitud
             // $request->validate([
@@ -258,7 +259,6 @@ class LiqCxCabeceraController extends Controller
                 'success' => true,
                 'message' => 'Registro clonado exitosamente'
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -377,12 +377,15 @@ class LiqCxCabeceraController extends Controller
                     $valor = 0;
 
 
-                        $items = $liqs->filter(function ($item) use ($despacho) {
-                            $folios = array_map('trim', explode(',', $item['folio_fx']));
+                    $items = $liqs->filter(function ($item) use ($despacho) {
+                        $folios = array_map('trim', explode(',', $item['folio_fx']));
 
-                            // Verificamos si el folio del despacho está en la lista
-                            $folioMatch = in_array($despacho->folio, $folios);
-                            if ($item['folio_fx'] === $despacho->folio || $folioMatch) {
+                        // Verificamos si el folio del despacho está en la lista
+                        $folioMatch = in_array($despacho->folio, $folios);
+                        if ($item['folio_fx'] === $despacho->folio || $folioMatch) {
+                            if ($item['folio_fx'] == 24017598) {
+
+
                                 Log::info('Comparando:', [
                                     'folio_fx' => [$item['folio_fx'], $despacho->folio, $folioMatch],
                                     'variedad' => [$item['variedad'], trim($despacho->n_variedad_rotulacion), strcasecmp($item['variedad'], trim($despacho->n_variedad_rotulacion)) === 0],
@@ -391,16 +394,17 @@ class LiqCxCabeceraController extends Controller
                                     'etiqueta' => [$item['etiqueta'], trim($despacho->n_etiqueta), strcasecmp($item['etiqueta'], trim($despacho->n_etiqueta)) === 0],
                                 ]);
                             }
+                        }
 
-                            return $folioMatch &&
-                                strcasecmp(trim($item['variedad']), trim($despacho->n_variedad_rotulacion)) === 0 &&
-                                strcasecmp(trim($item['embalaje']), trim($despacho->c_embalaje)) === 0 &&
-                                strcasecmp(trim($item['calibre']), trim($despacho->n_calibre)) === 0 &&
-                                strcasecmp(trim($item['etiqueta']), trim($despacho->n_etiqueta)) === 0;
-                        });
+                        return $folioMatch &&
+                            strcasecmp(trim($item['variedad']), trim($despacho->n_variedad_rotulacion)) === 0 &&
+                            strcasecmp(trim($item['embalaje']), trim($despacho->c_embalaje)) === 0 &&
+                            strcasecmp(trim($item['calibre']), trim($despacho->n_calibre)) === 0 &&
+                            strcasecmp(trim($item['etiqueta']), trim($despacho->n_etiqueta)) === 0;
+                    });
 
 
-                        Log::info('Elementos filtrados e:', $items->toArray());
+                    Log::info('Elementos filtrados e:', $items->toArray());
 
 
 
@@ -408,15 +412,15 @@ class LiqCxCabeceraController extends Controller
 
                     Log::info('item: ' . json_encode($items));
 
-                    $EFOB=0;
+                    $EFOB = 0;
                     foreach ($items as $item) {
-                        Log::info("EFOB inicio ".$EFOB);
+                        Log::info("EFOB inicio " . $EFOB);
                         $EFOB += $item['FOB_TO_USD'];
-                        Log::info("EFOB Asignado  ".$EFOB);
-                        Log::info("CAJAS Inicio".$item['Cajas']);
+                        Log::info("EFOB Asignado  " . $EFOB);
+                        Log::info("CAJAS Inicio" . $item['Cajas']);
                         $ECCajas += $item['Cajas'];
-                        Log::info("CAJAS Asignado".$item['Cajas']);
-                        Log::info('Folio '.$item['folio_fx'].' EFOB: ' . $EFOB);
+                        Log::info("CAJAS Asignado" . $item['Cajas']);
+                        Log::info('Folio ' . $item['folio_fx'] . ' EFOB: ' . $EFOB);
                     }
 
                     // Evitar división por cero
@@ -453,22 +457,22 @@ class LiqCxCabeceraController extends Controller
             if ($texto == null || $texto == '') {
                 return $texto;
             }
-           // Log::info("Traduciendo datos: " . $texto . "----" . $tipo);
+            // Log::info("Traduciendo datos: " . $texto . "----" . $tipo);
             $dato = Diccionario::where("tipo", $tipo)->where("variable", $texto)->first();
             if ($dato == null) {
                 return $texto;
             }
             return $dato->valor;
         } catch (\Exception $e) {
-           // Log::error("Error al traducir datos: " . $e->getMessage() . "----" . $texto . "----" . $tipo);
+            // Log::error("Error al traducir datos: " . $e->getMessage() . "----" . $texto . "----" . $tipo);
 
             return $texto;
         }
     }
     public function ConsolidadoLiquidacionesUnitario(int $id)
     {
-        $fg =$this;
-        $liqCxCabeceras = LiqCxCabecera::where('id',$id)->whereNull('deleted_at')->get(); // LiqCxCabecera::find(request('ids'));
+        $fg = $this;
+        $liqCxCabeceras = LiqCxCabecera::where('id', $id)->whereNull('deleted_at')->get(); // LiqCxCabecera::find(request('ids'));
 
         $dataComparativa = collect();
         $C_Logisticos = Costo::where('categoria', 'Costo Logístico')->get();
@@ -622,7 +626,7 @@ class LiqCxCabeceraController extends Controller
                 $Flete_Aereo = ($flete_exportadora / $total_kilos) * $Peso_neto; //BQ
                 $Flete_Aereo_TO = $Flete_Aereo * $Cajas; //BR
                 $Costos_cajas_RMB = $Imp_destino_caja_RMB + $Costo_log_Caja_RMB + $Ent_Al_mercado_Caja_RMB + $Costo_mercado_caja_RMB + $Otros_costos_dest_Caja_RMB +
-                $Comision_Caja + $Flete_marit_Caja_RMB + ($Otros_Impuestos_JWM_Impuestos * $TC) + ($Ajuste_impuesto_USD * $TC) - ($Otros_Ingresos_abonos * $TC) + ($Flete_Aereo * $TC); //AR
+                    $Comision_Caja + $Flete_marit_Caja_RMB + ($Otros_Impuestos_JWM_Impuestos * $TC) + ($Ajuste_impuesto_USD * $TC) - ($Otros_Ingresos_abonos * $TC) + ($Flete_Aereo * $TC); //AR
                 //=+AF3+AH3+AJ3+AL3+AN3+AB3+AP3+(CA3*AV3)+(BO3*AV3)-(CC3*AV3)+(BQ3*AV3)
                 $RMB_Costos_TO = $Costos_cajas_RMB * $Cajas; //AS
                 $Resultados_caja_RMB =  $RMB_Caja - $Costos_cajas_RMB;  //AT  Verificar con Haydelin
@@ -655,7 +659,7 @@ class LiqCxCabeceraController extends Controller
                 $CNY = 'PRE'; //BY
                 $Pais = 'CHINA'; //BZ
                 $c_embalaje = $item->c_embalaje;
-                $folio_fx=$item->folio_fx;
+                $folio_fx = $item->folio_fx;
 
                 //$embalaje_dato_origen'=>$item->embalaje_id, //CI
 
@@ -750,7 +754,7 @@ class LiqCxCabeceraController extends Controller
                         'USD_Flete_Domestico'    => $USD_Flete_Domestico, //CG
                         'USD_Flete_Domestico_TO' => $USD_Flete_Domestico_TO, //CH
                         'embalaje' => $c_embalaje, //agregado para obtener datos
-                        'folio_fx'=>$item->folio_fx,
+                        'folio_fx' => $item->folio_fx,
 
 
                     ],
