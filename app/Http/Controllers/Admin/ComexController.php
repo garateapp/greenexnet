@@ -1296,7 +1296,7 @@ class ComexController extends Controller
             $total_kilos = 0;
             $total_ventas = 0;
             foreach ($detalle as $item) {
-                $total_kilos = $total_kilos + (float)(str_replace(',', '.', $fg->traducedatos($item->embalaje_id, 'Embalaje'))) * (float)(str_replace(',', '.', $item->cantidad));
+                $total_kilos = $total_kilos + (float)(str_replace(',', '.', $fg->traducedatos($item->embalaje_id, 'Embalaje')>0 ? $fg->traducedatos($item->embalaje_id, 'Embalaje') : $item->embalaje)) * (float)(str_replace(',', '.', $item->cantidad));
 
                 $total_ventas = $total_ventas + $item->cantidad * (float)(str_replace(',', '.', $item->precio_unitario));
                 // Log::info("Total Venta: " . $total_ventas);

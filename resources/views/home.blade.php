@@ -356,6 +356,10 @@
                                                             Comparativo Liquidaciones
                                                         </a>
                                                     </button>
+                                                    <button class="btn btn-danger" id="btnActualizaGD"
+                                                        style="margin-bottom: 5px; width:200px;text-align: left;">
+                                                        Actualizar FOB masivo
+                                                    </button>
                                                 </div>
                                                 <div class="col-lg-6">
                                                     <button class="btn btn-secondary" id="btn_procesar"
@@ -376,14 +380,7 @@
                                                         </a>
                                                     </button>
                                                     <br>
-                                                    {{-- <button class="btn btn-secondary" id="btn_procesar"
-                                                        style="margin-bottom: 5px; width:200px;text-align: left;">
-                                                        <a href="{{ route('admin.comex.actualizarValorGD_en_fx') }}"
-                                                            style="color:white">
-                                                            <i class="fa-fw fas fa-hand-holding-usd" aria-hidden="true"></i>
-                                                            Actualizar Valores FOB
-                                                        </a>
-                                                    </button> --}}
+
                                                 </div>
                                             </div>
                                         </div>
@@ -398,7 +395,6 @@
         </div>
         <script>
             document.addEventListener("DOMContentLoaded", function() {
-
                 $("#btnActualizaGD").on("click", function(event) {
                     event.preventDefault(); // Evita recarga si el botón está dentro de un formulario
 
@@ -407,23 +403,37 @@
 
                     $("#msgOK, #msgKO").hide(); // Ocultamos mensajes previos
 
+                    InstructivosFXNoProcesadosCompleto.forEach(function(instructivo) {
+
+                        actualizaFOB(instructivo.id);
+                    });
+                });
+
+                function actualizaFOB(id,numero_embarque) {
+                    const url = `/admin/liq-cx-cabeceras/${id}/actualizar-valor-gd-unitario`;
                     $.ajax({
-                        url: "{{ route('admin.comex.actualizarValorGD_en_fx') }}",
+                        url: url,
                         method: "GET",
                         success: function(response) {
-                            $("#msgOK").html("Datos actualizados correctamente!!").show();
+                            $("#msgOK").html("Datos embarque "+numero_embarque+" actualizados !! ").show();
                         },
                         error: function() {
-                            $("#msgKO").html("Error al actualizar los datos!!").show();
+                            $("#msgKO").html("Error al actualizar los datos  embarque "+numero_embarque+"!!").show();
                         },
                         complete: function() {
                             btn.prop("disabled",
-                                false
-                            ); // Volvemos a habilitar el botón al finalizar la petición
+                                false); // Volvemos a habilitar el botón al finalizar la petición
                         }
                     });
+                }
 
-                });
+                let instructivoxsubir = [];
+
+                let instructivoSubidos = []; // Aseguramos que haya datos
+                let instructivosNoCargados = {}; // Convertir en array
+
+                let InstructivosFXNoProcesadosCompleto = {};
+                let InstructivosFXProcesadosCompleto = {};
 
                 function obtieneReporteInstructivo() {
                     let url = "{{ route('admin.reporteria.getReporteInstructivos') }}";
@@ -431,15 +441,16 @@
                         url: url,
                         method: "GET",
                         success: function(response) {
-                            let instructivoxsubir = response.InstructivosSinSubir || [];
-                            
-                            let instructivoSubidos = response.Instructivos ||
-                        []; // Aseguramos que haya datos
-                            let instructivosNoCargados = Object.values(response.InstructivosSinSubir ||
+                            instructivoxsubir = response.InstructivosSinSubir || [];
+
+                            instructivoSubidos = response.Instructivos || []; // Aseguramos que haya datos
+                            instructivosNoCargados = Object.values(response.InstructivosSinSubir ||
                             {}); // Convertir en array
 
-                            let InstructivosFXNoProcesadosCompleto=Object.values(response.InstructivosFXNoProcesadosCompleto || {});
-                            let InstructivosFXProcesadosCompleto = Object.values(response.InstructivosFXProcesadosCompleto || {});
+                            InstructivosFXNoProcesadosCompleto = Object.values(response
+                                .InstructivosFXNoProcesadosCompleto || {});
+                            InstructivosFXProcesadosCompleto = Object.values(response
+                                .InstructivosFXProcesadosCompleto || {});
                             console.log(InstructivosFXNoProcesadosCompleto);
                             console.log(InstructivosFXProcesadosCompleto);
                             let tbodyNoCargados = $("#tbodyLiquidacionesNoCargadas");
@@ -448,7 +459,7 @@
                             let tbodyConFOB = $("#tbodyLiquidacionesCargadasConFOB");
                             tbody.empty(); // Limpiamos antes de agregar nuevos datos
                             tbodyNoCargados.empty();
-                          
+
                             // Contar los instructivos
                             let totalInstructivos = instructivoSubidos.length;
                             let totalInstructivosNoCargados = instructivosNoCargados.length;
