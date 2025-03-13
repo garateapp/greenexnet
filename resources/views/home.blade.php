@@ -423,11 +423,13 @@
                             success: function(response) {
                                 $("#msgOK").html("Datos embarque " + numero_embarque +
                                     " actualizados !! ").show();
+                                $("#msgKO").hide();
                                 resolve();
                             },
                             error: function() {
                                 $("#msgKO").html("Error al actualizar los datos embarque " +
                                     numero_embarque + "!!").show();
+                                $("#msgOK").hide();
                                 reject();
                             }
                         });
@@ -497,10 +499,12 @@
                                 tbodyNoCargados.append(row);
                             });
                             InstructivosFXNoProcesadosCompleto.forEach(function(instructivo) {
-                                let row = `<tr>
+                                if (instructivo.id == null) {
+                                    let row = `<tr>
                           <td><a target="_blank" href="admin/liq-cx-cabeceras/${instructivo.id}/edit">${instructivo.Numero_Embarque}</a></td>
                     </tr>`;
-                                tbodySinFOB.append(row);
+                                    tbodySinFOB.append(row);
+                                }
                             });
                             InstructivosFXProcesadosCompleto.forEach(function(instructivo) {
                                 let row = `<tr>
