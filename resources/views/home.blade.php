@@ -406,11 +406,13 @@
 
                     InstructivosFXNoProcesadosCompleto.forEach(function(instructivo) {
 
-                       actualizaFOB(instructivo.id);
+                     await actualizaFOB(instructivo.id,instructivo.Numero_Embarque);
                     });
+                    btn.prop("disabled",
+                    false); // Volvemos a habilitar el botón al finalizar la petición
                 });
 
-                function actualizaFOB(id,numero_embarque) {
+                async function actualizaFOB(id,numero_embarque) {
                     const url = `/admin/liq-cx-cabeceras/actualizarValorGD_Unitario/${id}`;
                     $.ajax({
                         url: url,
@@ -422,8 +424,7 @@
                             $("#msgKO").html("Error al actualizar los datos  embarque "+numero_embarque+"!!").show();
                         },
                         complete: function() {
-                            btn.prop("disabled",
-                                false); // Volvemos a habilitar el botón al finalizar la petición
+
                         }
                     });
                 }
