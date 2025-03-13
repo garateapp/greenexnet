@@ -404,11 +404,13 @@
                     $("#msgOK, #msgKO").hide(); // Ocultamos mensajes previos
 
                     for (const instructivo of InstructivosFXNoProcesadosCompleto) {
-                        await actualizaFOB(instructivo.id, instructivo.Numero_Embarque);
+                        if (instructivo.id != null) {
+                            await actualizaFOB(instructivo.id, instructivo.Numero_Embarque);
+                        }
                     }
 
                     btn.prop("disabled",
-                    false); // Volvemos a habilitar el botón al finalizar todas las peticiones
+                        false); // Volvemos a habilitar el botón al finalizar todas las peticiones
                 });
 
                 async function actualizaFOB(id, numero_embarque) {
