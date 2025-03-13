@@ -213,7 +213,7 @@ class LiqCxCabeceraController extends Controller
     public function getDatosLiqItems(Request $request)
     {
 
-        $liquidacion = LiquidacionesCx::where('liqcabecera_id', $request->id)->get();
+        $liquidacion = LiquidacionesCx::where('liqcabecera_id', $request->id)->orderBy('folio_fx', 'asc')->get();
 
         return response()->json(['success' => true, 'message' => 'Campo actualizado con éxito', 'data' => $liquidacion]);
     }
