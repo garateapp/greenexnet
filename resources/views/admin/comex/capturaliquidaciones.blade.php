@@ -255,7 +255,7 @@
 
                                             $headers = [];
                                             $head = '';
-
+                                            @dump($items);
                                             if (count($items) > 0) {
                                                 foreach ($items as $header) {
                                                     foreach ($header as $th) {
@@ -290,7 +290,7 @@
                                     $totalesColumna = [];
 
                                     // Procesar datos de los items
-@dump($items);
+
                                     foreach ($items as $fila) {
                                         foreach ($fila as $columna) {
                                             $coordenada = $columna['coordenada'];
