@@ -146,55 +146,60 @@ class ComexController extends Controller
                     Log::info('celdaItems1(' . $columna . $fila . ') :' . $hoja->getCell("{$columna}{$fila}")->getValue());
 
                     //Solo por temas de RVG debo depurar aca la fila
-                    if($hoja->getCell("{$columna}{$fila}")->getValue()==''){
+                    if ($hoja->getCell("{$columna}{$fila}")->getValue() == '') {
                         break;
                     }
 
 
 
-                    if ($fila == $fila_costos && ($capturador->id != 7 && $capturador->id==15)) {
+                    if ($fila == $fila_costos && ($capturador->id != 7 && $capturador->id != 15)) {
 
 
                         break;
                     }
-                    if (($capturador->id == 7 || $capturador->id==15) && $valorCelda == '') {
+                    if (($capturador->id == 7 || $capturador->id == 15) && $valorCelda == '') {
                         break;
                     }
                     $item = [];
+                    try{
 
-                    preg_match('/(\D+)/', $estructura->coordenada, $colMatch);
+                        preg_match('/(\D+)/', $estructura->coordenada, $colMatch);
 
-                    Log::info('celdaItems2(' . $colMatch[1] . $fila . ') :' . $hoja->getCell("{$colMatch[1]}$fila")->getValue());
-                    $col = $colMatch[1];
-                    Log::info('celdaItems(' . $col . $fila . ') :' . $hoja->getCell("{$col}{$fila}")->getValue());
-                    if ($estructura->propiedad == "Calibre") {
-                        $item[] = [
-                            'coordenada' => "{$col}{$fila}",
-                            'propiedad' => $estructura->propiedad,
-                            'valor' => $this->traducedatos($hoja->getCell("{$col}{$fila}")->getValue(), 'Calibre'),
-                            'orden' => $estructura->orden,
-                        ];
-                    } elseif ($estructura->propiedad == "Embalaje") {
-                        $item[] = [
-                            'coordenada' => "{$col}{$fila}",
-                            'propiedad' => $estructura->propiedad,
-                            'valor' => $this->traducedatos($hoja->getCell("{$col}{$fila}")->getValue(), 'Embalaje'),
-                            'orden' => $estructura->orden,
-                        ];
-                    } else {
-                        $item[] = [
-                            'coordenada' => "{$col}{$fila}",
-                            'propiedad' => $estructura->propiedad,
-                            'valor' => $this->normalizarTexto($hoja->getCell("{$col}{$fila}")->getValue()),
-                            'orden' => $estructura->orden,
-                        ];
+                        Log::info('celdaItems2(' . $colMatch[1] . $fila . ') :' . $hoja->getCell("{$colMatch[1]}$fila")->getValue());
+                        $col = $colMatch[1];
+                        Log::info('celdaItems(' . $col . $fila . ') :' . $hoja->getCell("{$col}{$fila}")->getValue());
+                        if ($estructura->propiedad == "Calibre") {
+                            $item[] = [
+                                'coordenada' => "{$col}{$fila}",
+                                'propiedad' => $estructura->propiedad,
+                                'valor' => $this->traducedatos($hoja->getCell("{$col}{$fila}")->getValue(), 'Calibre'),
+                                'orden' => $estructura->orden,
+                            ];
+                        } elseif ($estructura->propiedad == "Embalaje") {
+                            $item[] = [
+                                'coordenada' => "{$col}{$fila}",
+                                'propiedad' => $estructura->propiedad,
+                                'valor' => $this->traducedatos($hoja->getCell("{$col}{$fila}")->getValue(), 'Embalaje'),
+                                'orden' => $estructura->orden,
+                            ];
+                        } else {
+                            $item[] = [
+                                'coordenada' => "{$col}{$fila}",
+                                'propiedad' => $estructura->propiedad,
+                                'valor' => $this->normalizarTexto($hoja->getCell("{$col}{$fila}")->getValue()),
+                                'orden' => $estructura->orden,
+                            ];
+                        }
+                        //Log::info('Celda('.$col.$fila.') :' . $hoja->getCell("{$col}{$fila}")->getValue());
+
+                        Log::info('Item: ' . json_encode($item));
+
+                        $items[] = $item;
+                        $fila++;
+                    }catch(\Exception $e){
+                        Log::info("Error" . $e->getMessage() . "----" . $estructura->coordenada . "----" . $estructura->propiedad . "----" . $e->getTraceAsString());
+                        $fila++;
                     }
-                    //Log::info('Celda('.$col.$fila.') :' . $hoja->getCell("{$col}{$fila}")->getValue());
-
-                    Log::info('Item: ' . json_encode($item));
-
-                    $items[] = $item;
-                    $fila++;
                 }
             }
 
@@ -463,12 +468,11 @@ class ComexController extends Controller
                 // } else {
 
                 $variedad_id = $fila['Variedad'];
-                if($variedad_id!=''){
-                    $especie=Variedad::where('nombre', $variedad_id)->first();
-                    if($especie){
-                        $especie_id=$especie->especie_id;
+                if ($variedad_id != '') {
+                    $especie = Variedad::where('nombre', $variedad_id)->first();
+                    if ($especie) {
+                        $especie_id = $especie->especie_id;
                     }
-
                 }
                 //}
                 $pallet = isset($fila['Pallet']) ? $fila['Pallet'] : '';
@@ -482,7 +486,7 @@ class ComexController extends Controller
                 $monto_rmb = isset($fila['Monto RMB']) ? $fila['Monto RMB'] : 0;
                 $observaciones = isset($fila['Observaciones']) ? $fila['Observaciones'] : '';
                 $liqcabecera_id = $LiqCabecera->id;
-                $LiqCabecera->especie_id=$especie_id;
+                $LiqCabecera->especie_id = $especie_id;
                 $LiqCabecera->save();
                 DB::statement('SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED');
                 $resultados = DB::connection('sqlsrv')
@@ -1268,7 +1272,7 @@ class ComexController extends Controller
 
 
         $fg = $this;
-        $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->where('id','>',470)->get(); // LiqCxCabecera::find(request('ids'));
+        $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->where('id', '>', 470)->get(); // LiqCxCabecera::find(request('ids'));
 
 
         $dataComparativa = collect();
@@ -1425,7 +1429,7 @@ class ComexController extends Controller
                 $Flete_Aereo = ($flete_exportadora / $total_kilos) * $Peso_neto; //BQ
                 $Flete_Aereo_TO = $Flete_Aereo * $Cajas; //BR
                 $Costos_cajas_RMB = $Imp_destino_caja_RMB + $Costo_log_Caja_RMB + $Ent_Al_mercado_Caja_RMB + $Costo_mercado_caja_RMB + $Otros_costos_dest_Caja_RMB +
-                $Comision_Caja + $Flete_marit_Caja_RMB + ($Otros_Impuestos_JWM_Impuestos * $TC) + ($Ajuste_impuesto_USD * $TC)  + ($Flete_Aereo * $TC); //AR - ($Otros_Ingresos_abonos * $TC)
+                    $Comision_Caja + $Flete_marit_Caja_RMB + ($Otros_Impuestos_JWM_Impuestos * $TC) + ($Ajuste_impuesto_USD * $TC)  + ($Flete_Aereo * $TC); //AR - ($Otros_Ingresos_abonos * $TC)
                 $RMB_Costos_TO = $Costos_cajas_RMB * $Cajas; //AS
                 $Resultados_caja_RMB =  $RMB_Caja - $Costos_cajas_RMB;  //AT  Verificar con Haydelin
                 $RMB_result_TO = $Resultados_caja_RMB * $Cajas; //AU  Verificar con Haydelin
