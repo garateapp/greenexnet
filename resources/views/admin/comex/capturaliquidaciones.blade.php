@@ -290,7 +290,7 @@
                                     $totalesColumna = [];
 
                                     // Procesar datos de los items
-                                    dd($items);
+
                                     foreach ($items as $fila) {
                                         foreach ($fila as $columna) {
                                             $coordenada = $columna['coordenada'];
@@ -382,13 +382,14 @@
                                 @php
                                 $TotalCostos = 0;
                                 @endphp
+                                dd($costos);
                                 @foreach ($costos as $costo)
                                     <tr>
                                         <td>{{ $costo['propiedad'] }}</td>
-                                        
+
                                         <td>{{ number_format((float)$costo['valor']) }}</td>
                                         <td>{{ number_format((float)$costo['valor']/$tasa) }}</td>
-                                        
+
                                     </tr>
                                     @php
                                     if( $costo['propiedad'] =="Otros Ingresos"){
