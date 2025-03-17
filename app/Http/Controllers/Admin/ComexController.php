@@ -301,7 +301,7 @@ class ComexController extends Controller
 
             // 🧮 **Calcular Total General**
             $totalGeneral = $totalItems - $totalCostos;
-            dd($datos);
+
             // 📤 Enviar datos a la vista
             return view('admin.comex.capturaliquidaciones', [
                 'cabecera' => $datos['cabecera'],
