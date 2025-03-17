@@ -210,7 +210,7 @@ class ComexController extends Controller
                 ];
                 $fila_costos++;
             }
-            dd($costos);
+
             foreach ($costos as &$costo) {
                 if ($costo["propiedad"] == "Ajuste Impuesto") {
                     $costo["valor"] = (float)$costo["valor"] * (float)$tasa;
@@ -254,7 +254,7 @@ class ComexController extends Controller
             // 📥 Obtener datos desde la base de datos
             $datosExcel = ExcelDato::where('instructivo', $instructivo)->firstOrFail();
             $datos = json_decode($datosExcel->datos, true);
-
+            dd($datos);
             // 🛠️ Inicializar variables
             $cabecera = $datos['cabecera'] ?? [];
             $items = $datos['items'] ?? [];
