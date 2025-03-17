@@ -144,6 +144,14 @@ class ComexController extends Controller
                 while (true) {
                     $valorCelda = $hoja->getCell("{$columna}{$fila}")->getValue();
                     Log::info('celdaItems1(' . $columna . $fila . ') :' . $hoja->getCell("{$columna}{$fila}")->getValue());
+
+                    //Solo por temas de RVG debo depurar aca la fila
+                    if($hoja->getCell("{$columna}{$fila}")->getValue()==''){
+                        break;
+                    }
+
+
+
                     if ($fila == $fila_costos && ($capturador->id != 7 && $capturador->id==15)) {
 
 
@@ -155,6 +163,7 @@ class ComexController extends Controller
                     $item = [];
 
                     preg_match('/(\D+)/', $estructura->coordenada, $colMatch);
+
                     Log::info('celdaItems2(' . $colMatch[1] . $fila . ') :' . $hoja->getCell("{$colMatch[1]}$fila")->getValue());
                     $col = $colMatch[1];
                     Log::info('celdaItems(' . $col . $fila . ') :' . $hoja->getCell("{$col}{$fila}")->getValue());
