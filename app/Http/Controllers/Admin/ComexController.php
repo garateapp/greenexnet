@@ -231,7 +231,7 @@ class ComexController extends Controller
                     $costo["valor"] = (float)$costo["valor"] * (float)$tasa;
                 }
             }
-            dd($costos);
+
             $datosExcel = ExcelDato::where('instructivo', $instructivo)->get();
             //    dd($fecha_arribo,$fecha_venta,$fecha_liquidacion,$fila_costos);
             // Guardar en la base de datos
@@ -301,7 +301,7 @@ class ComexController extends Controller
 
             // 🧮 **Calcular Total General**
             $totalGeneral = $totalItems - $totalCostos;
-
+            dd($datos);
             // 📤 Enviar datos a la vista
             return view('admin.comex.capturaliquidaciones', [
                 'cabecera' => $datos['cabecera'],
