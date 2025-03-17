@@ -290,7 +290,7 @@
                                     $totalesColumna = [];
 
                                     // Procesar datos de los items
-
+                                    dd($items);
                                     foreach ($items as $fila) {
                                         foreach ($fila as $columna) {
                                             $coordenada = $columna['coordenada'];
