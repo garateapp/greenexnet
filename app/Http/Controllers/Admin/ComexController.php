@@ -210,7 +210,7 @@ class ComexController extends Controller
                 ];
                 $fila_costos++;
             }
-
+            dd($costos);
             foreach ($costos as &$costo) {
                 if ($costo["propiedad"] == "Ajuste Impuesto") {
                     $costo["valor"] = (float)$costo["valor"] * (float)$tasa;
@@ -265,7 +265,7 @@ class ComexController extends Controller
             $totalItems = 0;
             $totalCostos = 0;
 
-            // 🧮 **Calcular Totales en Items**
+            // 🧮 **Calcular Totales en Items**3
             foreach ($items as $item) {
 
                 $cantidad = $item[0]['propiedad'] == "Cantidad" ? floatval($item[0]['valor']) : 0;
