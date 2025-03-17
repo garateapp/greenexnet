@@ -211,6 +211,7 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-header">
+
                         Previsualización de Liquidación Instructivo - {{ $instructivo }}
 
                     </div>
@@ -255,7 +256,7 @@
 
                                             $headers = [];
                                             $head = '';
-                                            @dump($items);
+
                                             if (count($items) > 0) {
                                                 foreach ($items as $header) {
                                                     foreach ($header as $th) {
