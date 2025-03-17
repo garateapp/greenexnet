@@ -144,12 +144,12 @@ class ComexController extends Controller
                 while (true) {
                     $valorCelda = $hoja->getCell("{$columna}{$fila}")->getValue();
                     Log::info('celdaItems1(' . $columna . $fila . ') :' . $hoja->getCell("{$columna}{$fila}")->getValue());
-                    if ($fila == $fila_costos && $capturador->id != 7) {
+                    if ($fila == $fila_costos && ($capturador->id != 7 && $capturador->id==15)) {
 
 
                         break;
                     }
-                    if ($capturador->id == 7 && $valorCelda == '') {
+                    if (($capturador->id == 7 || $capturador->id==15) && $valorCelda == '') {
                         break;
                     }
                     $item = [];
