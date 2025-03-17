@@ -143,10 +143,11 @@ class ComexController extends Controller
 
                 while (true) {
                     $valorCelda = $hoja->getCell("{$columna}{$fila}")->getValue();
-                    Log::info('celdaItems1(' . $columna . $fila . ') :' . $hoja->getCell("{$columna}{$fila}")->getValue());
+                    //Log::info('celdaItems1(' . $columna . $fila . ') :' . $hoja->getCell("{$columna}{$fila}")->getValue());
 
                     //Solo por temas de RVG debo depurar aca la fila
                     if ($hoja->getCell("{$columna}{$fila}")->getValue() == '') {
+
                         break;
                     }
 
@@ -230,7 +231,7 @@ class ComexController extends Controller
                     $costo["valor"] = (float)$costo["valor"] * (float)$tasa;
                 }
             }
-
+            dd($costos);
             $datosExcel = ExcelDato::where('instructivo', $instructivo)->get();
             //    dd($fecha_arribo,$fecha_venta,$fecha_liquidacion,$fila_costos);
             // Guardar en la base de datos
