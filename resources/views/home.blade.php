@@ -560,6 +560,7 @@
                     // Inicializar la página
                     inicializarFiltros();
                     actualizarResumenGeneral();
+                    calcularRNP();
                     // inicializarGraficos();
                 },
                 error: function(xhr, status, error) {
