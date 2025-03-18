@@ -616,6 +616,28 @@
                                                 Costos por Cliente
                                             </div>
                                             <div class="card-body">
+                                                <table class="table table-striped table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th></th>
+                                                            <th colspan="2" style="text-align: center;"
+                                                                class="bg-blue-300" >COSTOS VARIABLES</th>
+                                                            <th colspan="2" style="text-align: center;"
+                                                                class="bg-yellow-100">COSTOS FIJOS</th>
+                                                            <th></th>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>CLIENTE</th>
+                                                            <th class="bg-blue-300">COMISIÓN</th>
+                                                            <th class="bg-blue-300">IMPUESTOS</th>
+                                                            <th class="bg-yellow-100">COSTOS FIJOS MARITIMOS</th>
+                                                            <th class="bg-yellow-100">COSTOS FIJOS AÉREOS</th>
+                                                            <th>OTROS COSTOS</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="tBodyCostos">
+                                                    </tbody>
+                                                </table>
                                             </div>
                                         </div>
                                     </div>
@@ -624,7 +646,13 @@
                                             <div class="card-header">
                                                 Resultados FOB Acumulados por Calibre y Color
                                             </div>
-                                            <div class="card-body">
+                                            <div class="card-body" style="overflow-x: auto;">
+                                                <table class="table table-striped table-hover">
+                                                    <thead id="tHeadResultadosColorCalibre">
+                                                    </thead>
+                                                    <tbody id="tBodyResultadosColorCalibre" >
+                                                    </tbody>
+                                                </table>
                                             </div>
                                         </div>
                                     </div>
@@ -684,6 +712,8 @@
                             actualizarTablaVariedadFOBKG();
                             actualizarTablaDesempeñoClientes();
                             actualizarTablaSaldosComparativos();
+                            actualizarTablaCostosPorCliente();
+                            actualizarTablaResultadosColorCalibre();
                             // inicializarGraficos();
                         },
                         error: function(xhr, status, error) {
@@ -1050,6 +1080,187 @@
 
                         // Insertar las filas en el tbody
                         $("#tBodySaldos").html(htmlFilas);
+                    }
+
+                    function actualizarTablaCostosPorCliente() {
+                        // Agrupar datos por cliente
+                        const datosPorCliente = {};
+                        liquidacionesData.forEach(item => {
+                            const cliente = item.cliente || "Sin cliente";
+                            if (!datosPorCliente[cliente]) {
+                                datosPorCliente[cliente] = {
+                                    fobToUsd: 0,
+                                    kilosTotal: 0,
+                                    comToUsd: 0,
+                                    impDestinoUsdTo: 0,
+                                    fleteMaritUsdTo: 0,
+                                    fleteAereoTo: 0,
+                                    costoLogUsdTo: 0,
+                                    costosUsdTo: 0,
+                                    otrosCostosUsdTo: 0,
+                                    otrosCostosDestUsd: 0
+                                };
+                            }
+                            datosPorCliente[cliente].fobToUsd += item.FOB_TO_USD || 0;
+                            datosPorCliente[cliente].kilosTotal += item.Kilos_total || 0;
+                            datosPorCliente[cliente].comToUsd += item.Com_TO_USD || 0;
+                            datosPorCliente[cliente].impDestinoUsdTo += item.Imp_destino_USD_TO || 0;
+                            datosPorCliente[cliente].fleteMaritUsdTo += item.Flete_Marit_USD_TO || 0;
+                            datosPorCliente[cliente].fleteAereoTo += item.Flete_Aereo_TO || 0;
+                            datosPorCliente[cliente].costoLogUsdTo += item.Costo_log_USD_TO || 0;
+                            datosPorCliente[cliente].costosUsdTo += item.Costos_USD_TO || 0;
+                            datosPorCliente[cliente].otrosCostosUsdTo += item.Otros_costos_USD_TO || 0;
+                            datosPorCliente[cliente].otrosCostosDestUsd += item.Otros_costos_dest_USD || 0;
+                        });
+
+                        // Generar las filas para la tabla
+                        let htmlFilas = "";
+                        for (const [cliente, datos] of Object.entries(datosPorCliente)) {
+                            const fobKg = datos.kilosTotal > 0 ? datos.fobToUsd / datos.kilosTotal : 0;
+                            if (fobKg === 0) continue; // Evitar división por cero o FOB nulo
+
+                            const costoVariable = datos.kilosTotal > 0 ? datos.comToUsd / datos.kilosTotal : 0;
+                            const costoImpuesto = datos.kilosTotal > 0 ? datos.impDestinoUsdTo / datos.kilosTotal : 0;
+                            const costoFijoMaritimo = datos.kilosTotal > 0 ? datos.fleteMaritUsdTo / datos.kilosTotal : 0;
+                            const costoFijoAereo = datos.kilosTotal > 0 ? datos.fleteAereoTo / datos.kilosTotal : 0;
+                            const otrosCostos = datos.kilosTotal > 0 ? (
+                                (datos.costoLogUsdTo / datos.kilosTotal) +
+                                (datos.costosUsdTo / datos.kilosTotal) +
+                                (datos.otrosCostosUsdTo / datos.kilosTotal) +
+                                (datos.otrosCostosDestUsd / datos.kilosTotal)
+                            ) : 0;
+
+                            const porcVariable = (costoVariable / fobKg * 100).toFixed(2);
+                            const porcImpuesto = (costoImpuesto / fobKg * 100).toFixed(2);
+                            const porcFijoMaritimo = (costoFijoMaritimo / fobKg * 100).toFixed(2);
+                            const porcFijoAereo = (costoFijoAereo / fobKg * 100).toFixed(2);
+                            const porcOtrosCostos = (otrosCostos / fobKg * 100).toFixed(2);
+
+                            htmlFilas += `
+            <tr>
+                <td>${cliente}</td>
+                <td>${porcVariable}%</td>
+                <td>${porcImpuesto}%</td>
+                <td>${porcFijoMaritimo}%</td>
+                <td>${porcFijoAereo}%</td>
+                <td>${porcOtrosCostos}%</td>
+            </tr>
+        `;
+                        }
+
+                        // Insertar las filas en el tbody
+                        $("#tBodyCostos").html(htmlFilas);
+                    }
+
+                    function actualizarTablaResultadosColorCalibre() {
+                        // Agrupar datos por variedad y calibre para determinar calibres con valores
+                        const datosPorVariedad = {};
+                        const totalesPorCalibre = {};
+                        liquidacionesData.forEach(item => {
+                            const variedad = (item.variedad || "Sin variedad").toUpperCase();
+                            const calibre = item.calibre || "Sin calibre";
+                            const fob = item.FOB_TO_USD || 0;
+                            const kilos = item.Kilos_total || 0;
+
+                            if (kilos === 0) return; // Ignorar si kilos es 0
+
+                            if (!datosPorVariedad[variedad]) {
+                                datosPorVariedad[variedad] = {};
+                            }
+                            if (!datosPorVariedad[variedad][calibre]) {
+                                datosPorVariedad[variedad][calibre] = {
+                                    fob: 0,
+                                    kilos: 0
+                                };
+                            }
+                            datosPorVariedad[variedad][calibre].fob += fob;
+                            datosPorVariedad[variedad][calibre].kilos += kilos;
+
+                            if (!totalesPorCalibre[calibre]) {
+                                totalesPorCalibre[calibre] = {
+                                    fob: 0,
+                                    kilos: 0
+                                };
+                            }
+                            totalesPorCalibre[calibre].fob += fob;
+                            totalesPorCalibre[calibre].kilos += kilos;
+                        });
+
+                        // Filtrar calibres con valores no nulos
+                        const calibresConValores = Object.keys(totalesPorCalibre).filter(calibre => {
+                            const {
+                                fob,
+                                kilos
+                            } = totalesPorCalibre[calibre];
+                            return kilos > 0 && fob / kilos > 0;
+                        }).sort();
+
+                        // Si no hay calibres con valores, no generamos la tabla
+                        if (calibresConValores.length === 0) {
+                            $("#tHeadResultadosColorCalibre").html("<tr><th>No hay datos disponibles</th></tr>");
+                            $("#tBodyResultadosColorCalibre").html("");
+                            return;
+                        }
+
+                        // Generar el thead dinámico con solo calibres relevantes
+                        let theadHtml = `
+        <tr>
+            <th>VARIEDAD</th>
+    `;
+                        calibresConValores.forEach(calibre => {
+                            theadHtml += `<th>${calibre}</th>`;
+                        });
+                        theadHtml += `<th>PROMEDIO</th></tr>`;
+                        $("#tHeadResultadosColorCalibre").html(theadHtml);
+
+                        // Generar el tbody
+                        let tbodyHtml = "";
+
+                        // Fila Acumulado Total
+                        tbodyHtml += "<tr><td>Acumulado Total</td>";
+                        let sumaTotalFob = 0;
+                        let sumaTotalKilos = 0;
+                        calibresConValores.forEach(calibre => {
+                            const {
+                                fob,
+                                kilos
+                            } = totalesPorCalibre[calibre];
+                            const valor = kilos > 0 ? fob / kilos : 0;
+                            tbodyHtml +=
+                                `<td class="font-bold">$${valor.toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>`;
+                            sumaTotalFob += fob;
+                            sumaTotalKilos += kilos;
+                        });
+                        const promedioTotal = sumaTotalKilos > 0 ? sumaTotalFob / sumaTotalKilos : 0;
+                        tbodyHtml +=
+                            `<td>$${promedioTotal.toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td></tr>`;
+
+                        // Filas por variedad
+                        for (const [variedad, datos] of Object.entries(datosPorVariedad)) {
+                            tbodyHtml += `<tr><td>${variedad}</td>`;
+                            let sumaFobVariedad = 0;
+                            let sumaKilosVariedad = 0;
+
+                            calibresConValores.forEach(calibre => {
+                                const {
+                                    fob,
+                                    kilos
+                                } = datos[calibre] || {
+                                    fob: 0,
+                                    kilos: 0
+                                };
+                                const valor = kilos > 0 ? fob / kilos : 0;
+                                tbodyHtml +=
+                                    `<td>$${valor.toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>`;
+                                sumaFobVariedad += fob;
+                                sumaKilosVariedad += kilos;
+                            });
+                            const promedioVariedad = sumaKilosVariedad > 0 ? sumaFobVariedad / sumaKilosVariedad : 0;
+                            tbodyHtml +=
+                                `<td>$${promedioVariedad.toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td></tr>`;
+                        }
+
+                        $("#tBodyResultadosColorCalibre").html(tbodyHtml);
                     }
 
                 });
