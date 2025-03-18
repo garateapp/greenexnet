@@ -314,12 +314,12 @@
                                                         <div class="col-auto">
                                                             <label for="CostoKg" class="form-label">Costo por Kg</label>
                                                             <input type="text" class="form-control" id="CostoKg"
-                                                                name="CostoKg" placeholder="Costo Kg" />
+                                                                name="CostoKg" placeholder="Costo Kg" value="2.19"/>
                                                         </div>
                                                         <div class="col-auto">
                                                             <label for="Comision" class="form-label">Comisión (%)</label>
                                                             <input type="text" class="form-control" id="Comision"
-                                                                name="Comision" placeholder="Comisión" />
+                                                                name="Comision" placeholder="Comisión" value="8" />
                                                         </div>
                                                         <div class="col-auto">
                                                             <button type="button" class="btn btn-primary"
