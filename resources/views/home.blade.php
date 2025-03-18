@@ -1,208 +1,18 @@
 @extends('layouts.admin')
 <style>
-    table.pvtTable {
-        font-size: 8pt;
-        text-align: left;
-        border-collapse: collapse;
+    .indicador {
+        font-size: 1.5em;
+        font-weight: bolder;
     }
 
-    table.pvtTable thead tr th,
-    table.pvtTable tbody tr th {
-        background-color: #e6eeee;
-        border: 1px solid #cdcdcd;
-        font-size: 8pt;
-        padding: 5px;
-    }
-
-    table.pvtTable .pvtColLabel {
-        text-align: center;
-    }
-
-    table.pvtTable .pvtTotalLabel {
-        text-align: right;
-    }
-
-    table.pvtTable tbody tr td {
-        color: #3d3d3d;
-        padding: 5px;
-        background-color: #fff;
-        border: 1px solid #cdcdcd;
-        vertical-align: top;
-        text-align: right;
-    }
-
-    .pvtUi {
-        color: #333;
-    }
-
-    .pvtTotal,
-    .pvtGrandTotal {
-        font-weight: bold;
-    }
-
-    .pvtVals {
-        text-align: center;
-        white-space: nowrap;
-    }
-
-    .pvtRowOrder,
-    .pvtColOrder {
-        cursor: pointer;
-        width: 15px;
-        margin-left: 5px;
-        display: inline-block;
-    }
-
-    .pvtAggregator {
-        margin-bottom: 5px;
-    }
-
-    .pvtAxisContainer,
-    .pvtVals {
-        border: 1px solid gray;
-        background: #eee;
-        padding: 5px;
-        min-width: 20px;
-        min-height: 20px;
-
-        user-select: none;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -khtml-user-select: none;
-        -ms-user-select: none;
-    }
-
-    .pvtAxisContainer li {
-        padding: 8px 6px;
-        list-style-type: none;
-        cursor: move;
-    }
-
-    .pvtAxisContainer li.pvtPlaceholder {
-        -webkit-border-radius: 5px;
-        padding: 3px 15px;
-        -moz-border-radius: 5px;
-        border-radius: 5px;
-        border: 1px dashed #aaa;
-    }
-
-    .pvtAxisContainer li span.pvtAttr {
-        -webkit-text-size-adjust: 100%;
-        background: #f3f3f3;
-        border: 1px solid #dedede;
-        padding: 2px 5px;
-        white-space: nowrap;
-        -webkit-border-radius: 5px;
-        -moz-border-radius: 5px;
-        border-radius: 5px;
-    }
-
-    .pvtTriangle {
-        cursor: pointer;
-        color: grey;
-    }
-
-    .pvtHorizList li {
-        display: inline;
-    }
-
-    .pvtVertList {
-        vertical-align: top;
-    }
-
-    .pvtFilteredAttribute {
-        font-style: italic;
-    }
-
-    .pvtFilterBox {
-        z-index: 100;
-        width: 300px;
-        border: 1px solid gray;
-        background-color: #fff;
-        position: absolute;
-        text-align: center;
-    }
-
-    .pvtFilterBox h4 {
-        margin: 15px;
-    }
-
-    .pvtFilterBox p {
-        margin: 10px auto;
-    }
-
-    .pvtFilterBox label {
-        font-weight: normal;
-    }
-
-    .pvtFilterBox input[type="checkbox"] {
-        margin-right: 10px;
-        margin-left: 10px;
-    }
-
-    .pvtFilterBox input[type="text"] {
-        width: 230px;
-    }
-
-    .pvtFilterBox .count {
-        color: gray;
-        font-weight: normal;
-        margin-left: 3px;
-    }
-
-    .pvtCheckContainer {
-        text-align: left;
-        font-size: 14px;
-        white-space: nowrap;
-        overflow-y: scroll;
-        width: 100%;
-        max-height: 250px;
-        border-top: 1px solid lightgrey;
-        border-bottom: 1px solid lightgrey;
-    }
-
-    .pvtCheckContainer p {
-        margin: 5px;
-    }
-
-    .pvtRendererArea {
-        padding: 5px;
-    }
-
-    .flip-card {
-        perspective: 1000px;
-        width: 100%;
-        height: 100%;
-    }
-
-    .flip-card-inner {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        text-align: center;
-        transition: transform 0.6s;
-        transform-style: preserve-3d;
-        cursor: pointer;
-    }
-
-    .flip-card.flipped .flip-card-inner {
-        transform: rotateY(180deg);
-    }
-
-    .flip-card-front,
-    .flip-card-back {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        backface-visibility: hidden;
+    #loading-animation {
         display: flex;
-        align-items: center;
-        justify-content: center;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 1000;
     }
 
-    .flip-card-back {
-        background-color: #17a2b8;
-        transform: rotateY(180deg);
+    video {
+        border-radius: 10px;
     }
 </style>
 @section('content')
@@ -215,16 +25,29 @@
 
         </div>
         <div class="row">
+            <div id="loading-animation"
+                style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 9999; justify-content: center; align-items: center;">
+                <video autoplay loop muted style="width: 200px; height: auto;">
+                    <source src="{{ asset('img/transito.webm') }}" type="video/webm">
+                    Your browser does not support the video tag.
+                </video>
+                <br />
+                <div class="text-white text-opacity-75 text-end" id="loading-animation-text">Obteniendo Instructivos,
+                    Espera por favor..... :)</div>
+            </div>
+        </div>
+        <div class="row">
+
             <div class="col-lg-12">
                 @can('control_panel')
                     <div class="card">
                         <div class="card-header">
-                            Panel de Control
+                            Liquidaciones Temporada 2024 -2025
                         </div>
 
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-lg-6">
+                                {{-- <div class="col-lg-6">
                                     <div class="card">
                                         <div class="card-header">
                                             Liquidaciones Cherries
@@ -385,159 +208,502 @@
                                             </div>
                                         </div>
                                     </div>
+                                </div> --}}
+
+                                <div class="col-lg-2" id="divFiltros">
+                                    <h3>Filtros</h3>
+                                    <label for="filtroCliente">Clientes</label>
+                                    <select id="filtroCliente" class="form-control select2" multiple="multiple"></select>
+                                    <label for="filtroMercado">Mercado</label>
+                                    <select id="filtroMercado" class="form-control select2" multiple="multiple"></select>
+                                    <label for="filtroCliente">Clientes</label>
+                                    <select id="filtroCliente" class="form-control select2" multiple="multiple"></select>
+                                    <h3>Visualización</h3>
+                                    <label for="filtroAgrupación">Agrupación</label>
+                                    <select id="filtroAgrupación" class="form-control select2" multiple="multiple"></select>
+                                    <label for="filtroVista">Tipo de Vista</label>
+                                    <select id="filtroVista" class="form-control select2" multiple="multiple"></select>
+                                    <label for="filtroKgoCaja">Clientes</label>
+                                    <select id="filtroKgoCaja" class="form-control select2" multiple="multiple"></select>
                                 </div>
+                                <div class="col-lg-10" id="divGraficos">
+                                    <!-- Sección REsumen General-->
+                                    <div class="row">
+                                        <div class="card col-lg-3" style="margin-right: 15px;">
+                                            <div class="card-body">
+                                                <div class="fs-4 fw-bold text-center">
+                                                    <p><i class="fas fa-file-contract fa-3x "></i></p>
+                                                    <p class="indicador">449</p>
+                                                </div>
+
+                                                <div class="text-center">Liquidaciones Cargadas</div>
+                                                <div class="progress progress-thin my-2">
+                                                    <div class="progress-bar bg-success text-white text-center"
+                                                        role="progressbar" style="width: 100%" aria-valuenow="100"
+                                                        aria-valuemin="0" aria-valuemax="100">100%</div>
+                                                    <div class="text-body-primary">
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card col-lg-3" style="margin-right: 15px;">
+                                            <div class="card-body">
+                                                <div class="fs-4 fw-bold text-center">
+                                                    <p><i class="fas fa-money-check fa-3x "></i></p>
+                                                    <p class="indicador">$1.000.000.000.000</p>
+                                                </div>
+
+                                                <div class="text-center">FOB TOTAL</div>
+
+                                                <div class="text-body-primary">
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="card col-lg-3" style="margin-right: 15px;">
+                                            <div class="card-body">
+                                                <div class="fs-4 fw-bold text-center">
+                                                    <p><i class="fas fa-boxes fa-3x "></i></p>
+                                                    <p class="indicador">$18,75</p>
+                                                </div>
+
+                                                <div class="text-center">PROMEDIO FOB CAJA EQ.</div>
+
+                                                <div class="text-body-primary">
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card col-lg-3" style="margin-right: 15px;">
+                                            <div class="card-body">
+                                                <div class="fs-4 fw-bold text-center">
+                                                    <p><i class="fas fa-boxes fa-3x "></i></p>
+                                                    <p class="indicador">$18,75</p>
+                                                </div>
+
+                                                <div class="text-center">PROMEDIO FOB Kilo</div>
+
+                                                <div class="text-body-primary">
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="card col-lg-8" style="margin-right: 15px;">
+                                            <div class="card-body">
+                                                <div class="fs-4 fw-bold text-center">
+                                                    <p><i class="fas fa-boxes fa-3x "></i></p>
+                                                    <p class="indicador"></p>
+                                                </div>
+
+                                                <div class="text-center">RNP</div>
+
+                                                <div class="text-body-primary">
+                                                    <div class="row g-3 align-items-end">
+                                                        <!-- g-3 agrega un gutter (margen) entre columnas -->
+                                                        {{-- <div class="col-auto">
+                                                            <label for="cboFlete" class="form-label">Tipo de Flete</label>
+                                                            <select id="cboFlete" class="form-control select2">
+                                                                <option value="0">Seleccione Tipo de Flete</option>
+                                                                <option value="1">Marítimo</option>
+                                                                <option value="2">Aéreo</option>
+                                                            </select>
+                                                        </div> --}}
+                                                        <div class="col-auto">
+                                                            <label for="CostoKg" class="form-label">Costo por Kg</label>
+                                                            <input type="text" class="form-control" id="CostoKg"
+                                                                name="CostoKg" placeholder="Costo Kg" />
+                                                        </div>
+                                                        <div class="col-auto">
+                                                            <label for="Comision" class="form-label">Comisión (%)</label>
+                                                            <input type="text" class="form-control" id="Comision"
+                                                                name="Comision" placeholder="Comisión" />
+                                                        </div>
+                                                        <div class="col-auto">
+                                                            <button type="button" class="btn btn-primary"
+                                                                id="btnCalculaRNP">Calcular</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="row">
+                                            <p>
+                                            <h5>FOB ACUMULADO</h5>
+                                            </p>
+                                        </div>
+                                        <div class="row">
+                                            <ul class="nav nav-tabs col-lg-12" id="ComparativaTabs" role="tablist">
+                                                <!-- Pestaña Comparativa General -->
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link active" id="FobVariedad-tab" data-bs-toggle="tab"
+                                                        data-bs-target="#FobVariedad" type="button" role="tab"
+                                                        aria-controls="FobVariedad" aria-selected="false">
+                                                        Por Variedad
+                                                    </button>
+                                                </li>
+                                                <!-- Pestaña Comparativa x Cliente -->
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link" id="FobFormato-tab" data-bs-toggle="tab"
+                                                        data-bs-target="#FobFormato" type="button" role="tab"
+                                                        aria-controls="FobFormato" aria-selected="true">
+                                                        Por Formato
+                                                    </button>
+                                                </li>
+                                                <!-- Pestaña de Rendimiento -->
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link" id="FobCliente-tab" data-bs-toggle="tab"
+                                                        data-bs-target="#FobCliente" type="button" role="tab"
+                                                        aria-controls="FobCliente" aria-selected="false">
+                                                        Por Cliente
+                                                    </button>
+                                                </li>
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link" id="FobColor-tab" data-bs-toggle="tab"
+                                                        data-bs-target="#FobColor" type="button" role="tab"
+                                                        aria-controls="FobColor" aria-selected="false">
+                                                        Por Color
+                                                    </button>
+                                                </li>
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link" id="FobEtiqueta-tab" data-bs-toggle="tab"
+                                                        data-bs-target="#FobEtiqueta" type="button" role="tab"
+                                                        aria-controls="FobEtiqueta" aria-selected="false">
+                                                        Por Etiqueta
+                                                    </button>
+                                                </li>
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link" id="FobFlete-tab" data-bs-toggle="tab"
+                                                        data-bs-target="#FobFlete" type="button" role="tab"
+                                                        aria-controls="FobFlete" aria-selected="false">
+                                                        Por tipo de Flete
+                                                    </button>
+                                                </li>
+
+                                            </ul>
+                                            <div class="tab-content col-lg-12" id="reporteTabsContent">
+                                                <!-- Pestaña FOB VARIEDAD -->
+                                                <div class="tab-pane fade show active" id="FobVariedad" role="tabpanel"
+                                                    aria-labelledby="FobVariedad-tab">
+                                                    <div class="row">
+                                                        <div class="card">
+                                                            <div class="card-body">
+                                                                <div class="row">
+                                                                    filtros
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div id="chartContainerFobVariedad">
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Pestaña FOB FORMATO -->
+
+                                                <div class="tab-pane fade" id="FobFormato" role="tabpanel"
+                                                    aria-labelledby="FobFormato-tab">
+
+                                                    <div class="row">
+
+                                                        <div class="card">
+
+                                                            <div class="card-body">
+                                                                <div class="row">
+                                                                    filtros
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div id="chartContainerFobFormato">
+
+                                                                    </div>
+                                                                </div>
+
+
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+
+                                                <!-- Pestaña FOB CLIENTE -->
+
+                                                <div class="tab-pane fade" id="FobCliente" role="tabpanel"
+                                                    aria-labelledby="FobCliente-tab">
+                                                    <div class="row">
+                                                        <div class="card">
+                                                            <div class="card-body">
+                                                                <div class="row">
+                                                                    filtros
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div id="chartContainerFobCliente">
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+
+                                                <!-- Pestaña FOB COLOR -->
+
+                                                <div class="tab-pane fade" id="FobColor" role="tabpanel"
+                                                    aria-labelledby="FobColor-tab">
+                                                    <div class="row">
+                                                        <div class="card">
+                                                            <div class="card-body">
+                                                                <div class="row">
+                                                                    filtros
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div id="chartContainerFobColor">
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+
+                                                <!-- Pestaña FOB ETIQUETA -->
+
+                                                <div class="tab-pane fade" id="FobEtiqueta" role="tabpanel"
+                                                    aria-labelledby="FobEtiqueta-tab">
+                                                    <div class="row">
+                                                        <div class="card">
+                                                            <div class="card-body">
+                                                                <div class="row">
+                                                                    filtros
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div id="chartContainerFobEtiqueta">
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+
+                                                <!-- Pestaña FOB FLETE -->
+
+                                                <div class="tab-pane fade" id="FobFlete" role="tabpanel"
+                                                    aria-labelledby="FobFlete-tab">
+                                                    <div class="row">
+                                                        <div class="card">
+                                                            <div class="card-body">
+                                                                <div class="row">
+                                                                    filtros
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div id="chartContainerFobFlete">
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
-
                     </div>
-                @endcan
-            </div>
+                </div>
+            @endcan
         </div>
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                $("#btnActualizaGD").on("click", async function(event) {
-                    event.preventDefault(); // Evita recarga si el botón está dentro de un formulario
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script>
+        let liquidacionesData = []; // Variable global para almacenar los 8500 registros
 
-                    let btn = $(this); // Guardamos referencia al botón
-                    btn.prop("disabled", true); // Deshabilitamos el botón
+        document.addEventListener("DOMContentLoaded", function() {
 
-                    $("#msgOK, #msgKO").hide(); // Ocultamos mensajes previos
+            $("#cboFlete").select2({
+                placeholder: "Seleccione Tipo de Flete",
+                allowClear: true
+            });
 
-                    for (const instructivo of InstructivosFXNoProcesadosCompleto) {
-                        if (instructivo.id != null) {
-                            await actualizaFOB(instructivo.id, instructivo.Numero_Embarque);
-                        }
-                    }
+            // Evento para el botón Calcular
+            $("#btnCalculaRNP").on("click", function() {
+                calcularRNP();
+            });
+            // Mostrar animación de carga
+            $("#loading-animation").show();
 
-                    btn.prop("disabled",
-                        false); // Volvemos a habilitar el botón al finalizar todas las peticiones
+            $.ajax({
+                url: "{{ route('admin.reporteria.SabanaLiquidaciones') }}",
+                type: "GET",
+                success: function(response) {
+                    liquidacionesData =
+                        response; // Asumiendo que response es un array con los 8500 registros
+                    console.log("Datos cargados:", liquidacionesData.length);
+                    console.log(liquidacionesData);
+                    // Ocultar animación de carga
+                    $("#loading-animation").hide();
+
+                    // Inicializar la página
+                    inicializarFiltros();
+                    actualizarResumenGeneral();
+                    // inicializarGraficos();
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error al cargar datos:", error);
+                    $("#msgKO").text("Error al cargar los datos. Intenta de nuevo.").show();
+                    $("#loading-animation").hide();
+                }
+            });
+
+            function inicializarFiltros() {
+                // Extraer clientes únicos
+                const clientesUnicos = [...new Set(liquidacionesData.map(item => item.cliente))];
+                const mercadosUnicos = [...new Set(liquidacionesData.map(item => item.Pais))];
+                const variedadesUnicas = [...new Set(liquidacionesData.map(item => item.variedad))];
+
+                // Llenar select de clientes
+                $("#filtroCliente").select2({
+                    data: clientesUnicos.map(cliente => ({
+                        id: cliente,
+                        text: cliente
+                    })),
+                    placeholder: "Selecciona clientes",
+                    allowClear: true
                 });
 
-                async function actualizaFOB(id, numero_embarque) {
-                    const url = `/admin/liq-cx-cabeceras/actualizarValorGD_Unitario/${id}`;
 
-                    return new Promise((resolve, reject) => {
-                        $.ajax({
-                            url: url,
-                            method: "GET",
-                            success: function(response) {
-                                $("#msgOK").html("Datos embarque " + numero_embarque +
-                                    " actualizados !! ").show();
-                                $("#msgKO").hide();
-                                resolve();
-                            },
-                            error: function() {
-                                $("#msgKO").html("Error al actualizar los datos embarque " +
-                                    numero_embarque + "!!").show();
-                                $("#msgOK").hide();
-                                reject();
-                            }
-                        });
-                    });
+                // Llenar select de mercados
+                // $("#filtroMercado").select2({
+                //     data: mercadosUnicos.map(mercado => ({
+                //         id: mercado,
+                //         text: mercado
+                //     })),
+                //     placeholder: "Selecciona mercados",
+                //     allowClear: true
+                // });
+
+                // Agregar eventos de cambio para filtrar datos
+                // $("#filtroCliente, #filtroMercado").on("change", function() {
+                //     actualizarGraficos();
+                // });
+            }
+
+            function actualizarResumenGeneral() {
+                // 1. Liquidaciones Cargadas: Número de instructivos distintos
+                const instructivosUnicos = [...new Set(liquidacionesData.map(item => item.Liquidacion))].filter(
+                    Boolean);
+                const totalLiquidaciones = instructivosUnicos.length;
+
+                // 2. FOB Total: Suma de FOB_TO_USD
+                const fobTotal = liquidacionesData.reduce((sum, item) => sum + (item.FOB_TO_USD || 0), 0);
+                // 3. Promedio FOB Caja
+                // Fórmula 1: Suma de FOB_Equivalente / Cantidad de registros
+                const sumaFobEquivalente = liquidacionesData.reduce((sum, item) => sum + (item
+                    .FOB_Equivalente || 0), 0);
+                const promedioFobCaja1 = liquidacionesData.length > 0 ? (sumaFobEquivalente / liquidacionesData
+                    .length).toFixed(2) : 0;
+
+                // Fórmula 2: (Suma de FOB_TO_USD) / Suma de Kilos_total * 5
+                const sumaFobUsdPorCajas = liquidacionesData.reduce((sum, item) => sum + ((item.FOB_TO_USD || 0)),
+                    0);
+                const sumaKilosTotal = liquidacionesData.reduce((sum, item) => sum + (item.Kilos_total || 0),
+                    0);
+                const promedioFobCaja2 = sumaKilosTotal > 0 ? ((sumaFobUsdPorCajas / sumaKilosTotal) * 5)
+                    .toFixed(2) : 0;
+
+                //1.- (Suma de FOB_TO_USD) / Suma de Kilos_total
+                const sumaFobUsdPorKilo = liquidacionesData.reduce((sum, item) => sum + ((item.FOB_TO_USD || 0)),
+                    0);
+                const promedioFobKilo = sumaKilosTotal > 0 ? ((sumaFobUsdPorKilo / sumaKilosTotal))
+                    .toFixed(2) : 0;
+
+
+
+                // Actualizar las calugas en la interfaz
+                $(".indicador").eq(0).text(totalLiquidaciones); // Liquidaciones Cargadas
+                $(".indicador").eq(1).text(
+                    `$${fobTotal.toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                ); // FOB Total
+                $(".indicador").eq(2).text(`$${promedioFobCaja2}`); // Promedio FOB Caja Formula 2
+                $(".indicador").eq(3).text(`$${promedioFobKilo}`); // Promedio FOB Kilo
+            }
+
+            function calcularRNP() {
+
+                const costoKgInput = $("#CostoKg").val().trim();
+                const comisionInput = $("#Comision").val().trim();
+
+
+
+                // Validación 2: Campos no vacíos
+                if (!costoKgInput || !comisionInput) {
+                    alert("Por favor, completa ambos campos: Costo por Kg y Comisión.");
+                    return;
                 }
 
-                let instructivoxsubir = [];
-
-                let instructivoSubidos = []; // Aseguramos que haya datos
-                let instructivosNoCargados = {}; // Convertir en array
-
-                let InstructivosFXNoProcesadosCompleto = {};
-                let InstructivosFXProcesadosCompleto = {};
-
-                function obtieneReporteInstructivo() {
-                    let url = "{{ route('admin.reporteria.getReporteInstructivos') }}";
-                    $.ajax({
-                        url: url,
-                        method: "GET",
-                        success: function(response) {
-                            instructivoxsubir = response.InstructivosSinSubir || [];
-
-                            instructivoSubidos = response.Instructivos || []; // Aseguramos que haya datos
-                            instructivosNoCargados = Object.values(response.InstructivosSinSubir ||
-                            {}); // Convertir en array
-
-                            InstructivosFXNoProcesadosCompleto = Object.values(response
-                                .InstructivosFXNoProcesadosCompleto || {});
-                            InstructivosFXProcesadosCompleto = Object.values(response
-                                .InstructivosFXProcesadosCompleto || {});
-                            console.log(InstructivosFXNoProcesadosCompleto);
-                            console.log(InstructivosFXProcesadosCompleto);
-                            let tbodyNoCargados = $("#tbodyLiquidacionesNoCargadas");
-                            let tbody = $("#tbodyLiquidacionesCargadas");
-                            let tbodySinFOB = $("#tbodyLiquidacionesSinFOB");
-                            let tbodyConFOB = $("#tbodyLiquidacionesCargadasConFOB");
-                            tbody.empty(); // Limpiamos antes de agregar nuevos datos
-                            tbodyNoCargados.empty();
-
-                            // Contar los instructivos
-                            let totalInstructivos = instructivoSubidos.length;
-                            let totalInstructivosNoCargados = instructivosNoCargados.length;
-                            let totalGeneral = totalInstructivos + totalInstructivosNoCargados;
-                            let totalSinFOB = InstructivosFXNoProcesadosCompleto.length;
-                            let totalConFOB = InstructivosFXProcesadosCompleto.length;
-
-                            console.log("Total instructivos cargados:", totalInstructivos);
-                            console.log("Total instructivos no cargados:", totalInstructivosNoCargados);
-
-                            console.log("Total general:", totalGeneral);
-
-                            instructivoSubidos.forEach(function(instructivo) {
-                                let row = `<tr>
-                              <td><a target="_blank" href="admin/liq-cx-cabeceras/${instructivo.id}/edit">${instructivo.instructivo}</a></td>
-                           </tr>`;
-                                tbody.append(row);
-                            });
-
-
-
-
-                            // Iterar sobre los instructivos y agregarlos a la tabla
-                            instructivosNoCargados.forEach(function(instructivo) {
-                                let row = `<tr>
-                  <td><a target="_blank" href="admin/liq-cx-cabeceras/${instructivo.id}/edit">${instructivo.Numero_Embarque}</a></td>
-               </tr>`;
-                                tbodyNoCargados.append(row);
-                            });
-                            totalSinFOB=0;
-                            InstructivosFXNoProcesadosCompleto.forEach(function(instructivo) {
-                                if (instructivo.id != null) {
-                                    totalSinFOB++;
-                                    let row = `<tr>
-                          <td><a target="_blank" href="admin/liq-cx-cabeceras/${instructivo.id}/edit">${instructivo.Numero_Embarque}</a></td>
-                    </tr>`;
-                                    tbodySinFOB.append(row);
-                                }
-                            });
-                            InstructivosFXProcesadosCompleto.forEach(function(instructivo) {
-                                let row = `<tr>
-                          <td><a target="_blank" href="admin/liq-cx-cabeceras/${instructivo.id}/edit">${instructivo.Numero_Embarque}</a></td>
-                    </tr>`;
-                                tbodyConFOB.append(row);
-                            });
-
-                            // Actualizar el badge en el header
-                            $("#totalInstructivosBadge").text(totalInstructivos);
-                            $("#totalInstructivosNoCargadosBadge").text(totalInstructivosNoCargados);
-                            $("#totalInstructivosSinFOBsBadge").text(totalSinFOB);
-                            $("#totalInstructivosConFOBBadge").text(totalConFOB);
-
-
-
-                            instructivoconfoliosmultiples = response.InstructivosConFoliosMultiples
-                        },
-                        error: function() {
-                            instructivoxsubir = 0;
-                            instructivoconfoliosmultiples = 0;
-                        }
-                    });
-
+                // Validación 3: Campos son números válidos
+                const costoKg = parseFloat(costoKgInput);
+                const comision = parseFloat(comisionInput);
+                if (isNaN(costoKg) || isNaN(comision)) {
+                    alert("Costo por Kg y Comisión deben ser números válidos.");
+                    return;
                 }
 
-                obtieneReporteInstructivo();
-                // Manejar errores de conexión
+                // Validación 4: Valores positivos o cero
+                if (costoKg < 0 || comision < 0) {
+                    alert("Costo por Kg y Comisión deben ser valores positivos o cero.");
+                    return;
+                }
 
-            });
-        </script>
+                // // Filtrar datos según el tipo de flete
+                // let datosFiltrados = [];
+                // if (tipoFlete === "1") { // Marítimo: registros con valor en 'nave'
+                //     datosFiltrados = liquidacionesData.filter(item => item.nave && item.nave.trim() !== "");
+                // } else if (tipoFlete === "2") { // Aéreo: registros sin valor en 'nave'
+                //     datosFiltrados = liquidacionesData.filter(item => !item.nave || item.nave.trim() === "");
+                // }
+
+                // if (datosFiltrados.length === 0) {
+                //     $(".indicador").eq(3).text("No hay datos para este flete");
+                //     return;
+                // }
+                const sumaFobUsdPorKilo = liquidacionesData.reduce((sum, item) => sum + ((item.FOB_TO_USD || 0)),
+                    0);
+                    const sumaKilosTotal = liquidacionesData.reduce((sum, item) => sum + (item.Kilos_total || 0),
+                    0);
+                // const promedioFobKilo = sumaKilosTotal > 0 ? ((sumaFobUsdPorKilo / sumaKilosTotal))
+                //     .toFixed(2) : 0;
+                // // Calcular RNP por kilo
+                // const sumaFobToUsd = datosFiltrados.reduce((sum, item) => sum + (item.FOB_TO_USD || 0), 0);
+                // const sumaKilosTotal = datosFiltrados.reduce((sum, item) => sum + (item.Kilos_total || 0), 0);
+
+                let rnpKilo = 0;
+                if (sumaFobUsdPorKilo > 0) {
+                    costofinalestimado=((sumaFobUsdPorKilo / sumaKilosTotal) * (comision / 100)) + costoKg;
+                    rnpKilo =(sumaFobUsdPorKilo / sumaKilosTotal)-costofinalestimado;
+                }
+
+                // Actualizar la caluga con el resultado
+                $(".indicador").eq(4).text(
+                    `$${rnpKilo.toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                    );
+            }
+        });
+    </script>
     </div>
 @endsection
 @section('scripts')

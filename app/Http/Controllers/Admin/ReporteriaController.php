@@ -1970,12 +1970,26 @@ class ReporteriaController extends Controller
     }
     public function Liquidacionesagrupadas()
     {
+        if (!session()->has("sheetLiqs")) {
+            session(["sheetLiqs" => $this->ConsolidadoLiquidaciones()]);
+        }
 
-        $datos = $this->ConsolidadoLiquidaciones();
+        $datos = session("sheetLiqs");
+
 
         return $datos;
     }
+    public function SabanaLiquidaciones()
+    {
+        if (!session()->has("sheetLiqs")) {
+            session(["sheetLiqs" => $this->ConsolidadoLiquidaciones()]);
+        }
 
+        $datos = session("sheetLiqs");
+
+
+        return $datos;
+    }
     public function ConsolidadoLiquidaciones()
     {
         $fg = $this;
@@ -2290,8 +2304,7 @@ class ReporteriaController extends Controller
             ROW_NUMBER() OVER (ORDER BY Numero_Embarque) AS id,
         SUM(CASE WHEN valor_unitario = 0 THEN 1 ELSE 0 END) AS sin_fob,
         SUM(CASE WHEN valor_unitario <> 0 THEN 1 ELSE 0 END) AS con_fob,
-        Numero_Embarque
-    ")
+        Numero_Embarque    ")
             ->where('tipo_g_despacho', 'GDP')
             ->where('id_especie', 7)
             ->where('numero_embarque', 'like', '2425%')
