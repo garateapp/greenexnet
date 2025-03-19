@@ -1,22 +1,22 @@
 @extends('layouts.admin')
 @section('content')
-@if (session('message'))
-    <div class="alert alert-success">
-        {{ session('message') }}
-    </div>
-@endif
-@if (session('error'))
-    <div class="alert alert-danger">
-        {{ session('error') }}
-    </div>
-@endif
+    @if (session('message'))
+        <div class="alert alert-success">
+            {{ session('message') }}
+        </div>
+    @endif
+    @if (session('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+    @endif
     @can('liq_cx_cabecera_create')
         <div style="margin-bottom: 10px;" class="row">
             <div class="col-lg-12">
                 <form id="frmComparativa" action="{{ route('admin.comex.generacomparativa') }}" method="POST">
                     <a class="btn btn-success" href="{{ route('admin.liq-cx-cabeceras.create') }}">
-                    {{ trans('global.add') }} Liquidación
-                </a>
+                        {{ trans('global.add') }} Liquidación
+                    </a>
                     <a class="btn btn-success" href="{{ route('admin.comex.capturador') }}">
                         Capturar Liquidación
                     </a>
@@ -25,10 +25,11 @@
                     <input type="hidden" name="ids" id="comparativaIds">
                 </form>
                 <form id="frmComparativaGlobal" action="{{ route('admin.comex.generacomparativaglobal') }}" method="POST">
-                    
+
                     @csrf
-                    
+
                 </form>
+                <button id="btnACtualizaFOB" class="btn btn-primary">Actualizar FOB G. Despacho</button>
             </div>
         </div>
     @endcan
@@ -149,10 +150,38 @@
             </table>
         </div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $("document").ready(function() {
+            $("#btnACtualizaFOB").on('click', function() {
+                event.preventDefault(); // Evita recarga si el botón está dentro de un formulario
+
+                let btn = $(this); // Guardamos referencia al botón
+                btn.prop("disabled", true); // Deshabilitamos el botón
+                $.ajax({
+                    url: "{{ route('admin.liq-cx-cabeceras.actualizarValorCliente') }}",
+                    method: 'GET',
+                    success: function(response) {
+                        $("#msgOK").html("Datos actualizados correctamente!!").show();
+                    },
+                    error: function() {
+                        $("#msgKO").html("Error al actualizar los datos!!").show();
+                    },
+                    complete: function() {
+                        btn.prop("disabled",
+                            false); // Volvemos a habilitar el botón al finalizar la petición
+                    }
+                });
+
+            });
+        });
+    </script>
 @endsection
 @section('scripts')
     @parent
-    <script>
+   
+<script>
+        
         $(function() {
             let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
             @can('liq_cx_cabecera_delete')
@@ -225,115 +254,118 @@
                 url: "{{ route('admin.comex.generacomparativaglobal') }}",
                 className: 'btn-primary',
                 action: function(e, dt, node, config) {
-                    
+
 
                     if (confirm('{{ trans('global.areYouSure') }}')) {
-                      
+
                         $("#frmComparativaGlobal").submit();
                     }
 
                 }
             }
-            
 
-        dtButtons.push(comparativaButton)
-        dtButtons.push(comparativaGlobalButton)
-         let dtOverrideGlobals = {
-            buttons: dtButtons,
-            processing: true,
-            serverSide: true,
-            retrieve: true,
-            aaSorting: [],
-            ajax: "{{ route('admin.liq-cx-cabeceras.index') }}",
-            columns: [{
-                    data: 'placeholder',
-                    name: 'placeholder'
-                },
-                {
-                    data: 'id',
-                    name: 'id'
-                },
-                {
-                    data:'especie_nombre',
-                    name: 'especie.nombre'
-                },
-                {
-                    data: 'instructivo',
-                    name: 'instructivo'
-                },
-                {
-                    data: 'cliente_nombre_fantasia',
-                    name: 'cliente.nombre_fantasia'
-                },
-                {
-                    data: 'cliente.codigo_cliente',
-                    name: 'cliente.codigo_cliente'
-                },
-                {
-                    data: 'nave_nombre',
-                    name: 'nave.nombre'
-                },
-                {
-                    data: 'nave.codigo',
-                    name: 'nave.codigo'
-                },
-                {
-                    data: 'eta',
-                    name: 'eta'
-                },
-                {
-                    data: 'tasa_intercambio',
-                    name: 'tasa_intercambio'
-                },
-                {
-                    data: 'total_costo',
-                    name: 'total_costo'
-                },
-                {
-                    data: 'total_bruto',
-                    name: 'total_bruto'
-                },
-                {
-                    data: 'total_neto',
-                    name: 'total_neto'
-                },
-                {
-                    data: 'actions',
-                    name: '{{ trans('global.actions') }}'
+
+            dtButtons.push(comparativaButton)
+            dtButtons.push(comparativaGlobalButton)
+            let dtOverrideGlobals = {
+                buttons: dtButtons,
+                processing: true,
+                serverSide: true,
+                retrieve: true,
+                aaSorting: [],
+                ajax: "{{ route('admin.liq-cx-cabeceras.index') }}",
+                columns: [{
+                        data: 'placeholder',
+                        name: 'placeholder'
+                    },
+                    {
+                        data: 'id',
+                        name: 'id'
+                    },
+                    {
+                        data: 'especie_nombre',
+                        name: 'especie.nombre'
+                    },
+                    {
+                        data: 'instructivo',
+                        name: 'instructivo'
+                    },
+                    {
+                        data: 'cliente_nombre_fantasia',
+                        name: 'cliente.nombre_fantasia'
+                    },
+                    {
+                        data: 'cliente.codigo_cliente',
+                        name: 'cliente.codigo_cliente'
+                    },
+                    {
+                        data: 'nave_nombre',
+                        name: 'nave.nombre'
+                    },
+                    {
+                        data: 'nave.codigo',
+                        name: 'nave.codigo'
+                    },
+                    {
+                        data: 'eta',
+                        name: 'eta'
+                    },
+                    {
+                        data: 'tasa_intercambio',
+                        name: 'tasa_intercambio'
+                    },
+                    {
+                        data: 'total_costo',
+                        name: 'total_costo'
+                    },
+                    {
+                        data: 'total_bruto',
+                        name: 'total_bruto'
+                    },
+                    {
+                        data: 'total_neto',
+                        name: 'total_neto'
+                    },
+                    {
+                        data: 'actions',
+                        name: '{{ trans('global.actions') }}'
+                    }
+                ],
+                orderCellsTop: true,
+                order: [
+                    [1, 'desc']
+                ],
+                pageLength: 100,
+            };
+            let table = $('.datatable-LiqCxCabecera').DataTable(dtOverrideGlobals);
+            $('a[data-toggle="tab"]').on(
+                'shown.bs.tab click',
+                function(e) {
+                    $($.fn.dataTable.tables(true)).DataTable()
+                        .columns.adjust();
+                });
+
+            let visibleColumnsIndexes = null;
+            $('.datatable thead').on('input', '.search', function() {
+                let strict = $(this).attr('strict') || false
+                let value = strict && this.value ? "^" + this.value + "$" : this.value
+
+                let index = $(this).parent().index()
+                if (visibleColumnsIndexes !== null) {
+                    index = visibleColumnsIndexes[index]
                 }
-            ],
-            orderCellsTop: true,
-            order: [
-                [1, 'desc']
-            ],
-            pageLength: 100,
-        };
-        let table = $('.datatable-LiqCxCabecera').DataTable(dtOverrideGlobals); $('a[data-toggle="tab"]').on(
-            'shown.bs.tab click',
-            function(e) {
-                $($.fn.dataTable.tables(true)).DataTable()
-                    .columns.adjust();
+
+                table
+                    .column(index)
+                    .search(value, strict)
+                    .draw()
             });
-
-        let visibleColumnsIndexes = null; $('.datatable thead').on('input', '.search', function() {
-            let strict = $(this).attr('strict') || false
-            let value = strict && this.value ? "^" + this.value + "$" : this.value
-
-            let index = $(this).parent().index()
-            if (visibleColumnsIndexes !== null) {
-                index = visibleColumnsIndexes[index]
-            }
-
-            table
-                .column(index)
-                .search(value, strict)
-                .draw()
-        }); table.on('column-visibility.dt', function(e, settings, column, state) {
-            visibleColumnsIndexes = []
-            table.columns(":visible").every(function(colIdx) {
-                visibleColumnsIndexes.push(colIdx);
-            });
-        })
+            table.on('column-visibility.dt', function(e, settings, column, state) {
+                visibleColumnsIndexes = []
+                table.columns(":visible").every(function(colIdx) {
+                    visibleColumnsIndexes.push(colIdx);
+                });
+            })
         });
     </script>
 @endsection

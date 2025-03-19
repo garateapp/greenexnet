@@ -381,6 +381,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('liq-cx-cabeceras/destroyCosto/{id}', 'LiqCxCabeceraController@destroyCosto')->name('liq-cx-cabeceras.destroyCosto');
     Route::post('liq-cx-cabeceras/cloneItem', 'LiqCxCabeceraController@cloneItem')->name('liq-cx-cabeceras.cloneItem');
     Route::get('liq-cx-cabeceras/actualizarValorGD_Unitario/{id}', 'LiqCxCabeceraController@actualizarValorGD_Unitario')->name('liq-cx-cabeceras.actualizarValorGD_Unitario');
+    Route::get('liq-cx-cabeceras/actualizarValorCliente', 'LiqCxCabeceraController@actualizarValorCliente')->name('liq-cx-cabeceras.actualizarValorCliente');
+    
     Route::resource('liq-cx-cabeceras', 'LiqCxCabeceraController');
 
     // Liquidaciones Cx
