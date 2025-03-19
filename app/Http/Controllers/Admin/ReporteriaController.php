@@ -2137,18 +2137,18 @@ class ReporteriaController extends Controller
                 $RMB_otros_costos_TO = $Otros_costos_dest_Caja_RMB * $Cajas; //AO
                 $Flete_marit_Caja_RMB =  (($costosFleteInternacional == 0 ? 0 : $costosFleteInternacional) / $total_kilos) * $Peso_neto; //AP
                 $RMB_Flete_Marit_TO = $Flete_marit_Caja_RMB * $Cajas; //AQ
-                $Otros_Impuestos_JWM_Impuestos = (($otrosimpuestos == 0 ? 0 : ($otrosimpuestos / $excelDato->tasa)) / $total_kilos) * $Peso_neto; //CA
+                $Otros_Impuestos_JWM_Impuestos = (($otrosimpuestos == 0 ? 0 : ($otrosimpuestos )) / $total_kilos) * $Peso_neto; //CA
                 $Otros_Impuestos_JWM_TO_USD = $Otros_Impuestos_JWM_Impuestos * $Cajas; //CB
-                $Otros_Ingresos_abonos = (($otrosingresos == 0 ? 0 : ($otrosingresos / $excelDato->tasa)) / $total_kilos) * $Peso_neto; //CC
+                $Otros_Ingresos_abonos = (($otrosingresos == 0 ? 0 : ($otrosingresos )) / $total_kilos) * $Peso_neto; //CC
                 $Otros_Ingresos_abonos_TO_USD = $Otros_Ingresos_abonos * $Cajas; //CD
                 $RMB_Flete_Domestico_Caja = (($costosFleteDomestico == 0 ? 0 : $costosFleteDomestico) / $total_kilos) * $Peso_neto; //CE
                 $RMB_Flete_Domestico_TO = $RMB_Flete_Domestico_Caja * $Cajas; //CF
                 $USD_Flete_Domestico    = $RMB_Flete_Domestico_TO / $TC; //CG
                 $USD_Flete_Domestico_TO = $USD_Flete_Domestico * $Cajas; //CH
-                $Ajuste_impuesto_USD = (($ajusteimpuesto == 0 ? 0 : ($ajusteimpuesto) / $excelDato->tasa) / $total_kilos) * $Peso_neto; //BO
+                $Ajuste_impuesto_USD = (($ajusteimpuesto == 0 ? 0 : ($ajusteimpuesto) ) / $total_kilos) * $Peso_neto; //BO
                 $Flete_Aereo = ($flete_exportadora / $total_kilos) * $Peso_neto; //BQ
                 $Flete_Aereo_TO = $Flete_Aereo * $Cajas; //BR
-                $Costos_cajas_RMB = $Imp_destino_caja_RMB + $Costo_log_Caja_RMB + $Ent_Al_mercado_Caja_RMB + $Costo_mercado_caja_RMB + $Otros_costos_dest_Caja_RMB + $Comision_Caja + $Flete_marit_Caja_RMB + ($Otros_Impuestos_JWM_Impuestos * $TC) + ($Ajuste_impuesto_USD * $TC)  + ($Flete_Aereo * $TC); //AR - ($Otros_Ingresos_abonos * $TC)
+                $Costos_cajas_RMB = $Imp_destino_caja_RMB + $Costo_log_Caja_RMB + $Ent_Al_mercado_Caja_RMB + $Costo_mercado_caja_RMB + $Otros_costos_dest_Caja_RMB + $Comision_Caja + $Flete_marit_Caja_RMB + ($Otros_Impuestos_JWM_Impuestos ) + ($Ajuste_impuesto_USD )  + ($Flete_Aereo * $TC); //AR - ($Otros_Ingresos_abonos * $TC)
                 $RMB_Costos_TO = $Costos_cajas_RMB * $Cajas; //AS
                 $Resultados_caja_RMB =  $RMB_Caja - $Costos_cajas_RMB;  //AT  Verificar con Haydelin
                 $RMB_result_TO = $Resultados_caja_RMB * $Cajas; //AU  Verificar con Haydelin

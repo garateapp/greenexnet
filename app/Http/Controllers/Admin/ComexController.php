@@ -392,6 +392,7 @@ class ComexController extends Controller
             $tasa = $request->input('tasa');
 
             $datosLiq = ExcelDato::where('instructivo', $instructivo)->firstOrFail();
+            
             $datos = json_decode($datosLiq->datos, true);
 
             // 🛠️ Inicializar variables
@@ -868,7 +869,7 @@ class ComexController extends Controller
                         'Flete Marit. USD TO' => '=+BK' . $i . '*Y' . $i, //BL
                         'Costos cajas USD' => '=+AR' . $i . '/AV' . $i, //BM
                         'Costos USD TO' => '=+BM' . $i . '*Y' . $i, //BN
-                        'Ajuste impuesto USD' => '=+(' . ($ajusteimpuesto == 0 ? 0 : ($ajusteimpuesto) / $excelDato->tasa) . '/' . $total_kilos . ')*P' . $i, //BO
+                        'Ajuste impuesto USD' => '=+(' . ($ajusteimpuesto == 0 ? 0 : ($ajusteimpuesto)) . '/' . $total_kilos . ')*P' . $i, //BO
                         'Ajuste TO USD' => '=+BO' . $i . '*Y' . $i, //BP
                         'Flete Aereo' => '=+(' . $flete_exportadora . '/' . $total_kilos . ')*P' . $i, //BQ
                         'Flete Aereo TO' => '=+BQ' . $i . '*Y' . $i, //BR
@@ -880,7 +881,7 @@ class ComexController extends Controller
                         'Transporte' => $tipo_transporte == "A" ? 'AEREO' : 'MARITIMO', //BX
                         'CNY' => 'PRE', //BY
                         'Pais' => 'CHINA', //BZ
-                        'Otros Impuestos (JWM) Impuestos' => '=+(' . ($otrosimpuestos == 0 ? 0 : ($otrosimpuestos / $excelDato->tasa)) . '/' . $total_kilos . ')*P' . $i, //CA
+                        'Otros Impuestos (JWM) Impuestos' => '=+(' . ($otrosimpuestos == 0 ? 0 : ($otrosimpuestos )) . '/' . $total_kilos . ')*P' . $i, //CA
                         'Otros Impuestos (JWM) TO USD' => '=+CA' . $i . '*Y' . $i, //CB
                         'Otros Ingresos (abonos)' => '=+(' . ($otrosingresos == 0 ? 0 : ($otrosingresos / $excelDato->tasa)) . '/' . $total_kilos . ')*P' . $i, //CC
                         'Otros Ingresos (abonos) TO USD' => '=+CC' . $i . '*Y' . $i, //CD
