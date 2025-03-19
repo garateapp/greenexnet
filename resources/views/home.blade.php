@@ -662,6 +662,10 @@
                                                 Resultados FOB Acumulados por Semana y Variedad
                                             </div>
                                             <div class="card-body">
+                                            <table class="table table-striped table-hover">
+                <thead id="tHeadFOBPorSemanaVariedad"></thead>
+                <tbody id="tBodyFOBPorSemanaVariedad"></tbody>
+            </table>
                                             </div>
                                         </div>
                                     </div>
@@ -714,6 +718,7 @@
                             actualizarTablaSaldosComparativos();
                             actualizarTablaCostosPorCliente();
                             actualizarTablaResultadosColorCalibre();
+                            actualizarTablaFOBPorSemanaVariedad();
                             // inicializarGraficos();
                         },
                         error: function(xhr, status, error) {
@@ -1262,6 +1267,106 @@
 
                         $("#tBodyResultadosColorCalibre").html(tbodyHtml);
                     }
+                    function actualizarTablaFOBPorSemanaVariedad() {
+    // Función para obtener el número de semana ISO a partir de una fecha
+    function getISOWeek(date) {
+        const d = new Date(date);
+        d.setHours(0, 0, 0, 0);
+        d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+        const yearStart = new Date(d.getFullYear(), 0, 1);
+        const weekNo = Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
+        return `${d.getFullYear()}-W${weekNo.toString().padStart(2, '0')}`;
+    }
+
+    // Agrupar datos por variedad y semana
+    const datosPorVariedad = {};
+    const totalesPorSemana = {};
+    liquidacionesData.forEach(item => {
+        const variedad = (item.variedad || "Sin variedad").toUpperCase();
+        const eta = item.ETA; // Asumimos que ETA es una fecha válida
+        if (!eta) return; // Ignorar si no hay ETA
+        const semana = getISOWeek(eta);
+        const fob = item.FOB_TO_USD || 0;
+        const kilos = item.Kilos_total || 0;
+
+        if (kilos === 0) return; // Ignorar si kilos es 0
+
+        if (!datosPorVariedad[variedad]) {
+            datosPorVariedad[variedad] = {};
+        }
+        if (!datosPorVariedad[variedad][semana]) {
+            datosPorVariedad[variedad][semana] = { fob: 0, kilos: 0 };
+        }
+        datosPorVariedad[variedad][semana].fob += fob;
+        datosPorVariedad[variedad][semana].kilos += kilos;
+
+        if (!totalesPorSemana[semana]) {
+            totalesPorSemana[semana] = { fob: 0, kilos: 0 };
+        }
+        totalesPorSemana[semana].fob += fob;
+        totalesPorSemana[semana].kilos += kilos;
+    });
+
+    // Filtrar semanas con valores no nulos
+    const semanasConValores = Object.keys(totalesPorSemana).filter(semana => {
+        const { fob, kilos } = totalesPorSemana[semana];
+        return kilos > 0 && fob / kilos > 0;
+    }).sort();
+
+    // Si no hay semanas con valores, no generamos la tabla
+    if (semanasConValores.length === 0) {
+        $("#tHeadFOBPorSemanaVariedad").html("<tr><th>No hay datos disponibles</th></tr>");
+        $("#tBodyFOBPorSemanaVariedad").html("");
+        return;
+    }
+
+    // Generar el thead dinámico con solo semanas relevantes
+    let theadHtml = `
+        <tr>
+            <th>VARIEDAD</th>
+    `;
+    semanasConValores.forEach(semana => {
+        theadHtml += `<th>${semana}</th>`;
+    });
+    theadHtml += `<th>PROMEDIO</th></tr>`;
+    $("#tHeadFOBPorSemanaVariedad").html(theadHtml);
+
+    // Generar el tbody
+    let tbodyHtml = "";
+    
+    // Fila Acumulado Total
+    tbodyHtml += "<tr><td>Acumulado Total</td>";
+    let sumaTotalFob = 0;
+    let sumaTotalKilos = 0;
+    semanasConValores.forEach(semana => {
+        const { fob, kilos } = totalesPorSemana[semana];
+        const valor = kilos > 0 ? fob / kilos : 0;
+        tbodyHtml += `<td>$${valor.toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>`;
+        sumaTotalFob += fob;
+        sumaTotalKilos += kilos;
+    });
+    const promedioTotal = sumaTotalKilos > 0 ? sumaTotalFob / sumaTotalKilos : 0;
+    tbodyHtml += `<td>$${promedioTotal.toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td></tr>`;
+
+    // Filas por variedad
+    for (const [variedad, datos] of Object.entries(datosPorVariedad)) {
+        tbodyHtml += `<tr><td>${variedad}</td>`;
+        let sumaFobVariedad = 0;
+        let sumaKilosVariedad = 0;
+
+        semanasConValores.forEach(semana => {
+            const { fob, kilos } = datos[semana] || { fob: 0, kilos: 0 };
+            const valor = kilos > 0 ? fob / kilos : 0;
+            tbodyHtml += `<td>$${valor.toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>`;
+            sumaFobVariedad += fob;
+            sumaKilosVariedad += kilos;
+        });
+        const promedioVariedad = sumaKilosVariedad > 0 ? sumaFobVariedad / sumaKilosVariedad : 0;
+        tbodyHtml += `<td>$${promedioVariedad.toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td></tr>`;
+    }
+
+    $("#tBodyFOBPorSemanaVariedad").html(tbodyHtml);
+}
 
                 });
             </script>
