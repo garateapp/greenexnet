@@ -362,6 +362,9 @@ class LiqCxCabeceraController extends Controller
         // Obtener cabeceras
         $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->where('id', $id)->get();
 
+        
+        
+
         foreach ($liqCxCabeceras as $liqCxCabecera) {
             try {
                 // Obtener despachos
@@ -383,7 +386,114 @@ class LiqCxCabeceraController extends Controller
                         // Verificamos si el folio del despacho está en la lista
                         $folioMatch = in_array($despacho->folio, $folios);
                         if ($item['folio_fx'] === $despacho->folio || $folioMatch) {
-                            if ($item['folio_fx'] == '0000007404') {
+                            if ($item['folio_fx'] == '0000007404' || $item['folio_fx'] == '0000007406' || $item['folio_fx'] == '0000007421' || $item['folio_fx'] == '0000007428') {
+
+
+                                Log::info('Comparando:', [
+                                    'folio_fx' => [$item['folio_fx'], $despacho->folio, $folioMatch],
+                                    'variedad' => [$item['variedad'], trim($despacho->n_variedad_rotulacion), strcasecmp($item['variedad'], trim($despacho->n_variedad_rotulacion)) === 0],
+                                    'embalaje' => [$item['embalaje'], trim($despacho->c_embalaje), strcasecmp($item['embalaje'], trim($despacho->c_embalaje)) === 0],
+                                    'calibre' => [$item['calibre'], trim($despacho->n_calibre), strcasecmp($item['calibre'], trim($despacho->n_calibre)) === 0],
+                                    'etiqueta' => [$item['etiqueta'], trim($despacho->n_etiqueta), strcasecmp($item['etiqueta'], trim($despacho->n_etiqueta)) === 0],
+                                ]);
+                            }
+                        }
+
+                        return $folioMatch &&
+                            strcasecmp(trim($item['variedad']), trim($despacho->n_variedad_rotulacion)) === 0 &&
+                            strcasecmp(trim($item['embalaje']), trim($despacho->c_embalaje)) === 0 &&
+                            strcasecmp(trim($item['calibre']), trim($despacho->n_calibre)) === 0 &&
+                            strcasecmp(trim($item['etiqueta']), trim($despacho->n_etiqueta)) === 0;
+                    });
+
+
+                    Log::info('Elementos filtrados e:', $items->toArray());
+
+
+
+
+
+                    Log::info('item: ' . json_encode($items));
+
+                    $EFOB = 0;
+                    foreach ($items as $item) {
+                        Log::info("EFOB inicio " . $EFOB);
+                        $EFOB += $item['FOB_TO_USD'];
+                        Log::info("EFOB Asignado  " . $EFOB);
+                        Log::info("CAJAS Inicio" . $item['Cajas']);
+                        $ECCajas += $item['Cajas'];
+                        Log::info("CAJAS Asignado" . $item['Cajas']);
+                        Log::info('Folio ' . $item['folio_fx'] . ' EFOB: ' . $EFOB);
+                    }
+
+                    // Evitar división por cero
+                    $valor = ($ECCajas > 0) ? ($EFOB / $ECCajas) : 0;
+
+                    $resEjec->push([
+                        'folio' => $despacho->folio,
+                        'valor' => $valor,
+                    ]);
+                    try {
+                        //   dd(DB::connection('sqlsrv')->getPdo());
+                    } catch (\Exception $e) {
+                        die("Could not connect to the database.  Please check your configuration. error:" . $e);
+                    }
+                    // Realizar el UPDATE en la base de datos
+                    $affectedRows = DB::connection('sqlsrv')
+                        ->table('PKG_Stock_Det')
+                        ->where('folio', $despacho->folio)
+                        ->where('id', $despacho->id_pkg_stock_det)
+                        ->where('destruccion_tipo', 'GDP')
+                        ->update(['valor' => $valor]);
+                }
+            } catch (Exception $e) {
+                Log::error("Error al actualizar valor GD en FX: " . $e->getMessage());
+                return response()->json(['error' => $e->getMessage()], 500);
+            }
+        }
+
+        return response()->json(["message" => "Se modificaron $affectedRows registros", "data" => $affectedRows], 200);
+    }
+    public function actualizarValorCliente()
+    {
+
+        //$id = $request->id;
+        $affectedRows = 0;
+        $resEjec = collect();
+        //$liq = new Liquidaciones();
+
+        // Obtener la sesión correctamente
+        
+
+        // Obtener cabeceras
+        //$liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->where('id', $id)->get();
+
+        //Obtener cabeceras de JWM y Maoheng
+        $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->whereIn('cliente_id',[19,50] )->whereNotNull('nave_id')->get();
+
+        foreach ($liqCxCabeceras as $liqCxCabecera) {
+            $liqs = $this->ConsolidadoLiquidacionesUnitario($liqCxCabecera->id);
+            try {
+                // Obtener despachos
+                $despachos = DB::connection('sqlsrv')->table("V_PKG_Despachos")
+                    ->select('folio', 'n_variedad_rotulacion', 'c_embalaje', 'n_calibre', 'n_etiqueta', 'id_pkg_stock_det')
+                    ->where('tipo_g_despacho', '=', 'GDP')
+                    ->where('numero_embarque', '=', str_replace('i', '', str_replace('I', '', $liqCxCabecera->instructivo)))
+                    ->get();
+
+                foreach ($despachos as $despacho) {
+                    $EFOB = 0;
+                    $ECCajas = 0;
+                    $valor = 0;
+
+
+                    $items = $liqs->filter(function ($item) use ($despacho) {
+                        $folios = array_map('trim', explode(',', $item['folio_fx']));
+
+                        // Verificamos si el folio del despacho está en la lista
+                        $folioMatch = in_array($despacho->folio, $folios);
+                        if ($item['folio_fx'] === $despacho->folio || $folioMatch) {
+                            if ($item['folio_fx'] == '0000007404' || $item['folio_fx'] == '0000007406' || $item['folio_fx'] == '0000007421' || $item['folio_fx'] == '0000007428') {
 
 
                                 Log::info('Comparando:', [
@@ -626,7 +736,7 @@ class LiqCxCabeceraController extends Controller
                 $Flete_Aereo = ($flete_exportadora / $total_kilos) * $Peso_neto; //BQ
                 $Flete_Aereo_TO = $Flete_Aereo * $Cajas; //BR
                 $Costos_cajas_RMB = $Imp_destino_caja_RMB + $Costo_log_Caja_RMB + $Ent_Al_mercado_Caja_RMB + $Costo_mercado_caja_RMB + $Otros_costos_dest_Caja_RMB +
-                    $Comision_Caja + $Flete_marit_Caja_RMB + ($Otros_Impuestos_JWM_Impuestos * $TC) + ($Ajuste_impuesto_USD * $TC) - ($Otros_Ingresos_abonos * $TC) + ($Flete_Aereo * $TC); //AR
+                    $Comision_Caja + $Flete_marit_Caja_RMB + ($Ajuste_impuesto_USD)  + ($Flete_Aereo * $TC); //AR   Se saca  ($Otros_Impuestos_JWM_Impuestos * $TC) + - ($Otros_Ingresos_abonos * $TC) para que no afecte al FOB 
                 //=+AF3+AH3+AJ3+AL3+AN3+AB3+AP3+(CA3*AV3)+(BO3*AV3)-(CC3*AV3)+(BQ3*AV3)
                 $RMB_Costos_TO = $Costos_cajas_RMB * $Cajas; //AS
                 $Resultados_caja_RMB =  $RMB_Caja - $Costos_cajas_RMB;  //AT  Verificar con Haydelin
