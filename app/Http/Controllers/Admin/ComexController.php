@@ -50,7 +50,8 @@ class ComexController extends Controller
     public function capturador()
     {
         $Capturador = Capturador::all();
-        return view('admin.comex.capturador', compact('Capturador'));
+        $clientes=ClientesComex::all();
+        return view('admin.comex.capturador', compact('Capturador','clientes'));
     }
     public function capturadorexcel(Request $request)
     {
@@ -78,7 +79,18 @@ class ComexController extends Controller
             }
 
             $modulo = $capturador->modulo_id;
-            $cliente = $capturador->cliente_id;
+            if($capturador->id==16){
+                if($request->input('cliente')==null){
+                return response()->json(['message' => 'Debe seleccionar un cliente.'], 400);
+                }
+                else{
+                    $cliente=$request->input('cliente');
+                }
+            }
+            else{
+                $cliente = $capturador->cliente_id;
+            }
+            
 
             $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($archivo->getPathname());
             $hoja = $spreadsheet->getActiveSheet();
@@ -1171,6 +1183,7 @@ class ComexController extends Controller
     {
         $instructivo = $request->input('instructivo');
         ExcelDato::where('instructivo', $instructivo)->delete();
+        
         return redirect()->route('admin.comex.capturador')->with('message', 'Datos eliminados correctamente.');
     }
     public function actualizarValorGD_en_fx()

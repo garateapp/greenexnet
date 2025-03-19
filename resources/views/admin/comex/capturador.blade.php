@@ -231,9 +231,20 @@
                                             @endforeach
                                         </select>
                                     </div>
+                                    <div class="form-group" id="divCx" style="display:none;">
+
+                                        <label for="name">Seleccione Cliente</label>
+                                        <select class="form-control select2" id="cliente" name="cliente">
+                                            <option value="">Seleccione un Cliente</option>
+                                            @foreach ($clientes as $cx)
+                                                <option value="{{ $cx->id }}">{{ $cx->nombre_fantasia }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                     <div class="form-group">
                                         <label for="fecha">Instructivo</label>
-                                        <input type="text" name="instructivo" id="instructivo" class="form-control" required>
+                                        <input type="text" name="instructivo" id="instructivo" class="form-control"
+                                            required>
                                     </div>
                                     <div class="form-group">
                                         <label for="fecha">Tasa de Cambio</label>
@@ -241,19 +252,23 @@
                                     </div>
                                     <div class="form-group">
                                         <label for="fecha_arribo">Fecha de Arribo</label>
-                                        <input type="text" name="fecha_arribo" id="fecha_arribo"  class="form-control date" required>
+                                        <input type="text" name="fecha_arribo" id="fecha_arribo"
+                                            class="form-control date" required>
                                     </div>
                                     <div class="form-group">
                                         <label for="fecha_venta">Fecha de Venta</label>
-                                        <input type="text" name="fecha_venta" id="fecha_venta"  class="form-control date" required>
+                                        <input type="text" name="fecha_venta" id="fecha_venta" class="form-control date"
+                                            required>
                                     </div>
                                     <div class="form-group">
                                         <label for="fecha_venta">Fecha de Liquidación</label>
-                                        <input type="text" name="fecha_liquidacion" id="fecha_liquidacion"  class="form-control date" required>
+                                        <input type="text" name="fecha_liquidacion" id="fecha_liquidacion"
+                                            class="form-control date" required>
                                     </div>
                                     <div class="form-group">
                                         <label for="fila_costos">Fila en que inician los costos</label>
-                                        <input type="number" name="fila_costos" id="fila_costos" class="form-control" required>
+                                        <input type="number" name="fila_costos" id="fila_costos" class="form-control"
+                                            required>
                                     </div>
                                     <div class="form-group">
                                         <label for="file">Selecciona archivo</label>
@@ -270,17 +285,31 @@
                 </div>
             </div>
         </div>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
-                document.getElementById('tasa').addEventListener('input', function (event) {
-        // Reemplazar comas con puntos
-        this.value = this.value.replace(',', '.');
+            document.getElementById('tasa').addEventListener('input', function(event) {
+                // Reemplazar comas con puntos
+                this.value = this.value.replace(',', '.');
 
-        // Opcional: Validar que la entrada sea un número válido
-        if (isNaN(this.value)) {
-            this.value = this.value.slice(0, -1); // Remover el último carácter no válido
-        }
-    });
-            </script>
+                // Opcional: Validar que la entrada sea un número válido
+                if (isNaN(this.value)) {
+                    this.value = this.value.slice(0, -1); // Remover el último carácter no válido
+                }
+                
+            });
+            $("document").ready(function() {
+                
+                $("#plantilla").on('change', function() {
+                    if ($("#plantilla").val() == 16) {
+                        $("#divCx").show();
+                    } else {
+                        $("#divCx").hide();
+                    }
+                });
+
+
+            });
+        </script>
     @endsection
     @section('scripts')
         @parent
