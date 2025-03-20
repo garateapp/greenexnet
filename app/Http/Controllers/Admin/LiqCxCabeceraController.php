@@ -493,7 +493,7 @@ class LiqCxCabeceraController extends Controller
                         // Verificamos si el folio del despacho está en la lista
                         $folioMatch = in_array($despacho->folio, $folios);
                         if ($item['folio_fx'] === $despacho->folio || $folioMatch) {
-                            if ($item['folio_fx'] == '0000007404' || $item['folio_fx'] == '0000007406' || $item['folio_fx'] == '0000007421' || $item['folio_fx'] == '0000007428') {
+                            
 
 
                                 Log::info('Comparando:', [
@@ -503,7 +503,7 @@ class LiqCxCabeceraController extends Controller
                                     'calibre' => [$item['calibre'], trim($despacho->n_calibre), strcasecmp($item['calibre'], trim($despacho->n_calibre)) === 0],
                                     'etiqueta' => [$item['etiqueta'], trim($despacho->n_etiqueta), strcasecmp($item['etiqueta'], trim($despacho->n_etiqueta)) === 0],
                                 ]);
-                            }
+                            
                         }
 
                         return $folioMatch &&
@@ -735,7 +735,7 @@ class LiqCxCabeceraController extends Controller
                 $Ajuste_impuesto_USD = (($ajusteimpuesto == 0 ? 0 : ($ajusteimpuesto) ) / $total_kilos) * $Peso_neto; //BO
                 $Flete_Aereo = ($flete_exportadora / $total_kilos) * $Peso_neto; //BQ
                 $Flete_Aereo_TO = $Flete_Aereo * $Cajas; //BR
-                $Costos_cajas_RMB = $Imp_destino_caja_RMB + $Costo_log_Caja_RMB + $Ent_Al_mercado_Caja_RMB + $Costo_mercado_caja_RMB + $Otros_costos_dest_Caja_RMB +
+                $Costos_cajas_RMB = $Imp_destino_caja_RMB + $Costo_log_Caja_RMB + $Ent_Al_mercado_Caja_RMB + $Costo_mercado_caja_RMB + $Otros_costos_dest_Caja_RMB +costosFleteDomestico+
                 $Comision_Caja + $Flete_marit_Caja_RMB + ($Ajuste_impuesto_USD)  + ($Flete_Aereo * $TC); //AR   Se saca  ($Otros_Impuestos_JWM_Impuestos * $TC) + - ($Otros_Ingresos_abonos * $TC) para que no afecte al FOB 
                 //=+AF3+AH3+AJ3+AL3+AN3+AB3+AP3+(CA3*AV3)+(BO3*AV3)-(CC3*AV3)+(BQ3*AV3)
                 $RMB_Costos_TO = $Costos_cajas_RMB * $Cajas; //AS
