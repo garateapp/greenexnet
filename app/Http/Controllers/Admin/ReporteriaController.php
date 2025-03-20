@@ -2148,7 +2148,7 @@ class ReporteriaController extends Controller
                 $Ajuste_impuesto_USD = (($ajusteimpuesto == 0 ? 0 : ($ajusteimpuesto) ) / $total_kilos) * $Peso_neto; //BO
                 $Flete_Aereo = ($flete_exportadora / $total_kilos) * $Peso_neto; //BQ
                 $Flete_Aereo_TO = $Flete_Aereo * $Cajas; //BR
-                $Costos_cajas_RMB = $Imp_destino_caja_RMB + $Costo_log_Caja_RMB + $Ent_Al_mercado_Caja_RMB + $Costo_mercado_caja_RMB + $Otros_costos_dest_Caja_RMB + $Comision_Caja + $Flete_marit_Caja_RMB + ($Otros_Impuestos_JWM_Impuestos ) + ($Ajuste_impuesto_USD )  + ($Flete_Aereo * $TC); //AR - ($Otros_Ingresos_abonos * $TC)
+                $Costos_cajas_RMB = $Imp_destino_caja_RMB + $Costo_log_Caja_RMB + $Ent_Al_mercado_Caja_RMB + $Costo_mercado_caja_RMB + $Otros_costos_dest_Caja_RMB + $Comision_Caja + $Flete_marit_Caja_RMB  + ($Ajuste_impuesto_USD )  + ($Flete_Aereo * $TC); //AR - ($Otros_Ingresos_abonos * $TC) + ($Otros_Impuestos_JWM_Impuestos )
                 $RMB_Costos_TO = $Costos_cajas_RMB * $Cajas; //AS
                 $Resultados_caja_RMB =  $RMB_Caja - $Costos_cajas_RMB;  //AT  Verificar con Haydelin
                 $RMB_result_TO = $Resultados_caja_RMB * $Cajas; //AU  Verificar con Haydelin

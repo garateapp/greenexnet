@@ -158,6 +158,16 @@
         [id="rendimientoTable"] th[class^="cliente-"] {
             border-left: 1px solid #ccc;
         }
+
+        #loading-animation {
+            display: flex;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+        }
+
+        video {
+            border-radius: 10px;
+        }
     </style>
     <link rel="stylesheet" type="text/css"
         href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css">
@@ -172,76 +182,85 @@
         </div>
     @endif
     <div class="row">
-        <div class="col-12">
-            <div id="filters">
-                <div class="card">
-                    <div class="card-header">
-                        Filtro General
+        <div id="loading-animation"
+            style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 9999; justify-content: center; align-items: center;">
+            <video autoplay loop muted style="width: 200px; height: auto;">
+                <source src="{{ asset('img/transito.webm') }}" type="video/webm">
+                Your browser does not support the video tag.
+            </video>
+            <br />
+            <div class="text-white text-opacity-75 text-end" id="loading-animation-text">Obteniendo Instructivos,
+                Espera por favor..... :)</div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div id="filters">
+            <div class="card">
+                <div class="card-header">
+                    Filtros GRáficos
+                </div>
+                <div class="card-body">
+                    <div class="row">
+
+                        <div class="col-3">
+                            <label for="filtroWeek">Semana Arribo</label>
+                            <select id="filtroWeek" class="form-control select2" multiple="multiple"></select>
+                        </div>
+                        <div class="col-3">
+                            <label for="filtroNave">Nave</label>
+                            <select id="filtroNave" class="form-control select2" multiple="multiple"></select>
+                        </div>
+                        <div class="col-3">
+                            <label for="filtroCliente">Cliente</label>
+                            <select id="filtroCliente" class="form-control select2" multiple="multiple"></select>
+                        </div>
+
+                        <div class="col-3">
+                            <label for="filtroVariedad">Variedad</label>
+                            <select id="filtroVariedad" class="form-control select2" multiple="multiple"></select>
+                        </div>
+                        <div class="col-3">
+                            <label for="filtroCalibre">Calibre</label>
+                            <select id="filtroCalibre" class="form-control select2" multiple="multiple"></select>
+                        </div>
+                        <div class="col-3">
+                            <label for="filtroEtiqueta">Etiqueta</label>
+                            <select id="filtroEtiqueta" class="form-control select2" multiple="multiple"></select>
+                        </div>
+                        <div class="col-3">
+                            <label for="filtroEmbalaje">Embalaje</label>
+                            <select id="filtroEmbalaje" class="form-control select2" multiple="multiple"></select>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <div class="row">
-
-                            <div class="col-3">
-                                <label for="filtroWeek">Semana Arribo</label>
-                                <select id="filtroWeek" class="form-control select2" multiple="multiple"></select>
-                            </div>
-                            <div class="col-3">
-                                <label for="filtroNave">Nave</label>
-                                <select id="filtroNave" class="form-control select2" multiple="multiple"></select>
-                            </div>
-                            <div class="col-3">
-                                <label for="filtroCliente">Cliente</label>
-                                <select id="filtroCliente" class="form-control select2" multiple="multiple"></select>
-                            </div>
-
-                            <div class="col-3">
-                                <label for="filtroVariedad">Variedad</label>
-                                <select id="filtroVariedad" class="form-control select2" multiple="multiple"></select>
-                            </div>
-                            <div class="col-3">
-                                <label for="filtroCalibre">Calibre</label>
-                                <select id="filtroCalibre" class="form-control select2" multiple="multiple"></select>
-                            </div>
-                            <div class="col-3">
-                                <label for="filtroEtiqueta">Etiqueta</label>
-                                <select id="filtroEtiqueta" class="form-control select2" multiple="multiple"></select>
-                            </div>
-                            <div class="col-3">
-                                <label for="filtroEmbalaje">Embalaje</label>
-                                <select id="filtroEmbalaje" class="form-control select2" multiple="multiple"></select>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    Total FOB USD por Cliente
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="graficoFOB" style="display: none;"></canvas>
+                                    <canvas id="graficoPieFOB" style="max-height: 350px;"></canvas>
+                                </div>
                             </div>
                         </div>
 
+                        <div class="col-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    FOB Promedio por Caja
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="graficoPromedioFOB"></canvas>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
-    <div class="row">
-        <div class="col-6">
-            <div class="card">
-                <div class="card-header">
-                    Total FOB USD por Cliente
-                </div>
-                <div class="card-body">
-                    <canvas id="graficoFOB" style="display: none;"></canvas>
-                    <canvas id="graficoPieFOB" style="max-height: 350px;"></canvas>
-                </div>
-            </div>
-        </div>
 
-        <div class="col-6">
-            <div class="card">
-                <div class="card-header">
-                    FOB Promedio por Caja
-                </div>
-                <div class="card-body">
-                    <canvas id="graficoPromedioFOB"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
     <div class="row">
 
 
@@ -256,8 +275,8 @@
             <ul class="nav nav-tabs" id="ComparativaTabs" role="tablist">
                 <!-- Pestaña Comparativa General -->
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="ranking-tab" data-bs-toggle="tab" data-bs-target="#ranking" type="button"
-                        role="tab" aria-controls="ranking" aria-selected="false">
+                    <button class="nav-link active" id="ranking-tab" data-bs-toggle="tab" data-bs-target="#ranking"
+                        type="button" role="tab" aria-controls="ranking" aria-selected="false">
                         Comparativas Generales
                     </button>
                 </li>
@@ -384,6 +403,14 @@
 
             </script>
             <script>
+                function showLoading() {
+
+                    $("#loading-animation").fadeIn();
+                }
+
+                function hideLoading() {
+                    $("#loading-animation").fadeOut();
+                }
                 document.addEventListener("DOMContentLoaded", async () => {
                     let originalData = []; // Datos originales sin filtrar
                     let GroupedData = []; //DAtos Agrupados
@@ -399,6 +426,7 @@
                     // Obtener los datos de las liquidaciones
 
                     async function loadData() {
+                        showLoading();
                         try {
                             const response = await fetch(
                                 '{{ route('admin.reporteria.obtenerliquidacionesagrupadas') }}');
@@ -418,6 +446,7 @@
                             // cargarTabla(originalData); // Llenar la tabla con todos los datos
                             // calcularTotales(originalData); // Calcular totales iniciales
                             await fillSelects(); // Llenar los selectores
+                            hideLoading();
 
                         } catch (error) {
                             console.error("Error al cargar datos:", error);
@@ -529,7 +558,7 @@
 
                                 datosRelacionados.forEach(item => {
                                     let costoOportunidad = parseFloat(data
-                                        .PromedioFOBxCaja)-parseFloat(item.PromedioFOBxCaja);
+                                        .PromedioFOBxCaja) - parseFloat(item.PromedioFOBxCaja);
 
                                     // Guardar datos para el gráfico
                                     labels.push(item.cliente);
@@ -689,7 +718,11 @@
                             cargaRendimiento(GroupedData);
                             updateComparacionFOB();
 
+
                         }
+                        let dataAgrupada = filtrarDatosAgrupados()
+                        //cargarTabla(dataAgrupada);
+                        //cargaRendimientoGeneral(dataAgrupada);
                     });
 
                     function obtenerFiltrosSeleccionados() {
@@ -709,6 +742,21 @@
                         // console.log(originalData.map(item => item.embalaje)); // 📌 Esto imprimirá todos los valores de "embalaje"
 
                         return originalData.filter(d =>
+                            (filtros.nave.length === 0 || filtros.nave.includes(d.nave)) &&
+                            (filtros.cliente.length === 0 || filtros.cliente.includes(d.cliente)) &&
+                            (filtros.variedad.length === 0 || filtros.variedad.includes(d.variedad)) &&
+                            (filtros.calibre.length === 0 || filtros.calibre.includes(d.calibre)) &&
+                            (filtros.etiqueta.length === 0 || filtros.etiqueta.includes(d.etiqueta)) &&
+                            (filtros.ETA_Week.length === 0 || filtros.ETA_Week.includes(d.ETA_Week.toString()))
+                            //&& (filtros.embalaje.lenght === 0 || filtros.embalaje.includes(d.embalaje))
+                        );
+                    }
+
+                    function filtrarDatosAgrupados() {
+                        let filtros = obtenerFiltrosSeleccionados();
+                        // console.log(originalData.map(item => item.embalaje)); // 📌 Esto imprimirá todos los valores de "embalaje"
+
+                        return GroupedData.filter(d =>
                             (filtros.nave.length === 0 || filtros.nave.includes(d.nave)) &&
                             (filtros.cliente.length === 0 || filtros.cliente.includes(d.cliente)) &&
                             (filtros.variedad.length === 0 || filtros.variedad.includes(d.variedad)) &&
@@ -860,23 +908,23 @@
                         let headerRow = $("#headerRow");
                         headerRow.empty();
                         headerRow.append(`<th></th>
-        <th>Nave</th>
-        <th>Etiqueta</th>
-        <th>Embalaje</th>
-        <th>Variedad</th>
-        <th>Calibre</th>
-        <th>Kilos Total</th>
-        <th>FOB TO USD</th>
-        <th>FOB Kg</th>
-    `);
+                                            <th>Nave</th>
+                                            <th>Etiqueta</th>
+                                            <th>Embalaje</th>
+                                            <th>Variedad</th>
+                                            <th>Calibre</th>
+                                            <th>Kilos Total</th>
+                                            <th>FOB TO USD</th>
+                                            <th>FOB Kg</th>
+                                        `);
 
                         clientes.forEach(cliente => {
                             headerRow.append(`
-            <th class="cliente-header inicio-cliente">${cliente} - FOB Kg</th>
-            <th class="cliente-header">${cliente} - Suma de Kilos</th>
-            <th class="cliente-header">${cliente} - Diferencia</th>
-            <th class="cliente-header fin-cliente">${cliente} - Total Diferencia</th>
-        `);
+                                <th class="cliente-header inicio-cliente">${cliente} - FOB Kg</th>
+                                <th class="cliente-header">${cliente} - Suma de Kilos</th>
+                                <th class="cliente-header">${cliente} - Diferencia</th>
+                                <th class="cliente-header fin-cliente">${cliente} - Total Diferencia</th>
+                            `);
                         });
 
                         // Enriquecer los datos con los valores de los otros clientes
@@ -940,29 +988,50 @@
                                     data: 'calibre'
                                 },
                                 {
-                                    data: 'kilos_total'
+                                    data: 'kilos_total',
+                                    render: function(data) {
+                                        return parseFloat(data).toLocaleString();
+                                    }
                                 },
                                 {
-                                    data: 'FOB_TO_USD'
+                                    data: 'FOB_TO_USD',
+                                    render: function(data) {
+                                        return parseFloat(data).toLocaleString();
+                                    }
                                 },
                                 {
-                                    data: 'FOB_kg'
+                                    data: 'FOB_kg',
+                                    render: function(data) {
+                                        return parseFloat(data).toLocaleString();
+                                    }
                                 },
                                 ...clientes.flatMap(cliente => ([{
                                         data: `clientes.${cliente}.FOB_kg`,
-                                        className: `cliente-${cliente} inicio-cliente`
+                                        className: `cliente-${cliente} inicio-cliente`,
+                                        render: function(data) {
+                                            return parseFloat(data).toLocaleString();
+                                        }
                                     },
                                     {
                                         data: `clientes.${cliente}.kilos_total`,
-                                        className: `cliente-${cliente}`
+                                        className: `cliente-${cliente}`,
+                                        render: function(data) {
+                                            return parseFloat(data).toLocaleString();
+                                        }
                                     },
                                     {
                                         data: `clientes.${cliente}.diferencia`,
-                                        className: `cliente-${cliente}`
+                                        className: `cliente-${cliente}`,
+                                        render: function(data) {
+                                            return parseFloat(data).toLocaleString();
+                                        }
                                     },
                                     {
                                         data: `clientes.${cliente}.total_diferencia`,
-                                        className: `cliente-${cliente} fin-cliente`
+                                        className: `cliente-${cliente} fin-cliente`,
+                                        render: function(data) {
+                                            return parseFloat(data).toLocaleString();
+                                        }
                                     }
                                 ]))
                             ],
@@ -1059,7 +1128,7 @@
                         });
                         console.log(comparacionDatos);
                         // Actualizar el gráfico con los nuevos datos
-                       // updateGraficoComparacion(comparacionDatos);
+                        // updateGraficoComparacion(comparacionDatos);
                     }
 
 
@@ -1080,54 +1149,6 @@
                     }
                     let graficoComparacionFOB = null;
 
-                    // function updateGraficoComparacion(datos) {
-                    //     const ctx = document.getElementById("graficoComparacionFOB").getContext("2d");
-
-                    //     // Eliminar instancia previa del gráfico si existe
-                    //     if (graficoComparacionFOB) {
-                    //         graficoComparacionFOB.destroy();
-                    //     }
-
-                    //     const labels = datos.map(d => d.cliente);
-                    //     const data = datos.map(d => d.costoPorOportunidad);
-
-                    //     // Colores: Cliente Principal (azul), Comparados (rojo pastel)
-                    //     const backgroundColors = datos.map(d => d.esPrincipal ? "rgba(54, 162, 235, 0.7)" :
-                    //         "rgba(255, 99, 132, 0.7)");
-
-                    //     graficoComparacionFOB = new Chart(ctx, {
-                    //         type: "bar",
-                    //         data: {
-                    //             labels: labels,
-                    //             datasets: [{
-                    //                 label: "Costo por Oportunidad",
-                    //                 data: data,
-                    //                 backgroundColor: backgroundColors,
-                    //                 borderColor: backgroundColors.map(c => c.replace("0.7",
-                    //                     "1")), // Más opaco en el borde
-                    //                 borderWidth: 1
-                    //             }]
-                    //         },
-                    //         options: {
-                    //             responsive: true,
-                    //             maintainAspectRatio: false,
-                    //             scales: {
-                    //                 y: {
-                    //                     beginAtZero: true,
-                    //                     title: {
-                    //                         display: true,
-                    //                         text: "USD"
-                    //                     }
-                    //                 }
-                    //             },
-                    //             plugins: {
-                    //                 legend: {
-                    //                     display: false
-                    //                 }
-                    //             }
-                    //         }
-                    //     });
-                    // }
 
 
                     // Función para generar colores pastel para las barras
@@ -1265,13 +1286,15 @@
 
                             groupedData[key].clientes[dato.cliente].FOB_kg += dato.FOB_kg || 0;
                             groupedData[key].clientes[dato.cliente].kilos_total += dato.kilos_total || 0;
-                            groupedData[key].clientes[dato.cliente].diferencia += (dato.FOB_kg - groupedData[key].clientes[dato.cliente].FOB_kg) || 0;
-                            groupedData[key].clientes[dato.cliente].total_diferencia += (dato.kilos_total-groupedData[key].clientes[dato.cliente].kilos_total) || 0;
+                            groupedData[key].clientes[dato.cliente].diferencia += (dato.FOB_kg - groupedData[
+                                key].clientes[dato.cliente].FOB_kg) || 0;
+                            groupedData[key].clientes[dato.cliente].total_diferencia += (dato.kilos_total -
+                                groupedData[key].clientes[dato.cliente].kilos_total) || 0;
                         });
 
                         let datosFinales = Object.values(groupedData);
                         let clientes = [...new Set(data.map(d => d
-                        .cliente))]; // Asegurarse de obtener todos los clientes posibles
+                            .cliente))]; // Asegurarse de obtener todos los clientes posibles
 
                         let headerRow = $("#RGheaderRow").empty();
 
@@ -1323,7 +1346,8 @@
                                 } else {
                                     clientesCompletos[cliente] = {
                                         FOB_kg: formatNumber(
-                                        0), // Valores por defecto cuando el cliente no tiene datos
+                                            0
+                                        ), // Valores por defecto cuando el cliente no tiene datos
                                         kilos_total: formatNumber(0),
                                         diferencia: formatNumber(0),
                                         total_diferencia: formatNumber(0)
@@ -1367,29 +1391,50 @@
                                     data: 'calibre'
                                 },
                                 {
-                                    data: 'kilos_total'
+                                    data: 'kilos_total',
+                                    render: function(data) {
+                                        return parseFloat(data).toLocaleString();
+                                    }
                                 },
                                 {
-                                    data: 'FOB_TO_USD'
+                                    data: 'FOB_TO_USD',
+                                    render: function(data) {
+                                        return parseFloat(data).toLocaleString();
+                                    }
                                 },
                                 {
-                                    data: 'FOB_kg'
+                                    data: 'FOB_kg',
+                                    render: function(data) {
+                                        return parseFloat(data).toLocaleString();
+                                    }
                                 },
                                 ...clientes.flatMap(cliente => [{
                                         data: `clientes.${cliente}.FOB_kg`,
-                                        className: `cliente-${cliente} inicio-cliente`
+                                        className: `cliente-${cliente} inicio-cliente`,
+                                        render: function(data) {
+                                            return parseFloat(data).toLocaleString();
+                                        }
                                     },
                                     {
                                         data: `clientes.${cliente}.kilos_total`,
-                                        className: `cliente-${cliente}`
+                                        className: `cliente-${cliente}`,
+                                        render: function(data) {
+                                            return parseFloat(data).toLocaleString();
+                                        }
                                     },
                                     {
                                         data: `clientes.${cliente}.diferencia`,
-                                        className: `cliente-${cliente}`
+                                        className: `cliente-${cliente}`,
+                                        render: function(data) {
+                                            return parseFloat(data).toLocaleString();
+                                        }
                                     },
                                     {
                                         data: `clientes.${cliente}.total_diferencia`,
-                                        className: `cliente-${cliente} fin-cliente`
+                                        className: `cliente-${cliente} fin-cliente`,
+                                        render: function(data) {
+                                            return parseFloat(data).toLocaleString();
+                                        }
                                     }
                                 ])
                             ],
@@ -1415,6 +1460,8 @@
                     // document
                     //     .querySelector('div.dtsp-verticalPanes')
                     //     .appendChild(tableX.searchPanes.container().get(0));
+
                 });
+
             </script>
         @endsection

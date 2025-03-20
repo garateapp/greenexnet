@@ -410,10 +410,31 @@
                 opacity: 1;
             }
         }
+
+        #loading-animation {
+            display: flex;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+        }
+
+        video {
+            border-radius: 10px;
+        }
     </style>
     <div class="row">
-        <div class="col-md-12">
-            {{-- <div class="card">
+        <div id="loading-animation"
+            style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 9999; justify-content: center; align-items: center;">
+            <video autoplay loop muted style="width: 200px; height: auto;">
+                <source src="{{ asset('img/transito.webm') }}" type="video/webm">
+                Your browser does not support the video tag.
+            </video>
+            <br />
+            <div class="text-white text-opacity-75 text-end" id="loading-animation-text">Obteniendo Instructivos,
+                Espera por favor..... :)</div>
+        </div>
+    </div>
+    <div class="col-md-12">
+        {{-- <div class="card">
                 <div id="loading-animation"
                     style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 9999; justify-content: center; align-items: center;">
                     <video autoplay loop muted style="width: auto; height: auto;">
@@ -435,81 +456,47 @@
 
                 </div>
             </div> --}}
-        </div>
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header">
-                    Filtros
-                </div>
-                <div class="card-body">
-                    <div class="row" style="margin-bottom: 15px;">
-                        <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
-                            <label for="filtroCliente">Cliente</label>
-                            <select id="filtroCliente" class="form-control select2" multiple="multiple"></select>
-                        </div>
+    </div>
+    <div class="col-md-12">
 
-                        <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
-                            <label for="filtroVariedad">Variedad</label>
-                            <select id="filtroVariedad" class="form-control select2" multiple="multiple"></select>
-                        </div>
-                        <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
-                            <label for="filtroCalibre">Calibre</label>
-                            <select id="filtroCalibre" class="form-control select2" multiple="multiple"></select>
-                        </div>
-                    </div>
-                    <div class="row" style="margin-bottom: 15px;">
-                        <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
-                            <label for="filtroEtiqueta">Etiqueta</label>
-                            <select id="filtroEtiqueta" class="form-control select2" multiple="multiple"></select>
-                        </div>
-
-                        <div class="col-6 col-lg-4 col-xl-3 col-xxl-2">
-                            <label for="filtroSemana">Semana</label>
-                            <select id="filtroSemana" class="form-control select2" multiple="multiple"></select>
-                        </div>
-                    </div>
-                    <button id="btnAplicarFiltros" class="btn btn-secondary mb-3 align-middle" style="margin-top: 30px;">
-                        Aplicar filtros
-                    </button>
-                </div>
+    </div>
+    <div class="col-12 col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                Liquidaciones Venta Cerezas 2025
             </div>
-        </div>
-        <div class="col-12 col-lg-12">
-            <div class="card">
-                <div class="card-header">
-                    Liquidaciones Venta Cerezas 2025
-                </div>
-                <div class="card-body">
-                    <table id="tabla-datos" class="display" style="width:100%">
-                        <thead>
-                            <tr>
-                                <th></th>
-                                
-                                <th>Instructivo</th>
-                                <th>Tasa</th>
-                                <th>MONTO RMB</th>
-                                <th>MONTO USD</th>
-                                <th>Costos USD</th>
-                                <th>FOB USD</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tablaDatosBody"></tbody>
-                        <tfoot>
-                            <tr>
-                                <td colspan="3" style="text-align: right;">Subtotal:</td>
-                                <td id="subtotalCantidad"></td>
-                                <td id="subtotalMontoRMB"></td>
-                                <td id="subtotalMontoUSD"></td>
-                            </tr>
-                            <tr>
-                                <td colspan="3"><strong>Total</strong></td>
-                                <td id="totalCantidad">0</td>
-                                <td id="totalMontoRMB">0</td>
-                                <td id="totalMontoUSD">0</td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                    {{-- <table id="tablaCalibres" class="display table table-bordered table-striped table-hover">
+            <div class="card-body">
+                <table id="tabla-datos" class="display" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th></th>
+
+                            <th>Instructivo</th>
+                            <th>Tasa</th>
+                            <th>Total Kilos</th>
+                            <th>MONTO RMB</th>
+                            <th>MONTO USD</th>
+                            <th>Costos USD</th>
+                            <th>FOB USD</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaDatosBody"></tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4" style="text-align: right;">Subtotal:</td>
+                            <td id="subtotalCantidad"></td>
+                            <td id="subtotalMontoRMB"></td>
+                            <td id="subtotalMontoUSD"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4"><strong>Total</strong></td>
+                            <td id="totalCantidad">0</td>
+                            <td id="totalMontoRMB">0</td>
+                            <td id="totalMontoUSD">0</td>
+                        </tr>
+                    </tfoot>
+                </table>
+                {{-- <table id="tablaCalibres" class="display table table-bordered table-striped table-hover">
                         <thead id="tablaLiquidacionesHead">
                             <!-- Encabezados dinámicos -->
                         </thead>
@@ -518,91 +505,54 @@
                         </tbody>
                     </table> --}}
 
-                </div>
             </div>
         </div>
     </div>
+    </div>
     <script>
+        function showLoading() {
+
+            $("#loading-animation").fadeIn();
+        }
+
+        function hideLoading() {
+            $("#loading-animation").fadeOut();
+        }
         document.addEventListener("DOMContentLoaded", async () => {
             let originalData = []; // Datos originales sin filtrar
 
             // Función para obtener valores únicos de una columna específica
-            async function getUniqueValues(column) {
-                const uniqueValues = new Set();
-                originalData.forEach(item => {
-                    const value = item[column];
-                    if (value) uniqueValues.add(value);
-                });
-                return Array.from(uniqueValues).filter(value => value !== null && value !== "");
-            }
 
-            // Función para llenar los selects dinámicamente
-            async function fillSelects() {
-                try {
-                    const fields = {
-                        variedad_id: "filtroVariedad",
-                        calibre: "filtroCalibre",
-                        etiqueta_id: "filtroEtiqueta",
-                        Semana_Arribo: "filtroSemana",
-                        nombre_fantasia: "filtroCliente"
-                    };
-
-                    for (const [field, selectId] of Object.entries(fields)) {
-                        const values = await getUniqueValues(field);
-                        const selectElement = document.getElementById(selectId);
-
-                        // Limpiar opciones previas
-                        selectElement.innerHTML = '<option value="">Todos</option>';
-
-                        values.forEach(value => {
-                            const option = document.createElement("option");
-                            option.value = value;
-                            option.textContent = value;
-                            selectElement.appendChild(option);
-                        });
-
-                        // Inicializar Select2 en el select si aún no está inicializado
-                        if (!$(selectElement).hasClass("select2-hidden-accessible")) {
-                            $(selectElement).select2();
-                        }
-
-                        // Escuchar cambios en cada select para filtrar la tabla
-                        $(selectElement).on("change", filterTable);
-                    }
-                } catch (error) {
-                    console.error("Error llenando los selectores:", error);
-                }
-            }
 
             // Función para aplicar los filtros en la tabla
-            function filterTable() {
-                let filteredData = originalData;
+            // function filterTable() {
+            //     let filteredData = originalData;
 
-                const filters = {
-                    variedad_id: $("#filtroVariedad").val() || [],
-                    calibre: $("#filtroCalibre").val() || [],
-                    etiqueta_id: $("#filtroEtiqueta").val() || [],
-                    Semana_Arribo: $("#filtroSemana").val() || [],
-                    nombre_fantasia: $("#filtroCliente").val() || []
-                };
+            //     const filters = {
+            //         variedad_id: $("#filtroVariedad").val() || [],
+            //         calibre: $("#filtroCalibre").val() || [],
+            //         etiqueta_id: $("#filtroEtiqueta").val() || [],
+            //         Semana_Arribo: $("#filtroSemana").val() || [],
+            //         nombre_fantasia: $("#filtroCliente").val() || []
+            //     };
 
-                // Convertir valores en arrays en caso de que sean únicos
-                Object.keys(filters).forEach(key => {
-                    if (!Array.isArray(filters[key])) {
-                        filters[key] = [filters[key]];
-                    }
-                });
+            //     // Convertir valores en arrays en caso de que sean únicos
+            //     Object.keys(filters).forEach(key => {
+            //         if (!Array.isArray(filters[key])) {
+            //             filters[key] = [filters[key]];
+            //         }
+            //     });
 
-                // Aplicar filtros solo si hay valores seleccionados
-                filteredData = originalData.filter(item => {
-                    return Object.entries(filters).every(([key, values]) => {
-                        return values.length === 0 || values.includes(item[key].toString());
-                    });
-                });
+            //     // Aplicar filtros solo si hay valores seleccionados
+            //     filteredData = originalData.filter(item => {
+            //         return Object.entries(filters).every(([key, values]) => {
+            //             return values.length === 0 || values.includes(item[key].toString());
+            //         });
+            //     });
 
-                cargarTabla(filteredData);
-                calcularTotales(filteredData);
-            }
+            //     cargarTabla(filteredData);
+            //     calcularTotales(filteredData);
+            // }
 
             // Función para calcular totales
             function calcularTotales(data) {
@@ -645,43 +595,48 @@
                 $('#tabla-datos').DataTable({
                     destroy: true, // Permite recargar la tabla sin errores
                     data: datos,
-                    columns: [
-                       {
-                            data:'placeholder',
-                       },
+                    columns: [{
+                            data: 'placeholder',
+                        },
                         {
                             data: "instructivo"
                         },
-                        
-                          
+
+
                         {
-                            data:"tasa"
+                            data: "tasa"
                         },
                         {
-                            data:"MONTO_RMB",
+                            data: "total_kilos",
                             render: function(data) {
                                 return parseFloat(data).toLocaleString();
                             }
                         },
                         {
-                            data:"MONTO_USD",
+                            data: "MONTO_RMB",
                             render: function(data) {
                                 return parseFloat(data).toLocaleString();
                             }
                         },
                         {
-                            data:"costos",
+                            data: "MONTO_USD",
                             render: function(data) {
                                 return parseFloat(data).toLocaleString();
                             }
                         },
                         {
-                            data:"FOB_USD",
+                            data: "costos",
+                            render: function(data) {
+                                return parseFloat(data).toLocaleString();
+                            }
+                        },
+                        {
+                            data: "FOB_USD",
                             render: function(data) {
                                 return parseFloat(data).toLocaleString();
                             }
                         }
-                      
+
                     ],
                     language: {
                         url: "https://cdn.datatables.net/plug-ins/1.10.19/i18n/Spanish.json"
@@ -723,14 +678,14 @@
             //     }
             // });
             // Función para formatear la subtabla
-        //     function formatearSubtabla(data) {
-        //         var table = '<table class="table table-sm table-bordered" style="width:100%;">';
-        //         table +=
-        //             '<thead><tr><th>% Costos Asociado</th><th>Embalaje</th><th>Variedad</th><th>Calibre</th><th>Productor</th><th>CSG</th><th>Cantidad</th><th>Folio</th></tr></thead>';
-        //         table += '<tbody>';
+            //     function formatearSubtabla(data) {
+            //         var table = '<table class="table table-sm table-bordered" style="width:100%;">';
+            //         table +=
+            //             '<thead><tr><th>% Costos Asociado</th><th>Embalaje</th><th>Variedad</th><th>Calibre</th><th>Productor</th><th>CSG</th><th>Cantidad</th><th>Folio</th></tr></thead>';
+            //         table += '<tbody>';
 
-        //         data.forEach(item => {
-        //             table += `<tr>
+            //         data.forEach(item => {
+            //             table += `<tr>
         //                 <td>${item.folio}</td>
         //     <td>${item.C_Embalaje}</td>
         //     <td>${item.n_variedad}</td>
@@ -741,13 +696,14 @@
         //     <td>${parseFloat(item.porcentaje).toFixed(2)}%</td>
 
         // </tr>`;
-        //         });
+            //         });
 
-        //         table += '</tbody></table>';
-        //         return table;
-        //     }
+            //         table += '</tbody></table>';
+            //         return table;
+            //     }
             // Función para cargar los datos desde la API
             async function loadData() {
+                showLoading();
                 try {
                     const response = await fetch("{{ route('admin.reporteria.getLiquidaciones') }}");
                     originalData = await response.json(); // Guardar los datos originales
@@ -755,7 +711,7 @@
                     cargarTabla(originalData); // Llenar la tabla con todos los datos
                     calcularTotales(originalData); // Calcular totales iniciales
                     //await fillSelects(); // Llenar los selectores
-
+                    hideLoading();
                 } catch (error) {
                     console.error("Error al cargar datos:", error);
                 }

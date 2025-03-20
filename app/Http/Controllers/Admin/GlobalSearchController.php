@@ -15,11 +15,11 @@ class GlobalSearchController extends Controller
         'Region'   => 'cruds.region.title',
         'Comuna'   => 'cruds.comuna.title',
         'Status'   => 'cruds.status.title',
-        'TipoHawb' => 'cruds.tipoHawb.title',
         'Entidad'  => 'cruds.entidad.title',
         'Embalaje' => 'cruds.embalaje.title',
         'Puerto'   => 'cruds.puerto.title',
         'Familium' => 'cruds.familium.title',
+        'Au'       => 'cruds.au.title',
     ];
 
     public function search(Request $request)

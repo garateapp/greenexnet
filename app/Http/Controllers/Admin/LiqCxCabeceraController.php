@@ -469,7 +469,7 @@ class LiqCxCabeceraController extends Controller
         //$liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->where('id', $id)->get();
 
         //Obtener cabeceras de JWM y Maoheng
-        $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->whereIn('cliente_id',[19,50] )->whereNotNull('nave_id')->get();
+        $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->whereIn('cliente_id',[19] )->whereNotNull('nave_id')->get();
 
         foreach ($liqCxCabeceras as $liqCxCabecera) {
             $liqs = $this->ConsolidadoLiquidacionesUnitario($liqCxCabecera->id);
