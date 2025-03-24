@@ -603,6 +603,7 @@ class LiqCxCabeceraController extends Controller
         $ajusteimpuesto = 0;
         $otrosimpuestos = 0;
         $otrosingresos = 0;
+        $notacredito=0;
         $i = 2;
 
         foreach ($liqCxCabeceras as $liqCxCabecera) {
