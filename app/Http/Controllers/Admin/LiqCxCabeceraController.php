@@ -671,6 +671,8 @@ class LiqCxCabeceraController extends Controller
                         case 'Otros Ingresos':
                             $otrosingresos = $costo->valor;
                             break;
+                        case: 'Nota de Crédito'
+                            $notacredito=$costo->valor;
                         default:
 
 
@@ -736,7 +738,7 @@ class LiqCxCabeceraController extends Controller
                 $Flete_Aereo = ($flete_exportadora / $total_kilos) * $Peso_neto; //BQ
                 $Flete_Aereo_TO = $Flete_Aereo * $Cajas; //BR
                 $Costos_cajas_RMB = $Imp_destino_caja_RMB + $Costo_log_Caja_RMB + $Ent_Al_mercado_Caja_RMB + $Costo_mercado_caja_RMB + $Otros_costos_dest_Caja_RMB +$RMB_Flete_Domestico_Caja+
-                $Comision_Caja + $Flete_marit_Caja_RMB + ($Ajuste_impuesto_USD)  + ($Flete_Aereo * $TC); //AR   Se saca  ($Otros_Impuestos_JWM_Impuestos * $TC) + - ($Otros_Ingresos_abonos * $TC) para que no afecte al FOB 
+                $Comision_Caja + $Flete_marit_Caja_RMB + ($Ajuste_impuesto_USD)  + ($Flete_Aereo * $TC)-$notacredito; //AR   Se saca  ($Otros_Impuestos_JWM_Impuestos * $TC) + - ($Otros_Ingresos_abonos * $TC) para que no afecte al FOB 
                 //=+AF3+AH3+AJ3+AL3+AN3+AB3+AP3+(CA3*AV3)+(BO3*AV3)-(CC3*AV3)+(BQ3*AV3)
                 $RMB_Costos_TO = $Costos_cajas_RMB * $Cajas; //AS
                 $Resultados_caja_RMB =  $RMB_Caja - $Costos_cajas_RMB;  //AT  Verificar con Haydelin
@@ -770,6 +772,7 @@ class LiqCxCabeceraController extends Controller
                 $Pais = 'CHINA'; //BZ
                 $c_embalaje = $item->c_embalaje;
                 $folio_fx = $item->folio_fx;
+                
 
                 //$embalaje_dato_origen'=>$item->embalaje_id, //CI
 
@@ -865,6 +868,7 @@ class LiqCxCabeceraController extends Controller
                         'USD_Flete_Domestico_TO' => $USD_Flete_Domestico_TO, //CH
                         'embalaje' => $c_embalaje, //agregado para obtener datos
                         'folio_fx' => $item->folio_fx,
+                        'nota_credito'=>$notacredito,
 
 
                     ],
@@ -882,6 +886,7 @@ class LiqCxCabeceraController extends Controller
                 $comision = 0;
                 $entradamercado = 0;
                 $otroscostosdestino = 0;
+                $notacredito = 0;
             }
         }
         return $dataComparativa;
