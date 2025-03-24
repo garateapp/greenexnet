@@ -42,6 +42,7 @@ class Costo extends Model
         'Ajuste Impuesto'     => 'Ajuste Impuesto',
         'Otros Impuestos'     => 'Otros Impuestos',
         'Otros Ingresos'      => 'Otros Ingresos',
+        'Otros Costos'        => 'Otros Costos',
     ];
 
     protected function serializeDate(DateTimeInterface $date)
