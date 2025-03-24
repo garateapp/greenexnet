@@ -671,8 +671,9 @@ class LiqCxCabeceraController extends Controller
                         case 'Otros Ingresos':
                             $otrosingresos = $costo->valor;
                             break;
-                        case: 'Nota de Crédito'
+                        case 'Nota de Crédito'
                             $notacredito=$costo->valor;
+                            break;
                         default:
 
 
