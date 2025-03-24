@@ -502,7 +502,8 @@ class ComexController extends Controller
                 $liqcabecera_id = $LiqCabecera->id;
                 $LiqCabecera->especie_id = $especie_id;
                 $LiqCabecera->save();
-                DB::statement('SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED');
+                //dd($LiqCabecera);
+                //DB::statement('SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED');
                 $resultados = DB::connection('sqlsrv')
                     ->table('dbo.V_PKG_Embarques')
                     ->selectRaw('
@@ -515,9 +516,11 @@ class ComexController extends Controller
                     ->where('numero_referencia', $instructivo)
                     ->where('n_variedad_rotulacion', $variedad_id)
                     ->where('n_etiqueta', $etiqueta_id)
-                    ->where('c_calibre', $calibre)
+                    ->where('c_calibre', (string)$calibre)
                     ->groupBy('n_variedad_rotulacion', 'C_Embalaje', 'c_calibre', 'n_etiqueta')
                     ->get();
+
+                    
                 $c_embalaje = '';
 
                 $folio_fx = '';
@@ -596,7 +599,7 @@ class ComexController extends Controller
                     ]);
                     Log::info('Datos guardados correctamente' . "----" . $result);
                 } catch (\Exception $e) {
-                    Log::error('Error al guardar los datos: ' . $e->getMessage() . "----" . $e->getLine());
+                    Log::error('Error al guardar los datos: ' . $e->getMessage() . "----" . $e->getLine()."----".$e->getTraceAsString());
                 }
             }
             foreach ($costos as $costo) {
@@ -647,7 +650,7 @@ class ComexController extends Controller
         } catch (\Exception $e) {
             $clientes_comexes = ClientesComex::get();
             $naves            = Nafe::get();
-            Log::error('Error al procesar los datos: ' . $e->getMessage() . "----" . $e->getLine());
+            Log::error('Error al procesar los datos: ' . $e->getMessage() . "----" . $e->getLine()."----".$e->getTraceAsString());
             $message = 'Error al procesar los datos: ' . $e->getMessage() . "----" . $e->getLine();
             $status = 'error';
             return redirect()->route('admin.liq-cx-cabeceras.index')->with('error', 'Error al guardar los datos.');
