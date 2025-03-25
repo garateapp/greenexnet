@@ -1993,7 +1993,7 @@ class ReporteriaController extends Controller
     public function ConsolidadoLiquidaciones()
     {
         $fg = $this;
-        $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->get(); // LiqCxCabecera::find(request('ids'));
+        $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->where('especie_id',7)->get(); // LiqCxCabecera::find(request('ids'));
 
 
         $dataComparativa = collect();
