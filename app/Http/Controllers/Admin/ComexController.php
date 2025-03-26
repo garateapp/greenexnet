@@ -465,7 +465,8 @@ class ComexController extends Controller
                     });
                 })
                 ->values();
-
+            
+            $itemsLiquidacion=collect();
             foreach ($registros as $fila) {
 
                 $contenedor = isset($fila['Contenedor']) ? $fila['Contenedor'] : '';
@@ -486,6 +487,7 @@ class ComexController extends Controller
                     $especie = Variedad::where('nombre', $variedad_id)->first();
                     if ($especie) {
                         $especie_id = $especie->especie_id;
+                        $LiqCabecera->especie_id = $especie_id;
                     }
                 }
                 //}
@@ -500,11 +502,30 @@ class ComexController extends Controller
                 $monto_rmb = isset($fila['Monto RMB']) ? $fila['Monto RMB'] : 0;
                 $observaciones = isset($fila['Observaciones']) ? $fila['Observaciones'] : '';
                 $liqcabecera_id = $LiqCabecera->id;
-                $LiqCabecera->especie_id = $especie_id;
+               
                 $LiqCabecera->save();
                 //dd($LiqCabecera);
                 //DB::statement('SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED');
+                if($pallet!=''){
                 $resultados = DB::connection('sqlsrv')
+                    ->table('dbo.V_PKG_Embarques')
+                    ->selectRaw('
+                                    n_variedad_rotulacion,
+                                    C_Embalaje,
+                                    c_calibre,
+                                    n_etiqueta,
+                                    SUM(Cantidad) as total_cantidad
+                                ')
+                    ->where('numero_referencia', $instructivo)
+                    ->where('n_variedad_rotulacion', $variedad_id)
+                    ->where('n_etiqueta', $etiqueta_id)
+                    ->where('c_calibre', (string)$calibre)
+                    ->where('folio','like','%'.$pallet)
+                    ->groupBy('n_variedad_rotulacion', 'C_Embalaje', 'c_calibre', 'n_etiqueta')
+                    ->get();
+                }
+                else{
+                    $resultados = DB::connection('sqlsrv')
                     ->table('dbo.V_PKG_Embarques')
                     ->selectRaw('
                                     n_variedad_rotulacion,
@@ -519,15 +540,25 @@ class ComexController extends Controller
                     ->where('c_calibre', (string)$calibre)
                     ->groupBy('n_variedad_rotulacion', 'C_Embalaje', 'c_calibre', 'n_etiqueta')
                     ->get();
-
+                }
                     
                 $c_embalaje = '';
 
                 $folio_fx = '';
-                if (count($resultados) > 0) {
+                if (count($resultados) == 1) {
 
                     //$liq=LiquidacionesCx::where('liqcabecera_id', $dato->id)->where('variedad_id', $item->variedad_id)->where('etiqueta_id', $item->etiqueta_id)->where('calibre', $item->calibre)->first();
                     $c_embalaje = $resultados[0]->C_Embalaje;
+                }
+                elseif(count($resultados)>1){
+                    foreach($resultados as $result){
+                        if($result->total_cantidad==$cantidad){
+                            $c_embalaje=$result->C_Embalaje;
+                        }
+                    }
+                }
+                else{
+                    $c_embalaje='';
                 }
                 DB::statement('SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED');
                 $resultados = DB::connection('sqlsrv')
@@ -545,6 +576,7 @@ class ComexController extends Controller
                     //->where('n_variedad', $variedad_id)
                     ->where('n_etiqueta', $etiqueta_id)
                     ->where('c_calibre', $calibre)
+                    ->where('c_embalaje', $c_embalaje)
                     ->orderBy('folio')
                     ->get();
                 if (count($resultados) == 1) {
@@ -557,13 +589,9 @@ class ComexController extends Controller
                     $i = 0;
 
                     foreach ($resultados as $res) {
-
                         if ($i == 0) {
-
                             $folio_fx = $res->folio;
                         } else {
-
-
                             $folio_fx = $folio_fx . "," . $res->folio;
                         }
                         $i++;
@@ -597,9 +625,58 @@ class ComexController extends Controller
                         'folio_fx' => $folio_fx
 
                     ]);
+                    $itemsLiquidacion->push($result);
                     Log::info('Datos guardados correctamente' . "----" . $result);
                 } catch (\Exception $e) {
                     Log::error('Error al guardar los datos: ' . $e->getMessage() . "----" . $e->getLine()."----".$e->getTraceAsString());
+                }
+            }
+            
+            $grupos = $itemsLiquidacion->groupBy(function ($item) {
+                return $item->folio_fx . '|' . $item->calibre . '|' . $item->variedad_id . '|' . $item->c_embalaje . '|' . $item->etiqueta_id;
+            })->filter(function ($grupo) {
+                return $grupo->count() > 1; // Solo grupos con más de una línea, si quieres todos quita este filter
+            });
+
+
+           
+            foreach ($grupos as $clave => $items) {
+                // Extraer los valores de la clave compuesta
+                [$folio_fx, $calibre, $variedad_id, $c_embalaje, $etiqueta_id] = explode('|', $clave);
+            
+                // Convertir folio_fx en formato para IN
+                $arrayFolios = explode(',', $folio_fx);
+                $folioTransformado = "'" . implode("','", $arrayFolios) . "'";
+            
+                // Consulta a la base de datos para obtener la suma de cantidades
+                $sumaCantidadDB = DB::connection('sqlsrv')
+                    ->table('dbo.V_PKG_Despachos')
+                    ->selectRaw('SUM(cantidad) as cantidad_total')
+                    ->whereRaw("folio IN ($folioTransformado)")
+                    ->where('c_calibre', $calibre)
+                    ->where('n_variedad_rotulacion', $variedad_id)
+                    ->where('C_Embalaje', $c_embalaje)
+                    ->where('n_etiqueta', $etiqueta_id)
+                    ->first();
+            
+                // Calcular suma de precio * cantidad desde los ítems en $itemsLiquidacion
+                $sumaPrecioCantidad = $items->sum(function ($item) {
+                    return $item->precio_unitario * $item->cantidad;
+                });
+            
+                if ($sumaCantidadDB && $sumaCantidadDB->cantidad_total > 0) {
+                    $precioPonderado = $sumaPrecioCantidad / $sumaCantidadDB->cantidad_total;
+            
+                    // Actualizar todos los ítems en este grupo
+                    foreach ($items as $item) {
+                        $item->precio_unitario = $precioPonderado;
+                        $item->monto_rmb = $precioPonderado * $item->cantidad; // Recalcular monto_rmb
+                        $item->save(); // Guardar en la base de datos
+                    }
+            
+                    Log::info("Precio ponderado calculado para folio(s) {$folio_fx} (calibre: {$calibre}, variedad: {$variedad_id}, embalaje: {$c_embalaje}, etiqueta: {$etiqueta_id}): {$precioPonderado}");
+                } else {
+                    Log::warning("No se pudo calcular precio ponderado para folio(s) {$folio_fx} (calibre: {$calibre}, variedad: {$variedad_id}, embalaje: {$c_embalaje}, etiqueta: {$etiqueta_id}): cantidad total es 0 o no hay datos");
                 }
             }
             foreach ($costos as $costo) {
@@ -655,6 +732,7 @@ class ComexController extends Controller
             $status = 'error';
             return redirect()->route('admin.liq-cx-cabeceras.index')->with('error', 'Error al guardar los datos.');
         }
+
     }
     function formatDate2($date)
     {
