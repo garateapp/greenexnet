@@ -1300,7 +1300,7 @@ class ComexController extends Controller
             $especie=Especy::where('id',$variedad->especie_id)->first();
             //dd($especie);
            // Uncomment this to debug the structure of $liq if needed
-            FOB::create([
+           Fob::create([
                 
                 'cliente' => $liq['cliente'] ?? null,  
                 'nave' => $liq['nave'],              
