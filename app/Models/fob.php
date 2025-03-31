@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Fob extends Model
 {
     // Specify the table name (including schema if needed)
-    protected $table = 'FOB';
+    protected $table = 'fob';
 
     // Define the primary key
     protected $primaryKey = 'id';
