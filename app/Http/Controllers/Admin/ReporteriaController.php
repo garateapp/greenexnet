@@ -20,6 +20,7 @@ use App\Models\Costo;
 use App\Models\ExcelDato;
 use App\Models\Diccionario;
 use App\Models\Nafe;
+use App\Models\Fob;
 use Illuminate\Support\Str;
 use Log;
 use Carbon\Carbon;
@@ -1981,20 +1982,20 @@ class ReporteriaController extends Controller
     }
     public function SabanaLiquidaciones()
     {
-        if (!session()->has("sheetLiqs")) {
-            session(["sheetLiqs" => $this->ConsolidadoLiquidaciones()]);
-        }
+        // if (!session()->has("sheetLiqs")) {
+        //     session(["sheetLiqs" => $this->ConsolidadoLiquidaciones()]);
+        // }
 
-        $datos = session("sheetLiqs");
+        // $datos = session("sheetLiqs");
 
-
+        $datos=Fob::all();
         return $datos;
     }
     public function ConsolidadoLiquidaciones()
     {
         $fg = $this;
-        $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->where('especie_id',7)->get(); // LiqCxCabecera::find(request('ids'));
-
+        $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->get(); // LiqCxCabecera::find(request('ids'));
+        //->where('especie_id',7)
 
         $dataComparativa = collect();
         $C_Logisticos = Costo::where('categoria', 'Costo Logístico')->get();
@@ -2024,6 +2025,7 @@ class ReporteriaController extends Controller
             $factor_imp_destino = $liqCxCabecera->factor_imp_destino;
             $detalle = LiquidacionesCx::where('liqcabecera_id', $liqCxCabecera->id)->whereNull('deleted_at')->get();
             $excelDato = ExcelDato::where('instructivo', $liqCxCabecera->instructivo)->first();
+            $especie=$liqCxCabecera->especie_id;
             //Log::info("Instructivo: " . $liqCxCabecera->instructivo);
             $nombre_costo = Costo::pluck('nombre'); // Extraer solo los nombres de costos
             $total_kilos = 0;
@@ -2168,6 +2170,7 @@ class ReporteriaController extends Controller
                 $Otros_costos_USD_TO = $Otros_costos_dest_USD * $Cajas; //BJ
                 $Flete_marit_USD    = $Flete_marit_Caja_RMB / $TC; //BK
                 $Flete_Marit_USD_TO = $Flete_marit_USD * $Cajas; //BL
+                $Flete_Marit_USD_TO = $Costos_cajas_RMB / $TC; //BM
                 $Costos_cajas_USD = $Costos_cajas_RMB / $TC; //BM
                 $Costos_USD_TO = $Costos_cajas_USD * $Cajas; //BN
                 $Ajuste_TO_USD = $Costos_USD_TO * $Cajas; //BP

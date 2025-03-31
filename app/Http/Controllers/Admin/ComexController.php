@@ -28,6 +28,7 @@ use App\Mail\MensajeGenericoMailable;
 use App\Models\ClientesComex;
 use App\Models\Capturador;
 use App\Models\CapturadorEstructura;
+use App\Models\FOB;
 use App\Imports\ExcelConversor;
 use App\Models\ExcelDato;
 use Illuminate\Support\Str;
@@ -40,6 +41,7 @@ use App\Libs\Liquidaciones;
 use App\Exports\ComparativaExport;
 use App\Models\Diccionario;
 use App\Models\Variedad;
+use App\Models\Especy;
 use Exception;
 use Psy\Readline\Hoa\Console;
 use Symfony\Component\Console\Logger\ConsoleLogger;
@@ -1278,85 +1280,78 @@ class ComexController extends Controller
         $resEjec = collect();
 
 
-        // Obtener la sesión correctamente
-        // if (session()->has('liqs')) {
-        //     $liqs = session('liqs');
-        // } else {
-        //$liqs = $this->ConsolidadoLiquidaciones();
+        //Obtener la sesión correctamente
+        if (session()->has('liqs')) {
+            $liqs = session('liqs');
+        } else {
+        $liqs = $this->ConsolidadoLiquidaciones();
 
-        //session(['liqs' => $liqs]);
-        //}
-        //dd($liqs);
+        session(['liqs' => $liqs]);
+        }
+        //dd($liqs[0]);
         // Obtener cabeceras
         //$liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->get();
 
-        $liqs = $this->ConsolidadoLiquidaciones();
-        session(['liqs' => $liqs]);
-
-        $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->get();
-
-        foreach ($liqCxCabeceras as $liqCxCabecera) {
-            try {
-                $despachos = DB::connection('sqlsrv')->table("V_PKG_Despachos")
-                    ->select('folio', 'n_variedad_rotulacion', 'c_embalaje', 'n_calibre', 'n_etiqueta', 'id_pkg_stock_det')
-                    ->where('tipo_g_despacho', '=', 'GDP')
-                    ->where('numero_embarque', '=', str_replace('i', '', str_replace('I', '', '' . $liqCxCabecera->instructivo)))
-                    //->where('valor_unitario', '=', 0)
-                    ->get();
-
-
-                foreach ($despachos as $despacho) {
-                    $EFOB = 0;
-                    $ECCajas = 0;
-                    $valor = 0;
-
-                    $items = $liqs->filter(function ($item) use ($despacho) {
-                        // Convertimos "folio_fx" en un array separando por comas
-                        $folios = array_map('trim', explode(',', $item['folio_fx']));
-
-                        // Verificamos si el folio del despacho está en la lista
-                        $folioMatch = in_array($despacho->folio, $folios);
-                        if ($item['folio_fx'] === $despacho->folio || $folioMatch) {
-                            Log::info('Comparando:', [
-                                'folio_fx' => [$item['folio_fx'], $despacho->folio, $item['folio_fx'] === $despacho->folio],
-                                'variedad' => [$item['variedad'], trim($despacho->n_variedad_rotulacion), strcasecmp($item['variedad'], trim($despacho->n_variedad_rotulacion)) === 0],
-                                'embalaje' => [$item['embalaje'], trim($despacho->c_embalaje), strcasecmp($item['embalaje'], trim($despacho->c_embalaje)) === 0],
-                                'calibre' => [$item['calibre'], trim($despacho->n_calibre), strcasecmp($item['calibre'], trim($despacho->n_calibre)) === 0],
-                                'etiqueta' => [$item['etiqueta'], trim($despacho->n_etiqueta), strcasecmp($item['etiqueta'], trim($despacho->n_etiqueta)) === 0],
-                            ]);
-                        }
-
-                        return $item['folio_fx'] === $despacho->folio &&
-                            strcasecmp($item['variedad'], trim($despacho->n_variedad_rotulacion)) === 0 &&
-                            strcasecmp($item['embalaje'], trim($despacho->c_embalaje)) === 0 &&
-                            strcasecmp($item['calibre'], trim($despacho->n_calibre)) === 0 &&
-                            strcasecmp($item['etiqueta'], trim($despacho->n_etiqueta)) === 0;
-                    });
-                    foreach ($items as $item) {
-                        $EFOB += $item['FOB_TO_USD'];
-                        $ECCajas += $item['Cajas'];
-                    }
-
-                    $valor = ($ECCajas > 0) ? ($EFOB / $ECCajas) : 0;
-
-                    // Realizar el UPDATE en la base de datos
-                    $affectedRows = DB::connection('sqlsrv')
-                        ->table('PKG_Stock_Det')
-                        ->where('folio', $despacho->folio)
-                        ->where('id', $despacho->id_pkg_stock_det)
-                        ->where('destruccion_tipo', 'GDP')
-                        ->update(['valor' => $valor]);
-                    $resEjec->push([
-                        'Instructivo' => $liqCxCabecera->instructivo,
-                        'folio' => $despacho->folio,
-                        'valor' => $valor,
-                    ]);
-                }
-            } catch (Exception $e) {
-                Log::error("Error al actualizar valor GD en FX: " . $e->getMessage());
-                return response()->json(['error' => $e->getMessage()], 500);
-            }
+        
+        foreach ($liqs as $liq) {
+    
+            $variedad=Variedad::where('nombre',$liq["variedad"])->first();
+          //  dd($variedad);
+            $especie=Especy::where('id',$variedad->especie_id)->first();
+            //dd($especie);
+           // Uncomment this to debug the structure of $liq if needed
+            FOB::create([
+                
+                'cliente' => $liq['cliente'] ?? null,  
+                'nave' => $liq['nave'],              
+                'Liquidacion' => $liq['Liquidacion'] ?? null,
+                'ETA' => $liq['ETA'],
+                'ETA_Week' => $liq['ETA_Week'],
+                'Fecha_Venta' => $liq['Fecha_Venta'] ?? null,
+                'Fecha_Venta_Week' => $liq['Fecha_Venta_Week'] ?? null,
+                'Pallet' => $liq['Pallet'] ?? null,
+                'Peso_neto' => $liq['Peso_neto'] ?? null,
+                'Kilos_total' => $liq['Kilos_total'] ?? null,
+                'embalaje' => $liq['embalaje'] ?? null,
+                'etiqueta' => $liq['etiqueta'] ?? null,
+                'variedad' => $liq['variedad'] ?? null,
+                'calibre' => $liq['calibre'] ?? null,
+                'Cajas' => $liq['Cajas'] ?? null,
+                'TC' => $liq['TC'] ?? null,
+                'Ventas_TO_USD' => $liq['Ventas_TO_USD'] ?? null,
+                'Venta_USD' => $liq['Venta_USD'] ?? null,
+                'Com_USD' => $liq['Com_USD'] ?? null,
+                'Com_TO_USD' => $liq['Com_TO_USD'] ?? null,
+                'Imp_destino_USD' => $liq['Imp_destino_USD'] ?? null,
+                'Imp_destino_USD_TO' => $liq['Imp_destino_USD_TO'] ?? null,
+                'Costo_log_USD' => $liq['Costo_log_USD'] ?? null,
+                'Costo_log_USD_TO' => $liq['Costo_log_USD_TO'] ?? null,
+                'Ent_Al_mercado_USD' => $liq['Ent_Al_mercado_USD'] ?? null,
+                'Ent_Al_mercado_USD_TO' => $liq['Ent_Al_mercado_USD_TO'] ?? null,
+                'Costo_mercado_USD' => $liq['Costo_mercado_USD'] ?? null,
+                'Costos_mercado_USD_TO' => $liq['Costos_mercado_USD_TO'] ?? null,
+                'Otros_costos_dest_USD' => $liq['Otros_costos_dest_USD'] ?? null,
+                'Otros_costos_USD_TO' => $liq['Otros_costos_USD_TO'] ?? null,
+                'Flete_marit_USD' => $liq['Flete_marit_USD'] ?? null,
+                'Flete_Marit_USD_TO' => $liq['Flete_Marit_USD_TO'] ?? null,
+                'Costos_USD_TO' => $liq['Costos_USD_TO'] ?? null,
+                'Ajuste_TO_USD' => $liq['Ajuste_TO_USD'] ?? null,
+                'FOB_USD' => $liq['FOB_USD'] ?? null,
+                'FOB_TO_USD' => $liq['FOB_TO_USD'] ?? null,
+                'FOB_kg' => $liq['FOB_kg'] ?? null,
+                'FOB_Equivalente' => $liq['FOB_Equivalente'] ?? null,
+                'Flete_Cliente' => $liq['Flete_Cliente'] ?? null,
+                'Transporte' => $liq['Transporte'] ?? null,
+                'c_embalaje' => $liq['c_embalaje'] ?? null,
+                'folio_fx' => $liq['folio_fx'] ?? null,
+                'especie' => $especie->nombre ?? null,
+                'Costos_cajas_USD' => $liq['Costos_cajas_USD'] ?? null,
+            ]);
+          
+            $affectedRows++;
         }
+
+        
 
         return response()->json(["message" => "Se modificaron $affectedRows registros", "data" => $affectedRows], 200);
     }

@@ -212,6 +212,14 @@
 
                                 <div class="col-lg-2" id="divFiltros">
                                     <h3>Filtros</h3>
+                                    <label for="filtroEspecie">Especie</label>
+                                    <select id="filtroEspecie" class="form-control select2" multiple="multiple">
+                                        <option value="">Todas</option>
+                                        <option value="7">Cherries</option>
+                                        <option value="4">Nectarines</option>
+                                        <option value="6">Plums</option>
+                                        
+                                    </select>
                                     <label for="filtroCliente">Clientes</label>
                                     <select id="filtroCliente" class="form-control select2" multiple="multiple"></select>
                                     <label for="filtroMercado">Mercado</label>
