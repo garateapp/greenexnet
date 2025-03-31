@@ -28,7 +28,7 @@ use App\Mail\MensajeGenericoMailable;
 use App\Models\ClientesComex;
 use App\Models\Capturador;
 use App\Models\CapturadorEstructura;
-use App\Models\FOB;
+use App\Models\Fob;
 use App\Imports\ExcelConversor;
 use App\Models\ExcelDato;
 use Illuminate\Support\Str;

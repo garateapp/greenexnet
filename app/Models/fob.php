@@ -100,4 +100,6 @@ class Fob extends Model
         'Flete_Cliente' => 'float',
         'Costos_cajas_USD' => 'float',
     ];
+
+    
 }
