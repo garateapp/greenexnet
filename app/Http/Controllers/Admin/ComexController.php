@@ -803,7 +803,10 @@ class ComexController extends Controller
             foreach ($detalle as $item) {
 
                 $costos = LiqCosto::where('liq_cabecera_id', $liqCxCabecera->id)->get();
-
+                $variedad=Variedad::where('nombre',$item->variedad_id)->first();
+                //  dd($variedad);
+                $especie=Especy::where('id',$variedad->especie_id)->first();
+                $nave = $liqCxCabecera->nave_id ? Nafe::find($liqCxCabecera->nave_id)->nombre : "";
                 // Procesar los costos reales
 
                 foreach ($costos as $costo) {
@@ -973,6 +976,8 @@ class ComexController extends Controller
                         'USD Flete Domestico. '    => '=+CE' . $i . '/AV' . $i, //CG
                         'USD Flete Domestico. TO' => '=+CG' . $i . '*Y' . $i, //CH
                         'embalaje_dato_origen' => $item->c_embalaje, //CI
+                        'nave'=>$nave,
+                        'especie'=>$especie->nombre,
 
                     ],
                     //$costo_procesado,
@@ -1136,6 +1141,10 @@ class ComexController extends Controller
                 // Agregar los datos principales y los costos procesados al array
 
                 Log::info("Instructivo: " . $liqCxCabecera->instructivo);
+                $variedad=Variedad::where('nombre',$item->variedad_id)->first();
+                //  dd($variedad);
+                $especie=Especy::where('id',$variedad->especie_id)->first();
+                $nave = $liqCxCabecera->nave_id ? Nafe::find($liqCxCabecera->nave_id)->nombre : "";
                 $dataComparativa->push(array_merge(
                     [
                         'Embarque' => '',  //A
@@ -1225,6 +1234,8 @@ class ComexController extends Controller
                         'USD Flete Domestico. '    => '=+CF' . $i . '/AV' . $i, //CG
                         'USD Flete Domestico. TO' => '=+CG' . $i . '*Y' . $i, //CH
                         'embalaje_dato_origen' => $item->c_embalaje, //CI
+                        'nave'=>$nave,
+                        'especie'=>$especie->nombre,
 
                     ],
                     //$costo_procesado,
@@ -1281,13 +1292,14 @@ class ComexController extends Controller
 
 
         //Obtener la sesión correctamente
-        if (session()->has('liqs')) {
-            $liqs = session('liqs');
-        } else {
+        // if (session()->has('liqs')) {
+        //     $liqs = session('liqs');
+        // } else {
         $liqs = $this->ConsolidadoLiquidaciones();
-
-        session(['liqs' => $liqs]);
-        }
+ 
+        // session(['liqs' => $liqs]);
+        // }
+        // dd($liqs->count());
         //dd($liqs[0]);
         // Obtener cabeceras
         //$liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->get();
@@ -1392,7 +1404,7 @@ class ComexController extends Controller
             $flete_exportadora = $liqCxCabecera->flete_exportadora;
             $tipo_transporte = $liqCxCabecera->tipo_transporte;
             $factor_imp_destino = $liqCxCabecera->factor_imp_destino;
-            $detalle = LiquidacionesCx::where('liqcabecera_id', $liqCxCabecera->id)->whereNull('deleted_at')->where('folio_fx', 'not like', '%,%')->whereNotNull('folio_fx')->get();
+            $detalle = LiquidacionesCx::where('liqcabecera_id', $liqCxCabecera->id)->whereNull('deleted_at')->whereNotNull('folio_fx')->get();
 
             $excelDato = ExcelDato::where('instructivo', $liqCxCabecera->instructivo)->first();
             //Log::info("Instructivo: " . $liqCxCabecera->instructivo);
@@ -1462,6 +1474,7 @@ class ComexController extends Controller
                     }
                 }
                 //Variables
+                
                 $nave = $liqCxCabecera->nave_id ? Nafe::find($liqCxCabecera->nave_id)->nombre : "";
 
                 $Embarque = "";
