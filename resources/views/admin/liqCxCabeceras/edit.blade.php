@@ -252,6 +252,17 @@
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
+                                <tbody></tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="7" style="text-align:right">Total:</th>
+                                        <th></th> <!-- Cantidad -->
+                                        <th colspan="2"></th>
+                                        <th></th> <!-- Embalaje ID -->
+                                        <th></th> <!-- Monto RMB -->
+                                        <th colspan="2"></th>
+                                    </tr>
+                                </tfoot>
                             </table>
 
                         </div>
@@ -535,7 +546,37 @@
                                 orderable: false,
                                 searchable: false
                             }
-                        ]
+                        ],
+                        footerCallback: function(row, data, start, end, display) {
+                        let api = this.api();
+
+                        // Calculate totals for visible data
+                        let totalCantidad = api
+                            .column(10, { page: 'current' }) // Cantidad (column 10)
+                            .data()
+                            .reduce(function(a, b) {
+                                return parseFloat(a) + parseFloat(b || 0);
+                            }, 0);
+
+                        let totalEmbalajeId = api
+                            .column(7, { page: 'current' }) // Embalaje ID (column 7)
+                            .data()
+                            .reduce(function(a, b) {
+                                return parseFloat(a) + parseFloat(b || 0);
+                            }, 0);
+
+                        let totalMontoRmb = api
+                            .column(14, { page: 'current' }) // Monto RMB (column 14)
+                            .data()
+                            .reduce(function(a, b) {
+                                return parseFloat(a) + parseFloat(b || 0);
+                            }, 0);
+
+                        // Update footer with totals
+                        $(api.column(10).footer()).html(totalCantidad.toFixed(2).toLocaleString('es-CL'));
+                        $(api.column(7).footer()).html((totalEmbalajeId.toFixed(2)*totalCantidad.toFixed(2)).toLocaleString('es-CL'));
+                        $(api.column(14).footer()).html(totalMontoRmb.toFixed(2).toLocaleString('es-CL'));
+                    }
                     });
                     // Evento para el botón clonar
                     $('#liquidacionesTable tbody').on('click', '.clone-btn', function() {
