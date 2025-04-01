@@ -214,25 +214,31 @@
                                     <h3>Filtros</h3>
                                     <label for="filtroEspecie">Especie</label>
                                     <select id="filtroEspecie" class="form-control select2" multiple="multiple">
-                                        <option value="">Todas</option>
-                                        <option value="7">Cherries</option>
-                                        <option value="4">Nectarines</option>
-                                        <option value="6">Plums</option>
-                                        
+
+                                    </select>
+                                    <label for="filtroVariedad">Variedad</label>
+                                    <select id="filtroVariedad" class="form-control select2" multiple="multiple">
                                     </select>
                                     <label for="filtroCliente">Clientes</label>
                                     <select id="filtroCliente" class="form-control select2" multiple="multiple"></select>
-                                    <label for="filtroMercado">Mercado</label>
-                                    <select id="filtroMercado" class="form-control select2" multiple="multiple"></select>
-                                    <label for="filtroCliente">Clientes</label>
-                                    <select id="filtroCliente" class="form-control select2" multiple="multiple"></select>
+                                    <label for="filtroTransporte">Transporte</label>
+                                    <select id="filtroTransporte" class="form-control select2" multiple="multiple"></select>
                                     <h3>Visualización</h3>
                                     <label for="filtroAgrupación">Agrupación</label>
-                                    <select id="filtroAgrupación" class="form-control select2" multiple="multiple"></select>
+                                    <select id="filtroAgrupación" class="form-control select2">
+                                        <option value="0">Seleccione Agrupación</option>
+                                        <option value="1">Kg</option>
+                                        <option value="2">Caja</option>
+
+                                    </select>
                                     <label for="filtroVista">Tipo de Vista</label>
-                                    <select id="filtroVista" class="form-control select2" multiple="multiple"></select>
-                                    <label for="filtroKgoCaja">Clientes</label>
-                                    <select id="filtroKgoCaja" class="form-control select2" multiple="multiple"></select>
+                                    <select id="filtroVista" class="form-control select2">
+                                        <option value="0" selected>Seleccione Vista</option>
+                                        <option value="1">Tabla</option>
+                                        <option value="2">Gráfico</option>
+
+                                    </select>
+                                    
                                 </div>
                                 <div class="col-lg-10" id="divGraficos" style="overflow-y: scroll; height: 800px;">
                                     <!-- Sección REsumen General-->
@@ -718,15 +724,15 @@
 
                             // Inicializar la página
                             inicializarFiltros();
-                            actualizarResumenGeneral();
-                            calcularRNP();
-                            actualizarTablaLiquidacionesPorCliente();
-                            actualizarTablaVariedadFOBKG();
-                            actualizarTablaDesempeñoClientes();
-                            actualizarTablaSaldosComparativos();
-                            actualizarTablaCostosPorCliente();
-                            actualizarTablaResultadosColorCalibre();
-                            actualizarTablaFOBPorSemanaVariedad();
+                            actualizarResumenGeneral(liquidacionesData);
+                            calcularRNP(liquidacionesData);
+                            actualizarTablaLiquidacionesPorCliente(liquidacionesData);
+                            actualizarTablaVariedadFOBKG(liquidacionesData);
+                            actualizarTablaDesempeñoClientes(liquidacionesData);
+                            actualizarTablaSaldosComparativosliquidacionesData();
+                            actualizarTablaCostosPorCliente(liquidacionesData);
+                            actualizarTablaResultadosColorCalibre(liquidacionesData);
+                            actualizarTablaFOBPorSemanaVariedad(liquidacionesData);
                             // inicializarGraficos();
                         },
                         error: function(xhr, status, error) {
@@ -735,12 +741,80 @@
                             $("#loading-animation").hide();
                         }
                     });
+                    // Escuchar cambios en los filtros
+                    $("#filtroEspecie, #filtroVariedad, #filtroCliente, #filtroTransporte").on("change", function() {
+                        filtrarYActualizar();
+                    });
+                                    // Función para filtrar los datos y actualizar visualizaciones
+                function filtrarYActualizar() {
+                    // Obtener valores seleccionados de los filtros
+                    const especiesSel = $("#filtroEspecie").val() || [];
+                    const variedadesSel = $("#filtroVariedad").val() || [];
+                    const clientesSel = $("#filtroCliente").val() || [];
+                    const transportesSel = $("#filtroTransporte").val() || [];
+                    const agrupacionSel = $("#filtroAgrupación").val();
+                    const vistaSel = $("#filtroVista").val();
 
+                    // Filtrar liquidacionesData
+                    let datosFiltrados = liquidacionesData.filter(item => {
+                        return (
+                            (especiesSel.length === 0 || especiesSel.includes(item.especie)) &&
+                            (variedadesSel.length === 0 || variedadesSel.includes(item.variedad)) &&
+                            (clientesSel.length === 0 || clientesSel.includes(item.cliente)) &&
+                            (transportesSel.length === 0 || transportesSel.includes(item.transporte))
+                        );
+                    });
+
+                    console.log("Datos filtrados:", datosFiltrados.length);
+
+                    // Actualizar visualizaciones con los datos filtrados
+                    actualizarVisualizaciones(datosFiltrados, agrupacionSel, vistaSel);
+                }
+
+                // Función para actualizar todas las visualizaciones
+                function actualizarVisualizaciones(datos = liquidacionesData, agrupacion = "0", vista = "0") {
+                    actualizarResumenGeneral(datos);
+                    calcularRNP(datos);
+                    actualizarTablaLiquidacionesPorCliente(datos);
+                    actualizarTablaVariedadFOBKG(datos);
+                    actualizarTablaDesempeñoClientes(datos);
+                    actualizarTablaSaldosComparativos(datos);
+                    actualizarTablaCostosPorCliente(datos);
+                    actualizarTablaResultadosColorCalibre(datos);
+                    actualizarTablaFOBPorSemanaVariedad(datos);
+
+                    // Según el tipo de vista seleccionado
+                    if (vista === "1") {
+                        // Mostrar tabla
+                        $("#tablaVisualizacion").show();
+                        $("#graficoVisualizacion").hide();
+                        actualizarTabla(datos, agrupacion);
+                    } else if (vista === "2") {
+                        // Mostrar gráfico
+                        $("#tablaVisualizacion").hide();
+                        $("#graficoVisualizacion").show();
+                        actualizarGrafico(datos, agrupacion);
+                    }
+                }
+
+                // Ejemplo de función para actualizar una tabla (ajusta según tu estructura)
+                function actualizarTabla(datos, agrupacion) {
+                    // Lógica para renderizar la tabla según 'agrupacion' (Kg o Caja)
+                    console.log("Actualizando tabla con", datos.length, "registros y agrupación", agrupacion);
+                }
+
+                // Ejemplo de función para actualizar un gráfico (ajusta según tu librería de gráficos)
+                function actualizarGrafico(datos, agrupacion) {
+                    // Lógica para renderizar el gráfico (puedes usar Chart.js, por ejemplo)
+                    console.log("Actualizando gráfico con", datos.length, "registros y agrupación", agrupacion);
+                }
                     function inicializarFiltros() {
                         // Extraer clientes únicos
                         const clientesUnicos = [...new Set(liquidacionesData.map(item => item.cliente))];
                         const mercadosUnicos = [...new Set(liquidacionesData.map(item => item.Pais))];
                         const variedadesUnicas = [...new Set(liquidacionesData.map(item => item.variedad))];
+                        const especiesUnicas=[...new Set(liquidacionesData.map(item => item.especie))];
+                        const transportesUnicos = [...new Set(liquidacionesData.map(item => item.Transporte))];
 
                         // Llenar select de clientes
                         $("#filtroCliente").select2({
@@ -751,7 +825,30 @@
                             placeholder: "Selecciona clientes",
                             allowClear: true
                         });
-
+                        $("#filtroVariedad").select2({
+                            data: variedadesUnicas.map(variedad => ({
+                                id: variedad,
+                                text: variedad
+                            })),
+                            placeholder: "Seleeciona Variedades",
+                            allowClear: true
+                        });
+                        $("#filtroEspecie").select2({
+                            data: especiesUnicas.map(especie => ({
+                                id: especie,
+                                text: especie
+                            })),
+                            placeholder: "Seleeciona Especies",
+                            allowClear: true
+                        });
+                        $("#filtroTransporte").select2({
+                            data: transportesUnicos.map(transporte => ({
+                                id: transporte,
+                                text: transporte
+                            })),
+                            placeholder: "Seleeciona Transportes",
+                            allowClear: true
+                        });
 
                         // Llenar select de mercados
                         // $("#filtroMercado").select2({
@@ -769,25 +866,25 @@
                         // });
                     }
 
-                    function actualizarResumenGeneral() {
+                    function actualizarResumenGeneral(datos) {
                         // 1. Liquidaciones Cargadas: Número de instructivos distintos
-                        const instructivosUnicos = [...new Set(liquidacionesData.map(item => item.Liquidacion))].filter(
+                        const instructivosUnicos = [...new Set(datos.map(item => item.Liquidacion))].filter(
                             Boolean);
                         const totalLiquidaciones = instructivosUnicos.length;
 
                         // 2. FOB Total: Suma de FOB_TO_USD
-                        const fobTotal = liquidacionesData.reduce((sum, item) => sum + (item.FOB_TO_USD || 0), 0);
+                        const fobTotal = datos.reduce((sum, item) => sum + (item.FOB_TO_USD || 0), 0);
                         // 3. Promedio FOB Caja
                         // Fórmula 1: Suma de FOB_Equivalente / Cantidad de registros
-                        const sumaFobEquivalente = liquidacionesData.reduce((sum, item) => sum + (item
+                        const sumaFobEquivalente = datos.reduce((sum, item) => sum + (item
                             .FOB_Equivalente || 0), 0);
-                        const promedioFobCaja1 = liquidacionesData.length > 0 ? (sumaFobEquivalente / liquidacionesData
+                        const promedioFobCaja1 = datos.length > 0 ? (sumaFobEquivalente / liquidacionesData
                             .length).toFixed(2) : 0;
 
                         // Fórmula 2: (Suma de FOB_TO_USD) / Suma de Kilos_total * 5
-                        const sumaFobUsdPorCajas = liquidacionesData.reduce((sum, item) => sum + ((item.FOB_TO_USD || 0)),
+                        const sumaFobUsdPorCajas = datos.reduce((sum, item) => sum + ((item.FOB_TO_USD || 0)),
                             0);
-                        const sumaKilosTotal = liquidacionesData.reduce((sum, item) => sum + (item.Kilos_Total || 0),
+                        const sumaKilosTotal = datos.reduce((sum, item) => sum + (item.Kilos_Total || 0),
                             0);
 
                             console.log(sumaKilosTotal);
@@ -872,11 +969,11 @@
                         );
                     }
 
-                    function actualizarTablaLiquidacionesPorCliente() {
+                    function actualizarTablaLiquidacionesPorCliente(datos) {
                         // Agrupar liquidaciones únicas por cliente
                         const liquidacionesPorCliente = {};
 
-                        liquidacionesData.forEach(item => {
+                        datos.forEach(item => {
                             const cliente = item.cliente || "Sin cliente"; // Manejar casos sin cliente
                             if (!liquidacionesPorCliente[cliente]) {
                                 liquidacionesPorCliente[cliente] = new Set(); // Usar Set para liquidaciones únicas
@@ -902,11 +999,11 @@
                         $("#tbodyCxLiquidaciones").html(htmlFilas);
                     }
 
-                    function actualizarTablaVariedadFOBKG() {
+                    function actualizarTablaVariedadFOBKG(datos) {
                         // Agrupar datos por variedad (homologando a mayúsculas)
                         const datosPorVariedad = {};
 
-                        liquidacionesData.forEach(item => {
+                        datos.forEach(item => {
                             const variedad = (item.variedad || "Sin variedad")
                                 .toUpperCase(); // Normalizar a mayúsculas
                             if (!datosPorVariedad[variedad]) {
@@ -948,13 +1045,13 @@
                         $("#tbodyVariedadFOBKG").html(htmlFilas);
                     }
 
-                    function actualizarTablaDesempeñoClientes() {
+                    function actualizarTablaDesempeñoClientes(datos) {
                         const medida = $("#cboDesempeñoMedida").val(); // 1 = Volumen, 2 = FOB
                         const campoMedida = medida === "1" ? "Kilos_Total" : "FOB_TO_USD";
 
                         // Agrupar datos por cliente
                         const datosPorCliente = {};
-                        liquidacionesData.forEach(item => {
+                        datos.forEach(item => {
                             const cliente = item.cliente || "Sin cliente";
                             if (!datosPorCliente[cliente]) {
                                 datosPorCliente[cliente] = 0;
@@ -992,9 +1089,9 @@
                         $("#tBodyDesempeño").html(htmlFilas);
                     }
 
-                    function actualizarTablaSaldosComparativos() {
+                    function actualizarTablaSaldosComparativos(datos) {
                         // Filtrar liquidaciones con tipo de cambio válido
-                        const datosFiltrados = liquidacionesData.filter(item => item.TC && item.TC > 0);
+                        const datosFiltrados = datos.filter(item => item.TC && item.TC > 0);
 
                         // Agrupar por nave y luego por cliente y producto
                         const datosPorNave = {};
@@ -1005,6 +1102,7 @@
                             const calibre = item.calibre || "Sin calibre";
                             const color = calibre.endsWith("D") ? "Dark" : calibre.endsWith("L") ? "Light" : "N/A";
                             const formato = item.embalaje || "Sin formato";
+                            
                             const productoKey = `${variedad}-${calibre}-${color}-${formato}`;
 
                             if (!datosPorNave[nave]) {
@@ -1097,10 +1195,10 @@
                         $("#tBodySaldos").html(htmlFilas);
                     }
 
-                    function actualizarTablaCostosPorCliente() {
+                    function actualizarTablaCostosPorCliente(datos) {
                         // Agrupar datos por cliente
                         const datosPorCliente = {};
-                        liquidacionesData.forEach(item => {
+                        datos.forEach(item => {
                             const cliente = item.cliente || "Sin cliente";
                             if (!datosPorCliente[cliente]) {
                                 datosPorCliente[cliente] = {
@@ -1167,11 +1265,11 @@
                         $("#tBodyCostos").html(htmlFilas);
                     }
 
-                    function actualizarTablaResultadosColorCalibre() {
+                    function actualizarTablaResultadosColorCalibre(datos) {
                         // Agrupar datos por variedad y calibre para determinar calibres con valores
                         const datosPorVariedad = {};
                         const totalesPorCalibre = {};
-                        liquidacionesData.forEach(item => {
+                        datos.forEach(item => {
                             const variedad = (item.variedad || "Sin variedad").toUpperCase();
                             const calibre = item.calibre || "Sin calibre";
                             const fob = item.FOB_TO_USD || 0;
@@ -1277,7 +1375,7 @@
 
                         $("#tBodyResultadosColorCalibre").html(tbodyHtml);
                     }
-                    function actualizarTablaFOBPorSemanaVariedad() {
+                    function actualizarTablaFOBPorSemanaVariedad(datos) {
     // Función para obtener el número de semana ISO a partir de una fecha
     function getISOWeek(date) {
         const d = new Date(date);
@@ -1291,7 +1389,7 @@
     // Agrupar datos por variedad y semana
     const datosPorVariedad = {};
     const totalesPorSemana = {};
-    liquidacionesData.forEach(item => {
+    datos.forEach(item => {
         const variedad = (item.variedad || "Sin variedad").toUpperCase();
         const eta = item.ETA; // Asumimos que ETA es una fecha válida
         if (!eta) return; // Ignorar si no hay ETA
