@@ -470,11 +470,9 @@
                     <thead>
                         <tr>
                             <th></th>
-
                             <th>Instructivo</th>
                             <th>Tasa</th>
-                            <th>Total Kilos</th>
-                            <th>MONTO RMB</th>
+                            <th>Total Kilos</th>                          
                             <th>MONTO USD</th>
                             <th>Costos USD</th>
                             <th>FOB USD</th>
@@ -485,13 +483,13 @@
                         <tr>
                             <td colspan="4" style="text-align: right;">Subtotal:</td>
                             <td id="subtotalCantidad"></td>
-                            <td id="subtotalMontoRMB"></td>
+                           
                             <td id="subtotalMontoUSD"></td>
                         </tr>
                         <tr>
                             <td colspan="4"><strong>Total</strong></td>
                             <td id="totalCantidad">0</td>
-                            <td id="totalMontoRMB">0</td>
+                           
                             <td id="totalMontoUSD">0</td>
                         </tr>
                     </tfoot>
@@ -580,24 +578,26 @@
 
                 // Actualizar la fila de totales (calculados con originalData)
                 document.getElementById("totalCantidad").textContent = totalCantidad.toLocaleString();
-                document.getElementById("totalMontoRMB").textContent = totalMontoRMB.toLocaleString();
+                
                 document.getElementById("totalMontoUSD").textContent = totalMontoUSD.toLocaleString();
 
                 // Actualizar los subtotales (calculados con filteredData)
                 document.getElementById("subtotalCantidad").textContent = subtotalCantidad.toLocaleString();
-                document.getElementById("subtotalMontoRMB").textContent = subtotalMontoRMB.toLocaleString();
+                
                 document.getElementById("subtotalMontoUSD").textContent = subtotalMontoUSD.toLocaleString();
             }
 
 
             // Función para cargar la tabla con DataTables
             function cargarTabla(datos) {
+                console.log("datos", datos);
                 $('#tabla-datos').DataTable({
                     destroy: true, // Permite recargar la tabla sin errores
                     data: datos,
-                    columns: [{
-                            data: 'placeholder',
-                        },
+                    columns: [ {
+            data: null,
+            defaultContent: '<input type="checkbox" class="select-checkbox">'
+        },
                         {
                             data: "instructivo"
                         },
@@ -612,12 +612,7 @@
                                 return parseFloat(data).toLocaleString();
                             }
                         },
-                        {
-                            data: "MONTO_RMB",
-                            render: function(data) {
-                                return parseFloat(data).toLocaleString();
-                            }
-                        },
+                      
                         {
                             data: "MONTO_USD",
                             render: function(data) {

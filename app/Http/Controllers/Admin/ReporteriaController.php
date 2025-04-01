@@ -1203,81 +1203,24 @@ class ReporteriaController extends Controller
 
     public function getLiquidaciones()
     {
-        $datos = DB::table('greenexnet.liquidaciones_cxes as lc')
-            ->join('greenexnet.liq_cx_cabeceras as lcc', 'lc.liqcabecera_id', '=', 'lcc.id')
-            ->join('greenexnet.excel_datos as ed', 'lcc.instructivo', '=', 'ed.instructivo')
-            ->join('greenexnet.clientes_comexes as cc', 'lcc.cliente_id', '=', 'cc.id')
-            ->whereNull('lc.deleted_at')
-            ->select([
-                DB::raw('"" as `placeholder`'),
-
-                'ed.instructivo',
-                'ed.tasa',
-                'lcc.id',
-                DB::raw('lc.cantidad*lc.embalaje_id as `Total_Kilos`'),
-                DB::raw('lc.precio_unitario * lcc.factor_imp_destino*lc.cantidad AS `factor`'),
-                DB::raw('lc.precio_unitario * lc.cantidad AS `MONTO_RMB`'), // Nueva columna
-                DB::raw('(lc.precio_unitario * lc.cantidad/ed.tasa) AS `MONTO_USD`')
-            ])->orderBy('lcc.instructivo')
-            ->get();
-
-        $datosAgrupados = collect($datos)->groupBy('instructivo')->map(function ($grupo) {
-            return [
-                'placeholder' => '',
-                'instructivo' => $grupo->first()->instructivo,
-                'tasa' => $grupo->first()->tasa,
-                'id' => $grupo->first()->id, // Suponiendo que el ID es el mismo para todos
-                'factor' => $grupo->sum('factor') / $grupo->first()->tasa,
-                'total_kilos' => $grupo->sum('Total_Kilos'),
-                'MONTO_RMB' => $grupo->sum('MONTO_RMB'),
-                'MONTO_USD' => $grupo->sum('MONTO_USD'),
-
-            ];
-        })->values(); // Resetear los índices
-
-        // Ahora $datosAgrupados contiene los valores agrupados correctamente
-
-        $datosAgrupados = $datosAgrupados->map(function ($dato) {
-            $costos = DB::table('greenexnet.liq_costos as lc')
-                ->select(DB::raw("valor,nombre_costo"))
-                ->where("liq_cabecera_id", $dato["id"])->whereNull('deleted_at')
-                ->get();
-            $costoRMB = 0;
+        $datos = Fob::where('especie', '=', 'Cherries')
+        ->select(
+          
+            'Liquidacion as instructivo',
+            'TC as tasa'
+        )        
+        ->selectRaw('SUM(Kilos_total) as total_kilos')
+        ->selectRaw('SUM(Ventas_TO_USD) as MONTO_USD')
+        ->selectRaw('SUM(Costos_USD_TO) as costos')
+        ->selectRaw('SUM(FOB_TO_USD) as FOB_USD')
+        ->groupBy('Liquidacion', 'TC')
+        ->get();
 
 
-            foreach ($costos as $costo) {
-                if ($dato["instructivo"] == "I2425182") {
-                    Log::info($costo->nombre_costo . " --> " . $costo->valor);
-                }
-                if ($costo->nombre_costo == "Otros Ingresos") {
-                    $costoRMB = $costoRMB - $costo->valor;
-                } elseif ($costo->nombre_costo == "Impuestos") {
-                    $costoRMB = $costoRMB;
-                } else {
-                    $costoRMB = $costoRMB + $costo->valor;
-                }
-            }
-            Log::info("Total Costos --> " . $costoRMB);
-            $otros = DB::table('greenexnet.liq_cx_cabeceras')->select('flete_exportadora')->where('id', $dato["id"])->whereNull('deleted_at')->first();
-            if ($dato["instructivo"] == "I2425182") {
-                Log::info("flete_exportadora --> " . $otros->flete_exportadora);
-                Log::info("Impuestos--> " . $dato["factor"] / $dato["tasa"]);
-            }
-            $costo_usd = ($costoRMB / $dato["tasa"]) + $dato["factor"];
-            $costo_usd = $costo_usd + $otros->flete_exportadora;
-            $FOB_USD = $dato["MONTO_USD"] - $costo_usd;
-
-            return array_merge($dato, [
-                "costos" => $costo_usd,
-                "FOB_USD" => $FOB_USD
-            ]);
-        });
+        
 
 
-
-
-
-        return $datosAgrupados;
+        return response()->json($datos); 
     }
     public function liquidacionesventa()
     {
