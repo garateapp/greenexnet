@@ -258,9 +258,11 @@
                                         <th colspan="7" style="text-align:right">Total:</th>
                                         <th></th> <!-- Cantidad -->
                                         <th colspan="2"></th>
-                                        <th></th> <!-- Embalaje ID -->
-                                        <th></th> <!-- Monto RMB -->
+                                        <th colspan="4"></th> <!-- Embalaje ID -->
+                                        
                                         <th colspan="2"></th>
+                                        <th></th> <!-- Monto RMB -->
+
                                     </tr>
                                 </tfoot>
                             </table>
