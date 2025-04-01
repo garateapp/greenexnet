@@ -1375,7 +1375,7 @@ class ComexController extends Controller
 
 
         $fg = $this;
-        $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->where('id', '>', 470)->get(); // LiqCxCabecera::find(request('ids'));
+        $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->get(); // LiqCxCabecera::find(request('ids'));
 
 
         $dataComparativa = collect();
