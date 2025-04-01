@@ -916,7 +916,7 @@
                                     totalCajas: 0
                                 };
                             }
-                            datosPorVariedad[variedad].kilosTotal += item.Kilos_total || 0;
+                            datosPorVariedad[variedad].kilosTotal += item.Kilos_Total || 0;
                             datosPorVariedad[variedad].sumaFobEquivalente += item.FOB_TO_USD || 0;
                             datosPorVariedad[variedad].totalCajas += item.Cajas || 0;
                         });
@@ -950,7 +950,7 @@
 
                     function actualizarTablaDesempeñoClientes() {
                         const medida = $("#cboDesempeñoMedida").val(); // 1 = Volumen, 2 = FOB
-                        const campoMedida = medida === "1" ? "Kilos_total" : "FOB_TO_USD";
+                        const campoMedida = medida === "1" ? "Kilos_Total" : "FOB_TO_USD";
 
                         // Agrupar datos por cliente
                         const datosPorCliente = {};
@@ -1020,7 +1020,7 @@
                                 };
                             }
 
-                            datosPorNave[nave][cliente][productoKey].kilos += item.Kilos_total || 0;
+                            datosPorNave[nave][cliente][productoKey].kilos += item.Kilos_Total || 0;
                             datosPorNave[nave][cliente][productoKey].fob += item.FOB_TO_USD || 0;
                         });
 
@@ -1117,7 +1117,7 @@
                                 };
                             }
                             datosPorCliente[cliente].fobToUsd += item.FOB_TO_USD || 0;
-                            datosPorCliente[cliente].kilosTotal += item.Kilos_total || 0;
+                            datosPorCliente[cliente].kilosTotal += item.Kilos_Total || 0;
                             datosPorCliente[cliente].comToUsd += item.Com_TO_USD || 0;
                             datosPorCliente[cliente].impDestinoUsdTo += item.Imp_destino_USD_TO || 0;
                             datosPorCliente[cliente].fleteMaritUsdTo += item.Flete_Marit_USD_TO || 0;
@@ -1175,7 +1175,7 @@
                             const variedad = (item.variedad || "Sin variedad").toUpperCase();
                             const calibre = item.calibre || "Sin calibre";
                             const fob = item.FOB_TO_USD || 0;
-                            const kilos = item.Kilos_total || 0;
+                            const kilos = item.Kilos_Total || 0;
 
                             if (kilos === 0) return; // Ignorar si kilos es 0
 
@@ -1297,7 +1297,7 @@
         if (!eta) return; // Ignorar si no hay ETA
         const semana = getISOWeek(eta);
         const fob = item.FOB_TO_USD || 0;
-        const kilos = item.Kilos_total || 0;
+        const kilos = item.Kilos_Total || 0;
 
         if (kilos === 0) return; // Ignorar si kilos es 0
 
