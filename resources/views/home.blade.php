@@ -583,7 +583,7 @@
                                         <div class="card col-lg-12">
                                             <div class="card-header d-flex justify-content-between align-items-center">
                                                 <span>Desempeño Clientes</span>
-                                                <select class="form-select w-auto" id="cboDesempeñoMedida">
+                                                <select class="form-select w-auto" id="cboDesempenoMedida">
                                                     <option value="1">Volumen</option>
                                                     <option value="2">FOB</option>
                                                 </select>
@@ -635,17 +635,17 @@
                                                         <tr>
                                                             <th></th>
                                                             <th colspan="2" style="text-align: center;"
-                                                                class="bg-blue-300" >COSTOS VARIABLES</th>
+                                                                >COSTOS VARIABLES</th>
                                                             <th colspan="2" style="text-align: center;"
-                                                                class="bg-yellow-100">COSTOS FIJOS</th>
+                                                                >COSTOS FIJOS</th>
                                                             <th></th>
                                                         </tr>
                                                         <tr>
                                                             <th>CLIENTE</th>
-                                                            <th class="bg-blue-300">COMISIÓN</th>
-                                                            <th class="bg-blue-300">IMPUESTOS</th>
-                                                            <th class="bg-yellow-100">COSTOS FIJOS MARITIMOS</th>
-                                                            <th class="bg-yellow-100">COSTOS FIJOS AÉREOS</th>
+                                                            <th >COMISIÓN</th>
+                                                            <th >IMPUESTOS</th>
+                                                            <th >COSTOS FIJOS MARITIMOS</th>
+                                                            <th >COSTOS FIJOS AÉREOS</th>
                                                             <th>OTROS COSTOS</th>
                                                         </tr>
                                                     </thead>
@@ -707,10 +707,7 @@
                     // Mostrar animación de carga
                     $("#loading-animation").show();
 
-                    $("#cboDesempeñoMedida").on("change", function() {
-                        actualizarTablaDesempeñoClientes();
-                    });
-
+                   
                     $.ajax({
                         url: "{{ route('admin.reporteria.SabanaLiquidaciones') }}",
                         type: "GET",
@@ -728,8 +725,8 @@
                             calcularRNP(liquidacionesData);
                             actualizarTablaLiquidacionesPorCliente(liquidacionesData);
                             actualizarTablaVariedadFOBKG(liquidacionesData);
-                            actualizarTablaDesempeñoClientes(liquidacionesData);
-                            actualizarTablaSaldosComparativosliquidacionesData();
+                            actualizarTablaDesempenoClientes(liquidacionesData);
+                            actualizarTablaSaldosComparativos(liquidacionesData);
                             actualizarTablaCostosPorCliente(liquidacionesData);
                             actualizarTablaResultadosColorCalibre(liquidacionesData);
                             actualizarTablaFOBPorSemanaVariedad(liquidacionesData);
@@ -777,7 +774,7 @@
                     calcularRNP(datos);
                     actualizarTablaLiquidacionesPorCliente(datos);
                     actualizarTablaVariedadFOBKG(datos);
-                    actualizarTablaDesempeñoClientes(datos);
+                    actualizarTablaDesempenoClientes(datos);
                     actualizarTablaSaldosComparativos(datos);
                     actualizarTablaCostosPorCliente(datos);
                     actualizarTablaResultadosColorCalibre(datos);
@@ -1044,10 +1041,29 @@
                         // Insertar las filas en el tbody
                         $("#tbodyVariedadFOBKG").html(htmlFilas);
                     }
+                    $("#cboDesempenoMedida").on("change", function() {
+                    const medida = $(this).val();
+                    const especiesSel = $("#filtroEspecie").val() || [];
+                    const variedadesSel = $("#filtroVariedad").val() || [];
+                    const clientesSel = $("#filtroCliente").val() || [];
+                    const transportesSel = $("#filtroTransporte").val() || [];
+                    const agrupacionSel = $("#filtroAgrupación").val();
+                    const vistaSel = $("#filtroVista").val();
 
-                    function actualizarTablaDesempeñoClientes(datos) {
-                        const medida = $("#cboDesempeñoMedida").val(); // 1 = Volumen, 2 = FOB
-                        const campoMedida = medida === "1" ? "Kilos_Total" : "FOB_TO_USD";
+                    // Filtrar liquidacionesData
+                    let datosFiltrados = liquidacionesData.filter(item => {
+                        return (
+                            (especiesSel.length === 0 || especiesSel.includes(item.especie)) &&
+                            (variedadesSel.length === 0 || variedadesSel.includes(item.variedad)) &&
+                            (clientesSel.length === 0 || clientesSel.includes(item.cliente)) &&
+                            (transportesSel.length === 0 || transportesSel.includes(item.transporte))
+                        );
+                    });
+                    actualizarTablaDesempenoClientes(datosFiltrados);
+                    });
+                    function actualizarTablaDesempenoClientes(datos) {
+                        const medida = $("#cboDesempenoMedida").val(); // 1 = Volumen, 2 = FOB
+                        const campoMedida = medida === "1" ? "Kilos_Total" : "FOB_kg";
 
                         // Agrupar datos por cliente
                         const datosPorCliente = {};
@@ -1065,8 +1081,11 @@
 
                         // Generar las filas para la tabla
                         let htmlFilas = "";
-                        for (const [cliente, valorCliente] of Object.entries(datosPorCliente)) {
+                        const clientesOrdenados = Object.entries(datosPorCliente).sort((a, b) => b[1] - a[1]);
+                        for (const [cliente, valorCliente] of clientesOrdenados) {
+                            if(cliente!="Fruit Fortune"){
                             // Promedio del resto (excluyendo al cliente actual)
+                            console.log("cliente: "+cliente+" valor: "+valorCliente+" total: "+totalGeneral+" totalClientes: "+totalClientes);
                             const sumaResto = totalGeneral - valorCliente;
                             const promedioResto = totalClientes > 1 ? sumaResto / (totalClientes - 1) : 0;
 
@@ -1083,6 +1102,7 @@
                 <td class="${claseColor}">${signo}${porcentajeDiferencia}%</td>
             </tr>
         `;
+    }
                         }
 
                         // Insertar las filas en el tbody
