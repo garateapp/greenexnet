@@ -787,8 +787,10 @@
                         // Fórmula 2: (Suma de FOB_TO_USD) / Suma de Kilos_total * 5
                         const sumaFobUsdPorCajas = liquidacionesData.reduce((sum, item) => sum + ((item.FOB_TO_USD || 0)),
                             0);
-                        const sumaKilosTotal = liquidacionesData.reduce((sum, item) => sum + (item.Kilos_total || 0),
+                        const sumaKilosTotal = liquidacionesData.reduce((sum, item) => sum + (item.Kilos_Total || 0),
                             0);
+
+                            console.log(sumaKilosTotal);
                         const promedioFobCaja2 = sumaKilosTotal > 0 ? ((sumaFobUsdPorCajas / sumaKilosTotal) * 5)
                             .toFixed(2) : 0;
 
@@ -850,7 +852,7 @@
                         // }
                         const sumaFobUsdPorKilo = liquidacionesData.reduce((sum, item) => sum + ((item.FOB_TO_USD || 0)),
                             0);
-                        const sumaKilosTotal = liquidacionesData.reduce((sum, item) => sum + (item.Kilos_total || 0),
+                        const sumaKilosTotal = liquidacionesData.reduce((sum, item) => sum + (item.Kilos_Total || 0),
                             0);
                         // const promedioFobKilo = sumaKilosTotal > 0 ? ((sumaFobUsdPorKilo / sumaKilosTotal))
                         //     .toFixed(2) : 0;
