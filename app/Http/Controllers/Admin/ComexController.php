@@ -932,7 +932,7 @@ class ComexController extends Controller
                         'RMB otros costos TO' => '=+AN' . $i . '*Y' . $i, //AO
                         'Flete marit. Caja RMB' => '=+(' . ($costosFleteInternacional == 0 ? 0 : $costosFleteInternacional) . '/' . $total_kilos . ')*P' . $i, //AP
                         'RMB Flete Marit. TO' => '=+AP' . $i . '*Y' . $i, //AQ
-                        'Costos cajas RMB' => '=+AF' . $i . '+AH' . $i . '+AJ' . $i . '+AL' . $i . '+AN' . $i . '+AB' . $i . '+AP' . $i . '+(BO' . $i . ')+(BQ' . $i . '*AV' . $i . ')', //AR -(CC' . $i . '*AV' . $i . ') +(CA' . $i . '*AV' . $i . ') Se elimina por que no incide
+                        'Costos cajas RMB' => '=+AF' . $i . '+AH' . $i . '+AJ' . $i . '+AL' . $i . '+AN' . $i . '+AB' . $i . '+AP' . $i . '+(BO' . $i . ')+(BQ' . $i . '*AV' . $i . ')+CE'.$i, //AR -(CC' . $i . '*AV' . $i . ') +(CA' . $i . '*AV' . $i . ') Se elimina por que no incide
                         'RMB Costos TO' => '=+AR' . $i . '*Y' . $i, //AS
                         'Resultados caja RMB' => '=+Z' . $i . '-AR' . $i,  //AT  Verificar con Haydelin
                         'RMB result. TO' => '=+AT' . $i . '*Y' . $i, //AU  Verificar con Haydelin
@@ -976,8 +976,8 @@ class ComexController extends Controller
                         'USD Flete Domestico. '    => '=+CE' . $i . '/AV' . $i, //CG
                         'USD Flete Domestico. TO' => '=+CG' . $i . '*Y' . $i, //CH
                         'embalaje_dato_origen' => $item->c_embalaje, //CI
-                        'nave'=>$nave,
-                        'especie'=>$especie->nombre,
+                        'nave'=>$nave, //CJ
+                        'especie'=>$especie->nombre, //CK
 
                     ],
                     //$costo_procesado,
