@@ -908,7 +908,7 @@
                         $(".indicador").eq(3).text(`$${promedioFobKilo}`); // Promedio FOB Kilo
                     }
 
-                    function calcularRNP() {
+                    function calcularRNP(datos) {
 
                         const costoKgInput = $("#CostoKg").val().trim();
                         const comisionInput = $("#Comision").val().trim();
@@ -947,9 +947,9 @@
                         //     $(".indicador").eq(3).text("No hay datos para este flete");
                         //     return;
                         // }
-                        const sumaFobUsdPorKilo = liquidacionesData.reduce((sum, item) => sum + ((item.FOB_TO_USD || 0)),
+                        const sumaFobUsdPorKilo = datos.reduce((sum, item) => sum + ((item.FOB_TO_USD || 0)),
                             0);
-                        const sumaKilosTotal = liquidacionesData.reduce((sum, item) => sum + (item.Kilos_Total || 0),
+                        const sumaKilosTotal = datos.reduce((sum, item) => sum + (item.Kilos_Total || 0),
                             0);
                         // const promedioFobKilo = sumaKilosTotal > 0 ? ((sumaFobUsdPorKilo / sumaKilosTotal))
                         //     .toFixed(2) : 0;
