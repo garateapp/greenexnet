@@ -15,6 +15,9 @@ use App\Models\Costo;
 use App\Models\ExcelDato;
 use App\Models\Nafe;
 use App\Models\Diccionario;
+use App\Models\Fob;
+use App\Models\Variedad;
+use App\Models\Especy;
 use Gate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -358,10 +361,74 @@ class LiqCxCabeceraController extends Controller
 
         // Obtener la sesión correctamente
         $liqs = $this->ConsolidadoLiquidacionesUnitario($id);
-
-        // Obtener cabeceras
         $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->where('id', $id)->get();
+        foreach ($liqs as $liq) {
+            $fob = Fob::where('Liquidacion', $liq['Liquidacion'])->first();
 
+            // Buscar la variedad y la especie antes de insert/update
+            $variedad = Variedad::where('nombre', $liq["variedad"])->first();
+            $especie = $variedad ? Especy::where('id', $variedad->especie_id)->first() : null;
+            
+            // Datos comunes para inserción o actualización
+            $datosFob = [
+                'cliente' => $liq['cliente'] ?? null,  
+                'nave' => $liq['nave'],              
+                'Liquidacion' => $liq['Liquidacion'] ?? null,
+                'ETA' => $liq['ETA'],
+                'ETA_Week' => $liq['ETA_Week'],
+                'Fecha_Venta' => $liq['Fecha_Venta'] ?? null,
+                'Fecha_Venta_Week' => $liq['Fecha_Venta_Week'] ?? null,
+                'Pallet' => $liq['Pallet'] ?? null,
+                'Peso_neto' => $liq['Peso_neto'] ?? null,
+                'Kilos_total' => $liq['Kilos_total'] ?? null,
+                'embalaje' => $liq['embalaje'] ?? null,
+                'etiqueta' => $liq['etiqueta'] ?? null,
+                'variedad' => $liq['variedad'] ?? null,
+                'calibre' => $liq['calibre'] ?? null,
+                'Cajas' => $liq['Cajas'] ?? null,
+                'TC' => $liq['TC'] ?? null,
+                'Ventas_TO_USD' => $liq['Ventas_TO_USD'] ?? null,
+                'Venta_USD' => $liq['Venta_USD'] ?? null,
+                'Com_USD' => $liq['Com_USD'] ?? null,
+                'Com_TO_USD' => $liq['Com_TO_USD'] ?? null,
+                'Imp_destino_USD' => $liq['Imp_destino_USD'] ?? null,
+                'Imp_destino_USD_TO' => $liq['Imp_destino_USD_TO'] ?? null,
+                'Costo_log_USD' => $liq['Costo_log_USD'] ?? null,
+                'Costo_log_USD_TO' => $liq['Costo_log_USD_TO'] ?? null,
+                'Ent_Al_mercado_USD' => $liq['Ent_Al_mercado_USD'] ?? null,
+                'Ent_Al_mercado_USD_TO' => $liq['Ent_Al_mercado_USD_TO'] ?? null,
+                'Costo_mercado_USD' => $liq['Costo_mercado_USD'] ?? null,
+                'Costos_mercado_USD_TO' => $liq['Costos_mercado_USD_TO'] ?? null,
+                'Otros_costos_dest_USD' => $liq['Otros_costos_dest_USD'] ?? null,
+                'Otros_costos_USD_TO' => $liq['Otros_costos_USD_TO'] ?? null,
+                'Flete_marit_USD' => $liq['Flete_marit_USD'] ?? null,
+                'Flete_Marit_USD_TO' => $liq['Flete_Marit_USD_TO'] ?? null,
+                'Costos_USD_TO' => $liq['Costos_USD_TO'] ?? null,
+                'Ajuste_TO_USD' => $liq['Ajuste_TO_USD'] ?? null,
+                'FOB_USD' => $liq['FOB_USD'] ?? null,
+                'FOB_TO_USD' => $liq['FOB_TO_USD'] ?? null,
+                'FOB_kg' => $liq['FOB_kg'] ?? null,
+                'FOB_Equivalente' => $liq['FOB_Equivalente'] ?? null,
+                'Flete_Cliente' => $liq['Flete_Cliente'] ?? null,
+                'Transporte' => $liq['Transporte'] ?? null,
+                'c_embalaje' => $liq['c_embalaje'] ?? null,
+                'folio_fx' => $liq['folio_fx'] ?? null,
+                'especie' => $especie->nombre ?? null,
+                'Costos_cajas_USD' => $liq['Costos_cajas_USD'] ?? null,
+            ];
+        
+            if ($fob === null) {
+                // Si no existe, crear un nuevo registro
+                Fob::create($datosFob);
+            } else {
+                // Si ya existe, actualizar el registro
+                $fob->update($datosFob);
+            }
+            
+    }
+        // Obtener cabeceras
+       
+dd($fob);
         
         
 
