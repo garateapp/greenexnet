@@ -900,11 +900,11 @@
                             .length).toFixed(2) : 0;
 
 
-                        const promedioFobCaja2 = sumaKilosTotal > 0 ? ((sumaFobUsdPorCajas / sumaKilosTotal) * 5)
+                        const promedioFobCaja2 = sumaKilosTotal > 0 ? ((sumaFobUsdPorCajas / sumaKilosTotal))
                             .toFixed(2) : 0;
 
                         //1.- (Suma de FOB_TO_USD) / Suma de Kilos_total
-                        const sumaFobUsdPorKilo = liquidacionesData.reduce((sum, item) => sum + ((item.FOB_TO_USD || 0)),
+                        const sumaFobUsdPorKilo = liquidacionesData.reduce((sum, item) => sum + ((item.FOB_kg || 0)),
                             0);
                         const promedioFobKilo = sumaKilosTotal > 0 ? ((sumaFobUsdPorKilo / sumaKilosTotal))
                             .toFixed(2) : 0;
