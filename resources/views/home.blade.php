@@ -663,7 +663,7 @@
                                     (calibresSel.length === 0 || calibresSel.includes(item.Calibre)) &&
                                     (variedadesSel.length === 0 || variedadesSel.includes(item.variedad)) &&
                                     (formatosSel.length === 0 || formatosSel.includes(item.embalaje_id)) &&
-                                    (coloresSel.length === 0 || coloresSel.includes(item.color)) &&
+                                    
                                     // Ajusta 'color' si es otro campo
                                     (etiquetasSel.length === 0 || etiquetasSel.includes(item.etiqueta)) &&
                                     (clientesSel.length === 0 || clientesSel.includes(item.cliente)) &&
@@ -715,6 +715,10 @@
 
                             actualizarGraficoFobVariedad(datos, agrupacion);
                             actualizarGraficoFobFormato(datos, agrupacion);
+                            actualizarGraficoFobCliente(datos, agrupacion);
+                            actualizarGraficoFobCalibre(datos, agrupacion);
+                            actualizarGraficoFobEtiqueta(datos, agrupacion);
+                            actualizarGraficoFobTransporte(datos, agrupacion);
 
                         }
                         // Ejemplo de función para actualizar una tabla (ajusta según tu estructura)
