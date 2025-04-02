@@ -428,7 +428,7 @@ class LiqCxCabeceraController extends Controller
     }
         // Obtener cabeceras
        
-dd($fob);
+
         
         
 
