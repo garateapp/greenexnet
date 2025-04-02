@@ -884,7 +884,7 @@
                         // 3. Promedio FOB Caja
                         // Fórmula 1: Suma de FOB_Equivalente / Cantidad de registros
                         const sumaFobEquivalente = datos.reduce((sum, item) => sum + ((item
-                            .FOB_Equivalente/5)*(item.Peso_neto) || 0), 0);
+                            .FOB_kg*item.Peso_neto) || 0), 0);
                         const promedioFobCaja1 = datos.length > 0 ? (sumaFobEquivalente / liquidacionesData
                             .length).toFixed(2) : 0;
 
