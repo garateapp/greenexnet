@@ -551,16 +551,14 @@
 
                             switch (familiaSeleccionada) {
                                 case 1:
-                                    especies = ["Plums", "Nectarines", "Peaches"];
+                                    especies = ["PLUMS", "NECTARINES", "PEACHES"];
                                     break;
                                 case 2:
-                                    especies = ["Cherries"];
+                                    especies = ["CHERRIES"];
                                     break;
-                                case 3:
-                                    especies = ["Lemons", "Limes"];
-                                    break;
+                                
                                 case 4:
-                                    especies = ["Apples", "Pears", "Membrillos"];
+                                    especies = ["APPLES", "PEARS", "MEMBRILLOS"];
                                     break;
                                 default:
                                     especies = [];
@@ -577,8 +575,7 @@
                             success: function(response) {
                                 liquidacionesData =
                                     response; // Asumiendo que response es un array con los 8500 registros
-                                console.log("Datos cargados:", liquidacionesData.length);
-                                console.log(liquidacionesData);
+                               
                                 // Ocultar animación de carga
                                 $("#loading-animation").hide();
 
@@ -622,22 +619,28 @@
                         // Función para filtrar los datos y actualizar visualizaciones
                         function filtrarYActualizar() {
                             // Obtener valores seleccionados de los filtros
-                            const especiesSel = $("#filtroEspecie").val() || [];
-                            const variedadesSel = $("#filtroVariedad").val() || [];
-                            const clientesSel = $("#filtroCliente").val() || [];
-                            const transportesSel = $("#filtroTransporte").val() || [];
+                            const calibresSel = ($("#filtroFobVariedadCalibre").val() || []).map(val => val.toUpperCase());
+    const variedadesSel = ($("#filtroFobVariedadVariedad").val() || []).map(val => val.toUpperCase());
+    const formatosSel = ($("#filtroFobVariedadFormato").val() || []).map(val => val.toUpperCase());
+    const coloresSel = ($("#filtroFobVariedadColor").val() || []).map(val => val.toUpperCase());
+    const etiquetasSel = ($("#filtroFobVariedadEtiqueta").val() || []).map(val => val.toUpperCase());
+    const clientesSel = ($("#filtroFobVariedadClientes").val() || []).map(val => val.toUpperCase());
+    const especiesSel = ($("#filtroFobVariedadEspecie").val() || []).map(val => val.toUpperCase()); 
                             const agrupacionSel = $("#filtroAgrupación").val();
                             const vistaSel = $("#filtroVista").val();
 
                             // Filtrar liquidacionesData
                             let datosFiltrados = liquidacionesData.filter(item => {
-                                return (
-                                    (especiesSel.length === 0 || especiesSel.includes(item.especie)) &&
-                                    (variedadesSel.length === 0 || variedadesSel.includes(item.variedad)) &&
-                                    (clientesSel.length === 0 || clientesSel.includes(item.cliente)) &&
-                                    (transportesSel.length === 0 || transportesSel.includes(item.Transporte))
-                                );
-                            });
+        return (
+            (calibresSel.length === 0 || calibresSel.includes((item.Calibre || "").toUpperCase())) &&
+            (variedadesSel.length === 0 || variedadesSel.includes((item.variedad || "").toUpperCase())) &&
+            (formatosSel.length === 0 || formatosSel.includes((item.Peso_neto || "").toUpperCase())) &&
+            (etiquetasSel.length === 0 || etiquetasSel.includes((item.etiqueta || "").toUpperCase())) &&
+            (clientesSel.length === 0 || clientesSel.includes((item.cliente || "").toUpperCase())) &&
+            (especiesSel.length === 0 || especiesSel.includes((item.especie || "").toUpperCase()))
+        );
+    });
+
 
                             console.log("Datos filtrados:", datosFiltrados.length);
 
@@ -647,29 +650,31 @@
 
                         function filtrarYActualizarGraficos() {
                             // Obtener valores seleccionados de los filtros
-                            const especiesSel = $("#filtroFobVariedadEspecie").val() || [];
-                            const calibresSel = $("#filtroFobVariedadCalibre").val() || [];
-                            const variedadesSel = $("#filtroFobVariedadVariedad").val() || [];
-                            const formatosSel = $("#filtroFobVariedadFormato").val() || [];
-                            const coloresSel = $("#filtroFobVariedadColor").val() || [];
-                            const etiquetasSel = $("#filtroFobVariedadEtiqueta").val() || [];
-                            const clientesSel = $("#filtroFobVariedadClientes").val() || [];
+                            const especiesSel = ($("#filtroFobVariedadEspecie").val() || []).map(val => val.toUpperCase());
+                            const calibresSel = ($("#filtroFobVariedadCalibre").val() || []).map(val => val.toUpperCase());
+                            const variedadesSel = ($("#filtroFobVariedadVariedad").val() || []).map(val => val.toUpperCase());
+                            const formatosSel = ($("#filtroFobVariedadFormato").val() || []).map(val => val.toUpperCase());
+                            const coloresSel = ($("#filtroFobVariedadColor").val() || []).map(val => val.toUpperCase());
+                            const etiquetasSel = ($("#filtroFobVariedadEtiqueta").val() || []).map(val => val.toUpperCase());
+                            const clientesSel = ($("#filtroFobVariedadClientes").val() || []).map(val => val.toUpperCase());
                             const agrupacionSel = $("#filtroAgrupación").val() || "0"; // Si existe
                             const vistaSel = $("#filtroVista").val() || "0";
 
                             // Filtrar liquidacionesData
                             let datosFiltrados = liquidacionesData.filter(item => {
-                                return (
-                                    (calibresSel.length === 0 || calibresSel.includes(item.Calibre)) &&
-                                    (variedadesSel.length === 0 || variedadesSel.includes(item.variedad)) &&
-                                    (formatosSel.length === 0 || formatosSel.includes(item.embalaje_id)) &&
-                                    
-                                    // Ajusta 'color' si es otro campo
-                                    (etiquetasSel.length === 0 || etiquetasSel.includes(item.etiqueta)) &&
-                                    (clientesSel.length === 0 || clientesSel.includes(item.cliente)) &&
-                                    (especiesSel.length === 0 || especiesSel.includes(item.especie))
-                                );
-                            });
+        return (
+            (calibresSel.length === 0 || calibresSel.includes((item.Calibre || "").toUpperCase())) &&
+            (variedadesSel.length === 0 || variedadesSel.includes((item.variedad || "").toUpperCase())) &&
+            (formatosSel.length === 0 || formatosSel.includes((item.Peso_neto || "").toUpperCase())) &&
+            (coloresSel.length === 0 || coloresSel.includes(
+                (item.calibre || item.Calibre || "").toUpperCase().endsWith("d") ? "dark" : "light"
+            )) &&
+            (etiquetasSel.length === 0 || etiquetasSel.includes((item.etiqueta || "").toUpperCase())) &&
+            (clientesSel.length === 0 || clientesSel.includes((item.cliente || "").toUpperCase())) &&
+            (especiesSel.length === 0 || especiesSel.includes((item.especie || "").toUpperCase()))
+        );
+    });
+
 
                             console.log("Datos filtrados:", datosFiltrados.length);
 
@@ -735,22 +740,22 @@
 
                         function inicializarFiltros() {
                             // Extraer clientes únicos
-                            const clientesUnicos = [...new Set(liquidacionesData.map(item => item.cliente))];
-                            const mercadosUnicos = [...new Set(liquidacionesData.map(item => item.Pais))];
-                            const variedadesUnicas = [...new Set(liquidacionesData.map(item => item.variedad))];
-                            const especiesUnicas = [...new Set(liquidacionesData.map(item => item.especie))];
-                            const transportesUnicos = [...new Set(liquidacionesData.map(item => item.Transporte))];
+                            const clientesUnicos = [...new Set(liquidacionesData.map(item => (item.cliente || "").toUpperCase()))];
+                            const mercadosUnicos = [...new Set(liquidacionesData.map(item => (item.Pais || "").toUpperCase()))];
+                            const variedadesUnicas = [...new Set(liquidacionesData.map(item => (item.variedad || "").toUpperCase()))];
+                            const especiesUnicas = [...new Set(liquidacionesData.map(item => (item.especie || "").toUpperCase()))];
+                            const transportesUnicos = [...new Set(liquidacionesData.map(item => (item.Transporte || "").toUpperCase()))];
 
-                            const filtroFobVariedadCalibre = [...new Set(liquidacionesData.map(item => item.Calibre))];
-                            const filtroFobVariedadVariedad = [...new Set(liquidacionesData.map(item => item.variedad))];
-                            const filtroFobVariedadFormato = [...new Set(liquidacionesData.map(item => item.Peso_neto))];
+                            const filtroFobVariedadCalibre = [...new Set(liquidacionesData.map(item => (item.Calibre || "").toUpperCase()))];
+                            const filtroFobVariedadVariedad = [...new Set(liquidacionesData.map(item => (item.variedad || "").toUpperCase()))];
+                            const filtroFobVariedadFormato = [...new Set(liquidacionesData.map(item => (item.Peso_neto || "")))];
                             const filtroFobVariedadColor = [...new Set(liquidacionesData.map(item => {
                                 const calibre = item.calibre || item.Calibre || "";
-                                return calibre.endsWith("D") ? "Dark" : "Light";
+                                return calibre.toUpperCase().endsWith("d") ? "dark" : "light"; // Normalizar aquí también
                             }))];
-                            const filtroFobVariedadEtiqueta = [...new Set(liquidacionesData.map(item => item.etiqueta))];
-                            const filtroFobVariedadClientes = [...new Set(liquidacionesData.map(item => item.cliente))];
-                            const filtroFobVariedadEspecie = [...new Set(liquidacionesData.map(item => item.especie))];
+                            const filtroFobVariedadEtiqueta = [...new Set(liquidacionesData.map(item => (item.etiqueta || "").toUpperCase()))];
+                            const filtroFobVariedadClientes = [...new Set(liquidacionesData.map(item => (item.cliente || "").toUpperCase()))];
+                            const filtroFobVariedadEspecie = [...new Set(liquidacionesData.map(item => (item.especie || "").toUpperCase()))];
 
                             // Llenar select de clientes
                             $("#filtroCliente").select2({
@@ -1515,7 +1520,7 @@
                             const groupedData = datos.reduce((acc, item) => {
                                 const week = item.ETA_Week + "-" + item.ETA.substring(0, 4) ||
                                     "Sin semana"; // Manejar valores nulos
-                                const variedad = item.variedad || "Sin variedad";
+                                const variedad = (item.variedad || "Sin variedad").toUpperCase(); // Homologar a mayúsculas
                                 if (!acc[week]) {
                                     acc[week] = {};
                                 }
@@ -1536,8 +1541,8 @@
                                 const [yearB, weekB] = b.split('-W');
                                 return yearA - yearB || weekA - weekB;
                             });
-                            const variedades = [...new Set(datos.map(item => item.variedad ||
-                                "Sin variedad"))]; // Variedades únicas
+                            const variedades = [...new Set(datos.map(item => (item.variedad ||
+                                "Sin variedad").toUpperCase()))]; // Variedades únicas
                             const series = variedades.map(variedad => {
                                 return {
                                     name: variedad,
@@ -1745,7 +1750,7 @@
                             const groupedData = datos.reduce((acc, item) => {
                                 const week = item.ETA_Week + "-" + item.ETA.substring(0, 4) ||
                                     "Sin semana"; // Manejar valores nulos
-                                const formato = item.cliente || "Sin formato"; // Usar embalaje_id como formato
+                                const formato = (item.cliente || "Sin formato").toUpperCase(); // Usar embalaje_id como formato
                                 if (!acc[week]) {
                                     acc[week] = {};
                                 }
@@ -1766,8 +1771,8 @@
                                 const [yearB, weekB] = b.split('-W');
                                 return yearA - yearB || weekA - weekB;
                             });
-                            const formatos = [...new Set(datos.map(item => item.cliente ||
-                                "Sin formato"))]; // Formatos únicos
+                            const formatos = [...new Set(datos.map(item => (item.cliente ||
+                                "Sin formato").toUpperCase()))]; // Formatos únicos
                             const series = formatos.map(formato => {
                                 return {
                                     name: formato,
@@ -1860,7 +1865,7 @@
                             const groupedData = datos.reduce((acc, item) => {
                                 const week = item.ETA_Week + "-" + item.ETA.substring(0, 4) ||
                                     "Sin semana"; // Manejar valores nulos
-                                const Calibre = item.Calibre || "Sin formato"; // Usar embalaje_id como formato
+                                const Calibre = (item.Calibre || "Sin formato").toUpperCase(); // Usar embalaje_id como formato
                                 if (!acc[week]) {
                                     acc[week] = {};
                                 }
@@ -1881,8 +1886,8 @@
                                 const [yearB, weekB] = b.split('-W');
                                 return yearA - yearB || weekA - weekB;
                             });
-                            const Calibre = [...new Set(datos.map(item => item.Calibre ||
-                                "Sin formato"))]; // Formatos únicos
+                            const Calibre = [...new Set(datos.map(item => (item.Calibre ||
+                                "Sin CALIBRE").toUpperCase()))]; // Formatos únicos
                             const series = Calibre.map(Calibre => {
                                 return {
                                     name: Calibre,
@@ -1975,7 +1980,7 @@
                             const groupedData = datos.reduce((acc, item) => {
                                 const week = item.ETA_Week + "-" + item.ETA.substring(0, 4) ||
                                     "Sin semana"; // Manejar valores nulos
-                                const etiqueta = item.etiqueta || "Sin formato"; // Usar embalaje_id como formato
+                                const etiqueta = (item.etiqueta || "Sin Etiqueta").toUpperCase(); // Usar embalaje_id como formato
                                 if (!acc[week]) {
                                     acc[week] = {};
                                 }
@@ -1996,8 +2001,8 @@
                                 const [yearB, weekB] = b.split('-W');
                                 return yearA - yearB || weekA - weekB;
                             });
-                            const etiqueta = [...new Set(datos.map(item => item.etiqueta ||
-                                "Sin formato"))]; // Formatos únicos
+                            const etiqueta = [...new Set(datos.map(item => (item.etiqueta ||
+                                "Sin ETIQUETA").toUpperCase()))]; // Formatos únicos
                             const series = etiqueta.map(etiqueta => {
                                 return {
                                     name: etiqueta,
@@ -2091,7 +2096,7 @@
                             const groupedData = datos.reduce((acc, item) => {
                                 const week = item.ETA_Week + "-" + item.ETA.substring(0, 4) ||
                                     "Sin semana"; // Manejar valores nulos
-                                const Transporte = item.Transporte || "Sin formato"; // Usar embalaje_id como formato
+                                const Transporte = item.Transporte || "Sin Transporte"; // Usar embalaje_id como formato
                                 if (!acc[week]) {
                                     acc[week] = {};
                                 }
