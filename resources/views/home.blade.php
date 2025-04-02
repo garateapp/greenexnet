@@ -916,7 +916,13 @@
                         $(".indicador").eq(1).text(
                             `$${fobTotal.toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
                         ); // FOB Total
-                        $(".indicador").eq(2).text(`$${promedioFobCaja2}`); // Promedio FOB Caja Formula 2
+                        if($("#filtroFamilia").val() == 2){
+                        $(".indicador").eq(2).text(`$${promedioFobCaja2*5}`); // Promedio FOB Caja Formula 2
+                        }
+                        else{
+                            $(".indicador").eq(2).text(`$${promedioFobCaja2*9}`); // Promedio FOB Caja Formula 2
+                        }
+
                         $(".indicador").eq(3).text(`$${promedioFobKilo}`); // Promedio FOB Kilo
                     }
 
