@@ -223,6 +223,7 @@
                                                         <th>VARIEDAD</th>
                                                         <th>KILOS</th>
                                                         <th>FOB/KG EQ</th>
+                                                        <th>RNP Estimado</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody id="tbodyVariedadFOBKG">
@@ -1051,12 +1052,19 @@
                                     maximumFractionDigits: 2
                                 }) :
                                 "0,00";
+                                const RnpEstimado = datos.kilosTotal > 0 ?
+                                (datos.sumaFobEquivalente-$("#CostoKg")-(datos.sumaFobEquivalente*$("#Comision").val()/100) / datos.kilosTotal).toLocaleString('es-CL', {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2
+                                }) :
+                                "0,00";
 
                             htmlFilas += `
             <tr>
                 <td>${variedad}</td>
                 <td>${kilos}</td>
                 <td>$${fobCajaEq}</td>
+                <td>$${RnpEstimado}</td>
             </tr>
         `;
                         }
