@@ -1077,7 +1077,7 @@
                                 }) :
                                 "0,00";
                                 const RnpEstimado = datos.kilosTotal > 0 ?
-                                ((datos.sumaFobEquivalente/ datos.kilosTotal)-costoKg-(datos.sumaFobEquivalente*(comision/100))).toLocaleString('es-CL', {
+                                ((datos.sumaFobEquivalente/ datos.kilosTotal)-costoKg-((datos.sumaFobEquivalente/datos.kilosTotal)*(comision/100))).toLocaleString('es-CL', {
                                     minimumFractionDigits: 2,
                                     maximumFractionDigits: 2
                                 }) :
