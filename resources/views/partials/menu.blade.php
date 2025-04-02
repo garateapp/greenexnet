@@ -374,7 +374,7 @@
                             </a>
                         </li>
                         <li class="c-sidebar-nav-item">
-                            <a href="{{ route('admin.reporteria.compartivoliquidacionescx') }}"
+                            <a href="{{ route('admin.home') }}"
                                 class="c-sidebar-nav-link {{ request()->is('admin/reporteria') || request()->is('admin/reporteria/*') ? 'c-active' : '' }}">
                                 <i class="fa-fw fas fa-box-open c-sidebar-nav-icon">
                                 </i>
