@@ -881,12 +881,7 @@
 
                         // 2. FOB Total: Suma de FOB_TO_USD
                         const fobTotal = datos.reduce((sum, item) => sum + (item.FOB_TO_USD || 0), 0);
-                        // 3. Promedio FOB Caja
-                        // Fórmula 1: Suma de FOB_Equivalente / Cantidad de registros
-                        const sumaFobEquivalente = datos.reduce((sum, item) => sum + ((item
-                            .FOB_kg*item.Peso_neto) || 0), 0);
-                        const promedioFobCaja1 = datos.length > 0 ? (sumaFobEquivalente / liquidacionesData
-                            .length).toFixed(2) : 0;
+                       
 
                         // Fórmula 2: (Suma de FOB_TO_USD) / Suma de Kilos_total * 5
                         const sumaFobUsdPorCajas = datos.reduce((sum, item) => sum + ((item.FOB_TO_USD || 0)),
@@ -895,6 +890,16 @@
                             0);
 
                         console.log(sumaKilosTotal);
+
+                         // 3. Promedio FOB Caja
+                        // Fórmula 1: Suma de FOB_Equivalente / Cantidad Kilos
+                        const sumaFobEquivalente = datos.reduce((sum, item) => sum + ((item
+                            .FOB_kg*item.Peso_neto) || 0), 0);
+
+                        const promedioFobCaja1 = datos.length > 0 ? (sumaFobEquivalente / sumaKilosTotal
+                            .length).toFixed(2) : 0;
+
+
                         const promedioFobCaja2 = sumaKilosTotal > 0 ? ((sumaFobUsdPorCajas / sumaKilosTotal) * 5)
                             .toFixed(2) : 0;
 
