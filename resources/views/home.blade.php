@@ -265,7 +265,7 @@
                                             <div class="card-body">
                                                 <div class="fs-4 fw-bold text-center">
                                                     <p><i class="fas fa-money-check fa-3x "></i></p>
-                                                    <p class="indicador">$1.000.000.000.000</p>
+                                                    <p class="indicador"></p>
                                                 </div>
 
                                                 <div class="text-center">FOB TOTAL</div>
@@ -280,7 +280,7 @@
                                             <div class="card-body">
                                                 <div class="fs-4 fw-bold text-center">
                                                     <p><i class="fas fa-boxes fa-3x "></i></p>
-                                                    <p class="indicador">$18,75</p>
+                                                    <p class="indicador"></p>
                                                 </div>
 
                                                 <div class="text-center">PROMEDIO FOB CAJA EQ.</div>
@@ -294,7 +294,7 @@
                                             <div class="card-body">
                                                 <div class="fs-4 fw-bold text-center">
                                                     <p><i class="fas fa-boxes fa-3x "></i></p>
-                                                    <p class="indicador">$18,75</p>
+                                                    <p class="indicador"></p>
                                                 </div>
 
                                                 <div class="text-center">PROMEDIO FOB Kilo</div>
@@ -758,7 +758,7 @@
                             (especiesSel.length === 0 || especiesSel.includes(item.especie)) &&
                             (variedadesSel.length === 0 || variedadesSel.includes(item.variedad)) &&
                             (clientesSel.length === 0 || clientesSel.includes(item.cliente)) &&
-                            (transportesSel.length === 0 || transportesSel.includes(item.transporte))
+                            (transportesSel.length === 0 || transportesSel.includes(item.Transporte))
                         );
                     });
 
