@@ -918,9 +918,11 @@
                         ); // FOB Total
                         if($("#filtroFamilia").val() == 2){
                         $(".indicador").eq(2).text(`$${promedioFobCaja2*5}`); // Promedio FOB Caja Formula 2
+                        $("#CostoKg").val("2.19";)
                         }
                         else{
-                            $(".indicador").eq(2).text(`$${promedioFobCaja2*9}`); // Promedio FOB Caja Formula 2
+                            $("#CostoKg").val("0.61");
+                            $(".indicador").eq(2).text(`$${promedioFobKilo*9}`); // Promedio FOB Caja Formula 2
                         }
 
                         $(".indicador").eq(3).text(`$${promedioFobKilo}`); // Promedio FOB Kilo
