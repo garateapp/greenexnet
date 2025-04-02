@@ -1041,6 +1041,30 @@
 
                         // Generar las filas para la tabla
                         let htmlFilas = "";
+                        const costoKgInput = $("#CostoKg").val().trim();
+                        const comisionInput = $("#Comision").val().trim();
+
+
+
+                        // Validación 2: Campos no vacíos
+                        if (!costoKgInput || !comisionInput) {
+                            alert("Por favor, completa ambos campos: Costo por Kg y Comisión.");
+                            return;
+                        }
+
+                        // Validación 3: Campos son números válidos
+                        const costoKg = parseFloat(costoKgInput);
+                        const comision = parseFloat(comisionInput);
+                        if (isNaN(costoKg) || isNaN(comision)) {
+                            alert("Costo por Kg y Comisión deben ser números válidos.");
+                            return;
+                        }
+
+                        // Validación 4: Valores positivos o cero
+                        if (costoKg < 0 || comision < 0) {
+                            alert("Costo por Kg y Comisión deben ser valores positivos o cero.");
+                            return;
+                        }
                         for (const [variedad, datos] of Object.entries(datosPorVariedad)) {
                             const kilos = datos.kilosTotal.toLocaleString('es-CL', {
                                 minimumFractionDigits: 0,
@@ -1053,7 +1077,7 @@
                                 }) :
                                 "0,00";
                                 const RnpEstimado = datos.kilosTotal > 0 ?
-                                ((datos.sumaFobEquivalente-$("#CostoKg").val()-(datos.sumaFobEquivalente*($("#Comision").val()/100))) / datos.kilosTotal).toLocaleString('es-CL', {
+                                ((datos.sumaFobEquivalente-costoKg-(datos.sumaFobEquivalente*(comision/100))) / datos.kilosTotal).toLocaleString('es-CL', {
                                     minimumFractionDigits: 2,
                                     maximumFractionDigits: 2
                                 }) :
