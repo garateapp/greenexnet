@@ -714,7 +714,7 @@
                                     "dark" : "light"
                                 )) &&
                                 (etiquetasSel.length === 0 || etiquetasSel.includes((item.etiqueta
-                                    .toUpperCase() || "")
+                                        .toUpperCase() || "")
                                     .toUpperCase())) &&
                                 (clientesSel.length === 0 || clientesSel.includes((item.cliente.toUpperCase() ||
                                         "")
@@ -1061,7 +1061,7 @@
 
                         datos.forEach(item => {
                             const cliente = (item.cliente || "Sin cliente")
-                        .toUpperCase(); // Manejar casos sin cliente
+                                .toUpperCase(); // Manejar casos sin cliente
                             if (!liquidacionesPorCliente[cliente]) {
                                 liquidacionesPorCliente[cliente] = new Set(); // Usar Set para liquidaciones únicas
                             }
@@ -1197,39 +1197,76 @@
                     });
 
                     function actualizarTablaDesempenoClientes(datos) {
-                        const medida = $("#cboDesempenoMedida").val(); // 1 = Volumen, 2 = FOB
-                        const campoMedida = medida === "1" ? "Kilos_Total" : "FOB_kg";
+                        const medida = $("#cboDesempenoMedida").val(); // 1 = Volumen, 2 = FOB (relación)
 
-                        // Agrupar datos por cliente
+                        // Agrupar datos por cliente: suma de FOB y Kilos
                         const datosPorCliente = {};
+                        let totalGeneral = 0; // Para Volumen o FOB (según medida)
+                        let totalFOB = 0; // Solo para cálculo de relación FOB/Kilos
+                        let totalKilos = 0; // Solo para cálculo de relación FOB/Kilos
+
                         datos.forEach(item => {
                             const cliente = (item.cliente || "Sin cliente").toUpperCase();
                             if (!datosPorCliente[cliente]) {
-                                datosPorCliente[cliente] = 0;
+                                datosPorCliente[cliente] = {
+                                    fob: 0,
+                                    kilos: 0
+                                };
                             }
-                            datosPorCliente[cliente] += item[campoMedida] || 0;
+                            datosPorCliente[cliente].fob += item.FOB_TO_USD || 0;
+                            datosPorCliente[cliente].kilos += item.Kilos_Total || 0;
+
+                            // Acumular totales según medida seleccionada
+                            if (medida === "1") { // Volumen (suma de Kilos)
+                                totalGeneral += item.Kilos_Total || 0;
+                            } else if (medida === "2") { // FOB (suma de FOB)
+                                totalGeneral += item.FOB_TO_USD || 0;
+                            }
+
+                            // Totales para relación FOB/Kilos (si se necesita)
+                            totalFOB += item.FOB_TO_USD || 0;
+                            totalKilos += item.Kilos_Total || 0;
                         });
 
-                        // Calcular el total general para el promedio del resto
-                        const totalGeneral = Object.values(datosPorCliente).reduce((sum, valor) => sum + valor, 0);
-                        const totalClientes = Object.keys(datosPorCliente).length;
-
-                        // Generar las filas para la tabla
+                        // Generar filas según la medida seleccionada
                         let htmlFilas = "";
-                        const clientesOrdenados = Object.entries(datosPorCliente).sort((a, b) => b[1] - a[1]);
-                        for (const [cliente, valorCliente] of clientesOrdenados) {
-                            //if (cliente != "Fruit Fortune") {
-                            // Promedio del resto (excluyendo al cliente actual)
-                            console.log("cliente: " + cliente + " valor: " + valorCliente + " total: " + totalGeneral +
-                                " totalClientes: " + totalClientes);
-                            const sumaResto = totalGeneral - valorCliente;
-                            const promedioResto = totalClientes > 1 ? sumaResto / (totalClientes - 1) : 0;
+                        let clientesOrdenados;
 
-                            // Porcentaje de diferencia
-                            let porcentajeDiferencia = promedioResto > 0 ? ((valorCliente - promedioResto) /
-                                promedioResto *
-                                100) : 0;
-                            porcentajeDiferencia = porcentajeDiferencia.toFixed(2); // Dos decimales
+                        if (medida === "1") {
+                            // Ordenar por VOLUMEN (Kilos_Total)
+                            clientesOrdenados = Object.entries(datosPorCliente).sort((a, b) => b[1].kilos - a[1].kilos);
+                        } else if (medida === "2") {
+                            // Ordenar por RELACIÓN FOB/Kilos
+                            clientesOrdenados = Object.entries(datosPorCliente).sort((a, b) => {
+                                const ratioA = a[1].kilos > 0 ? a[1].fob / a[1].kilos : 0;
+                                const ratioB = b[1].kilos > 0 ? b[1].fob / b[1].kilos : 0;
+                                return ratioB - ratioA;
+                            });
+                        }
+
+                        for (const [cliente, valores] of clientesOrdenados) {
+                            let valorCliente, promedioResto;
+
+                            if (medida === "1") {
+                                // Comparativa por VOLUMEN (Kilos)
+                                valorCliente = valores.kilos;
+                                const sumaResto = totalGeneral - valorCliente;
+                                promedioResto = (Object.keys(datosPorCliente).length - 1) > 0 ? sumaResto / (Object.keys(
+                                    datosPorCliente).length - 1) : 0;
+                            } else if (medida === "2") {
+                                // Comparativa por RELACIÓN FOB/Kilos
+                                const clientRatio = valores.kilos > 0 ? valores.fob / valores.kilos : 0;
+                                const restoFOB = totalFOB - valores.fob;
+                                const restoKilos = totalKilos - valores.kilos;
+                                const restoRatio = restoKilos > 0 ? restoFOB / restoKilos : 0;
+                                valorCliente = clientRatio;
+                                promedioResto = restoRatio;
+                            }
+
+                            // Calcular diferencia porcentual
+                            let porcentajeDiferencia = promedioResto !== 0 ? ((valorCliente - promedioResto) / Math.abs(
+                                promedioResto) * 100) : 0;
+                            porcentajeDiferencia = porcentajeDiferencia.toFixed(2);
                             const signo = porcentajeDiferencia >= 0 ? "+" : "";
                             const claseColor = porcentajeDiferencia >= 0 ? "text-success" : "text-danger";
 
@@ -1239,10 +1276,8 @@
                 <td class="${claseColor}">${signo}${porcentajeDiferencia}%</td>
             </tr>
         `;
-                            //}
                         }
 
-                        // Insertar las filas en el tbody
                         $("#tBodyDesempeño").html(htmlFilas);
                     }
 
@@ -1675,22 +1710,25 @@
 
                         // Agrupar datos por ETA_Week y variedad
                         // Agrupar datos por semana (desde ETA) y variedad
-    const groupedData = datos.reduce((acc, item) => {
-        const week = item.ETA ? getYearWeek(item.ETA) : "Sin semana"; // Convertir ETA a semana
-        const variedad = item.variedad || "Sin variedad";
-        if (!acc[week]) acc[week] = {};
-        if (!acc[week][variedad]) acc[week][variedad] = { totalFOB: 0, count: 0 };
-        acc[week][variedad].totalFOB += parseFloat(item.FOB_kg) || 0;
-        acc[week][variedad].count += 1;
-        return acc;
-    }, {});
+                        const groupedData = datos.reduce((acc, item) => {
+                            const week = item.ETA ? getYearWeek(item.ETA) : "Sin semana"; // Convertir ETA a semana
+                            const variedad = item.variedad || "Sin variedad";
+                            if (!acc[week]) acc[week] = {};
+                            if (!acc[week][variedad]) acc[week][variedad] = {
+                                totalFOB: 0,
+                                count: 0
+                            };
+                            acc[week][variedad].totalFOB += parseFloat(item.FOB_kg) || 0;
+                            acc[week][variedad].count += 1;
+                            return acc;
+                        }, {});
 
-    // Ordenar semanas (YYYY-W##)
-    const weeks = Object.keys(groupedData).sort((a, b) => {
-        const [yearA, weekA] = a.split('-W');
-        const [yearB, weekB] = b.split('-W');
-        return yearA - yearB || weekA - weekB;
-    });
+                        // Ordenar semanas (YYYY-W##)
+                        const weeks = Object.keys(groupedData).sort((a, b) => {
+                            const [yearA, weekA] = a.split('-W');
+                            const [yearB, weekB] = b.split('-W');
+                            return yearA - yearB || weekA - weekB;
+                        });
                         const variedades = [...new Set(datos.map(item => (item.variedad ||
                             "Sin variedad").toUpperCase()))]; // Variedades únicas
                         const series = variedades.map(variedad => {
