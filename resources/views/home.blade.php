@@ -1208,94 +1208,93 @@
                     }
 
                     function actualizarTablaDesempenoClientes(datos) {
-    const medida = $("#cboDesempenoMedida").val(); // 1 = Volumen, 2 = FOB (relación)
+                        const medida = $("#cboDesempenoMedida").val(); // 1 = Volumen, 2 = FOB (relación)
 
-    // Agrupar datos por cliente: suma de FOB y Kilos
-    const datosPorCliente = {};
-    let totalGeneral = 0; // Para Volumen o FOB (según medida)
-    let totalFOB = 0; // Para relación FOB/Kilos
-    let totalKilos = 0; // Para relación FOB/Kilos
+                        // Agrupar datos por cliente: suma de FOB y Kilos
+                        const datosPorCliente = {};
+                        let totalGeneral = 0; // Para Volumen o FOB (según medida)
+                        let totalFOB = 0; // Para relación FOB/Kilos
+                        let totalKilos = 0; // Para relación FOB/Kilos
 
-    datos.forEach(item => {
-        const cliente = (item.cliente || "Sin cliente").toUpperCase();
-        if (!datosPorCliente[cliente]) {
-            datosPorCliente[cliente] = {
-                fob: 0,
-                kilos: 0
-            };
-        }
-        datosPorCliente[cliente].fob += item.FOB_TO_USD || 0;
-        datosPorCliente[cliente].kilos += item.Kilos_Total || 0;
+                        datos.forEach(item => {
+                            const cliente = (item.cliente || "Sin cliente").toUpperCase();
+                            if (!datosPorCliente[cliente]) {
+                                datosPorCliente[cliente] = {
+                                    fob: 0,
+                                    kilos: 0
+                                };
+                            }
+                            datosPorCliente[cliente].fob += item.FOB_TO_USD || 0;
+                            datosPorCliente[cliente].kilos += item.Kilos_Total || 0;
+                           
+                            if (medida === "1") { // Volumen (suma de Kilos)
+                                totalGeneral += item.Kilos_Total || 0;
+                            } else if (medida === "2") { // FOB (suma de FOB para relación)
+                                totalGeneral += item.FOB_TO_USD || 0;
+                            }
+                            totalFOB += item.FOB_TO_USD || 0;
+                            totalKilos += item.Kilos_Total || 0;
+                        });
+                        
+                        console.log("Datos por cliente:", datosPorCliente);
+                        // Generar filas según la medida seleccionada
+                        let htmlFilas = "";
+                        let clientesOrdenados;
 
-        if (medida === "1") { // Volumen (suma de Kilos)
-            totalGeneral += item.Kilos_Total || 0;
-        } else if (medida === "2") { // FOB (suma de FOB para relación)
-            totalGeneral += item.FOB_TO_USD || 0;
-        }
-        totalFOB += item.FOB_TO_USD || 0;
-        totalKilos += item.Kilos_Total || 0;
-    });
+                        if (medida === "1") {
+                            // Ordenar por VOLUMEN (Kilos_Total)
+                            clientesOrdenados = Object.entries(datosPorCliente).sort((a, b) => b[1].kilos - a[1].kilos);
+                        } else if (medida === "2") {
+                            // Ordenar por RELACIÓN FOB/Kilos
+                            clientesOrdenados = Object.entries(datosPorCliente).sort((a, b) => {
+                                const ratioA = a[1].kilos > 0 ? a[1].fob / a[1].kilos : 0;
+                                const ratioB = b[1].kilos > 0 ? b[1].fob / b[1].kilos : 0;
+                                return ratioB - ratioA;
+                            });
+                        }
 
-    console.log("Datos por cliente:", datosPorCliente);
+                        for (const [cliente, valores] of clientesOrdenados) {
+                            let valorCliente, medianaResto;
 
-    // Generar filas según la medida seleccionada
-    let htmlFilas = "";
-    let clientesOrdenados;
+                            if (medida === "1") {
+                                // Comparativa por VOLUMEN (Kilos)
+                                valorCliente = valores.kilos;
+                                // Calcular la mediana del resto de los clientes
+                                const kilosResto = Object.entries(datosPorCliente)
+                                    .filter(([key]) => key !== cliente)
+                                    .map(([, val]) => val.kilos);
+                                medianaResto = calcularMediana(kilosResto);
+                            } else if (medida === "2") {
+                                // Comparativa por RELACIÓN FOB/Kilos
+                                const clientRatio = valores.kilos > 0 ? valores.fob / valores.kilos : 0;
+                                valorCliente = clientRatio;
+                                
+                                console.log("Valor Cliente: "+cliente+" -> "+valorCliente+" valorFob: "+valores.fob+" kilos: "+valores.kilos);
+                                // Calcular la mediana del resto de los clientes
+                                const ratiosResto = Object.entries(datosPorCliente)
+                                    .filter(([key]) => key !== cliente)
+                                    .map(([, val]) => val.kilos > 0 ? val.fob / val.kilos : 0);
+                                medianaResto = calcularMediana(ratiosResto);
+                                console.log("Mediana Resto: "+medianaResto);
+                            }
 
-    if (medida === "1") {
-        // Ordenar por VOLUMEN (Kilos_Total)
-        clientesOrdenados = Object.entries(datosPorCliente).sort((a, b) => b[1].kilos - a[1].kilos);
-    } else if (medida === "2") {
-        // Ordenar por RELACIÓN FOB/Kilos
-        clientesOrdenados = Object.entries(datosPorCliente).sort((a, b) => {
-            const ratioA = a[1].kilos > 0 ? a[1].fob / a[1].kilos : 0;
-            const ratioB = b[1].kilos > 0 ? b[1].fob / b[1].kilos : 0;
-            return ratioB - ratioA;
-        });
-    }
+                            // Calcular diferencia porcentual respecto a la mediana
+                            let porcentajeDiferencia = medianaResto !== 0 ? ((valorCliente - medianaResto) / Math.abs(
+                                medianaResto) * 100) : 0;
+                            porcentajeDiferencia = porcentajeDiferencia.toFixed(2);
+                            const signo = porcentajeDiferencia >= 0 ? "+" : "";
+                            const claseColor = porcentajeDiferencia >= 0 ? "text-success" : "text-danger";
 
-    // Calcular el promedio general de FOB USD por Kilo (para medida 2)
-    const promedioFOBporKilo = totalKilos > 0 ? totalFOB / totalKilos : 0;
-    console.log("Promedio FOB USD por Kilo:", promedioFOBporKilo);
-
-    for (const [cliente, valores] of clientesOrdenados) {
-        let valorCliente, referencia;
-
-        if (medida === "1") {
-            // Comparativa por VOLUMEN (Kilos)
-            valorCliente = valores.kilos;
-            // Calcular la mediana del resto de los clientes
-            const kilosResto = Object.entries(datosPorCliente)
-                .filter(([key]) => key !== cliente)
-                .map(([, val]) => val.kilos);
-            referencia = calcularMediana(kilosResto);
-        } else if (medida === "2") {
-            // Comparativa por RELACIÓN FOB/Kilos
-            const clientRatio = valores.kilos > 0 ? valores.fob / valores.kilos : 0;
-            valorCliente = clientRatio;
-
-            console.log("Valor Cliente: " + cliente + " -> " + valorCliente + " valorFob: " + valores.fob + " kilos: " + valores.kilos);
-            // Usar el promedio general como referencia
-            referencia = promedioFOBporKilo;
-            console.log("Referencia (Promedio): " + referencia);
-        }
-
-        // Calcular diferencia porcentual respecto a la referencia (mediana o promedio)
-        let porcentajeDiferencia = referencia !== 0 ? ((valorCliente - referencia) / referencia * 100) : 0;
-        porcentajeDiferencia = porcentajeDiferencia.toFixed(2);
-        const signo = porcentajeDiferencia >= 0 ? "+" : "";
-        const claseColor = porcentajeDiferencia >= 0 ? "text-success" : "text-danger";
-
-        htmlFilas += `
+                            htmlFilas += `
             <tr>
                 <td>${cliente}</td>
                 <td class="${claseColor}">${signo}${porcentajeDiferencia}%</td>
             </tr>
         `;
-    }
+                        }
 
-    $("#tBodyDesempeño").html(htmlFilas);
-}
+                        $("#tBodyDesempeño").html(htmlFilas);
+                    }
 
                     function actualizarTablaSaldosComparativos(datos) {
                         // Filtrar liquidaciones con tipo de cambio válido

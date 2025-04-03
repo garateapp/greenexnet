@@ -1358,6 +1358,7 @@ class ComexController extends Controller
                 'folio_fx' => $liq['folio_fx'] ?? null,
                 'especie' => $especie->nombre ?? null,
                 'Costos_cajas_USD' => $liq['Costos_cajas_USD'] ?? null,
+                'Flete_Aereo_TO'=> $liq['Flete_Aereo_TO'] ?? null
             ]);
           
             $affectedRows++;
