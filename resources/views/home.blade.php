@@ -545,15 +545,19 @@
                         // Filtrar liquidacionesData
                         let datosFiltrados = liquidacionesData.filter(item => {
                             return (
-                                (transporteSel.length === 0 || transporteSel.includes((item.Transporte.toUpperCase() || "")
+                                (transporteSel.length === 0 || transporteSel.includes((item.Transporte
+                                        .toUpperCase() || "")
                                     .toUpperCase())) &&
-                                (variedadesSel.length === 0 || variedadesSel.includes((item.variedad.toUpperCase() || "")
+                                (variedadesSel.length === 0 || variedadesSel.includes((item.variedad
+                                        .toUpperCase() || "")
                                     .toUpperCase())) &&
                                 // (etiquetasSel.length === 0 || etiquetasSel.includes((item.etiqueta.toUpperCase() || "")
                                 //     .toUpperCase())) &&
-                                (clientesSel.length === 0 || clientesSel.includes((item.cliente.toUpperCase() || "")
+                                (clientesSel.length === 0 || clientesSel.includes((item.cliente
+                                        .toUpperCase() || "")
                                     .toUpperCase())) &&
-                                (especiesSel.length === 0 || especiesSel.includes((item.especie.toUpperCase() || "")
+                                (especiesSel.length === 0 || especiesSel.includes((item.especie
+                                        .toUpperCase() || "")
                                     .toUpperCase()))
                             );
                         });
@@ -645,7 +649,7 @@
                     // Función para filtrar los datos y actualizar visualizaciones
                     function filtrarYActualizar() {
                         // Obtener valores seleccionados de los filtros
-                        
+
                         const variedadesSel = ($("#filtroVariedad").val() || []).map(val => val.toUpperCase());
                         const transporteSel = ($("#filtroTransporte").val() || []).map(val => val.toUpperCase());
                         const coloresSel = ($("#filtroFobVariedadColor").val() || []).map(val => val.toUpperCase());
@@ -658,15 +662,19 @@
                         // Filtrar liquidacionesData
                         let datosFiltrados = liquidacionesData.filter(item => {
                             return (
-                                (transporteSel.length === 0 || transporteSel.includes((item.Transporte.toUpperCase() || "")
+                                (transporteSel.length === 0 || transporteSel.includes((item.Transporte
+                                        .toUpperCase() || "")
                                     .toUpperCase())) &&
-                                (variedadesSel.length === 0 || variedadesSel.includes((item.variedad.toUpperCase() || "")
+                                (variedadesSel.length === 0 || variedadesSel.includes((item.variedad
+                                        .toUpperCase() || "")
                                     .toUpperCase())) &&
                                 // (etiquetasSel.length === 0 || etiquetasSel.includes((item.etiqueta.toUpperCase() || "")
                                 //     .toUpperCase())) &&
-                                (clientesSel.length === 0 || clientesSel.includes((item.cliente.toUpperCase() || "")
+                                (clientesSel.length === 0 || clientesSel.includes((item.cliente.toUpperCase() ||
+                                        "")
                                     .toUpperCase())) &&
-                                (especiesSel.length === 0 || especiesSel.includes((item.especie.toUpperCase() || "")
+                                (especiesSel.length === 0 || especiesSel.includes((item.especie.toUpperCase() ||
+                                        "")
                                     .toUpperCase()))
                             );
                         });
@@ -693,9 +701,11 @@
                         // Filtrar liquidacionesData
                         let datosFiltrados = liquidacionesData.filter(item => {
                             return (
-                                (calibresSel.length === 0 || calibresSel.includes((item.Calibre.toUpperCase() || "")
+                                (calibresSel.length === 0 || calibresSel.includes((item.Calibre.toUpperCase() ||
+                                        "")
                                     .toUpperCase())) &&
-                                (variedadesSel.length === 0 || variedadesSel.includes((item.variedad.toUpperCase() || "")
+                                (variedadesSel.length === 0 || variedadesSel.includes((item.variedad
+                                        .toUpperCase() || "")
                                     .toUpperCase())) &&
                                 (formatosSel.length === 0 || formatosSel.includes((item.Peso_neto || "")
                                     .toUpperCase())) &&
@@ -703,11 +713,14 @@
                                     (item.calibre || item.Calibre || "").toUpperCase().endsWith("d") ?
                                     "dark" : "light"
                                 )) &&
-                                (etiquetasSel.length === 0 || etiquetasSel.includes((item.etiqueta.toUpperCase() || "")
+                                (etiquetasSel.length === 0 || etiquetasSel.includes((item.etiqueta
+                                    .toUpperCase() || "")
                                     .toUpperCase())) &&
-                                (clientesSel.length === 0 || clientesSel.includes((item.cliente.toUpperCase() || "")
+                                (clientesSel.length === 0 || clientesSel.includes((item.cliente.toUpperCase() ||
+                                        "")
                                     .toUpperCase())) &&
-                                (especiesSel.length === 0 || especiesSel.includes((item.especie.toUpperCase() || "")
+                                (especiesSel.length === 0 || especiesSel.includes((item.especie.toUpperCase() ||
+                                        "")
                                     .toUpperCase()))
                             );
                         });
@@ -778,12 +791,12 @@
                     function inicializarFiltros() {
                         // Extraer clientes únicos
                         const clientesUnicos = [...new Set(liquidacionesData.map(item => (item.cliente || "")
-                        .toUpperCase()))];
+                            .toUpperCase()))];
                         const mercadosUnicos = [...new Set(liquidacionesData.map(item => (item.Pais || "").toUpperCase()))];
                         const variedadesUnicas = [...new Set(liquidacionesData.map(item => (item.variedad || "")
                             .toUpperCase()))];
                         const especiesUnicas = [...new Set(liquidacionesData.map(item => (item.especie || "")
-                        .toUpperCase()))];
+                            .toUpperCase()))];
                         const transportesUnicos = [...new Set(liquidacionesData.map(item => (item.Transporte || "")
                             .toUpperCase()))];
 
@@ -792,11 +805,11 @@
                         const filtroFobVariedadVariedad = [...new Set(liquidacionesData.map(item => (item.variedad || "")
                             .toUpperCase()))];
                         const filtroFobVariedadFormato = [...new Set(liquidacionesData.map(item => (item.Peso_neto ||
-                        "")))];
+                            "")))];
                         const filtroFobVariedadColor = [...new Set(liquidacionesData.map(item => {
                             const calibre = item.calibre || item.Calibre || "";
                             return calibre.toUpperCase().endsWith("d") ? "dark" :
-                            "light"; // Normalizar aquí también
+                                "light"; // Normalizar aquí también
                         }))];
                         const filtroFobVariedadEtiqueta = [...new Set(liquidacionesData.map(item => (item.etiqueta || "")
                             .toUpperCase()))];
@@ -906,7 +919,7 @@
 
                         // 2. FOB Total: Suma de FOB_TO_USD
                         const fobTotal = datos.reduce((sum, item) => sum + (item.FOB_TO_USD || 0), 0);
-                       
+
 
                         // Fórmula 2: (Suma de FOB_TO_USD) / Suma de Kilos_total * 5
                         const sumaFobUsdPorCajas = datos.reduce((sum, item) => sum + ((item.FOB_TO_USD || 0)),
@@ -916,7 +929,7 @@
 
                         console.log(sumaKilosTotal);
 
-                         // 3. Promedio FOB Caja
+                        // 3. Promedio FOB Caja
                         // Fórmula 1: Suma de FOB_Equivalente / Cantidad Kilos
                         const sumaFobEquivalente = datos.reduce((sum, item) => sum + ((item
                             .FOB_TO_USD) || 0), 0);
@@ -941,11 +954,10 @@
                         $(".indicador").eq(1).text(
                             `$${fobTotal.toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
                         ); // FOB Total
-                        if($("#filtroFamilia").val() == 2){
-                        $(".indicador").eq(2).text(`$${promedioFobCaja2*5}`); // Promedio FOB Caja Formula 2
-                        $("#CostoKg").val("2.19");
-                        }
-                        else{
+                        if ($("#filtroFamilia").val() == 2) {
+                            $(".indicador").eq(2).text(`$${promedioFobCaja2*5}`); // Promedio FOB Caja Formula 2
+                            $("#CostoKg").val("2.19");
+                        } else {
                             $("#CostoKg").val("0.61");
                             $(".indicador").eq(2).text(`$${promedioFobKilo*9}`); // Promedio FOB Caja Formula 2
                         }
@@ -1024,15 +1036,19 @@
                         // Filtrar liquidacionesData
                         let datosFiltrados = liquidacionesData.filter(item => {
                             return (
-                                (transporteSel.length === 0 || transporteSel.includes((item.Transporte.toUpperCase() || "")
+                                (transporteSel.length === 0 || transporteSel.includes((item.Transporte
+                                        .toUpperCase() || "")
                                     .toUpperCase())) &&
-                                (variedadesSel.length === 0 || variedadesSel.includes((item.variedad.toUpperCase() || "")
+                                (variedadesSel.length === 0 || variedadesSel.includes((item.variedad
+                                        .toUpperCase() || "")
                                     .toUpperCase())) &&
                                 // (etiquetasSel.length === 0 || etiquetasSel.includes((item.etiqueta.toUpperCase() || "")
                                 //     .toUpperCase())) &&
-                                (clientesSel.length === 0 || clientesSel.includes((item.cliente.toUpperCase() || "")
+                                (clientesSel.length === 0 || clientesSel.includes((item.cliente.toUpperCase() ||
+                                        "")
                                     .toUpperCase())) &&
-                                (especiesSel.length === 0 || especiesSel.includes((item.especie.toUpperCase() || "")
+                                (especiesSel.length === 0 || especiesSel.includes((item.especie.toUpperCase() ||
+                                        "")
                                     .toUpperCase()))
                             );
                         });
@@ -1044,7 +1060,8 @@
                         const liquidacionesPorCliente = {};
 
                         datos.forEach(item => {
-                            const cliente = (item.cliente || "Sin cliente").toUpperCase(); // Manejar casos sin cliente
+                            const cliente = (item.cliente || "Sin cliente")
+                        .toUpperCase(); // Manejar casos sin cliente
                             if (!liquidacionesPorCliente[cliente]) {
                                 liquidacionesPorCliente[cliente] = new Set(); // Usar Set para liquidaciones únicas
                             }
@@ -1125,8 +1142,9 @@
                                     maximumFractionDigits: 2
                                 }) :
                                 "0,00";
-                                const RnpEstimado = datos.kilosTotal > 0 ?
-                                ((datos.sumaFobEquivalente/ datos.kilosTotal)-costoKg-((datos.sumaFobEquivalente/datos.kilosTotal)*(comision/100))).toLocaleString('es-CL', {
+                            const RnpEstimado = datos.kilosTotal > 0 ?
+                                ((datos.sumaFobEquivalente / datos.kilosTotal) - costoKg - ((datos.sumaFobEquivalente /
+                                    datos.kilosTotal) * (comision / 100))).toLocaleString('es-CL', {
                                     minimumFractionDigits: 2,
                                     maximumFractionDigits: 2
                                 }) :
@@ -1159,15 +1177,19 @@
                         // Filtrar liquidacionesData
                         let datosFiltrados = liquidacionesData.filter(item => {
                             return (
-                                (transporteSel.length === 0 || transporteSel.includes((item.Transporte.toUpperCase() || "")
+                                (transporteSel.length === 0 || transporteSel.includes((item.Transporte
+                                        .toUpperCase() || "")
                                     .toUpperCase())) &&
-                                (variedadesSel.length === 0 || variedadesSel.includes((item.variedad.toUpperCase() || "")
+                                (variedadesSel.length === 0 || variedadesSel.includes((item.variedad
+                                        .toUpperCase() || "")
                                     .toUpperCase())) &&
                                 // (etiquetasSel.length === 0 || etiquetasSel.includes((item.etiqueta.toUpperCase() || "")
                                 //     .toUpperCase())) &&
-                                (clientesSel.length === 0 || clientesSel.includes((item.cliente.toUpperCase() || "")
+                                (clientesSel.length === 0 || clientesSel.includes((item.cliente
+                                        .toUpperCase() || "")
                                     .toUpperCase())) &&
-                                (especiesSel.length === 0 || especiesSel.includes((item.especie.toUpperCase() || "")
+                                (especiesSel.length === 0 || especiesSel.includes((item.especie
+                                        .toUpperCase() || "")
                                     .toUpperCase()))
                             );
                         });
@@ -1197,21 +1219,21 @@
                         const clientesOrdenados = Object.entries(datosPorCliente).sort((a, b) => b[1] - a[1]);
                         for (const [cliente, valorCliente] of clientesOrdenados) {
                             //if (cliente != "Fruit Fortune") {
-                                // Promedio del resto (excluyendo al cliente actual)
-                                console.log("cliente: " + cliente + " valor: " + valorCliente + " total: " + totalGeneral +
-                                    " totalClientes: " + totalClientes);
-                                const sumaResto = totalGeneral - valorCliente;
-                                const promedioResto = totalClientes > 1 ? sumaResto / (totalClientes - 1) : 0;
+                            // Promedio del resto (excluyendo al cliente actual)
+                            console.log("cliente: " + cliente + " valor: " + valorCliente + " total: " + totalGeneral +
+                                " totalClientes: " + totalClientes);
+                            const sumaResto = totalGeneral - valorCliente;
+                            const promedioResto = totalClientes > 1 ? sumaResto / (totalClientes - 1) : 0;
 
-                                // Porcentaje de diferencia
-                                let porcentajeDiferencia = promedioResto > 0 ? ((valorCliente - promedioResto) /
-                                    promedioResto *
-                                    100) : 0;
-                                porcentajeDiferencia = porcentajeDiferencia.toFixed(2); // Dos decimales
-                                const signo = porcentajeDiferencia >= 0 ? "+" : "";
-                                const claseColor = porcentajeDiferencia >= 0 ? "text-success" : "text-danger";
+                            // Porcentaje de diferencia
+                            let porcentajeDiferencia = promedioResto > 0 ? ((valorCliente - promedioResto) /
+                                promedioResto *
+                                100) : 0;
+                            porcentajeDiferencia = porcentajeDiferencia.toFixed(2); // Dos decimales
+                            const signo = porcentajeDiferencia >= 0 ? "+" : "";
+                            const claseColor = porcentajeDiferencia >= 0 ? "text-success" : "text-danger";
 
-                                htmlFilas += `
+                            htmlFilas += `
             <tr>
                 <td>${cliente}</td>
                 <td class="${claseColor}">${signo}${porcentajeDiferencia}%</td>
@@ -1633,6 +1655,17 @@
 
                         $("#tBodyFOBPorSemanaVariedad").html(tbodyHtml);
                     }
+
+                    function getYearWeek(dateString) {
+                        const date = new Date(dateString);
+                        const year = date.getFullYear();
+                        const startOfYear = new Date(year, 0, 1);
+                        const diff = date - startOfYear;
+                        const oneDay = 1000 * 60 * 60 * 24;
+                        const dayOfYear = Math.floor(diff / oneDay);
+                        const week = Math.ceil((dayOfYear + startOfYear.getDay() + 1) / 7);
+                        return `${year}-W${week.toString().padStart(2, '0')}`; // Ej: "2023-W40"
+                    }
                     //Gráficos 
                     function actualizarGraficoFobVariedad(datos = liquidacionesData, agrupacion = "0") {
                         // Destruir gráfico existente si hay uno
@@ -1641,31 +1674,23 @@
                         }
 
                         // Agrupar datos por ETA_Week y variedad
-                        const groupedData = datos.reduce((acc, item) => {
-                            const week = item.ETA_Week + "-" + item.ETA.substring(0, 4) ||
-                                "Sin semana"; // Manejar valores nulos
-                            const variedad = (item.variedad || "Sin variedad")
-                        .toUpperCase(); // Homologar a mayúsculas
-                            if (!acc[week]) {
-                                acc[week] = {};
-                            }
-                            if (!acc[week][variedad]) {
-                                acc[week][variedad] = {
-                                    totalFOB: 0,
-                                    count: 0
-                                };
-                            }
-                            acc[week][variedad].totalFOB += parseFloat(item.FOB_kg) || 0;
-                            acc[week][variedad].count += 1;
-                            return acc;
-                        }, {});
+                        // Agrupar datos por semana (desde ETA) y variedad
+    const groupedData = datos.reduce((acc, item) => {
+        const week = item.ETA ? getYearWeek(item.ETA) : "Sin semana"; // Convertir ETA a semana
+        const variedad = item.variedad || "Sin variedad";
+        if (!acc[week]) acc[week] = {};
+        if (!acc[week][variedad]) acc[week][variedad] = { totalFOB: 0, count: 0 };
+        acc[week][variedad].totalFOB += parseFloat(item.FOB_kg) || 0;
+        acc[week][variedad].count += 1;
+        return acc;
+    }, {});
 
-                        // Preparar datos para el gráfico
-                        const weeks = Object.keys(groupedData).sort((a, b) => {
-                            const [yearA, weekA] = a.split('-W');
-                            const [yearB, weekB] = b.split('-W');
-                            return yearA - yearB || weekA - weekB;
-                        });
+    // Ordenar semanas (YYYY-W##)
+    const weeks = Object.keys(groupedData).sort((a, b) => {
+        const [yearA, weekA] = a.split('-W');
+        const [yearB, weekB] = b.split('-W');
+        return yearA - yearB || weekA - weekB;
+    });
                         const variedades = [...new Set(datos.map(item => (item.variedad ||
                             "Sin variedad").toUpperCase()))]; // Variedades únicas
                         const series = variedades.map(variedad => {
@@ -1758,8 +1783,7 @@
 
                         // Agrupar datos por ETA_Week y embalaje_id (formato)
                         const groupedData = datos.reduce((acc, item) => {
-                            const week = item.ETA_Week + "-" + item.ETA.substring(0, 4) ||
-                                "Sin semana"; // Manejar valores nulos
+                            const week = item.ETA ? getYearWeek(item.ETA) : "Sin semana"; // Convertir ETA a semana
                             const formato = item.Peso_neto || "Sin formato"; // Usar embalaje_id como formato
                             if (!acc[week]) {
                                 acc[week] = {};
@@ -1873,10 +1897,9 @@
 
                         // Agrupar datos por ETA_Week y embalaje_id (formato)
                         const groupedData = datos.reduce((acc, item) => {
-                            const week = item.ETA_Week + "-" + item.ETA.substring(0, 4) ||
-                                "Sin semana"; // Manejar valores nulos
+                            const week = item.ETA ? getYearWeek(item.ETA) : "Sin semana"; // Convertir ETA a semana
                             const formato = (item.cliente || "Sin formato")
-                        .toUpperCase(); // Usar embalaje_id como formato
+                                .toUpperCase(); // Usar embalaje_id como formato
                             if (!acc[week]) {
                                 acc[week] = {};
                             }
@@ -1989,10 +2012,9 @@
 
                         // Agrupar datos por ETA_Week y Calibre (calibre)
                         const groupedData = datos.reduce((acc, item) => {
-                            const week = item.ETA_Week + "-" + item.ETA.substring(0, 4) ||
-                                "Sin semana"; // Manejar valores nulos
+                            const week = item.ETA ? getYearWeek(item.ETA) : "Sin semana"; // Convertir ETA a semana
                             const Calibre = (item.Calibre || "Sin formato")
-                        .toUpperCase(); // Usar embalaje_id como formato
+                                .toUpperCase(); // Usar embalaje_id como formato
                             if (!acc[week]) {
                                 acc[week] = {};
                             }
@@ -2105,10 +2127,9 @@
 
                         // Agrupar datos por ETA_Week y Calibre (calibre)
                         const groupedData = datos.reduce((acc, item) => {
-                            const week = item.ETA_Week + "-" + item.ETA.substring(0, 4) ||
-                                "Sin semana"; // Manejar valores nulos
+                            const week = item.ETA ? getYearWeek(item.ETA) : "Sin semana"; // Convertir ETA a semana
                             const etiqueta = (item.etiqueta || "Sin Etiqueta")
-                        .toUpperCase(); // Usar embalaje_id como formato
+                                .toUpperCase(); // Usar embalaje_id como formato
                             if (!acc[week]) {
                                 acc[week] = {};
                             }
@@ -2222,8 +2243,7 @@
 
                         // Agrupar datos por ETA_Week y Calibre (calibre)
                         const groupedData = datos.reduce((acc, item) => {
-                            const week = item.ETA_Week + "-" + item.ETA.substring(0, 4) ||
-                                "Sin semana"; // Manejar valores nulos
+                            const week = item.ETA ? getYearWeek(item.ETA) : "Sin semana"; // Convertir ETA a semana
                             const Transporte = item.Transporte || "Sin Transporte"; // Usar embalaje_id como formato
                             if (!acc[week]) {
                                 acc[week] = {};
