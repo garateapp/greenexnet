@@ -533,7 +533,31 @@
 
                     // Evento para el botón Calcular
                     $("#btnCalculaRNP").on("click", function() {
-                        calcularRNP();
+                        const variedadesSel = ($("#filtroVariedad").val() || []).map(val => val.toUpperCase());
+                        const transporteSel = ($("#filtroTransporte").val() || []).map(val => val.toUpperCase());
+                        const coloresSel = ($("#filtroFobVariedadColor").val() || []).map(val => val.toUpperCase());
+                        //const etiquetasSel = ($("#filtroFobVariedadEtiqueta").val() || []).map(val => val.toUpperCase());
+                        const clientesSel = ($("#filtroCliente").val() || []).map(val => val.toUpperCase());
+                        const especiesSel = ($("#filtroEspecie").val() || []).map(val => val.toUpperCase());
+                        const agrupacionSel = $("#filtroAgrupación").val();
+                        const vistaSel = $("#filtroVista").val();
+
+                        // Filtrar liquidacionesData
+                        let datosFiltrados = liquidacionesData.filter(item => {
+                            return (
+                                (transporteSel.length === 0 || transporteSel.includes((item.Transporte.toUpperCase() || "")
+                                    .toUpperCase())) &&
+                                (variedadesSel.length === 0 || variedadesSel.includes((item.variedad.toUpperCase() || "")
+                                    .toUpperCase())) &&
+                                // (etiquetasSel.length === 0 || etiquetasSel.includes((item.etiqueta.toUpperCase() || "")
+                                //     .toUpperCase())) &&
+                                (clientesSel.length === 0 || clientesSel.includes((item.cliente.toUpperCase() || "")
+                                    .toUpperCase())) &&
+                                (especiesSel.length === 0 || especiesSel.includes((item.especie.toUpperCase() || "")
+                                    .toUpperCase()))
+                            );
+                        });
+                        calcularRNP(datosFiltrados);
                     });
                     // Mostrar animación de carga
                     $("#loading-animation").show();
@@ -988,6 +1012,31 @@
                         $(".indicador").eq(4).text(
                             `$${rnpKilo.toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
                         );
+                        const variedadesSel = ($("#filtroVariedad").val() || []).map(val => val.toUpperCase());
+                        const transporteSel = ($("#filtroTransporte").val() || []).map(val => val.toUpperCase());
+                        const coloresSel = ($("#filtroFobVariedadColor").val() || []).map(val => val.toUpperCase());
+                        //const etiquetasSel = ($("#filtroFobVariedadEtiqueta").val() || []).map(val => val.toUpperCase());
+                        const clientesSel = ($("#filtroCliente").val() || []).map(val => val.toUpperCase());
+                        const especiesSel = ($("#filtroEspecie").val() || []).map(val => val.toUpperCase());
+                        const agrupacionSel = $("#filtroAgrupación").val();
+                        const vistaSel = $("#filtroVista").val();
+
+                        // Filtrar liquidacionesData
+                        let datosFiltrados = liquidacionesData.filter(item => {
+                            return (
+                                (transporteSel.length === 0 || transporteSel.includes((item.Transporte.toUpperCase() || "")
+                                    .toUpperCase())) &&
+                                (variedadesSel.length === 0 || variedadesSel.includes((item.variedad.toUpperCase() || "")
+                                    .toUpperCase())) &&
+                                // (etiquetasSel.length === 0 || etiquetasSel.includes((item.etiqueta.toUpperCase() || "")
+                                //     .toUpperCase())) &&
+                                (clientesSel.length === 0 || clientesSel.includes((item.cliente.toUpperCase() || "")
+                                    .toUpperCase())) &&
+                                (especiesSel.length === 0 || especiesSel.includes((item.especie.toUpperCase() || "")
+                                    .toUpperCase()))
+                            );
+                        });
+                        actualizarTablaVariedadFOBKG(datosFiltrados);
                     }
 
                     function actualizarTablaLiquidacionesPorCliente(datos) {
