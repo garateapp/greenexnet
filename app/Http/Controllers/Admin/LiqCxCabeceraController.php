@@ -183,7 +183,7 @@ class LiqCxCabeceraController extends Controller
             ->where('valor_unitario', '=', 0)   
             ->get();
             if($despachos[0]->folios>0){
-                   return response()->json(['success' => false, 'message' => 'Existen despachos sin proceso.'], 404);  
+                   return response()->json(['success' => false, 'message' => 'Existen despachos sin proceso.'], 200);  
             }
             else{
                 return response()->json(['success' => true, 'message' => 'No existen despachos sin proceso.'], 200);  
