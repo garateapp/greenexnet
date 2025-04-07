@@ -185,6 +185,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('reporteria/obtenerliquidacionesagrupadas', 'ReporteriaController@obtenerliquidacionesagrupadas')->name('reporteria.obtenerliquidacionesagrupadas');
     Route::get('reporteria/getReporteInstructivos', 'ReporteriaController@getReporteInstructivos')->name('reporteria.getReporteInstructivos');
     Route::get('reporteria/SabanaLiquidaciones', 'ReporteriaController@SabanaLiquidaciones')->name('reporteria.SabanaLiquidaciones');
+    Route::get('reporteria/access-report','ReporteriaController@SabanaLiquidaciones')->name('reporteria.accessreport');
 
     // Embalajes
     Route::delete('embalajes/destroy', 'EmbalajesController@massDestroy')->name('embalajes.massDestroy');
@@ -364,6 +365,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::resource('capturador-estructuras', 'CapturadorEstructuraController');
 
 
+    //GoogleSheets
+    
+
 
     //Liquidaciones de Cliente
 
@@ -380,6 +384,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('liq-cx-cabeceras/destroyItem/{id}', 'LiqCxCabeceraController@destroyItem')->name('liq-cx-cabeceras.destroyItem');
     Route::get('liq-cx-cabeceras/destroyCosto/{id}', 'LiqCxCabeceraController@destroyCosto')->name('liq-cx-cabeceras.destroyCosto');
     Route::post('liq-cx-cabeceras/cloneItem', 'LiqCxCabeceraController@cloneItem')->name('liq-cx-cabeceras.cloneItem');
+    Route::post('liq-cx-cabeceras/sinproceso', 'LiqCxCabeceraController@sinproceso')->name('liq-cx-cabeceras.sinproceso');
     Route::get('liq-cx-cabeceras/actualizarValorGD_Unitario/{id}', 'LiqCxCabeceraController@actualizarValorGD_Unitario')->name('liq-cx-cabeceras.actualizarValorGD_Unitario');
     Route::get('liq-cx-cabeceras/actualizarValorCliente', 'LiqCxCabeceraController@actualizarValorCliente')->name('liq-cx-cabeceras.actualizarValorCliente');
     

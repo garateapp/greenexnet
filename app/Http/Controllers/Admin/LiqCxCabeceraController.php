@@ -174,6 +174,21 @@ class LiqCxCabeceraController extends Controller
             substr($uniqid, 12, 4) . '-' . substr($uniqid, 16, 4) . '-' .
             substr($uniqid, 20, 12);
     }
+    public function sinproceso(Request $request){
+        
+            $despachos = DB::connection('sqlsrv')->table("V_PKG_Despachos")
+            ->selectRaw("COUNT('folio') as folios")
+            ->where('tipo_g_despacho', '=', 'GDP')
+            ->where('numero_embarque', '=', str_replace('i', '', str_replace('I', '', $request->instructivo)))
+            ->where('valor_unitario', '=', 0)   
+            ->get();
+            if($despachos[0]->folios>0){
+                   return response()->json(['success' => false, 'message' => 'Existen despachos sin proceso.'], 404);  
+            }
+            else{
+                return response()->json(['success' => true, 'message' => 'No existen despachos sin proceso.'], 200);  
+            }
+    }
     public function edit(LiqCxCabecera $liqCxCabecera)
     {
         abort_if(Gate::denies('liq_cx_cabecera_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
@@ -217,6 +232,8 @@ class LiqCxCabeceraController extends Controller
     {
 
         $liquidacion = LiquidacionesCx::where('liqcabecera_id', $request->id)->orderBy('folio_fx', 'asc')->get();
+       
+
 
         return response()->json(['success' => true, 'message' => 'Campo actualizado con éxito', 'data' => $liquidacion]);
     }
@@ -834,7 +851,7 @@ class LiqCxCabeceraController extends Controller
                 $FOB_USD = ($Resultados_caja_RMB / $TC); //BS
                 $FOB_TO_USD = $FOB_USD * $Cajas; //BT
                 $FOB_kg = $FOB_TO_USD / $Kilos_total; //BU
-                $FOB_Equivalente = $FOB_kg * 5; //BV
+                $FOB_Equivalente = $FOB_kg * $Peso_neto; //BV
                 $Flete_Cliente = $flete_exportadora > 0 ? 'NO' : 'SI'; //BW
                 $Transporte = $tipo_transporte == "A" ? 'AEREO' : 'MARITIMO'; //BX
                 $CNY = 'PRE'; //BY

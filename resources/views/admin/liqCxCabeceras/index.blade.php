@@ -336,6 +336,29 @@
                     [1, 'desc']
                 ],
                 pageLength: 100,
+                rowCallback: function(row, data) {
+                    // Obtener el valor del campo 'instructivo' de la fila actual
+                    let instructivo = data.instructivo;
+
+                    // Hacer la llamada AJAX a la función 'sinproceso'
+                    $.ajax({
+                        url: "{{ route('admin.liq-cx-cabeceras.sinproceso') }}", // Asegúrate de definir esta ruta en tu archivo de rutas
+                        method: 'POST',
+                        data: {
+                            instructivo: instructivo,
+                            _token: '{{ csrf_token() }}' // Token CSRF para Laravel
+                        },
+                        success: function(response) {
+                            // Si hay despachos sin proceso (success: false), pintar la fila
+                            if (!response.success) {
+                                $(row).css('background-color', '#ffcccc'); // Ejemplo: fondo rojo claro
+                            }
+                        },
+                        error: function(xhr) {
+                            console.log('Error en la consulta AJAX:', xhr);
+                        }
+                    });
+                }
             };
             let table = $('.datatable-LiqCxCabecera').DataTable(dtOverrideGlobals);
             $('a[data-toggle="tab"]').on(
