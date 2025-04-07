@@ -650,7 +650,14 @@
                                     orderable: false,
                                     searchable: false
                                 }
-                            ]
+                            ],
+                            rowCallback: function(row, data) {
+                               
+                                if(data.nombre_costo=="Impuestos"){
+                                    $("#factor_imp_destino").val(data.valor/$("#total_bruto").val());
+                                }
+                                
+                            }
                         });
                         // Función para permitir la edición inline
                         function makeEditable(field) {
