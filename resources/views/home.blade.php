@@ -707,8 +707,7 @@
                                 (variedadesSel.length === 0 || variedadesSel.includes((item.variedad
                                         .toUpperCase() || "")
                                     .toUpperCase())) &&
-                                (formatosSel.length === 0 || formatosSel.includes((item.Peso_neto || "")
-                                    .toUpperCase())) &&
+                                (formatosSel.length === 0 || formatosSel.includes((item.Peso_neto || "") )) &&
                                 (coloresSel.length === 0 || coloresSel.includes(
                                     (item.calibre || item.Calibre || "").toUpperCase().endsWith("d") ?
                                     "dark" : "light"
