@@ -954,26 +954,14 @@
                             `$${fobTotal.toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
                         ); // FOB Total
                         if ($("#filtroFamilia").val() == 2) {
-                            $(".indicador").eq(2).text((`$${promedioFobCaja2*5}`).toLocaleString('es-CL', {
-                                    minimumFractionDigits: 2,
-                                    maximumFractionDigits: 2
-                                }) :
-                                "0,00";); // Promedio FOB Caja Formula 2
+                            $(".indicador").eq(2).text(`$${(promedioFobCaja2*5).toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`); // Promedio FOB Caja Formula 2
                             $("#CostoKg").val("2.19");
                         } else {
                             $("#CostoKg").val("0.61");
-                            $(".indicador").eq(2).text((`$${promedioFobKilo*9}`).toLocaleString('es-CL', {
-                                    minimumFractionDigits: 2,
-                                    maximumFractionDigits: 2
-                                }) :
-                                "0,00";); // Promedio FOB Caja Formula 2
+                            $(".indicador").eq(2).text(`$${(promedioFobKilo*9).toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`); // Promedio FOB Caja Formula 2
                         }
 
-                        $(".indicador").eq(3).text((`$${promedioFobKilo}`).toLocaleString('es-CL', {
-                                    minimumFractionDigits: 2,
-                                    maximumFractionDigits: 2
-                                }) :
-                                "0,00";); // Promedio FOB Kilo
+                        $(".indicador").eq(3).text(`$${promedioFobKilo}`); // Promedio FOB Kilo
                     }
 
                     function calcularRNP(datos) {
