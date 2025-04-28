@@ -777,7 +777,7 @@ class LiqCxCabeceraController extends Controller
                 $Liquidacion = $liqCxCabecera->instructivo; //G
                 $ETD = ''; //H
                 $ETD_Week = ''; //I
-                $ETA = ($excelDato->fecha_arribo ? excelDato->fecha_arribo : ''); //J
+                $ETA = ($excelDato->fecha_arribo ? Carbon::parse($excelDato->fecha_arribo)->format('Y-m-d') : ''); //J
                 $ETA_Week = ($excelDato->fecha_arribo ? Carbon::parse($excelDato->fecha_arribo)->weekOfYear : 0); //K
                 $Fecha_Venta = $item->fecha_venta ? Carbon::parse($item->fecha_venta) : 0; //L
                 $Fecha_Venta_Week = ($excelDato->fecha_venta ? Carbon::parse($excelDato->fecha_venta)->weekOfYear : 0); //M
