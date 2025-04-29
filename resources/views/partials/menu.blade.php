@@ -20,6 +20,16 @@
                 {{ trans('global.dashboard') }}
             </a>
         </li>
+        @can('control_panel')
+        <li class="c-sidebar-nav-item">
+            <a href="{{ route('admin.liq-cx-cabeceras.selprods') }}" class="c-sidebar-nav-link">
+                <i class="c-sidebar-nav-icon fas fa-fw fa-chart-pie">
+
+                </i>
+               Graficos Liquidaciones
+            </a>
+        </li>
+        @endcan
         @can('user_management_access')
             <li
                 class="c-sidebar-nav-dropdown {{ request()->is('admin/permissions*') ? 'c-show' : '' }} {{ request()->is('admin/roles*') ? 'c-show' : '' }} {{ request()->is('admin/users*') ? 'c-show' : '' }} {{ request()->is('admin/estados*') ? 'c-show' : '' }} {{ request()->is('admin/audit-logs*') ? 'c-show' : '' }} {{ request()->is('admin/configuracions*') ? 'c-show' : '' }}">
@@ -485,6 +495,198 @@
                 @endcan
             </ul>
         </li>
+        @can('instructivo_access')
+            <li class="c-sidebar-nav-dropdown {{ request()->is("admin/base-recibidors*") ? "c-show" : "" }} {{ request()->is("admin/base-contactos*") ? "c-show" : "" }} {{ request()->is("admin/agente-aduanas*") ? "c-show" : "" }} {{ request()->is("admin/puerto-correos*") ? "c-show" : "" }} {{ request()->is("admin/embarcadors*") ? "c-show" : "" }} {{ request()->is("admin/chofers*") ? "c-show" : "" }} {{ request()->is("admin/planta-cargas*") ? "c-show" : "" }} {{ request()->is("admin/peso-embalajes*") ? "c-show" : "" }} {{ request()->is("admin/navieras*") ? "c-show" : "" }} {{ request()->is("admin/condpagos*") ? "c-show" : "" }} {{ request()->is("admin/correoalso-airs*") ? "c-show" : "" }} {{ request()->is("admin/instructivo-embarques*") ? "c-show" : "" }} {{ request()->is("admin/tipofletes*") ? "c-show" : "" }} {{ request()->is("admin/emision-bls*") ? "c-show" : "" }} {{ request()->is("admin/forma-pagos*") ? "c-show" : "" }} {{ request()->is("admin/mod-venta*") ? "c-show" : "" }} {{ request()->is("admin/clausula-venta*") ? "c-show" : "" }} {{ request()->is("admin/monedas*") ? "c-show" : "" }}">
+                <a class="c-sidebar-nav-dropdown-toggle" href="#">
+                    <i class="fa-fw fas fa-cogs c-sidebar-nav-icon">
+
+                    </i>
+                    {{ trans('cruds.instructivo.title') }}
+                </a>
+                <ul class="c-sidebar-nav-dropdown-items">
+                    @can('base_recibidor_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.base-recibidors.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/base-recibidors") || request()->is("admin/base-recibidors/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fas fa-align-justify c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.baseRecibidor.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('base_contacto_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.base-contactos.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/base-contactos") || request()->is("admin/base-contactos/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fas fa-cogs c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.baseContacto.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('agente_aduana_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.agente-aduanas.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/agente-aduanas") || request()->is("admin/agente-aduanas/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fab fa-adn c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.agenteAduana.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('puerto_correo_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.puerto-correos.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/puerto-correos") || request()->is("admin/puerto-correos/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fas fa-cogs c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.puertoCorreo.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('embarcador_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.embarcadors.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/embarcadors") || request()->is("admin/embarcadors/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fas fa-cogs c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.embarcador.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('chofer_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.chofers.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/chofers") || request()->is("admin/chofers/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fas fa-cogs c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.chofer.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('planta_carga_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.planta-cargas.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/planta-cargas") || request()->is("admin/planta-cargas/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fas fa-cogs c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.plantaCarga.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('peso_embalaje_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.peso-embalajes.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/peso-embalajes") || request()->is("admin/peso-embalajes/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fas fa-balance-scale c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.pesoEmbalaje.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('naviera_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.navieras.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/navieras") || request()->is("admin/navieras/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fas fa-ship c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.naviera.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('condpago_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.condpagos.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/condpagos") || request()->is("admin/condpagos/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fas fa-file-invoice-dollar c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.condpago.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('correoalso_air_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.correoalso-airs.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/correoalso-airs") || request()->is("admin/correoalso-airs/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fas fa-cogs c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.correoalsoAir.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('instructivo_embarque_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.instructivo-embarques.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/instructivo-embarques") || request()->is("admin/instructivo-embarques/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fas fa-info c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.instructivoEmbarque.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('tipoflete_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.tipofletes.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/tipofletes") || request()->is("admin/tipofletes/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fas fa-truck-moving c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.tipoflete.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('emision_bl_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.emision-bls.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/emision-bls") || request()->is("admin/emision-bls/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fas fa-cogs c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.emisionBl.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('forma_pago_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.forma-pagos.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/forma-pagos") || request()->is("admin/forma-pagos/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fas fa-hand-holding-usd c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.formaPago.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('mod_ventum_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.mod-venta.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/mod-venta") || request()->is("admin/mod-venta/*") ? "c-active" : "" }}">
+                                <i class="fa-fw far fa-credit-card c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.modVentum.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('clausula_ventum_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.clausula-venta.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/clausula-venta") || request()->is("admin/clausula-venta/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fas fa-ruble-sign c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.clausulaVentum.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('moneda_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.monedas.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/monedas") || request()->is("admin/monedas/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fas fa-coins c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.moneda.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                </ul>
+            </li>
+        @endcan
         @can('maestros_access')
             <li class="c-sidebar-nav-dropdown {{ request()->is('admin/embalajes*') ? 'c-show' : '' }}">
                 <a class="c-sidebar-nav-dropdown-toggle" href="#">
