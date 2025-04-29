@@ -18,6 +18,7 @@ use App\Models\Diccionario;
 use App\Models\Fob;
 use App\Models\Variedad;
 use App\Models\Especy;
+use App\Models\LiqPdf;
 use Gate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -30,6 +31,11 @@ use App\Libs\Funciones_Globales;
 use DB;
 use Illuminate\Support\Str;
 use League\CommonMark\Extension\CommonMark\Parser\Block\ListItemParser;
+//use Barryvdh\Snappy\Facades\SnappyPdf as PDF;
+use Barryvdh\DomPDF\Facade\Pdf  as PDF;
+//use barryvdh\laravel-dompdf as PDF;
+use Spatie\Browsershot\Browsershot;
+
 
 class LiqCxCabeceraController extends Controller
 {
@@ -121,7 +127,156 @@ class LiqCxCabeceraController extends Controller
 
         return view('admin.liqCxCabeceras.create', compact('clientes', 'naves', 'especies'));
     }
+    //Generadores de Excel para liquidaciones NADIA
+    // public function pdfliq()
+    // {
+    //     $pdf=LiqPdf::distinct()->pluck('productor'); //$pdf=LiqPdf::where('productor','=',$productor)->get();
+        
+    //     foreach ($pdf as $item) {
 
+    //         $this->generarGrafico($item,"600","350");
+    //     }
+    //    // $this->generarGrafico($productor,"600","350");
+    //     return response()->json($pdf);   
+
+    // }
+    public function downloadChartsPdf(Request $request, $productor)
+{
+    // Obtener datos del productor
+    $productorData = LiqPdf::where('productor', $productor)->get();
+
+    // Obtener imágenes de los gráficos
+    $chartImages = $request->input('chartImages', []);
+    \Log::info('Header image path:', ['path' => public_path('img/cabecera_pdf.jpg')]);
+    \Log::info('Footer image path:', ['path' => public_path('img/footer_pdf.jpg')]);
+    // Generar la vista para el PDF
+    $pdf = PDF::loadView('admin.liqCxCabeceras.pdf', [
+        'productorData' => $productorData,
+        'chartImages' => $chartImages
+    ]);
+
+    // Configurar opciones de dompdf
+    $pdf->setOptions([
+        'isHtml5ParserEnabled' => true,
+        'isRemoteEnabled' => true,
+        'isPhpEnabled' => true,
+            'dpi' => 200,
+            'defaultFont' => 'Arial',
+            'chroot' => base_path(), // Allow access to entire project
+    ]);
+
+    // Guardar el PDF temporalmente
+    $filename = 'charts_' . $productor . '.pdf';
+    $path = storage_path('app/public/' . $filename);
+    $pdf->save($path);
+
+    // Devolver la URL para la descarga
+    return response()->json([
+        'url' => asset('storage/' . $filename),
+        'filename' => $filename
+    ]);
+}
+
+    /**
+     * Generate a PDF with the charts for the given productor.
+     * @param string $productor
+     * @return \Illuminate\Http\Response
+     */
+public function pdf(){
+    $chartImages =[];
+    $productor='Greenex Spa';
+    $productorData = LiqPdf::where('productor', $productor)->get();
+    return view('admin.liqCxCabeceras.pdf', compact('productorData','chartImages'));
+}
+    public function getgraphs($productor)
+    {
+        // Obtener valores únicos de la columna 'productor' desde LiqPdf
+        $productorData = LiqPdf::where('productor',$productor)->get();
+        return response()->json($productorData);
+        //return view('admin.liqCxCabeceras.graphs', compact('productorData'));
+    }
+    public function selprods()
+    {
+        // Obtener valores únicos de la columna 'productor' desde LiqPdf
+        // Obtener todos los datos de productores
+        $productorData = LiqPdf::all();
+        // Obtener productores únicos
+        $producers = LiqPdf::distinct()->pluck('productor')->sort()->values()->toArray();
+       
+        return view('admin.liqCxCabeceras.selprods', compact('productorData', 'producers'));
+    }
+    public function generarGrafico($nombre,$ancho,$alto)
+    {
+        $imagePath = storage_path("app/public/screenshots/{$nombre}.png");
+        if (file_exists($imagePath)) {
+            unlink($imagePath); // Borra la imagen anterior
+        }
+        //if (!file_exists($imagePath)) {
+            //Browsershot::url("https://appgreenex.cl/admin/{$id}.html")
+            $url="https://greenexnet.test/admin/liq-cx-cabeceras/getgraphs/{$nombre}";
+            log::info($url);
+            Browsershot::html($url)
+              //->setChromePath('/usr/bin/chromium-browser')
+                ->windowSize($ancho, $alto)
+                ->setOption('args', ['--verbose']) // Modo debug
+                ->setOption('debug', true) // Activa más detalles
+                ->waitUntilNetworkIdle()
+                ->save($imagePath);
+        //}
+    
+        return $imagePath;
+     }
+    // app/Http/Controllers/Admin/FrutaController.php
+protected function generatePdfZip(array $imagePaths)
+{
+    // Directorio temporal para PDFs
+    $tempDir = storage_path('app/temp_pdfs');
+    if (!file_exists($tempDir)) {
+        mkdir($tempDir, 0755, true);
+    }
+
+    // Generar un PDF por productor
+    $pdfFiles = [];
+    foreach ($imagePaths as $productor => $imagePath) {
+        $safeProductor = preg_replace('/[^A-Za-z0-9_-]/', '_', $productor);
+        $pdfPath = $tempDir . '/' . $safeProductor . '-Cz-2425.pdf';
+
+        // Obtener datos del productor
+        $frutas = LiqPdf::where('productor', $productor)->get()->toArray();
+
+        // Generar el PDF con DomPDF
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('liqCxCabeceras.pdf', [
+            'productor' => $productor,
+            'frutas' => $frutas,
+            'imagePath' => $imagePath
+        ])->setOptions([
+            'dpi' => 150,
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => true
+        ]);
+        $pdf->save($pdfPath);
+        $pdfFiles[] = $pdfPath;
+    }
+
+    // Crear el archivo ZIP
+    $zipPath = storage_path('app/temp_pdfs/graficos_frutas.zip');
+    $zip = new \ZipArchive();
+    if ($zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
+        throw new \Exception('No se pudo crear el archivo ZIP');
+    }
+    foreach ($pdfFiles as $pdfFile) {
+        $zip->addFile($pdfFile, basename($pdfFile));
+    }
+    $zip->close();
+
+    // Limpiar archivos temporales (excepto el ZIP)
+    foreach ($pdfFiles as $pdfFile) {
+        @unlink($pdfFile);
+    }
+    @rmdir($tempDir);
+
+    return $zipPath;
+}
     public function store(StoreLiqCxCabeceraRequest $request)
     {
 
@@ -442,7 +597,7 @@ class LiqCxCabeceraController extends Controller
                 $fob->update($datosFob);
             }
             
-    }
+        }
         // Obtener cabeceras
        
 
@@ -977,4 +1132,6 @@ class LiqCxCabeceraController extends Controller
         }
         return $dataComparativa;
     }
+   
+        
 }
