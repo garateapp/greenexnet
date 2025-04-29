@@ -167,7 +167,7 @@ class LiqCxCabeceraController extends Controller
 
     // Guardar el PDF temporalmente
     $filename = 'charts_' . str_replace(' ', '_', $productor) . '.pdf';
-    $path = storage_path('public/storage' . $filename);
+    $path = storage_path('public/storage/' . $filename);
     $pdf->save($path);
 
     // Devolver la URL para la descarga
