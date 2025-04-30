@@ -149,6 +149,8 @@ class LiqCxCabeceraController extends Controller
     $chartImages = $request->input('chartImages', []);
     \Log::info('Header image path:', ['path' => public_path('img/cabecera_pdf.jpg')]);
     \Log::info('Footer image path:', ['path' => public_path('img/footer_pdf.jpg')]);
+    \Log::info('Public path:', ['path' => public_path()]);
+    \Log::info(public_path());
     // Generar la vista para el PDF
     $pdf = PDF::loadView('admin.liqCxCabeceras.pdf', [
         'productorData' => $productorData,
