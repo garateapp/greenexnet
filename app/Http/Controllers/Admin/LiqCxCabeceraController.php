@@ -169,9 +169,10 @@ class LiqCxCabeceraController extends Controller
 
     // Guardar el PDF temporalmente
     $filename = 'charts_' . str_replace(' ', '_', $productor) . '.pdf';
-    $path = storage_path('pdf/' . $filename);
-    $pdf->save($path);
+    $path = storage_path('/' . $filename);
     \Log::info("Path--> ".$path);
+    $pdf->save($path);
+   
     //\Storage::move('home/forge/net.greenexweb.cl/storage/'.$filename,"/home/forge/net.greenexweb.cl/public/".$filename);
     // Devolver la URL para la descarga
     return response()->json([
