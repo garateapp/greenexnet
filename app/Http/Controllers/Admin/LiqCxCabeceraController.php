@@ -166,14 +166,41 @@ class LiqCxCabeceraController extends Controller
             'defaultFont' => 'Arial',
             'chroot' => base_path(), // Allow access to entire project
     ]);
+   // Esperar hasta que el archivo exista o intentar moverlo
+$maxAttempts = 5; // Número máximo de intentos
+$delaySeconds = 1; // Segundos de espera entre intentos
 
+$sourcePath = $filename; // Ruta relativa en storage/app/
+$destinationPath = public_path('storage/' . $filename); // Ruta absoluta en public/storage
+    
     // Guardar el PDF temporalmente
     $filename = 'charts_' . str_replace(' ', '_', $productor) . '.pdf';
     $path = storage_path('/' . $filename);
     \Log::info("Path--> ".$path);
     $pdf->save($path);
-   
-    \Storage::move('home/forge/net.greenexweb.cl/storage/'.$filename,"/home/forge/net.greenexweb.cl/public/storage".$filename);
+    
+    $attempt = 0;
+    while ($attempt < $maxAttempts) {
+        if (Storage::exists($sourcePath)) {
+            // Mover el archivo
+            try {
+                Storage::move($sourcePath, $destinationPath);
+                Log::info("Archivo movido con éxito a: " . $destinationPath);
+                break;
+            } catch (\Exception $e) {
+                Log::error("Error al mover el archivo: " . $e->getMessage());
+                break;
+            }
+        } else {
+            Log::info("Archivo no encontrado en intento " . ($attempt + 1) . ", esperando...");
+            sleep($delaySeconds); // Esperar X segundos
+            $attempt++;
+        }
+    }
+    
+    if ($attempt >= $maxAttempts) {
+        Log::error("No se pudo mover el archivo: no se encontró después de $maxAttempts intentos.");
+    }
     // Devolver la URL para la descarga
     return response()->json([
         'url' =>  asset("http://net.greenexweb.cl/storage/".$filename),
