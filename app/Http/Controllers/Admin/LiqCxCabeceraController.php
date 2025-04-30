@@ -169,7 +169,7 @@ class LiqCxCabeceraController extends Controller
     ]);
    // Esperar hasta que el archivo exista o intentar moverlo
 $maxAttempts = 5; // Número máximo de intentos
-$delaySeconds = 1; // Segundos de espera entre intentos
+$delaySeconds = 3; // Segundos de espera entre intentos
 
 // Ruta absoluta en public/storage
     
@@ -182,6 +182,8 @@ $delaySeconds = 1; // Segundos de espera entre intentos
 $destinationPath = public_path('storage/' . $filename); 
     $attempt = 0;
     while ($attempt < $maxAttempts) {
+        \Log::info("origen: ".$sourcePath);
+        \Log::info("destino: ".$destinationPath);
         if (Storage::exists($sourcePath)) {
             // Mover el archivo
             try {
