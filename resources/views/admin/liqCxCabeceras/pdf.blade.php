@@ -65,7 +65,7 @@
     <!-- Footer -->
     <div class="footer">
         @php
-            $footerImagePath = storage_path('/img/footer_pdf.jpg');
+            $footerImagePath = public_path('/img/footer_pdf.jpg');
         @endphp
         @if (file_exists($footerImagePath))
             <img src="{{ $footerImagePath }}" alt="Footer">
