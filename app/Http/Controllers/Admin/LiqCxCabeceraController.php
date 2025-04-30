@@ -175,38 +175,15 @@ $delaySeconds = 3; // Segundos de espera entre intentos
     
     // Guardar el PDF temporalmente
     $filename = 'charts_' . str_replace(' ', '_', $productor) . '.pdf';
-    $path = storage_path($filename);
+    $path = public_path('/storage/' . $filename); // Ruta relativa en public/storage/($filename);
     \Log::info("Path--> ".$path);
     $pdf->save($path);
     $sourcePath = $path; // Ruta relativa en storage/app/
 $destinationPath = public_path('storage/' . $filename); 
-    $attempt = 0;
-    while ($attempt < $maxAttempts) {
-        \Log::info("origen: ".$sourcePath);
-        \Log::info("destino: ".$destinationPath);
-        if (Storage::exists($sourcePath)) {
-            // Mover el archivo
-            try {
-                Storage::move($sourcePath, $destinationPath);
-                Log::info("Archivo movido con éxito a: " . $destinationPath);
-                break;
-            } catch (\Exception $e) {
-                Log::error("Error al mover el archivo: " . $e->getMessage());
-                break;
-            }
-        } else {
-            Log::info("Archivo no encontrado en intento " . ($attempt + 1) . ", esperando...");
-            sleep($delaySeconds); // Esperar X segundos
-            $attempt++;
-        }
-    }
-    
-    if ($attempt >= $maxAttempts) {
-        Log::error("No se pudo mover el archivo: no se encontró después de $maxAttempts intentos.");
-    }
+
     // Devolver la URL para la descarga
     return response()->json([
-        'url' =>  asset("http://net.greenexweb.cl/storage/".$filename),
+        'url' =>  asset("https://net.greenexweb.cl/storage/".$filename),
         'filename' => $filename
     ]);
 }
