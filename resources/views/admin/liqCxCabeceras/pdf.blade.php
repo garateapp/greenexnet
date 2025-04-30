@@ -53,7 +53,7 @@
        <!-- Header -->
        <div class="header">
         @php
-            $headerImagePath = storage_path('app/public/cabecera_pdf.jpg');
+            $headerImagePath = storage_path('app/public/img/cabecera_pdf.jpg');
         @endphp
         @if (file_exists($headerImagePath))
             <img src="{{ $headerImagePath }}" alt="Header">
@@ -65,7 +65,7 @@
     <!-- Footer -->
     <div class="footer">
         @php
-            $footerImagePath = storage_path('app/public/footer_pdf.jpg');
+            $footerImagePath = storage_path('app/public/img/footer_pdf.jpg');
         @endphp
         @if (file_exists($footerImagePath))
             <img src="{{ $footerImagePath }}" alt="Footer">
