@@ -173,10 +173,10 @@ class LiqCxCabeceraController extends Controller
     \Log::info("Path--> ".$path);
     $pdf->save($path);
    
-    //\Storage::move('home/forge/net.greenexweb.cl/storage/'.$filename,"/home/forge/net.greenexweb.cl/public/".$filename);
+    \Storage::move('home/forge/net.greenexweb.cl/storage/'.$filename,"/home/forge/net.greenexweb.cl/public/storage".$filename);
     // Devolver la URL para la descarga
     return response()->json([
-        'url' =>  asset("http://net.greenexweb.cl/".$filename),
+        'url' =>  asset("http://net.greenexweb.cl/storage/".$filename),
         'filename' => $filename
     ]);
 }
