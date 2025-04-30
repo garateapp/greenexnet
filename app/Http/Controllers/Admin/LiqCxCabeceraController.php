@@ -30,6 +30,7 @@ use App\Libs\Liquidaciones;
 use App\Libs\Funciones_Globales;
 use DB;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 use League\CommonMark\Extension\CommonMark\Parser\Block\ListItemParser;
 //use Barryvdh\Snappy\Facades\SnappyPdf as PDF;
 use Barryvdh\DomPDF\Facade\Pdf  as PDF;
@@ -174,7 +175,7 @@ $delaySeconds = 1; // Segundos de espera entre intentos
     
     // Guardar el PDF temporalmente
     $filename = 'charts_' . str_replace(' ', '_', $productor) . '.pdf';
-    $path = storage_path('/' . $filename);
+    $path = storage_path($filename);
     \Log::info("Path--> ".$path);
     $pdf->save($path);
     $sourcePath = $path; // Ruta relativa en storage/app/
