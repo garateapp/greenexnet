@@ -185,6 +185,7 @@
         // Capturar gráficos como imágenes y enviar al servidor
         $('#downloadPdf').click(function() {
             const chartContainers = $('.chart-container');
+            $("#downloadPdf").prop('disabled', true);
             const chartImages = [];
             let processed = 0;
 
@@ -209,6 +210,7 @@
                                 link.href = response.url;
                                 link.download = response.filename;
                                 link.click();
+                                $("#downloadPdf").prop('disabled', false);
                             },
                             error: function() {
                                 alert('Error al generar el PDF.');
