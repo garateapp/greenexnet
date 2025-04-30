@@ -174,7 +174,7 @@ class LiqCxCabeceraController extends Controller
     \Storage::move($path,public_path($filename));
     // Devolver la URL para la descarga
     return response()->json([
-        'url' =>  asset("public/" $filename),
+        'url' =>  asset("public/".$filename),
         'filename' => $filename
     ]);
 }
