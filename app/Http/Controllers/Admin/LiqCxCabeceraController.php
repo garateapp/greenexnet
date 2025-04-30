@@ -171,10 +171,10 @@ class LiqCxCabeceraController extends Controller
     $filename = 'charts_' . str_replace(' ', '_', $productor) . '.pdf';
     $path = storage_path('/' . $filename);
     $pdf->save($path);
-
+    \Storage::move($path,public_path($filename))
     // Devolver la URL para la descarga
     return response()->json([
-        'url' =>  asset('storage/' . $filename),
+        'url' =>  asset("public/" $filename),
         'filename' => $filename
     ]);
 }
