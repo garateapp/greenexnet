@@ -170,15 +170,15 @@ class LiqCxCabeceraController extends Controller
 $maxAttempts = 5; // Número máximo de intentos
 $delaySeconds = 1; // Segundos de espera entre intentos
 
-$sourcePath = $filename; // Ruta relativa en storage/app/
-$destinationPath = public_path('storage/' . $filename); // Ruta absoluta en public/storage
+// Ruta absoluta en public/storage
     
     // Guardar el PDF temporalmente
     $filename = 'charts_' . str_replace(' ', '_', $productor) . '.pdf';
     $path = storage_path('/' . $filename);
     \Log::info("Path--> ".$path);
     $pdf->save($path);
-    
+    $sourcePath = $path; // Ruta relativa en storage/app/
+$destinationPath = public_path('storage/' . $filename); 
     $attempt = 0;
     while ($attempt < $maxAttempts) {
         if (Storage::exists($sourcePath)) {
