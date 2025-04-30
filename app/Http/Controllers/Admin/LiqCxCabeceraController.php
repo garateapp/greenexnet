@@ -171,7 +171,7 @@ class LiqCxCabeceraController extends Controller
     $filename = 'charts_' . str_replace(' ', '_', $productor) . '.pdf';
     $path = storage_path('/' . $filename);
     $pdf->save($path);
-    \Storage::move($path,"/home/forge/net.greenexweb.cl/public/".$filename);
+    \Storage::move('home/forge/net.greenexweb.cl/storage/'.$filename,"/home/forge/net.greenexweb.cl/public/".$filename);
     // Devolver la URL para la descarga
     return response()->json([
         'url' =>  asset("http://net.greenexweb.cl/public/".$filename),
