@@ -9,6 +9,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ trans('panel.site_title') }}</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet" />
     <link href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" rel="stylesheet" />
@@ -25,11 +26,27 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.5.1/min/dropzone.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/jquery.perfect-scrollbar/1.5.0/css/perfect-scrollbar.min.css"
         rel="stylesheet" />
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/handsontable@14.5.0/dist/handsontable.full.min.css" rel="stylesheet" />
+
     <link href="{{ asset('css/custom.css') }}" rel="stylesheet" />
     <link href="{{ asset('css/app.css') }}" rel="stylesheet" />
+    <link href="{{ asset('css/jquery-ui.css') }}" rel="stylesheet" />
+    
+    <link href="{{ asset('css/trirand/ui.jqgrid.css') }}" rel="stylesheet" />
+    <link href="{{ asset('css/jquery.treegrid.css') }}" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 
+    <!-- TreeGrid CSS -->
+
+
+<!-- TreeGrid JS -->
+<script src="https://www.guriddo.net/demo/js/jquery-ui.min.js"></script>
+<script src="https://www.guriddo.net/demo/js/trirand/jquery.jqGrid.min.js"></script>
+<link href="https://www.guriddo.net/demo/css/trirand/ui.jqgrid.css"/>
+<link href="{{ asset('js/trirand/jquery.jqGrid.min.js') }}" rel="stylesheet" />
     <script src="https://cdn.datatables.net/rowgroup/1.1.6/js/dataTables.rowGroup.min.js"></script>
     {{-- <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script> --}}
     <link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.3.2/css/fixedHeader.dataTables.min.css">
