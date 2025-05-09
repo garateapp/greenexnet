@@ -315,6 +315,7 @@ class ComexController extends Controller
 
             // 🧮 **Calcular Total General**
             $totalGeneral = $totalItems - $totalCostos;
+            
            
             // 📤 Enviar datos a la vista
             return view('admin.comex.capturaliquidaciones', [
@@ -1001,7 +1002,7 @@ class ComexController extends Controller
     public function generacomparativaglobal(Request $request)
     {
 
-        $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->get(); // LiqCxCabecera::find(request('ids'));
+        $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->whereIn('especie_id',[4,6])->get(); // LiqCxCabecera::find(request('ids'));
 
         $dataComparativa = collect();
         $C_Logisticos = Costo::where('categoria', 'Costo Logístico')->get();
@@ -1284,7 +1285,7 @@ class ComexController extends Controller
     public function actualizarValorGD_en_fx()
     {
 
-
+        return response()->json(["message" => "Se modificaron $affectedRows registros", "data" => "11"], 200);
 
 
         $affectedRows = 0;
