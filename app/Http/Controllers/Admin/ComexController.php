@@ -1144,7 +1144,7 @@ class ComexController extends Controller
                 Log::info("Instructivo: " . $liqCxCabecera->instructivo);
                 $variedad=Variedad::where('nombre',$item->variedad_id)->first();
                 //  dd($variedad);
-                $especie=Especy::where('id',$variedad->especie_id)->first();
+                $especie=Especy::where('id',$liqCxCabecera->especie_id)->first();
                 $nave = $liqCxCabecera->nave_id ? Nafe::find($liqCxCabecera->nave_id)->nombre : "";
                 $dataComparativa->push(array_merge(
                     [
