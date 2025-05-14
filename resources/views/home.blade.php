@@ -684,7 +684,7 @@
                     success: function(response) {
                         liquidacionesData =
                             response; // Asumiendo que response es un array con los 8500 registros
-                        console.log(liquidacionesData);
+                        console.log("liquidacionesData: " + liquidacionesData);
                         // Ocultar animación de carga
                         $("#loading-animation").hide();
 
@@ -876,7 +876,7 @@
                     const mercadosUnicos = [...new Set(liquidacionesData.map(item => (item.Pais || "").toUpperCase()))];
                     const variedadesUnicas = [...new Set(liquidacionesData.map(item => (item.variedad || "")
                         .toUpperCase()))];
-                        const especiesUnicas = [...new Set(liquidacionesData.map(item => (item.especie || "").toUpperCase()))];
+                        const especiesUnicas = [...new Set(liquidacionesData.map(item => (item.especie || "")))];
                     const transportesUnicos = [...new Set(liquidacionesData.map(item => (item.Transporte || "")
                         .toUpperCase()))];
 

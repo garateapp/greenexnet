@@ -1932,6 +1932,10 @@ class ReporteriaController extends Controller
         // $datos = session("sheetLiqs");
 
         $datos=Fob::all();
+        $datos=$datos->map(function ($item) {
+            $item->especie = strtoupper($item->especie ?? '');
+            return $item;
+        });
         return $datos;
     }
     public function ConsolidadoLiquidaciones()
