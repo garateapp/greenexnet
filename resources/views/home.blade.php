@@ -117,7 +117,6 @@
 
                                     <label for="filtroEspecie">Especie</label>
                                     <select id="filtroEspecie" class="form-control select2" multiple="multiple">
-
                                     </select>
                                     <label for="filtroVariedad">Variedad</label>
                                     <select id="filtroVariedad" class="form-control select2" multiple="multiple">
@@ -801,7 +800,7 @@
                             (clientesSel.length === 0 || clientesSel.includes((item.cliente.toUpperCase() ||
                                     "")
                                 .toUpperCase())) &&
-                            (especiesSel.length === 0 || especiesSel.includes((item.especie.toUpperCase() ||
+                            (especiesSel.length === 0 || especiesSel.includes((item.especie ||
                                     "")
                                 .toUpperCase()))
                         );
@@ -877,8 +876,8 @@
                     const mercadosUnicos = [...new Set(liquidacionesData.map(item => (item.Pais || "").toUpperCase()))];
                     const variedadesUnicas = [...new Set(liquidacionesData.map(item => (item.variedad || "")
                         .toUpperCase()))];
-                    const especiesUnicas = [...new Set(liquidacionesData.map(item => (item.especie || "")
-                        .toUpperCase()))];
+                    const especiesUnicas = [...new Set(liquidacionesData.map(item => (item.especie.toUpperCase() || "")
+                        ))];
                     const transportesUnicos = [...new Set(liquidacionesData.map(item => (item.Transporte || "")
                         .toUpperCase()))];
 
@@ -897,8 +896,8 @@
                         .toUpperCase()))];
                     const filtroFobVariedadClientes = [...new Set(liquidacionesData.map(item => (item.cliente || "")
                         .toUpperCase()))];
-                    const filtroFobVariedadEspecie = [...new Set(liquidacionesData.map(item => (item.especie || "")
-                        .toUpperCase()))];
+                    const filtroFobVariedadEspecie = [...new Set(liquidacionesData.map(item => (item.especie.toUpperCase() || "")
+                        ))];
                     const clientePrincipalComparativo = [...new Set(liquidacionesData.map(item => (item.cliente || "")
                         .toUpperCase()))];
                     const clienteComparado = [...new Set(liquidacionesData.map(item => (item.cliente || "")
@@ -927,7 +926,7 @@
                     $("#filtroEspecie").select2({
                         data: especiesUnicas.map(especie => ({
                             id: especie,
-                            text: especie
+                            text: especie.toUpperCase()
                         })),
                         placeholder: "Selecciona Especies",
                         allowClear: true
@@ -991,7 +990,7 @@
                     $("#filtroFobVariedadEspecie").select2({
                         data: filtroFobVariedadEspecie.map(especie => ({
                             id: especie,
-                            text: especie
+                            text: especie.toUpperCase()
                         })),
                         placeholder: "Selecciona Especies",
                         allowClear: true
