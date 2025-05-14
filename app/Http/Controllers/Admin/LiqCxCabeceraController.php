@@ -47,7 +47,7 @@ class LiqCxCabeceraController extends Controller
         abort_if(Gate::denies('liq_cx_cabecera_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         if ($request->ajax()) {
-            $query = LiqCxCabecera::with(['cliente', 'nave'])->select(sprintf('%s.*', (new LiqCxCabecera)->table));
+            $query = LiqCxCabecera::with(['cliente', 'nave', 'especie'])->select(sprintf('%s.*', (new LiqCxCabecera)->table));
             $table = Datatables::of($query);
 
             $table->addColumn('placeholder', '&nbsp;');
@@ -113,7 +113,9 @@ class LiqCxCabeceraController extends Controller
         $clientes_comexes = ClientesComex::get();
         $naves            = Nafe::get();
 
-        return view('admin.liqCxCabeceras.index', compact('clientes_comexes', 'naves'));
+        $especies = Especy::get();
+
+        return view('admin.liqCxCabeceras.index', compact('clientes_comexes', 'naves', 'especies'));
     }
 
     public function create()

@@ -101,8 +101,8 @@
                         <td>
                             <select class="search">
                                 <option value>{{ trans('global.all') }}</option>
-                                @foreach ($clientes_comexes as $key => $item)
-                                    <option value="{{ $item->nombre_fantasia }}">{{ $item->nombre_fantasia }}</option>
+                                @foreach ($especies as $key => $item)
+                                    <option value="{{ $item->nombre }}">{{ $item->nombre }}</option>
                                 @endforeach
                             </select>
                         </td>
