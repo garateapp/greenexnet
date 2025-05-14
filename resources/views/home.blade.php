@@ -755,9 +755,9 @@
                             (clientesSel.length === 0 || clientesSel.includes((item.cliente.toUpperCase() ||
                                     "")
                                 .toUpperCase())) &&
-                            (especiesSel.length === 0 || especiesSel.includes((item.especie.toUpperCase() ||
+                            (especiesSel.length === 0 || especiesSel.includes((item.especie ||
                                     "")
-                                .toUpperCase()))
+                                ))
                         );
                     });
 
@@ -876,8 +876,7 @@
                     const mercadosUnicos = [...new Set(liquidacionesData.map(item => (item.Pais || "").toUpperCase()))];
                     const variedadesUnicas = [...new Set(liquidacionesData.map(item => (item.variedad || "")
                         .toUpperCase()))];
-                    const especiesUnicas = [...new Set(liquidacionesData.map(item => (item.especie || "")
-                        ))];
+                        const especiesUnicas = [...new Set(liquidacionesData.map(item => (item.especie || "").toUpperCase()))];
                     const transportesUnicos = [...new Set(liquidacionesData.map(item => (item.Transporte || "")
                         .toUpperCase()))];
 
