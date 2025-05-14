@@ -546,9 +546,19 @@ protected function generatePdfZip(array $imagePaths)
 
         // Obtener la sesión correctamente
         $liqs = $this->ConsolidadoLiquidacionesUnitario($id);
+        \Log::info("Total de registros en liqs: " . count($liqs));
+        \Log::info("liqs: ", $liqs->toArray());
+    
+       
         $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->where('id', $id)->get();
+        $fob = Fob::where('Liquidacion',$liqCxCabeceras[0]->instructivo)->first(); // Busca solo uno
+        if ($fob) {
+            $fob->delete(); // Elimina solo si existe
+        }
         foreach ($liqs as $liq) {
-            $fob = Fob::where('Liquidacion', $liq['Liquidacion'])->first();
+            //$fob = Fob::where('Liquidacion', $liq['Liquidacion'])->first();
+           
+           // \Log::info("liq. " . json_encode($liq));     
 
             // Buscar la variedad y la especie antes de insert/update
             $variedad = Variedad::where('nombre', $liq["variedad"])->first();
@@ -602,13 +612,15 @@ protected function generatePdfZip(array $imagePaths)
                 'Costos_cajas_USD' => $liq['Costos_cajas_USD'] ?? null,
             ];
         
-            if ($fob === null) {
-                // Si no existe, crear un nuevo registro
-                Fob::create($datosFob);
-            } else {
-                // Si ya existe, actualizar el registro
-                $fob->update($datosFob);
+           
+            try {
+                $fob = new Fob();
+                $resultado = $fob->create($datosFob);
+                \Log::info("Fob creado: " . json_encode($resultado));
+            } catch (\Exception $e) {
+                \Log::error("Error al crear Fob para Liquidacion {$liq['Liquidacion']}: " . $e->getMessage());
             }
+           
             
         }
         // Obtener cabeceras
