@@ -730,13 +730,169 @@ protected function generatePdfZip(array $imagePaths)
         
 
         // Obtener cabeceras
-        //$liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->where('id', $id)->get();
+        $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->whereIn('especie_id',[4,6])->get();
 
         //Obtener cabeceras de JWM y Maoheng
-        $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->whereIn('cliente_id',[19] )->whereNotNull('nave_id')->get();
+        //$liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->whereIn('cliente_id',[19] )->whereNotNull('nave_id')->get();
 
         foreach ($liqCxCabeceras as $liqCxCabecera) {
             $liqs = $this->ConsolidadoLiquidacionesUnitario($liqCxCabecera->id);
+            $fob = Fob::where('Liquidacion',$liqCxCabeceras[0]->instructivo)->first(); // Busca solo uno
+            if ($fob) {
+                $fob->delete(); // Elimina solo si existe
+            }
+            foreach ($liqs as $liq) {
+                //$fob = Fob::where('Liquidacion', $liq['Liquidacion'])->first();
+               
+               // \Log::info("liq. " . json_encode($liq));     
+    
+                // Buscar la variedad y la especie antes de insert/update
+                $variedad = Variedad::where('nombre', $liq["variedad"])->first();
+                $especie = $variedad ? Especy::where('id', $variedad->especie_id)->first() : null;
+                
+                // Datos comunes para inserción o actualización
+                $datosFob = [
+                    'cliente' => $liq['cliente'] ?? null,  
+                    'nave' => $liq['nave'],              
+                    'Liquidacion' => $liq['Liquidacion'] ?? null,
+                    'ETA' => $liq['ETA'],
+                    'ETA_Week' => $liq['ETA_Week'],
+                    'Fecha_Venta' => $liq['Fecha_Venta'] ?? null,
+                    'Fecha_Venta_Week' => $liq['Fecha_Venta_Week'] ?? null,
+                    'Pallet' => $liq['Pallet'] ?? null,
+                    'Peso_neto' => $liq['Peso_neto'] ?? null,
+                    'Kilos_total' => $liq['Kilos_total'] ?? null,
+                    'embalaje' => $liq['embalaje'] ?? null,
+                    'etiqueta' => $liq['etiqueta'] ?? null,
+                    'variedad' => $liq['variedad'] ?? null,
+                    'calibre' => $liq['calibre'] ?? null,
+                    'Cajas' => $liq['Cajas'] ?? null,
+                    'TC' => $liq['TC'] ?? null,
+                    'Ventas_TO_USD' => $liq['Ventas_TO_USD'] ?? null,
+                    'Venta_USD' => $liq['Venta_USD'] ?? null,
+                    'Com_USD' => $liq['Com_USD'] ?? null,
+                    'Com_TO_USD' => $liq['Com_TO_USD'] ?? null,
+                    'Imp_destino_USD' => $liq['Imp_destino_USD'] ?? null,
+                    'Imp_destino_USD_TO' => $liq['Imp_destino_USD_TO'] ?? null,
+                    'Costo_log_USD' => $liq['Costo_log_USD'] ?? null,
+                    'Costo_log_USD_TO' => $liq['Costo_log_USD_TO'] ?? null,
+                    'Ent_Al_mercado_USD' => $liq['Ent_Al_mercado_USD'] ?? null,
+                    'Ent_Al_mercado_USD_TO' => $liq['Ent_Al_mercado_USD_TO'] ?? null,
+                    'Costo_mercado_USD' => $liq['Costo_mercado_USD'] ?? null,
+                    'Costos_mercado_USD_TO' => $liq['Costos_mercado_USD_TO'] ?? null,
+                    'Otros_costos_dest_USD' => $liq['Otros_costos_dest_USD'] ?? null,
+                    'Otros_costos_USD_TO' => $liq['Otros_costos_USD_TO'] ?? null,
+                    'Flete_marit_USD' => $liq['Flete_marit_USD'] ?? null,
+                    'Flete_Marit_USD_TO' => $liq['Flete_Marit_USD_TO'] ?? null,
+                    'Costos_USD_TO' => $liq['Costos_USD_TO'] ?? null,
+                    'Ajuste_TO_USD' => $liq['Ajuste_TO_USD'] ?? null,
+                    'FOB_USD' => $liq['FOB_USD'] ?? null,
+                    'FOB_TO_USD' => $liq['FOB_TO_USD'] ?? null,
+                    'FOB_kg' => $liq['FOB_kg'] ?? null,
+                    'FOB_Equivalente' => $liq['FOB_Equivalente'] ?? null,
+                    'Flete_Cliente' => $liq['Flete_Cliente'] ?? null,
+                    'Transporte' => $liq['Transporte'] ?? null,
+                    'c_embalaje' => $liq['c_embalaje'] ?? null,
+                    'folio_fx' => $liq['folio_fx'] ?? null,
+                    'especie' => $especie->nombre ?? null,
+                    'Costos_cajas_USD' => $liq['Costos_cajas_USD'] ?? null,
+                ];
+            
+               
+                try {
+                    $fob = new Fob();
+                    $resultado = $fob->create($datosFob);
+                    \Log::info("Fob creado: " . json_encode($resultado));
+                } catch (\Exception $e) {
+                    \Log::error("Error al crear Fob para Liquidacion {$liq['Liquidacion']}: " . $e->getMessage());
+                }
+               
+                
+            }
+            // try {
+            //     // Obtener despachos
+            //     $despachos = DB::connection('sqlsrv')->table("V_PKG_Despachos")
+            //         ->select('folio', 'n_variedad_rotulacion', 'c_embalaje', 'n_calibre', 'n_etiqueta', 'id_pkg_stock_det')
+            //         ->where('tipo_g_despacho', '=', 'GDP')
+            //         ->where('numero_embarque', '=', str_replace('i', '', str_replace('I', '', $liqCxCabecera->instructivo)))
+            //         ->get();
+
+            //     foreach ($despachos as $despacho) {
+            //         $EFOB = 0;
+            //         $ECCajas = 0;
+            //         $valor = 0;
+
+
+            //         $items = $liqs->filter(function ($item) use ($despacho) {
+            //             $folios = array_map('trim', explode(',', $item['folio_fx']));
+
+            //             // Verificamos si el folio del despacho está en la lista
+            //             $folioMatch = in_array($despacho->folio, $folios);
+            //             if ($item['folio_fx'] === $despacho->folio || $folioMatch) {
+                            
+
+
+            //                     Log::info('Comparando:', [
+            //                         'folio_fx' => [$item['folio_fx'], $despacho->folio, $folioMatch],
+            //                         'variedad' => [$item['variedad'], trim($despacho->n_variedad_rotulacion), strcasecmp($item['variedad'], trim($despacho->n_variedad_rotulacion)) === 0],
+            //                         'embalaje' => [$item['embalaje'], trim($despacho->c_embalaje), strcasecmp($item['embalaje'], trim($despacho->c_embalaje)) === 0],
+            //                         'calibre' => [$item['calibre'], trim($despacho->n_calibre), strcasecmp($item['calibre'], trim($despacho->n_calibre)) === 0],
+            //                         'etiqueta' => [$item['etiqueta'], trim($despacho->n_etiqueta), strcasecmp($item['etiqueta'], trim($despacho->n_etiqueta)) === 0],
+            //                     ]);
+                            
+            //             }
+
+            //             return $folioMatch &&
+            //                 strcasecmp(trim($item['variedad']), trim($despacho->n_variedad_rotulacion)) === 0 &&
+            //                 strcasecmp(trim($item['embalaje']), trim($despacho->c_embalaje)) === 0 &&
+            //                 strcasecmp(trim($item['calibre']), trim($despacho->n_calibre)) === 0 &&
+            //                 strcasecmp(trim($item['etiqueta']), trim($despacho->n_etiqueta)) === 0;
+            //         });
+
+
+            //         Log::info('Elementos filtrados e:', $items->toArray());
+
+
+
+
+
+            //         Log::info('item: ' . json_encode($items));
+
+            //         $EFOB = 0;
+            //         foreach ($items as $item) {
+            //             Log::info("EFOB inicio " . $EFOB);
+            //             $EFOB += $item['FOB_TO_USD'];
+            //             Log::info("EFOB Asignado  " . $EFOB);
+            //             Log::info("CAJAS Inicio" . $item['Cajas']);
+            //             $ECCajas += $item['Cajas'];
+            //             Log::info("CAJAS Asignado" . $item['Cajas']);
+            //             Log::info('Folio ' . $item['folio_fx'] . ' EFOB: ' . $EFOB);
+            //         }
+
+            //         // Evitar división por cero
+            //         $valor = ($ECCajas > 0) ? ($EFOB / $ECCajas) : 0;
+
+            //         $resEjec->push([
+            //             'folio' => $despacho->folio,
+            //             'valor' => $valor,
+            //         ]);
+            //         try {
+            //             //   dd(DB::connection('sqlsrv')->getPdo());
+            //         } catch (\Exception $e) {
+            //             die("Could not connect to the database.  Please check your configuration. error:" . $e);
+            //         }
+            //         // Realizar el UPDATE en la base de datos
+            //         $affectedRows = DB::connection('sqlsrv')
+            //             ->table('PKG_Stock_Det')
+            //             ->where('folio', $despacho->folio)
+            //             ->where('id', $despacho->id_pkg_stock_det)
+            //             ->where('destruccion_tipo', 'GDP')
+            //             ->update(['valor' => $valor]);
+            //     }
+            // } catch (Exception $e) {
+            //     Log::error("Error al actualizar valor GD en FX: " . $e->getMessage());
+            //     return response()->json(['error' => $e->getMessage()], 500);
+            // }
             try {
                 // Obtener despachos
                 $despachos = DB::connection('sqlsrv')->table("V_PKG_Despachos")
@@ -757,7 +913,7 @@ protected function generatePdfZip(array $imagePaths)
                         // Verificamos si el folio del despacho está en la lista
                         $folioMatch = in_array($despacho->folio, $folios);
                         if ($item['folio_fx'] === $despacho->folio || $folioMatch) {
-                            
+                            if ($item['folio_fx'] == '0000007404' || $item['folio_fx'] == '0000007406' || $item['folio_fx'] == '0000007421' || $item['folio_fx'] == '0000007428') {
 
 
                                 Log::info('Comparando:', [
@@ -767,7 +923,7 @@ protected function generatePdfZip(array $imagePaths)
                                     'calibre' => [$item['calibre'], trim($despacho->n_calibre), strcasecmp($item['calibre'], trim($despacho->n_calibre)) === 0],
                                     'etiqueta' => [$item['etiqueta'], trim($despacho->n_etiqueta), strcasecmp($item['etiqueta'], trim($despacho->n_etiqueta)) === 0],
                                 ]);
-                            
+                            }
                         }
 
                         return $folioMatch &&
