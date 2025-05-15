@@ -1160,7 +1160,7 @@ protected function generatePdfZip(array $imagePaths)
                 $color = ''; //W
                 $Observaciones = $item->observaciones; //X
                 $Cajas = $item->cantidad; //y
-                $TC    = $excelDato->tasa; //AV
+                $TC    =$liqCxCabecera->tasa_intercambio; //AV
                 $RMB_Caja = isset($item->precio_unitario) ? $item->precio_unitario : 0; //z
                 $RMB_Venta = $Cajas * $RMB_Caja; //AA
                 $Comision_Caja = $porcComision * $RMB_Caja; //AB
