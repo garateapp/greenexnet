@@ -568,7 +568,7 @@ protected function generatePdfZip(array $imagePaths)
         }
         foreach ($liqCxCabeceras as $liqCxCabecera) {
             $liqCxCabecera->update($request->all());
-            $ed=ExcelDatos::where('instructivo', $liqCxCabecera->instructivo)->first();
+            $ed=ExcelDato::where('instructivo', $liqCxCabecera->instructivo)->first();
             $ed->tasa=$liqCxCabecera->tasa_intercambio;
             $ed->save();
             $fob = Fob::where('Liquidacion', $liqCxCabecera->instructivo)->get();
