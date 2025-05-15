@@ -417,7 +417,7 @@ protected function generatePdfZip(array $imagePaths)
     public function update(UpdateLiqCxCabeceraRequest $request, LiqCxCabecera $liqCxCabecera)
     {
         $liqCxCabecera->update($request->all());
-        $ed=ExcelDatos::where('instructivo', $liqCxCabecera->instructivo)->first();
+        $ed=ExcelDato::where('instructivo', $liqCxCabecera->instructivo)->first();
         $ed->tasa=$liqCxCabecera->tasa_intercambio;
         $ed->save();
         $fob = Fob::where('Liquidacion', $liqCxCabecera->instructivo)->get();
@@ -918,91 +918,91 @@ protected function generatePdfZip(array $imagePaths)
             //     Log::error("Error al actualizar valor GD en FX: " . $e->getMessage());
             //     return response()->json(['error' => $e->getMessage()], 500);
             // }
-            try {
-                // Obtener despachos
-                $despachos = DB::connection('sqlsrv')->table("V_PKG_Despachos")
-                    ->select('folio', 'n_variedad_rotulacion', 'c_embalaje', 'n_calibre', 'n_etiqueta', 'id_pkg_stock_det')
-                    ->where('tipo_g_despacho', '=', 'GDP')
-                    ->where('numero_embarque', '=', str_replace('i', '', str_replace('I', '', $liqCxCabecera->instructivo)))
-                    ->get();
+        //     try {
+        //         // Obtener despachos
+        //         $despachos = DB::connection('sqlsrv')->table("V_PKG_Despachos")
+        //             ->select('folio', 'n_variedad_rotulacion', 'c_embalaje', 'n_calibre', 'n_etiqueta', 'id_pkg_stock_det')
+        //             ->where('tipo_g_despacho', '=', 'GDP')
+        //             ->where('numero_embarque', '=', str_replace('i', '', str_replace('I', '', $liqCxCabecera->instructivo)))
+        //             ->get();
 
-                foreach ($despachos as $despacho) {
-                    $EFOB = 0;
-                    $ECCajas = 0;
-                    $valor = 0;
-
-
-                    $items = $liqs->filter(function ($item) use ($despacho) {
-                        $folios = array_map('trim', explode(',', $item['folio_fx']));
-
-                        // Verificamos si el folio del despacho está en la lista
-                        $folioMatch = in_array($despacho->folio, $folios);
-                        if ($item['folio_fx'] === $despacho->folio || $folioMatch) {
-                            //if ($item['folio_fx'] == '0000007404' || $item['folio_fx'] == '0000007406' || $item['folio_fx'] == '0000007421' || $item['folio_fx'] == '0000007428') {
+        //         foreach ($despachos as $despacho) {
+        //             $EFOB = 0;
+        //             $ECCajas = 0;
+        //             $valor = 0;
 
 
-                                Log::info('Comparando:', [
-                                    'folio_fx' => [$item['folio_fx'], $despacho->folio, $folioMatch],
-                                    'variedad' => [$item['variedad'], trim($despacho->n_variedad_rotulacion), strcasecmp($item['variedad'], trim($despacho->n_variedad_rotulacion)) === 0],
-                                    'embalaje' => [$item['embalaje'], trim($despacho->c_embalaje), strcasecmp($item['embalaje'], trim($despacho->c_embalaje)) === 0],
-                                    'calibre' => [$item['calibre'], trim($despacho->n_calibre), strcasecmp($item['calibre'], trim($despacho->n_calibre)) === 0],
-                                    'etiqueta' => [$item['etiqueta'], trim($despacho->n_etiqueta), strcasecmp($item['etiqueta'], trim($despacho->n_etiqueta)) === 0],
-                                ]);
-                            //}
-                        }
+        //             $items = $liqs->filter(function ($item) use ($despacho) {
+        //                 $folios = array_map('trim', explode(',', $item['folio_fx']));
 
-                        return $folioMatch &&
-                            strcasecmp(trim($item['variedad']), trim($despacho->n_variedad_rotulacion)) === 0 &&
-                            strcasecmp(trim($item['embalaje']), trim($despacho->c_embalaje)) === 0 &&
-                            strcasecmp(trim($item['calibre']), trim($despacho->n_calibre)) === 0 &&
-                            strcasecmp(trim($item['etiqueta']), trim($despacho->n_etiqueta)) === 0;
-                    });
+        //                 // Verificamos si el folio del despacho está en la lista
+        //                 $folioMatch = in_array($despacho->folio, $folios);
+        //                 if ($item['folio_fx'] === $despacho->folio || $folioMatch) {
+        //                     //if ($item['folio_fx'] == '0000007404' || $item['folio_fx'] == '0000007406' || $item['folio_fx'] == '0000007421' || $item['folio_fx'] == '0000007428') {
 
 
-                    Log::info('Elementos filtrados e:', $items->toArray());
+        //                         Log::info('Comparando:', [
+        //                             'folio_fx' => [$item['folio_fx'], $despacho->folio, $folioMatch],
+        //                             'variedad' => [$item['variedad'], trim($despacho->n_variedad_rotulacion), strcasecmp($item['variedad'], trim($despacho->n_variedad_rotulacion)) === 0],
+        //                             'embalaje' => [$item['embalaje'], trim($despacho->c_embalaje), strcasecmp($item['embalaje'], trim($despacho->c_embalaje)) === 0],
+        //                             'calibre' => [$item['calibre'], trim($despacho->n_calibre), strcasecmp($item['calibre'], trim($despacho->n_calibre)) === 0],
+        //                             'etiqueta' => [$item['etiqueta'], trim($despacho->n_etiqueta), strcasecmp($item['etiqueta'], trim($despacho->n_etiqueta)) === 0],
+        //                         ]);
+        //                     //}
+        //                 }
+
+        //                 return $folioMatch &&
+        //                     strcasecmp(trim($item['variedad']), trim($despacho->n_variedad_rotulacion)) === 0 &&
+        //                     strcasecmp(trim($item['embalaje']), trim($despacho->c_embalaje)) === 0 &&
+        //                     strcasecmp(trim($item['calibre']), trim($despacho->n_calibre)) === 0 &&
+        //                     strcasecmp(trim($item['etiqueta']), trim($despacho->n_etiqueta)) === 0;
+        //             });
 
 
+        //             Log::info('Elementos filtrados e:', $items->toArray());
 
 
 
-                    Log::info('item: ' . json_encode($items));
 
-                    $EFOB = 0;
-                    foreach ($items as $item) {
-                        Log::info("EFOB inicio " . $EFOB);
-                        $EFOB += $item['FOB_TO_USD'];
-                        Log::info("EFOB Asignado  " . $EFOB);
-                        Log::info("CAJAS Inicio" . $item['Cajas']);
-                        $ECCajas += $item['Cajas'];
-                        Log::info("CAJAS Asignado" . $item['Cajas']);
-                        Log::info('Folio ' . $item['folio_fx'] . ' EFOB: ' . $EFOB);
-                    }
 
-                    // Evitar división por cero
-                    $valor = ($ECCajas > 0) ? ($EFOB / $ECCajas) : 0;
+        //             Log::info('item: ' . json_encode($items));
 
-                    $resEjec->push([
-                        'folio' => $despacho->folio,
-                        'valor' => $valor,
-                    ]);
-                    try {
-                        //   dd(DB::connection('sqlsrv')->getPdo());
-                    } catch (\Exception $e) {
-                        die("Could not connect to the database.  Please check your configuration. error:" . $e);
-                    }
-                    // Realizar el UPDATE en la base de datos
-                    $affectedRows = DB::connection('sqlsrv')
-                        ->table('PKG_Stock_Det')
-                        ->where('folio', $despacho->folio)
-                        ->where('id', $despacho->id_pkg_stock_det)
-                        ->where('destruccion_tipo', 'GDP')
-                        ->update(['valor' => $valor]);
-                }
-            } catch (Exception $e) {
-                Log::error("Error al actualizar valor GD en FX: " . $e->getMessage());
-                return response()->json(['error' => $e->getMessage()], 500);
-            }
-        }
+        //             $EFOB = 0;
+        //             foreach ($items as $item) {
+        //                 Log::info("EFOB inicio " . $EFOB);
+        //                 $EFOB += $item['FOB_TO_USD'];
+        //                 Log::info("EFOB Asignado  " . $EFOB);
+        //                 Log::info("CAJAS Inicio" . $item['Cajas']);
+        //                 $ECCajas += $item['Cajas'];
+        //                 Log::info("CAJAS Asignado" . $item['Cajas']);
+        //                 Log::info('Folio ' . $item['folio_fx'] . ' EFOB: ' . $EFOB);
+        //             }
+
+        //             // Evitar división por cero
+        //             $valor = ($ECCajas > 0) ? ($EFOB / $ECCajas) : 0;
+
+        //             $resEjec->push([
+        //                 'folio' => $despacho->folio,
+        //                 'valor' => $valor,
+        //             ]);
+        //             try {
+        //                 //   dd(DB::connection('sqlsrv')->getPdo());
+        //             } catch (\Exception $e) {
+        //                 die("Could not connect to the database.  Please check your configuration. error:" . $e);
+        //             }
+        //             // Realizar el UPDATE en la base de datos
+        //             $affectedRows = DB::connection('sqlsrv')
+        //                 ->table('PKG_Stock_Det')
+        //                 ->where('folio', $despacho->folio)
+        //                 ->where('id', $despacho->id_pkg_stock_det)
+        //                 ->where('destruccion_tipo', 'GDP')
+        //                 ->update(['valor' => $valor]);
+        //         }
+        //     } catch (Exception $e) {
+        //         Log::error("Error al actualizar valor GD en FX: " . $e->getMessage());
+        //         return response()->json(['error' => $e->getMessage()], 500);
+        //     }
+        // }
 
         return response()->json(["message" => "Se modificaron $affectedRows registros", "data" => $affectedRows], 200);
     }
