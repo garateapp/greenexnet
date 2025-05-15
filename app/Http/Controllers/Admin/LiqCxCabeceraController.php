@@ -834,6 +834,7 @@ protected function generatePdfZip(array $imagePaths)
                
                 
             }
+
             // try {
             //     // Obtener despachos
             //     $despachos = DB::connection('sqlsrv')->table("V_PKG_Despachos")
@@ -1002,7 +1003,7 @@ protected function generatePdfZip(array $imagePaths)
         //         Log::error("Error al actualizar valor GD en FX: " . $e->getMessage());
         //         return response()->json(['error' => $e->getMessage()], 500);
         //     }
-        // }
+         }
 
         return response()->json(["message" => "Se modificaron $affectedRows registros", "data" => $affectedRows], 200);
     }
