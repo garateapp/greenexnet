@@ -417,6 +417,15 @@ protected function generatePdfZip(array $imagePaths)
     public function update(UpdateLiqCxCabeceraRequest $request, LiqCxCabecera $liqCxCabecera)
     {
         $liqCxCabecera->update($request->all());
+        $ed=ExcelDatos::where('instructivo', $liqCxCabecera->instructivo)->first();
+        $ed->tasa=$liqCxCabecera->tasa_intercambio;
+        $ed->save();
+        $fob = Fob::where('Liquidacion', $liqCxCabecera->instructivo)->get();
+        foreach ($fob as $item) {
+            $item->tc = $liqCxCabecera->tasa_intercambio;
+            $item->save();
+        }
+        
 
         return redirect()->route('admin.liq-cx-cabeceras.index');
     }
@@ -913,7 +922,7 @@ protected function generatePdfZip(array $imagePaths)
                         // Verificamos si el folio del despacho está en la lista
                         $folioMatch = in_array($despacho->folio, $folios);
                         if ($item['folio_fx'] === $despacho->folio || $folioMatch) {
-                            if ($item['folio_fx'] == '0000007404' || $item['folio_fx'] == '0000007406' || $item['folio_fx'] == '0000007421' || $item['folio_fx'] == '0000007428') {
+                            //if ($item['folio_fx'] == '0000007404' || $item['folio_fx'] == '0000007406' || $item['folio_fx'] == '0000007421' || $item['folio_fx'] == '0000007428') {
 
 
                                 Log::info('Comparando:', [
@@ -923,7 +932,7 @@ protected function generatePdfZip(array $imagePaths)
                                     'calibre' => [$item['calibre'], trim($despacho->n_calibre), strcasecmp($item['calibre'], trim($despacho->n_calibre)) === 0],
                                     'etiqueta' => [$item['etiqueta'], trim($despacho->n_etiqueta), strcasecmp($item['etiqueta'], trim($despacho->n_etiqueta)) === 0],
                                 ]);
-                            }
+                            //}
                         }
 
                         return $folioMatch &&
