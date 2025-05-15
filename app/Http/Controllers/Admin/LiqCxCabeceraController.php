@@ -416,13 +416,15 @@ protected function generatePdfZip(array $imagePaths)
     }
     public function update(UpdateLiqCxCabeceraRequest $request, LiqCxCabecera $liqCxCabecera)
     {
+        $ed=ExcelDato::where('instructivo', $request->instructivo)->first();
+        $ed->tasa=$request->tasa_intercambio;
         $liqCxCabecera->update($request->all());
-        $ed=ExcelDato::where('instructivo', $liqCxCabecera->instructivo)->first();
-        $ed->tasa=$liqCxCabecera->tasa_intercambio;
+        
+        
         $ed->save();
-        $fob = Fob::where('Liquidacion', $liqCxCabecera->instructivo)->get();
+        $fob = Fob::where('Liquidacion', $request->instructivo)->get();
         foreach ($fob as $item) {
-            $item->tc = $liqCxCabecera->tasa_intercambio;
+            $item->tc = $request->tasa_intercambio;
             $item->save();
         }
         
@@ -753,7 +755,7 @@ protected function generatePdfZip(array $imagePaths)
 
         // Obtener cabeceras
         $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->whereIn('especie_id',[4,6])->get();
-
+        
         //Obtener cabeceras de JWM y Maoheng
         //$liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->whereIn('cliente_id',[19] )->whereNotNull('nave_id')->get();
 
@@ -761,8 +763,11 @@ protected function generatePdfZip(array $imagePaths)
             $liqs = $this->ConsolidadoLiquidacionesUnitario($liqCxCabecera->id);
 
             $fob = Fob::where('Liquidacion',$liqCxCabeceras[0]->instructivo)->get(); // Busca solo uno
-            //if ($fob) {
+            if ($liqCxCabecera->instructivo=="I2425505") {
+                \Log::info("fob: " . json_encode($fob));
+            }
                 foreach ($fob as $item) {
+                    
                     $item->delete();
                 }
             //}
