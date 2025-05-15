@@ -562,7 +562,20 @@ protected function generatePdfZip(array $imagePaths)
         $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->where('id', $id)->get();
         $fob = Fob::where('Liquidacion',$liqCxCabeceras[0]->instructivo)->get(); // Busca solo uno
         if ($fob) {
-            $fob->delete()->where('Liquidacion', $liqCxCabeceras[0]->instructivo)->get();
+            foreach ($fob as $item) {
+                $item->delete();
+            }
+        }
+        foreach ($liqCxCabeceras as $liqCxCabecera) {
+            $liqCxCabecera->update($request->all());
+            $ed=ExcelDatos::where('instructivo', $liqCxCabecera->instructivo)->first();
+            $ed->tasa=$liqCxCabecera->tasa_intercambio;
+            $ed->save();
+            $fob = Fob::where('Liquidacion', $liqCxCabecera->instructivo)->get();
+            foreach ($fob as $item) {
+                $item->tc = $liqCxCabecera->tasa_intercambio;
+                $item->save();
+            }
         }
         foreach ($liqs as $liq) {
             //$fob = Fob::where('Liquidacion', $liq['Liquidacion'])->first();
