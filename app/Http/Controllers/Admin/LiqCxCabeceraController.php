@@ -1073,10 +1073,7 @@ protected function generatePdfZip(array $imagePaths)
                 $total_ventas = $total_ventas + $item->cantidad * (float)(str_replace(',', '.', $item->precio_unitario));
                 // Log::info("Total Venta: " . $total_ventas);
             }
-            if($total_kilos==0){
-                Log::info("Total kilos es cero: " . $total_kilos." Instructivo: " . $liqCxCabecera->instructivo);
-                Log::info("error en kilos de la liquidacion: ".json_encode($detalle));
-            }
+           
             $porcComision = '0,06';
             foreach ($detalle as $item) {
 
@@ -1156,6 +1153,10 @@ protected function generatePdfZip(array $imagePaths)
                 $Pallet = $item->folio_fx; //O
                 $Peso_neto = (float)(str_replace(',', '.', $fg->traducedatos($item->embalaje_id, 'Embalaje')));  //P
                 $Kilos_total = $Peso_neto * $item->cantidad; //Q
+                if($Kilos_total==0){
+                    Log::info("Total kilos es cero: " . $total_kilos." Instructivo: " . $liqCxCabecera->instructivo);
+                    Log::info("error en kilos de la liquidacion: ".json_encode($detalle));
+                }
                 $embalaje = $fg->traducedatos($item->embalaje_id, 'Embalaje'); //R
                 $etiqueta = $item->etiqueta_id; //S
                 $variedad = $item->variedad_id; //T
