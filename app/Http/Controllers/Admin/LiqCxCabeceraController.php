@@ -284,9 +284,9 @@ protected function generatePdfZip(array $imagePaths)
 
     // Limpiar archivos temporales (excepto el ZIP)
     foreach ($pdfFiles as $pdfFile) {
-        @unlink($pdfFile);
+@unlink($pdfFile);
     }
-    @rmdir($tempDir);
+@rmdir($tempDir);
 
     return $zipPath;
 }
@@ -759,9 +759,12 @@ protected function generatePdfZip(array $imagePaths)
 
         foreach ($liqCxCabeceras as $liqCxCabecera) {
             $liqs = $this->ConsolidadoLiquidacionesUnitario($liqCxCabecera->id);
-            $fob = Fob::where('Liquidacion',$liqCxCabeceras[0]->instructivo)->first(); // Busca solo uno
+
+            $fob = Fob::where('Liquidacion',$liqCxCabeceras[0]->instructivo)->get(); // Busca solo uno
             if ($fob) {
-                $fob->delete(); // Elimina solo si existe
+                foreach ($fob as $item) {
+                    $item->delete();
+                }
             }
             foreach ($liqs as $liq) {
                 //$fob = Fob::where('Liquidacion', $liq['Liquidacion'])->first();
