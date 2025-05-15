@@ -761,11 +761,11 @@ protected function generatePdfZip(array $imagePaths)
             $liqs = $this->ConsolidadoLiquidacionesUnitario($liqCxCabecera->id);
 
             $fob = Fob::where('Liquidacion',$liqCxCabeceras[0]->instructivo)->get(); // Busca solo uno
-            if ($fob) {
+            //if ($fob) {
                 foreach ($fob as $item) {
                     $item->delete();
                 }
-            }
+            //}
             foreach ($liqs as $liq) {
                 //$fob = Fob::where('Liquidacion', $liq['Liquidacion'])->first();
                
