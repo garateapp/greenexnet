@@ -1073,6 +1073,10 @@ protected function generatePdfZip(array $imagePaths)
                 $total_ventas = $total_ventas + $item->cantidad * (float)(str_replace(',', '.', $item->precio_unitario));
                 // Log::info("Total Venta: " . $total_ventas);
             }
+            if($total_kilos==0){
+                Log::info("Total kilos es cero: " . $total_kilos." Instructivo: " . $liqCxCabecera->instructivo);
+                Log::info("error en kilos de la liquidacion: ".json_encode($detalle));
+            }
             $porcComision = '0,06';
             foreach ($detalle as $item) {
 
