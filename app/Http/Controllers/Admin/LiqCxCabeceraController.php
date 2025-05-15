@@ -560,9 +560,9 @@ protected function generatePdfZip(array $imagePaths)
     
        
         $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->where('id', $id)->get();
-        $fob = Fob::where('Liquidacion',$liqCxCabeceras[0]->instructivo)->first(); // Busca solo uno
+        $fob = Fob::where('Liquidacion',$liqCxCabeceras[0]->instructivo)->get(); // Busca solo uno
         if ($fob) {
-            $fob->delete(); // Elimina solo si existe
+            $fob->delete()->where('Liquidacion', $liqCxCabeceras[0]->instructivo)->get();
         }
         foreach ($liqs as $liq) {
             //$fob = Fob::where('Liquidacion', $liq['Liquidacion'])->first();
