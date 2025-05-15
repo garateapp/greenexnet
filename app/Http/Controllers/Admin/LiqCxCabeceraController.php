@@ -762,7 +762,7 @@ protected function generatePdfZip(array $imagePaths)
         foreach ($liqCxCabeceras as $liqCxCabecera) {
             $liqs = $this->ConsolidadoLiquidacionesUnitario($liqCxCabecera->id);
 
-            $fob = Fob::where('Liquidacion',$liqCxCabeceras[0]->instructivo)->get(); // Busca solo uno
+            $fob = Fob::where('Liquidacion',$liqCxCabecera->instructivo)->get(); // Busca solo uno
             if ($liqCxCabecera->instructivo=="I2425505") {
                 \Log::info("fob: " . json_encode($fob));
             }
