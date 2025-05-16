@@ -754,7 +754,28 @@ protected function generatePdfZip(array $imagePaths)
         
 
         // Obtener cabeceras
-        $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->whereIn('especie_id',[4,6])->get();
+        $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->whereIn('instructivo',[
+            'I2425630',
+            'I2425652',
+            'I2425633',
+            'I2425646',
+            'I2425638',
+            'I2425598',
+            'I2425621',
+            'I2425590',
+            'I2425605',
+            'I2425603',
+            'I2425620',
+            'I2425624',
+            'I2425634',
+            'I2425666',
+            'I2425653',
+            'I2425628',
+            'I2425632',
+            'I2425623',
+            'I2425619',
+            'I2425658',
+            'I2425647'])->get();
         
         //Obtener cabeceras de JWM y Maoheng
         //$liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->whereIn('cliente_id',[19] )->whereNotNull('nave_id')->get();
