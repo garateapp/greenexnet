@@ -83,9 +83,8 @@
                             <label class="required"
                                 for="tasa_intercambio">{{ trans('cruds.liqCxCabecera.fields.tasa_intercambio') }}</label>
                             <input class="form-control {{ $errors->has('tasa_intercambio') ? 'is-invalid' : '' }}"
-                                type="number" name="tasa_intercambio" id="tasa_intercambio"
-                                value="{{ old('tasa_intercambio', $liqCxCabecera->tasa_intercambio) }}" step="0.01"
-                                required>
+                                type="number" name="tasa_intercambio" id="tasa_intercambio" step="0.0000001"
+                                value="{{ old('tasa_intercambio', $liqCxCabecera->tasa_intercambio) }}"  required>
                             @if ($errors->has('tasa_intercambio'))
                                 <div class="invalid-feedback">{{ $errors->first('tasa_intercambio') }}</div>
                             @endif
