@@ -1251,6 +1251,9 @@ protected function generatePdfZip(array $imagePaths)
                 $Pais = 'CHINA'; //BZ
                 $c_embalaje = $item->c_embalaje;
                 $folio_fx = $item->folio_fx;
+                $notacredito_caja = (($notacredito == 0 ? 0 : ($notacredito) ) / $total_kilos) * $Peso_neto; //CA
+                $notacredito_total = $notacredito_caja * $Cajas; //CB
+                
                 
 
                 //$embalaje_dato_origen'=>$item->embalaje_id, //CI
@@ -1347,7 +1350,8 @@ protected function generatePdfZip(array $imagePaths)
                         'USD_Flete_Domestico_TO' => $USD_Flete_Domestico_TO, //CH
                         'embalaje' => $c_embalaje, //agregado para obtener datos
                         'folio_fx' => $item->folio_fx,
-                        'nota_credito'=>(($notacredito/$total_kilos)*$Peso_neto),
+                        'nota_credito_caja'=>$notacredito_caja, //CA
+                        'nota_credito_total'=>$notacredito_total, //CB
 
 
                     ],
