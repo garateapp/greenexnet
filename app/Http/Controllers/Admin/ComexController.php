@@ -852,6 +852,9 @@ class ComexController extends Controller
                         case 'Otros Ingresos':
                             $otrosingresos = $costo->valor;
                             break;
+                        case 'Nota de Crédito':
+                            $notacredito=$costo->valor;
+                            break;
                         default:
 
 
@@ -933,7 +936,7 @@ class ComexController extends Controller
                         'RMB otros costos TO' => '=+AN' . $i . '*Y' . $i, //AO
                         'Flete marit. Caja RMB' => '=+(' . ($costosFleteInternacional == 0 ? 0 : $costosFleteInternacional) . '/' . $total_kilos . ')*P' . $i, //AP
                         'RMB Flete Marit. TO' => '=+AP' . $i . '*Y' . $i, //AQ
-                        'Costos cajas RMB' => '=+AF' . $i . '+AH' . $i . '+AJ' . $i . '+AL' . $i . '+AN' . $i . '+AB' . $i . '+AP' . $i . '+(BO' . $i . ')+(BQ' . $i . '*AV' . $i . ')+CE'.$i, //AR -(CC' . $i . '*AV' . $i . ') +(CA' . $i . '*AV' . $i . ') Se elimina por que no incide
+                        'Costos cajas RMB' => '=+AF' . $i . '+AH' . $i . '+AJ' . $i . '+AL' . $i . '+AN' . $i . '+AB' . $i . '+AP' . $i . '+(BO' . $i . ')+(BQ' . $i . '*AV' . $i . ')+CE'.$i."+CL".i, //AR -(CC' . $i . '*AV' . $i . ') +(CA' . $i . '*AV' . $i . ') Se elimina por que no incide
                         'RMB Costos TO' => '=+AR' . $i . '*Y' . $i, //AS
                         'Resultados caja RMB' => '=+Z' . $i . '-AR' . $i,  //AT  Verificar con Haydelin
                         'RMB result. TO' => '=+AT' . $i . '*Y' . $i, //AU  Verificar con Haydelin
@@ -979,6 +982,8 @@ class ComexController extends Controller
                         'embalaje_dato_origen' => $item->c_embalaje, //CI
                         'nave'=>$nave, //CJ
                         'especie'=>$especie->nombre, //CK
+                        'nota_credito_caja'=>'=+(' . $notacredito. '/' . $total_kilos . ')*P' . $i, //CL
+                        'nota_credito_to'=>'+=(CL'.$i.'*Y'.$i.')', //CM
 
                     ],
                     //$costo_procesado,
