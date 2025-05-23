@@ -783,6 +783,7 @@ class ComexController extends Controller
         $ajusteimpuesto = 0;
         $otrosimpuestos = 0;
         $otrosingresos = 0;
+        $notacredito=0;
         $i = 2;
 
         foreach ($liqCxCabeceras as $liqCxCabecera) {
@@ -1028,6 +1029,7 @@ class ComexController extends Controller
         $ajusteimpuesto = 0;
         $otrosimpuestos = 0;
         $otrosingresos = 0;
+        $notacredito=0;
         $i = 2;
 
         foreach ($liqCxCabeceras as $liqCxCabecera) {
@@ -1404,6 +1406,7 @@ class ComexController extends Controller
         $ajusteimpuesto = 0;
         $otrosimpuestos = 0;
         $otrosingresos = 0;
+        $notacredito=0;
         $i = 2;
 
         foreach ($liqCxCabeceras as $liqCxCabecera) {
@@ -1474,6 +1477,9 @@ class ComexController extends Controller
                         case 'Otros Ingresos':
                             $otrosingresos = $costo->valor;
                             break;
+                            case 'Nota de Credito':
+                                $notacredito = $costo->valor;
+                                break;
                         default:
 
 
@@ -1574,6 +1580,7 @@ class ComexController extends Controller
                 $c_embalaje = $item->c_embalaje;
                 $folio_fx = $item->folio_fx;
 
+
                 //$embalaje_dato_origen'=>$item->embalaje_id, //CI
 
                 //Fin Variables
@@ -1668,6 +1675,7 @@ class ComexController extends Controller
                         'USD_Flete_Domestico_TO' => $USD_Flete_Domestico_TO, //CH
                         'embalaje' => $c_embalaje, //agregado para obtener datos
                         'folio_fx' => $folio_fx,
+                        'notacredito' => $notacredito,
 
 
 
