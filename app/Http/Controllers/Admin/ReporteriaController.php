@@ -1931,13 +1931,354 @@ class ReporteriaController extends Controller
 
         // $datos = session("sheetLiqs");
 
-        $datos=Fob::all();
+        $datos=Fob::where('id','>',0)
+        ->orderBy('nave')
+        ->orderBy("etiqueta")
+        ->get();
+        
         $datos=$datos->map(function ($item) {
             $item->especie = strtoupper($item->especie ?? '');
             return $item;
         });
         return $datos;
     }
+     public function obtenerDataComparativaInicial()
+    {
+        // if (!session()->has("sheetLiqs")) {
+        //     session(["sheetLiqs" => $this->ConsolidadoLiquidaciones()]);
+        // }
+
+        $datos=Fob::where('nave','!=','')
+        ->select("nave","etiqueta","variedad","calibre","embalaje",
+                    "cliente","especie","ETA_Week",
+        DB::raw("SUM(FOB_TO_USD) as FOB_TO_USD"),
+        DB::raw("SUM(FOB_TO_USD/Kilos_Total) as Ventas_TO_USD"),
+        DB::raw("SUM(Kilos_Total) as Kilos_Total"),
+        DB::raw("SUM(Ventas_TO_USD/Kilos_Total) as Ventas_TO_USD"))
+        ->groupBy("cliente","nave","etiqueta","embalaje","variedad","calibre","especie","ETA_Week")
+        ->orderBy('nave')
+        ->orderBy("etiqueta")
+        ->get();
+        
+        $datos=$datos->map(function ($item) {
+            $item->especie = strtoupper($item->especie ?? '');
+            return $item;
+        });
+        return $datos;
+    }
+    public function obtenerComparativo(Request $request)
+    {
+        // Fetch main client
+        $cliente = ClientesComex::where('nombre_fantasia', $request->input('cliente', ''))->first();
+        if (!$cliente) {
+            return response()->json(['error' => 'Cliente no encontrado'], 404);
+        }
+
+        // Execute queries for main client
+        $datos = Fob::whereIn('especie', $request->input('especie', []))
+            ->where('nave', '!=', '')
+            ->where('cliente', $cliente->nombre_fantasia)
+            ->select(
+                "nave",
+                "etiqueta",
+                "variedad",
+                "calibre",
+                "cliente",
+                "especie",
+                "ETA_Week",
+                DB::raw("RIGHT(embalaje,1) as embalaje"),
+                DB::raw("SUM(FOB_TO_USD) as FOB_TO_USD"),
+                DB::raw("SUM(Ventas_TO_USD) as Ventas_TO_USD"),
+                DB::raw("SUM(Kilos_Total) as Kilos_Total"),
+                DB::raw("SUM(Ventas_TO_USD)/NULLIF(SUM(Kilos_Total), 0) as Ventas_kg")
+            )
+            ->groupBy("cliente", "nave", "etiqueta", "embalaje", "variedad", "calibre", "especie", "ETA_Week")
+            ->orderBy('nave')
+            ->orderBy('etiqueta')
+            ->orderBy('variedad')
+            ->orderBy('calibre')
+            ->get();
+
+        $vista = $request->input('vista', 2);
+
+        // Execute queries for compared clients
+        if ($vista == 1) {
+            $datosComparativo = Fob::whereIn('especie', $request->input('especie', []))
+                ->where('nave', '!=', '')
+                ->where('cliente', '!=', $cliente->nombre_fantasia)
+                ->select(
+                    "nave",
+                    "etiqueta",
+                    "variedad",
+                    "calibre",
+                    DB::raw("RIGHT(embalaje,1) as embalaje"),
+                    DB::raw("SUM(FOB_TO_USD) as FOB_TO_USD"),
+                    DB::raw("SUM(Ventas_TO_USD) as Ventas_TO_USD"),
+                    DB::raw("SUM(Kilos_Total) as Kilos_Total"),
+                    DB::raw("SUM(Ventas_TO_USD)/NULLIF(SUM(Kilos_Total), 0) as Ventas_kg")
+                )
+                ->groupBy("nave", "etiqueta", "embalaje", "variedad", "calibre")
+                ->orderBy('nave')
+                ->orderBy('etiqueta')
+                ->get();
+        } else {
+            $datosComparativo = Fob::whereIn('especie', $request->input('especie', []))
+                ->where('nave', '!=', '')
+                ->where('cliente', '!=', $cliente->nombre_fantasia)
+                ->select(
+                    "nave",
+                    "etiqueta",
+                    "variedad",
+                    "calibre",
+                    "cliente",
+                    "especie",
+                    "ETA_Week",
+                    DB::raw("RIGHT(embalaje,1) as embalaje"),
+                    DB::raw("SUM(FOB_TO_USD) as FOB_TO_USD"),
+                    DB::raw("SUM(Ventas_TO_USD) as Ventas_TO_USD"),
+                    DB::raw("SUM(Kilos_Total) as Kilos_Total"),
+                    DB::raw("SUM(Ventas_TO_USD)/NULLIF(SUM(Kilos_Total), 0) as Ventas_kg")
+                )
+                ->groupBy("cliente", "nave", "etiqueta", "embalaje", "variedad", "calibre", "especie", "ETA_Week")
+                ->orderBy('nave')
+                ->orderBy('etiqueta')
+                ->get();
+        }
+
+        // Get unique compared clients (for vista = 2)
+        $compared_clients = [];
+        if ($vista == 2) {
+            $all_clients = Fob::whereIn('especie', $request->input('especie', []))
+                ->where('nave', '!=', '')
+                ->where('cliente', '!=', $cliente->nombre_fantasia)
+                ->distinct()
+                ->pluck('cliente')
+                ->toArray();
+            $compared_clients = array_unique($all_clients);
+            sort($compared_clients); // Sort clients for consistent column order
+        }
+
+        // Initialize arrays
+        $result = [];
+        $combined = [];
+        $subtotals = [];
+
+        // Process $datos (main client)
+        foreach ($datos as $row) {
+            $key = $row->nave . '|' . $row->etiqueta . '|' . $row->embalaje . '|' . $row->variedad . '|' . $row->calibre;
+            if (!isset($combined[$key])) {
+                $combined[$key] = [
+                    'nave' => $row->nave,
+                    'etiqueta' => $row->etiqueta,
+                    'embalaje' => $row->embalaje,
+                    'variedad' => $row->variedad,
+                    'calibre' => $row->calibre,
+                    'kilos_total' => 0,
+                    'fob_to_usd' => 0,
+                    'ventas_to_usd' => 0,
+                    'fob_kilo_usd_main' => 0,
+                    'venta_kilo_usd_main' => 0,
+                ];
+                if ($vista == 1) {
+                    $combined[$key]['fob_kilo_usd_resto'] = 0;
+                    $combined[$key]['venta_kilo_usd_resto'] = 0;
+                    $combined[$key]['resto_kilos_total'] = 0;
+                    $combined[$key]['resto_fob_to_usd'] = 0;
+                    $combined[$key]['resto_ventas_to_usd'] = 0;
+                } else {
+                    foreach ($compared_clients as $client) {
+                        $client_key = str_replace(' ', '_', $client);
+                        $combined[$key]["fob_kilo_usd_$client_key"] = 0;
+                        $combined[$key]["venta_kilo_usd_$client_key"] = 0;
+                    }
+                }
+            }
+            $combined[$key]['kilos_total'] += $row->Kilos_Total;
+            $combined[$key]['fob_to_usd'] += $row->FOB_TO_USD;
+            $combined[$key]['ventas_to_usd'] += $row->Ventas_TO_USD;
+            $combined[$key]['fob_kilo_usd_main'] = $row->Kilos_Total > 0 ? $row->FOB_TO_USD / $row->Kilos_Total : 0;
+            $combined[$key]['venta_kilo_usd_main'] = $row->Ventas_kg ?? 0;
+
+            // Accumulate for subtotals
+            $subtotal_key = $row->nave . '|' . $row->etiqueta;
+            if (!isset($subtotals[$subtotal_key])) {
+                $subtotals[$subtotal_key] = [
+                    'kilos_total' => 0,
+                    'fob_to_usd' => 0,
+                    'ventas_to_usd' => 0,
+                ];
+            }
+            $subtotals[$subtotal_key]['kilos_total'] += $row->Kilos_Total;
+            $subtotals[$subtotal_key]['fob_to_usd'] += $row->FOB_TO_USD;
+            $subtotals[$subtotal_key]['ventas_to_usd'] += $row->Ventas_TO_USD;
+        }
+
+        // Process $datosComparativo
+        foreach ($datosComparativo as $row) {
+            $key = $row->nave . '|' . $row->etiqueta . '|' . $row->embalaje . '|' . $row->variedad . '|' . $row->calibre;
+            if (isset($combined[$key])) {
+                if ($vista == 1) {
+                    $combined[$key]['resto_kilos_total'] += $row->Kilos_Total;
+                    $combined[$key]['resto_fob_to_usd'] += $row->FOB_TO_USD;
+                    $combined[$key]['resto_ventas_to_usd'] += $row->Ventas_TO_USD;
+                    $combined[$key]['fob_kilo_usd_resto'] = $combined[$key]['resto_kilos_total'] > 0 
+                        ? $combined[$key]['resto_fob_to_usd'] / $combined[$key]['resto_kilos_total'] 
+                        : 0;
+                    $combined[$key]['venta_kilo_usd_resto'] = $combined[$key]['resto_kilos_total'] > 0 
+                        ? $combined[$key]['resto_ventas_to_usd'] / $combined[$key]['resto_kilos_total'] 
+                        : 0;
+                } else {
+                    $client_key = str_replace(' ', '_', $row->cliente);
+                    $combined[$key]["fob_kilo_usd_$client_key"] = $row->Kilos_Total > 0 
+                        ? $row->FOB_TO_USD / $row->Kilos_Total 
+                        : 0;
+                    $combined[$key]["venta_kilo_usd_$client_key"] = $row->Ventas_kg ?? 0;
+                }
+            }
+        }
+
+        // Build the result array
+        $result = [];
+        $current_nave = null;
+        $current_etiqueta = null;
+
+        foreach ($combined as $key => $row) {
+            // Detect change in Nave or Etiqueta
+            if ($current_nave !== $row['nave'] || $current_etiqueta !== $row['etiqueta']) {
+                // Add subtotal for previous Nave|Etiqueta
+                if ($current_nave !== null && $current_etiqueta !== null) {
+                    $subtotal_key = $current_nave . '|' . $current_etiqueta;
+                    if (isset($subtotals[$subtotal_key])) {
+                        $fob_kilo_usd = $subtotals[$subtotal_key]['kilos_total'] > 0 
+                            ? $subtotals[$subtotal_key]['fob_to_usd'] / $subtotals[$subtotal_key]['kilos_total'] 
+                            : 0;
+                        $venta_kilo_usd = $subtotals[$subtotal_key]['kilos_total'] > 0 
+                            ? $subtotals[$subtotal_key]['ventas_to_usd'] / $subtotals[$subtotal_key]['kilos_total'] 
+                            : 0;
+                        $subtotal_row = [
+                            'Nave' => $current_nave,
+                            'Etiqueta' => $current_etiqueta . ' Subtotal',
+                            'Embalaje' => '',
+                            'Variedad' => '',
+                            'Calibre' => '',
+                            'Suma de Kilos Total' => $subtotals[$subtotal_key]['kilos_total'],
+                            'Suma de FOB TO USD' => $subtotals[$subtotal_key]['fob_to_usd'],
+                            'Suma de FOB Kilo USD' => $fob_kilo_usd,
+                            'Suma de Venta USD Kilo' => $venta_kilo_usd,
+                            'Diferencia' => null,
+                            'Total Diferencia' => null,
+                        ];
+                        if ($vista == 1) {
+                            $subtotal_row['FOB Kilo USD Resto de Clientes'] = null;
+                            $subtotal_row['Venta Kilo USD Resto de Clientes'] = null;
+                        } else {
+                            foreach ($compared_clients as $client) {
+                                $client_key = str_replace(' ', '_', $client);
+                                $subtotal_row["FOB Kilo USD ($client)"] = null;
+                                $subtotal_row["Venta Kilo USD ($client)"] = null;
+                            }
+                        }
+                        $result[] = $subtotal_row;
+                        unset($subtotals[$subtotal_key]);
+                    }
+                }
+                $current_nave = $row['nave'];
+                $current_etiqueta = $row['etiqueta'];
+            }
+
+            // Calculate Diferencia
+            $fob_kilo_usd = $row['kilos_total'] > 0 ? $row['fob_to_usd'] / $row['kilos_total'] : 0;
+            $venta_kilo_usd = $row['kilos_total'] > 0 ? $row['ventas_to_usd'] / $row['kilos_total'] : 0;
+            $diferencia = 0;
+
+            if ($vista == 1) {
+                $avg_fob_resto = $row['fob_kilo_usd_resto'];
+                $diferencia = $avg_fob_resto > 0 ? $row['fob_kilo_usd_main'] - $avg_fob_resto : 0;
+            } else {
+                $fob_values = [];
+                foreach ($compared_clients as $client) {
+                    $client_key = str_replace(' ', '_', $client);
+                    $fob_value = $row["fob_kilo_usd_$client_key"];
+                    if ($fob_value > 0) {
+                        $fob_values[] = $fob_value;
+                    }
+                }
+                $avg_fob_resto = !empty($fob_values) ? array_sum($fob_values) / count($fob_values) : 0;
+                $diferencia = $avg_fob_resto > 0 ? $row['fob_kilo_usd_main'] - $avg_fob_resto : 0;
+            }
+
+            // Calculate Total Diferencia
+            $total_diferencia = $diferencia * $row['kilos_total'];
+
+            // Build row data
+            $row_data = [
+                'Nave' => $row['nave'],
+                'Etiqueta' => $row['etiqueta'],
+                'Embalaje' => $row['embalaje'],
+                'Variedad' => $row['variedad'],
+                'Calibre' => $row['calibre'],
+                'Suma de Kilos Total' => $row['kilos_total'],
+                'Suma de FOB TO USD' => $row['fob_to_usd'],
+                'Suma de FOB Kilo USD' => $fob_kilo_usd,
+                'Suma de Venta USD Kilo' => $venta_kilo_usd,
+                'Diferencia' => $diferencia,
+                'Total Diferencia' => $total_diferencia,
+            ];
+
+            if ($vista == 1) {
+                $row_data['FOB Kilo USD Resto de Clientes'] = $row['fob_kilo_usd_resto'];
+                $row_data['Venta Kilo USD Resto de Clientes'] = $row['venta_kilo_usd_resto'];
+            } else {
+                foreach ($compared_clients as $client) {
+                    $client_key = str_replace(' ', '_', $client);
+                    $row_data["FOB Kilo USD ($client)"] = $row["fob_kilo_usd_$client_key"];
+                    $row_data["Venta Kilo USD ($client)"] = $row["venta_kilo_usd_$client_key"];
+                }
+            }
+
+            $result[] = $row_data;
+        }
+
+        // Add final subtotal
+        if ($current_nave !== null && $current_etiqueta !== null) {
+            $subtotal_key = $current_nave . '|' . $current_etiqueta;
+            if (isset($subtotals[$subtotal_key])) {
+                $fob_kilo_usd = $subtotals[$subtotal_key]['kilos_total'] > 0 
+                    ? $subtotals[$subtotal_key]['fob_to_usd'] / $subtotals[$subtotal_key]['kilos_total'] 
+                    : 0;
+                $venta_kilo_usd = $subtotals[$subtotal_key]['kilos_total'] > 0 
+                    ? $subtotals[$subtotal_key]['ventas_to_usd'] / $subtotals[$subtotal_key]['kilos_total'] 
+                    : 0;
+                $subtotal_row = [
+                    'Nave' => $current_nave,
+                    'Etiqueta' => $current_etiqueta . ' Subtotal',
+                    'Embalaje' => '',
+                    'Variedad' => '',
+                    'Calibre' => '',
+                    'Suma de Kilos Total' => $subtotals[$subtotal_key]['kilos_total'],
+                    'Suma de FOB TO USD' => $subtotals[$subtotal_key]['fob_to_usd'],
+                    'Suma de FOB Kilo USD' => $fob_kilo_usd,
+                    'Suma de Venta USD Kilo' => $venta_kilo_usd,
+                    'Diferencia' => null,
+                    'Total Diferencia' => null,
+                ];
+                if ($vista == 1) {
+                    $subtotal_row['FOB Kilo USD Resto de Clientes'] = null;
+                     $subtotal_row['Venta Kilo USD Resto de Clientes'] = null;
+                } else {
+                    foreach ($compared_clients as $client) {
+                        $client_key = str_replace(' ', '_', $client);
+                        $subtotal_row["FOB Kilo USD ($client)"] = null;
+                        $subtotal_row["Venta Kilo USD ($client)"] = null;
+                    }
+                }
+                $result[] = $subtotal_row;
+            }
+        }
+
+        return response()->json($result);
+    }
+   
     public function ConsolidadoLiquidaciones()
     {
         $fg = $this;

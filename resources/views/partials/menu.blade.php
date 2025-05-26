@@ -28,7 +28,15 @@
                 </i>
                Graficos Liquidaciones
             </a>
+
         </li>
+        <li class="c-sidebar-nav-item">
+            <a href="{{ route('admin.liq-cx-cabeceras.comparativoliquidaciones') }}" class="c-sidebar-nav-link">
+                <i class="c-sidebar-nav-icon fas fa-fw fa-chart-bar">
+
+                </i>
+               Comparativo Liquidaciones
+            </a>
         @endcan
         @can('user_management_access')
             <li
@@ -476,6 +484,7 @@
 
             </ul>
         </li>
+
         <li class="c-sidebar-nav-dropdown {{ request()->is('admin/embalajes*') ? 'c-show' : '' }}">
             <a class="c-sidebar-nav-dropdown-toggle" href="#">
                 <i class="fa-fw fas fa-cogs c-sidebar-nav-icon"></i>
@@ -681,6 +690,125 @@
 
                                 </i>
                                 {{ trans('cruds.moneda.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                </ul>
+            </li>
+        @endcan
+        @can('confeccion_liquidacion_access')
+            <li class="c-sidebar-nav-dropdown {{ request()->is("admin/grupos*") ? "c-show" : "" }} {{ request()->is("admin/productors*") ? "c-show" : "" }} {{ request()->is("admin/conjuntos*") ? "c-show" : "" }} {{ request()->is("admin/valor-fletes*") ? "c-show" : "" }} {{ request()->is("admin/valor-dolars*") ? "c-show" : "" }} {{ request()->is("admin/valor-envases*") ? "c-show" : "" }} {{ request()->is("admin/anticipos*") ? "c-show" : "" }} {{ request()->is("admin/interes-anticipos*") ? "c-show" : "" }} {{ request()->is("admin/recepcions*") ? "c-show" : "" }} {{ request()->is("admin/procesos*") ? "c-show" : "" }}">
+                <a class="c-sidebar-nav-dropdown-toggle" href="#">
+                    <i class="fa-fw fab fa-asymmetrik c-sidebar-nav-icon">
+
+                    </i>
+                    {{ trans('cruds.confeccionLiquidacion.title') }}
+                </a>
+                <ul class="c-sidebar-nav-dropdown-items">
+                    <li class="c-sidebar-nav-item">
+                        <a href="{{ route("admin.constructorliquidacion.selector") }}" class="c-sidebar-nav-link {{ request()->is("admin/recepcions") || request()->is("admin/recepcions/*") ? "c-active" : "" }}">
+                            <i class="fa-fw fas fa-spinner c-sidebar-nav-icon">
+
+                            </i>
+                           Generar Liquidación 
+                        </a>
+                    </li>
+                    @can('grupo_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.grupos.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/grupos") || request()->is("admin/grupos/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fas fa-users-cog c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.grupo.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('productor_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.productors.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/productors") || request()->is("admin/productors/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fas fa-tree c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.productor.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('conjunto_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.conjuntos.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/conjuntos") || request()->is("admin/conjuntos/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fas fa-circle c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.conjunto.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('valor_flete_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.valor-fletes.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/valor-fletes") || request()->is("admin/valor-fletes/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fas fa-truck-loading c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.valorFlete.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('valor_dolar_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.valor-dolars.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/valor-dolars") || request()->is("admin/valor-dolars/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fas fa-dollar-sign c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.valorDolar.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('valor_envase_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.valor-envases.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/valor-envases") || request()->is("admin/valor-envases/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fas fa-box-open c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.valorEnvase.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('anticipo_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.anticipos.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/anticipos") || request()->is("admin/anticipos/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fas fa-hand-holding-usd c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.anticipo.title') }}
+                            </a>
+                        </li>
+                   
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.interes-anticipos.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/interes-anticipos") || request()->is("admin/interes-anticipos/*") ? "c-active" : "" }}">
+                                <i class="fa-fw far fa-money-bill-alt c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.interesAnticipo.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('recepcion_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.recepcions.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/recepcions") || request()->is("admin/recepcions/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fas fa-spinner c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.recepcion.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('proceso_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.procesos.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/procesos") || request()->is("admin/procesos/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fas fa-users-cog c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.proceso.title') }}
                             </a>
                         </li>
                     @endcan
