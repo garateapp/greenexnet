@@ -1374,6 +1374,10 @@ protected function generatePdfZip(array $imagePaths)
         }
         return $dataComparativa;
     }
+    public function comparativoliquidaciones(Request $request){
+        $fob=FOB::all();
+        return view('admin.liqCxCabeceras.comparativoliquidaciones', compact('fob'));
+    }
    
         
 }
