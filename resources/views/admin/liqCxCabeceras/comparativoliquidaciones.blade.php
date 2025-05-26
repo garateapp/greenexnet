@@ -274,37 +274,47 @@
                         title: 'Suma de Kilos Total', 
                         data: 'Suma de Kilos Total',
                         className: 'numeric',
-                        render: data => data ? Number(data).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ''
+                        render: data => data ? Number(data).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ''
                     },
                     { 
                         title: 'Suma de FOB TO USD', 
                         data: 'Suma de FOB TO USD',
                         className: 'numeric',
-                        render: data => data ? Number(data).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ''
+                        render: data => data ? Number(data).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ''
                     },
                     { 
                         title: 'Suma de FOB Kilo USD', 
                         data: 'Suma de FOB Kilo USD',
                         className: 'numeric',
-                        render: data => data ? Number(data).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ''
+                        render: data => data ? Number(data).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ''
                     },
                     { 
                         title: 'Suma de Venta USD Kilo', 
                         data: 'Suma de Venta USD Kilo',
                         className: 'numeric',
-                        render: data => data ? Number(data).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ''
+                        render: data => data ? Number(data).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ''
                     },
                     { 
                         title: 'Diferencia', 
                         data: 'Diferencia',
                         className: 'numeric',
-                        render: data => data !== null ? Number(data).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ''
+                         render: function(data) {
+                            if (data === null) return '';
+                            const num = Number(data);
+                            const formatted = num.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                            return num < 0 ? `<span class="negative">${formatted}</span>` : formatted;
+                        }
                     },
                     { 
                         title: 'Total Diferencia', 
                         data: 'Total Diferencia',
                         className: 'numeric',
-                        render: data => data !== null ? Number(data).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ''
+                         render: function(data) {
+                            if (data === null) return '';
+                            const num = Number(data);
+                            const formatted = num.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                            return num < 0 ? `<span class="negative">${formatted}</span>` : formatted;
+                        }
                     }
                 ];
 
@@ -321,13 +331,13 @@
                                 title: 'FOB Kilo USD Resto de Clientes',
                                 data: 'FOB Kilo USD Resto de Clientes',
                                 className: 'numeric',
-                                render: data => data !== null ? Number(data).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ''
+                                render: data => data !== null ? Number(data).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ''
                             },
                             {
                                 title: 'Venta Kilo USD Resto de Clientes',
                                 data: 'Venta Kilo USD Resto de Clientes',
                                 className: 'numeric',
-                                render: data => data !== null ? Number(data).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ''
+                                render: data => data !== null ? Number(data).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ''
                             }
                         );
                     } else {
@@ -370,7 +380,7 @@
                 dataTable = $('#comparativeTable').DataTable({
                     data: data,
                     columns: columns,
-                    pageLength: 10,
+                    pageLength: 100,
                     responsive: true,
                     order: [[0, 'asc'], [1, 'asc']],
                     createdRow: function(row, data) {
