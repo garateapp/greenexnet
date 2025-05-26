@@ -34,6 +34,9 @@
         td.numeric {
             text-align: right;
         }
+        .negative {
+            color: red;
+        }
     </style>
     @if (session('message'))
         <div class="alert alert-success">
