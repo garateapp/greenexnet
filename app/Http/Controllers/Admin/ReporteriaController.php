@@ -1979,9 +1979,9 @@ class ReporteriaController extends Controller
             ->where('nave', '!=', '')
             ->where('cliente', $cliente->nombre_fantasia)
             ->select(
-                "nave",
-                "etiqueta",
-                "variedad",
+                 DB::raw("upper(nave) as nave"),
+                    "etiqueta",
+                    DB::raw("upper(variedad) as variedad"),
                 "calibre",
                 "cliente",
                 "especie",
@@ -2007,9 +2007,9 @@ class ReporteriaController extends Controller
                 ->where('nave', '!=', '')
                 ->where('cliente', '!=', $cliente->nombre_fantasia)
                 ->select(
-                    "nave",
+                    DB::raw("upper(nave) as nave"),
                     "etiqueta",
-                    "variedad",
+                    DB::raw("upper(variedad) as variedad"),
                     "calibre",
                     DB::raw("RIGHT(embalaje,1) as embalaje"),
                     DB::raw("SUM(FOB_TO_USD) as FOB_TO_USD"),
@@ -2026,9 +2026,11 @@ class ReporteriaController extends Controller
                 ->where('nave', '!=', '')
                 ->where('cliente', '!=', $cliente->nombre_fantasia)
                 ->select(
-                    "nave",
+                    
+                    DB::raw("upper(nave) as nave"),
                     "etiqueta",
-                    "variedad",
+                    DB::raw("upper(variedad) as variedad"),
+                    "calibre",
                     "calibre",
                     "cliente",
                     "especie",
@@ -2278,7 +2280,124 @@ class ReporteriaController extends Controller
 
         return response()->json($result);
     }
-   
+    public function obtenerRankingOportunidad(Request $request)
+    {
+        // Get species from request
+        $especies = $request->input('especie', []);
+        if (empty($especies)) {
+            return response()->json(['error' => 'Especies no especificadas'], 400);
+        }
+
+        // Get all unique clients for the species
+        $all_clients = Fob::whereIn('especie', $especies)
+            ->where('nave', '!=', '')
+            ->distinct()
+            ->pluck('cliente')
+            ->toArray();
+        $all_clients = array_unique($all_clients);
+        sort($all_clients);
+
+        $ranking = [];
+
+        // Process each client as the main client
+        foreach ($all_clients as $main_client) {
+            // Fetch data for main client
+            $datos = Fob::whereIn('especie', $especies)
+                ->where('nave', '!=', '')
+                ->where('cliente', $main_client)
+                ->select(
+                    DB::raw("upper(nave) as nave"),
+                    "etiqueta",
+                    DB::raw("upper(variedad) as variedad"),
+                    "calibre",
+                    DB::raw("RIGHT(embalaje,1) as embalaje"),
+                    DB::raw("SUM(FOB_TO_USD) as FOB_TO_USD"),
+                    DB::raw("SUM(Kilos_Total) as Kilos_Total")
+                )
+                ->groupBy("cliente", "nave", "etiqueta", "embalaje", "variedad", "calibre")
+                ->get();
+
+            // Fetch data for other clients
+            $datosComparativo = Fob::whereIn('especie', $especies)
+                ->where('nave', '!=', '')
+                ->where('cliente', '!=', $main_client)
+                ->select(
+                    DB::raw("upper(nave) as nave"),
+                    "etiqueta",
+                    DB::raw("upper(variedad) as variedad"),
+                    "calibre",
+                    DB::raw("RIGHT(embalaje,1) as embalaje"),
+                    DB::raw("SUM(FOB_TO_USD) as FOB_TO_USD"),
+                    DB::raw("SUM(Kilos_Total) as Kilos_Total")
+                )
+                ->groupBy("nave", "etiqueta", "embalaje", "variedad", "calibre")
+                ->get();
+
+            // Initialize combined data
+            $combined = [];
+            $total_kilos = 0.0;
+            $total_diferencia = 0.0;
+
+            // Process main client data
+            foreach ($datos as $row) {
+                $key = $row->nave . '|' . $row->etiqueta . '|' . $row->embalaje . '|' . 
+                       $row->variedad . '|' . $row->calibre;
+                $combined[$key] = [
+                    'kilos_total' => $row->Kilos_Total,
+                    'fob_to_usd' => $row->FOB_TO_USD,
+                    'fob_kilo_usd_main' => $row->Kilos_Total > 0 ? $row->FOB_TO_USD / $row->Kilos_Total : 0,
+                    'resto_fob_to_usd' => 0,
+                    'resto_kilos_total' => 0,
+                ];
+                //$total_kilos += $row->Kilos_Total;
+            }
+
+            // Process comparative data
+            foreach ($datosComparativo as $row) {
+                $key = $row->nave . '|' . $row->etiqueta . '|' . $row->embalaje . '|' . 
+                    $row->variedad . '|' . $row->calibre;
+                if (isset($combined[$key])) {
+                    $combined[$key]['resto_fob_to_usd'] += $row->FOB_TO_USD;
+                    $combined[$key]['resto_kilos_total'] += $row->Kilos_Total;
+                }
+            }
+
+            // Calculate Diferencia and Total Diferencia
+            foreach ($combined as $key => $row) {
+                $fob_kilo_usd_resto = $row['resto_kilos_total'] > 0 
+                    ? $row['resto_fob_to_usd'] / $row['resto_kilos_total'] 
+                    : 0;
+                $diferencia = $fob_kilo_usd_resto > 0 ? $row['fob_kilo_usd_main'] - $fob_kilo_usd_resto : 0;
+                $total_diferencia += $diferencia * $row['kilos_total'];
+                if($diferencia!=0){
+                    $total_kilos += $row['kilos_total'];
+                }
+                
+            }
+
+            // Calculate opportunity cost
+            $opportunity_cost = $total_kilos > 0 ? $total_diferencia / $total_kilos : 0;
+
+            $ranking[] = [
+                'Cliente' => $main_client,
+                'Suma de Kilos Total' => $total_kilos,
+                'Total Diferencia' => $total_diferencia,
+                'Costo Oportunidad' => $opportunity_cost,
+            ];
+        }
+
+        // Sort by opportunity cost (descending)
+        usort($ranking, function($a, $b) {
+            return $b['Costo Oportunidad'] <=> $a['Costo Oportunidad'];
+        });
+
+        // Add rank
+        foreach ($ranking as $index => &$item) {
+            $item['Ranking'] = $index + 1;
+        }
+
+        return response()->json($ranking);
+    }
     public function ConsolidadoLiquidaciones()
     {
         $fg = $this;

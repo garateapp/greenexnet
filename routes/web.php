@@ -189,6 +189,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('reporteria/access-report','ReporteriaController@SabanaLiquidaciones')->name('reporteria.accessreport');
     Route::post('reporteria/obtenerComparativo', 'ReporteriaController@obtenerComparativo')->name('reporteria.obtenerComparativo');
     Route::get('reporteria/obtenerDataComparativaInicial', 'ReporteriaController@obtenerDataComparativaInicial')->name('reporteria.obtenerDataComparativaInicial');
+    Route::post('reporteria/obtenerRankingOportunidad', 'ReporteriaController@obtenerRankingOportunidad')->name('reporteria.obtenerRankingOportunidad');
     // Embalajes
     Route::delete('embalajes/destroy', 'EmbalajesController@massDestroy')->name('embalajes.massDestroy');
     Route::post('embalajes/parse-csv-import', 'EmbalajesController@parseCsvImport')->name('embalajes.parseCsvImport');
