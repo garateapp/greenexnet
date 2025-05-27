@@ -1979,20 +1979,20 @@ class ReporteriaController extends Controller
             ->where('nave', '!=', '')
             ->where('cliente', $cliente->nombre_fantasia)
             ->select(
-                 DB::raw("upper(nave) as nave"),
-                    "etiqueta",
+                DB::raw("upper(nave) as nave"),
+                    DB::raw("upper(etiqueta) as etiqueta"),
                     DB::raw("upper(variedad) as variedad"),
                 "calibre",
                 "cliente",
                 "especie",
                 "ETA_Week",
-                DB::raw("RIGHT(embalaje,1) as embalaje"),
+                "Peso_neto as embalaje",
                 DB::raw("SUM(FOB_TO_USD) as FOB_TO_USD"),
                 DB::raw("SUM(Ventas_TO_USD) as Ventas_TO_USD"),
                 DB::raw("SUM(Kilos_Total) as Kilos_Total"),
                 DB::raw("SUM(Ventas_TO_USD)/NULLIF(SUM(Kilos_Total), 0) as Ventas_kg")
             )
-            ->groupBy("cliente", "nave", "etiqueta", "embalaje", "variedad", "calibre", "especie", "ETA_Week")
+            ->groupBy("cliente", "nave", "etiqueta", "Peso_neto", "variedad", "calibre", "especie", "ETA_Week")
             ->orderBy('nave')
             ->orderBy('etiqueta')
             ->orderBy('variedad')
@@ -2008,18 +2008,20 @@ class ReporteriaController extends Controller
                 ->where('cliente', '!=', $cliente->nombre_fantasia)
                 ->select(
                     DB::raw("upper(nave) as nave"),
-                    "etiqueta",
+                    DB::raw("upper(etiqueta) as etiqueta"),
                     DB::raw("upper(variedad) as variedad"),
                     "calibre",
-                    DB::raw("RIGHT(embalaje,1) as embalaje"),
+                  "Peso_neto as embalaje",
                     DB::raw("SUM(FOB_TO_USD) as FOB_TO_USD"),
                     DB::raw("SUM(Ventas_TO_USD) as Ventas_TO_USD"),
                     DB::raw("SUM(Kilos_Total) as Kilos_Total"),
                     DB::raw("SUM(Ventas_TO_USD)/NULLIF(SUM(Kilos_Total), 0) as Ventas_kg")
                 )
-                ->groupBy("nave", "etiqueta", "embalaje", "variedad", "calibre")
+                ->groupBy("nave", "etiqueta", "Peso_neto", "variedad", "calibre")
                 ->orderBy('nave')
-                ->orderBy('etiqueta')
+            ->orderBy('etiqueta')
+            ->orderBy('variedad')
+            ->orderBy('calibre')
                 ->get();
         } else {
             $datosComparativo = Fob::whereIn('especie', $request->input('especie', []))
@@ -2028,22 +2030,21 @@ class ReporteriaController extends Controller
                 ->select(
                     
                     DB::raw("upper(nave) as nave"),
-                    "etiqueta",
+                    DB::raw("upper(etiqueta) as etiqueta"),
                     DB::raw("upper(variedad) as variedad"),
                     "calibre",
-                    "calibre",
                     "cliente",
-                    "especie",
-                    "ETA_Week",
-                    DB::raw("RIGHT(embalaje,1) as embalaje"),
+                   "Peso_neto as embalaje",
                     DB::raw("SUM(FOB_TO_USD) as FOB_TO_USD"),
                     DB::raw("SUM(Ventas_TO_USD) as Ventas_TO_USD"),
                     DB::raw("SUM(Kilos_Total) as Kilos_Total"),
                     DB::raw("SUM(Ventas_TO_USD)/NULLIF(SUM(Kilos_Total), 0) as Ventas_kg")
                 )
-                ->groupBy("cliente", "nave", "etiqueta", "embalaje", "variedad", "calibre", "especie", "ETA_Week")
+                ->groupBy("cliente", "nave", "etiqueta", "Peso_neto", "variedad", "calibre")
                 ->orderBy('nave')
-                ->orderBy('etiqueta')
+            ->orderBy('etiqueta')
+            ->orderBy('variedad')
+            ->orderBy('calibre')
                 ->get();
         }
 
@@ -2302,19 +2303,24 @@ class ReporteriaController extends Controller
         // Process each client as the main client
         foreach ($all_clients as $main_client) {
             // Fetch data for main client
+            $total_kilos=0;
             $datos = Fob::whereIn('especie', $especies)
                 ->where('nave', '!=', '')
                 ->where('cliente', $main_client)
                 ->select(
                     DB::raw("upper(nave) as nave"),
-                    "etiqueta",
+                    DB::raw("upper(etiqueta) as etiqueta"),
                     DB::raw("upper(variedad) as variedad"),
                     "calibre",
-                    DB::raw("RIGHT(embalaje,1) as embalaje"),
+                   "Peso_neto as embalaje",
                     DB::raw("SUM(FOB_TO_USD) as FOB_TO_USD"),
                     DB::raw("SUM(Kilos_Total) as Kilos_Total")
                 )
-                ->groupBy("cliente", "nave", "etiqueta", "embalaje", "variedad", "calibre")
+                ->groupBy("nave", "etiqueta", "Peso_neto", "variedad", "calibre")
+                ->orderBy('nave')
+                ->orderBy('etiqueta')
+                ->orderBy('variedad')
+                ->orderBy('calibre')
                 ->get();
 
             // Fetch data for other clients
@@ -2323,14 +2329,18 @@ class ReporteriaController extends Controller
                 ->where('cliente', '!=', $main_client)
                 ->select(
                     DB::raw("upper(nave) as nave"),
-                    "etiqueta",
+                     DB::raw("upper(etiqueta) as etiqueta"),
                     DB::raw("upper(variedad) as variedad"),
                     "calibre",
-                    DB::raw("RIGHT(embalaje,1) as embalaje"),
+                   "Peso_neto as embalaje",
                     DB::raw("SUM(FOB_TO_USD) as FOB_TO_USD"),
                     DB::raw("SUM(Kilos_Total) as Kilos_Total")
                 )
-                ->groupBy("nave", "etiqueta", "embalaje", "variedad", "calibre")
+                ->groupBy("nave", "etiqueta", "Peso_neto", "variedad", "calibre")
+                ->orderBy('nave')
+                ->orderBy('etiqueta')
+                ->orderBy('variedad')
+                ->orderBy('calibre')
                 ->get();
 
             // Initialize combined data
@@ -2357,6 +2367,7 @@ class ReporteriaController extends Controller
                 $key = $row->nave . '|' . $row->etiqueta . '|' . $row->embalaje . '|' . 
                     $row->variedad . '|' . $row->calibre;
                 if (isset($combined[$key])) {
+                    Log::info($main_client."-->".$key."-->".$row->Kilos_Total);
                     $combined[$key]['resto_fob_to_usd'] += $row->FOB_TO_USD;
                     $combined[$key]['resto_kilos_total'] += $row->Kilos_Total;
                 }
@@ -2369,9 +2380,10 @@ class ReporteriaController extends Controller
                     : 0;
                 $diferencia = $fob_kilo_usd_resto > 0 ? $row['fob_kilo_usd_main'] - $fob_kilo_usd_resto : 0;
                 $total_diferencia += $diferencia * $row['kilos_total'];
-                if($diferencia!=0){
+                if($diferencia>0 || $diferencia<0){
                     $total_kilos += $row['kilos_total'];
                 }
+
                 
             }
 
