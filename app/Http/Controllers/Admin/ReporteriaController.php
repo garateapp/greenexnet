@@ -531,11 +531,13 @@ class ReporteriaController extends Controller
 
             )
             //->where('c_altura', '=', '240')
-            ->where('n_categoria', '=', 'Cat 1')
+           // ->whereIn('n_categoria', ['Cat 1','fancy','extra fancy'])
+           ->where('c_embalaje','not like','UV%')
+            ->whereIn('n_categoria', ['Cat 1','fancy','extra fancy'])
             ->where('n_exportadora', '=', 'Greenex Spa')
             ->where('id_empresa', '=', '1')
             ->where('n_categoria', '!=', 'muestra')
-            ->where('fecha_produccion', '<', DB::RAW("DATEADD(DAY, -2, GETDATE())"))
+            ->where('fecha_produccion', '<', DB::RAW("DATEADD(DAY, -10, GETDATE())"))
             ->groupBy(
                 'n_variedad_original',
                 'c_embalaje',
@@ -580,10 +582,10 @@ class ReporteriaController extends Controller
 
             )
             //->where('destruccion_tipo', '=', '')
-            ->where('id_especie', '=', '7')
+            //->where('id_especie', '=', '7')
             //->where('id_altura', '=', '8')
             ->where('id_empresa', '=', '1')
-            ->where(DB::raw("DATEPART(YEAR,fecha_produccion)"), '>', '2023')
+            ->where(DB::raw("DATEPART(YEAR,fecha_produccion)"), '>', '2024')
             ->where('n_categoria', '!=', 'muestra')
             ->groupBy('fecha_produccion')
 
@@ -636,14 +638,15 @@ class ReporteriaController extends Controller
                 'Tratamiento'
             )
             //->where('id_altura', '=', 8)
-            ->where('n_categoria', '=', 'Cat 1')
+            ->where('c_embalaje','not like','UV%')
+            ->whereIn('n_categoria', ['Cat 1','fancy','extra fancy'])
             ->where('n_exportadora', '=', 'Greenex Spa')
             ->where('c_embalaje', '=', $request->n_embalaje)
             ->where('n_variedad_original', '=', $request->n_variedad)
             ->where('n_etiqueta', '=', $request->n_etiqueta)
             ->where('n_categoria', '!=', 'muestra')
             ->where('id_empresa', '=', '1')
-            ->where('fecha_produccion', '<', DB::RAW("DATEADD(DAY, -2, GETDATE())"))
+            ->where('fecha_produccion', '<', DB::RAW("DATEADD(DAY, -10, GETDATE())"))
 
             ->groupBy(
                 'n_variedad',
@@ -706,14 +709,15 @@ class ReporteriaController extends Controller
                 'Tratamiento'
             )
             //->where('id_altura', '=', 8)
-            ->where('n_categoria', '=', 'Cat 1')
+           ->where('c_embalaje','not like','UV%')
+            ->whereIn('n_categoria', ['Cat 1','fancy','extra fancy'])
             ->where('n_exportadora', '=', 'Greenex Spa')
             ->where('c_embalaje', '=', $request->c_embalaje)
             ->where('n_variedad_original', '=', $request->n_variedad)
             ->where('n_etiqueta', '=', $request->n_etiqueta)
             ->where('n_calibre', '=', $request->n_calibre)
             ->where('id_empresa', '=', '1')
-            ->where('fecha_produccion', '<', DB::RAW("DATEADD(DAY, -2, GETDATE())"))
+            ->where('fecha_produccion', '<', DB::RAW("DATEADD(DAY, -10, GETDATE())"))
             ->groupBy(
                 'n_variedad',
                 'fecha_produccion',
