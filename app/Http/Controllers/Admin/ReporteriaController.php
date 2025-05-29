@@ -640,7 +640,7 @@ class ReporteriaController extends Controller
             )
             //->where('id_altura', '=', 8)
             ->where('c_embalaje','not like','UV%')
-            ->where('c_embalaje', '=', $request->c_embalaje)
+            ->where('c_embalaje', '=', $request->n_embalaje)
             ->where('n_variedad_original', '=', $request->n_variedad)
             ->where('n_etiqueta', '=', $request->n_etiqueta)
             ->where('n_categoria', '!=', 'muestra')
