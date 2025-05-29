@@ -533,11 +533,12 @@ class ReporteriaController extends Controller
             //->where('c_altura', '=', '240')
            // ->whereIn('n_categoria', ['Cat 1','fancy','extra fancy'])
            ->where('c_embalaje','not like','UV%')
-            ->whereIn('n_categoria', ['Cat 1','fancy','extra fancy'])
+           // ->whereIn('n_categoria', ['Cat 1','fancy','extra fancy'])
             ->where('n_exportadora', '=', 'Greenex Spa')
             ->where('id_empresa', '=', '1')
-            ->where('n_categoria', '!=', 'muestra')
-            ->where('fecha_produccion', '<', DB::RAW("DATEADD(DAY, -10, GETDATE())"))
+            ->whereIn('id_categoria',[4,10,21,20,17])
+            ->whereRaw('MONTH(fecha_produccion) <= MONTH(GETDATE())')
+            ->where('id_altura',8)
             ->groupBy(
                 'n_variedad_original',
                 'c_embalaje',
@@ -639,15 +640,15 @@ class ReporteriaController extends Controller
             )
             //->where('id_altura', '=', 8)
             ->where('c_embalaje','not like','UV%')
-            ->whereIn('n_categoria', ['Cat 1','fancy','extra fancy'])
-            ->where('n_exportadora', '=', 'Greenex Spa')
-            ->where('c_embalaje', '=', $request->n_embalaje)
+            ->where('c_embalaje', '=', $request->c_embalaje)
             ->where('n_variedad_original', '=', $request->n_variedad)
             ->where('n_etiqueta', '=', $request->n_etiqueta)
             ->where('n_categoria', '!=', 'muestra')
+            ->where('n_exportadora', '=', 'Greenex Spa')
             ->where('id_empresa', '=', '1')
-            ->where('fecha_produccion', '<', DB::RAW("DATEADD(DAY, -10, GETDATE())"))
-
+            ->whereIn('id_categoria',[4,10,21,20,17])
+            ->whereRaw('MONTH(fecha_produccion) <= MONTH(GETDATE())')
+            ->where('id_altura',8)
             ->groupBy(
                 'n_variedad',
                 'fecha_produccion',
@@ -710,14 +711,16 @@ class ReporteriaController extends Controller
             )
             //->where('id_altura', '=', 8)
            ->where('c_embalaje','not like','UV%')
-            ->whereIn('n_categoria', ['Cat 1','fancy','extra fancy'])
-            ->where('n_exportadora', '=', 'Greenex Spa')
             ->where('c_embalaje', '=', $request->c_embalaje)
             ->where('n_variedad_original', '=', $request->n_variedad)
             ->where('n_etiqueta', '=', $request->n_etiqueta)
             ->where('n_calibre', '=', $request->n_calibre)
+            ->where('n_categoria', '!=', 'muestra')
+            ->where('n_exportadora', '=', 'Greenex Spa')
             ->where('id_empresa', '=', '1')
-            ->where('fecha_produccion', '<', DB::RAW("DATEADD(DAY, -10, GETDATE())"))
+            ->whereIn('id_categoria',[4,10,21,20,17])
+            ->whereRaw('MONTH(fecha_produccion) <= MONTH(GETDATE())')
+            ->where('id_altura',8)
             ->groupBy(
                 'n_variedad',
                 'fecha_produccion',
