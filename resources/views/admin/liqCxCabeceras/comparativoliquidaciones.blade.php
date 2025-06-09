@@ -137,11 +137,14 @@
                                     </label>
                                 </div>
                             </div>
-                             <div class="row">
-                               <p>
-                               
-                                    <button id="btnFiltrar" class="btn btn-primary mb-3" style="width: 140px;margin-left:25px;">Filtrar</button>
-                           
+                            <div class="row">
+                                <p>
+
+                                    <button id="btnFiltrar" class="btn btn-primary mb-3"
+                                        style="width: 140px;margin-left:25px;">Filtrar</button>
+                                    <button style="width: 140px;margin-left:25px;" class="btn btn-primary mb-3"
+                                        id="btnImprimir">Imprmir</button>
+
                                 </p>
                             </div>
 
@@ -149,7 +152,7 @@
                         </div>
                     </div>
                 </div>
-               
+
             </div>
 
 
@@ -167,7 +170,7 @@
                                     </div>
                                     <div class="card-body">
                                         <div class="table-section">
-                                           
+
                                             <table id="rankingTable" class="display" style="width:100%">
                                                 <thead>
                                                     <tr></tr>
@@ -178,7 +181,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-6" id="scores">
                                 <div class="card">
                                     <div class="card-header">
                                         <h3 class="card-title">Scores</h3>
@@ -226,7 +229,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-12">
+                            <div class="col-md-12" id="comparativeTableContainer">
                                 <div class="card">
                                     <div class="card-header">
                                         <h3 class="card-title">Tabla Comparativa</h3>
@@ -251,13 +254,184 @@
             </div>
         </div>
     </div>
+    <div id="printTableContainer" style="display: none;">
+        <table id="printComparativeTable" class="display" style="width:100%">
+            <thead></thead>
+            <tbody></tbody>
+        </table>
+    </div>
     {{--  --}}
     <script>
         let liquidacionesData = [];
         let table;
         let fullDataSet = []; // Store full dataset for toggling
+
         $(document).ready(function() {
 
+        $("#btnImprimir").off('click').on('click', function() {
+                printSpecificDivs();
+            });
+
+
+
+
+            function printSpecificDivs() {
+    const scoreDiv = document.getElementById('scores');
+    const comparativeTable = document.getElementById('comparativeTable'); // Your main DataTables table
+    const printTableContainer = document.getElementById('printTableContainer'); // The new hidden div
+
+    if (!scoreDiv || !comparativeTable || !printTableContainer) {
+        alert('One or more required elements were not found for printing.');
+        return;
+    }
+
+    // Get the current data from your DataTables instance
+    // Assuming 'dataTable' is your global DataTables instance for #comparativeTable
+    if (!dataTable || !$.fn.DataTable.isDataTable('#comparativeTable')) {
+        alert('Data table is not initialized. Please filter data first.');
+        return;
+    }
+
+    const currentTableData = dataTable.rows({
+        page: 'all'
+    }).data().toArray();
+    const currentTableColumns = dataTable.settings().init().columns; // Get original column definitions
+
+    // --- Build the print-specific table's HTML ---
+    let printTableHTML = '<table id="printComparativeTable" style="width:100%; border-collapse: collapse;"><thead><tr>';
+
+    // Generate headers for the print table
+    // Skip DataTables specific columns like 'dt-control' or 'select-checkbox'
+    currentTableColumns.forEach(col => {
+        if (col.className && (col.className.includes('dt-control') || col.className.includes('select-checkbox'))) {
+            // Skip these columns in print
+        } else {
+            printTableHTML += `<th style="border: 1px solid #ccc; padding: 8px; text-align: left; background-color: #f2f2f2;">${col.title}</th>`;
+        }
+    });
+    printTableHTML += '</tr></thead><tbody>';
+
+    // Populate the body of the print table
+    currentTableData.forEach(rowData => {
+        printTableHTML += '<tr>';
+        currentTableColumns.forEach(col => {
+            if (col.className && (col.className.includes('dt-control') || col.className.includes('select-checkbox'))) {
+                // Skip these columns in print
+            } else {
+                let cellData = rowData[col.data];
+                // Apply render function if available and not null
+                if (col.render && cellData !== null && cellData !== undefined) {
+                    // Temporarily create a dummy context for the render function
+                    cellData = col.render(cellData, 'display', rowData);
+                } else if (cellData === null || cellData === undefined) {
+                    cellData = '';
+                }
+
+                // Add class for numeric alignment if needed
+                let cellClass = col.className && col.className.includes('numeric') ? 'text-align: right;' : '';
+                // Add negative color if needed
+                if (col.data === 'Diferencia' || col.data === 'Total Diferencia') {
+                    if (Number(rowData[col.data]) < 0) {
+                        cellClass += 'color: red;';
+                    }
+                }
+                // Apply subtotal row styling
+                let rowClass = '';
+                if (rowData.Etiqueta && rowData.Etiqueta.includes('Subtotal')) {
+                    rowClass = 'background-color: #f0f0f0; font-weight: bold;';
+                }
+
+                printTableHTML += `<td style="border: 1px solid #ccc; padding: 8px; ${cellClass} ${rowClass}">${cellData}</td>`;
+            }
+        });
+        printTableHTML += '</tr>';
+    });
+
+    printTableHTML += '</tbody></table>';
+
+    // Set the HTML for the hidden print container
+    printTableContainer.innerHTML = printTableHTML;
+
+    // Create a new window for printing
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write('<html><head><title>Comparativa Liquidaciones</title>');
+
+    // Add necessary print-specific CSS directly to the print window
+    printWindow.document.write(`
+        <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            #scores { margin-bottom: 20px; }
+            .card { border: 1px solid #eee; border-radius: 5px; margin-bottom: 15px; padding: 15px; }
+            .card-header { font-weight: bold; margin-bottom: 10px; }
+            h3 { font-size: 1.2em; margin-top: 0; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+            th { background-color: #f2f2f2; font-weight: bold; }
+            td.numeric { text-align: right; }
+            .negative { color: red; }
+            .subtotal { background-color: #f0f0f0; font-weight: bold; }
+
+            /* Ensure background colors print */
+            @media print {
+                body {
+                    -webkit-print-color-adjust: exact !important;
+                    color-adjust: exact !important;
+                }
+                th {
+                    background-color: #f2f2f2 !important; /* Re-apply to ensure it prints */
+                }
+                .subtotal {
+                    background-color: #f0f0f0 !important; /* Ensure subtotal background prints */
+                }
+            }
+
+            /* Basic styling for the scores div */
+            #scores .card-body {
+                display: flex;
+                flex-direction: column;
+            }
+            #scores .card.widget-flat {
+                border: 1px solid #ccc;
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+            #scores h5 {
+                margin: 0;
+                font-size: 1em;
+                color: #666;
+            }
+            #scores h3 {
+                margin: 5px 0;
+                font-size: 1.5em;
+            }
+            #scores p {
+                margin: 0;
+                font-size: 0.9em;
+                color: #555;
+            }
+            #scores span.text-success { color: green; } /* Ensure text-success color prints */
+            #scores span.text-muted { color: #888; } /* Ensure text-muted color prints */
+
+            /* Page break control */
+            table { page-break-after: auto; }
+            tr { page-break-inside: avoid; page-break-after: auto; }
+            thead { display: table-header-group; } /* Repeat header on each page */
+            tfoot { display: table-footer-group; } /* Repeat footer on each page */
+        </style>
+    `);
+    printWindow.document.write('</head><body>');
+
+    // Append the score div and the *newly generated* print-specific table
+    printWindow.document.write(scoreDiv.outerHTML);
+    printWindow.document.write('<div style="page-break-before: always;"></div>'); // Optional: force new page for table
+    printWindow.document.write(printTableContainer.innerHTML); // Use innerHTML to get the table directly
+
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    // printWindow.close(); // You might want to comment this out during debugging to inspect the print window
+}
 
             $("#loading-animation").show();
             $('.select2').select2({
@@ -393,7 +567,7 @@
                         data: 'Suma de Kilos Total',
                         className: 'numeric',
                         render: function(data) {
-                            
+
                             return data ? Number(data).toLocaleString('es-ES', {
                                 minimumFractionDigits: 2,
                                 maximumFractionDigits: 2
@@ -405,8 +579,8 @@
                         data: 'Suma de FOB TO USD',
                         className: 'numeric',
                         render: data => data ? Number(data).toLocaleString('es-ES', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2
+                            minimumFractionDigits: 4,
+                            maximumFractionDigits: 4
                         }) : ''
                     },
                     {
@@ -414,8 +588,8 @@
                         data: 'Suma de FOB Kilo USD',
                         className: 'numeric',
                         render: data => data ? Number(data).toLocaleString('es-ES', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2
+                            minimumFractionDigits: 4,
+                            maximumFractionDigits: 4
                         }) : ''
                     },
                     {
@@ -423,8 +597,8 @@
                         data: 'Suma de Venta USD Kilo',
                         className: 'numeric',
                         render: data => data ? Number(data).toLocaleString('es-ES', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2
+                            minimumFractionDigits: 4,
+                            maximumFractionDigits: 4
                         }) : ''
                     },
                     {
@@ -435,8 +609,8 @@
                             if (data === null) return '';
                             const num = Number(data);
                             const formatted = num.toLocaleString('es-ES', {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2
+                                minimumFractionDigits: 4,
+                                maximumFractionDigits: 4
                             });
                             return num < 0 ? `<span class="negative">${formatted}</span>` : formatted;
                         }
@@ -449,10 +623,10 @@
 
                             if (data === null) return '';
                             const num = Number(data);
-                           
+
                             const formatted = num.toLocaleString('es-ES', {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2
+                                minimumFractionDigits: 4,
+                                maximumFractionDigits: 4
                             });
                             return num < 0 ? `<span class="negative">${formatted}</span>` : formatted;
                         }
@@ -472,16 +646,16 @@
                             data: 'FOB Kilo USD Resto de Clientes',
                             className: 'numeric',
                             render: data => data !== null ? Number(data).toLocaleString('es-ES', {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2
+                                minimumFractionDigits: 4,
+                                maximumFractionDigits: 4
                             }) : ''
                         }, {
                             title: 'Venta Kilo USD Resto de Clientes',
                             data: 'Venta Kilo USD Resto de Clientes',
                             className: 'numeric',
                             render: data => data !== null ? Number(data).toLocaleString('es-ES', {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2
+                                minimumFractionDigits: 4,
+                                maximumFractionDigits: 4
                             }) : ''
                         });
                     } else {
@@ -506,8 +680,8 @@
                                 className: 'numeric',
                                 render: data => data !== null ? Number(data).toLocaleString(
                                     'en-US', {
-                                        minimumFractionDigits: 2,
-                                        maximumFractionDigits: 2
+                                        minimumFractionDigits: 4,
+                                        maximumFractionDigits: 4
                                     }) : ''
                             }, {
                                 title: ventaKey,
@@ -515,8 +689,8 @@
                                 className: 'numeric',
                                 render: data => data !== null ? Number(data).toLocaleString(
                                     'en-US', {
-                                        minimumFractionDigits: 2,
-                                        maximumFractionDigits: 2
+                                        minimumFractionDigits: 4,
+                                        maximumFractionDigits: 4
                                     }) : ''
                             });
                         });
@@ -561,22 +735,22 @@
                     row.Diferencia !== null);
                 dataTable.clear();
                 dataTable.rows.add(filteredData).draw();
-               filteredData.forEach(row => {
+                filteredData.forEach(row => {
                     scoreTotalKilos += row['Suma de Kilos Total'] || 0;
                     scoreTotalDiferencia += row['Total Diferencia'] || 0;
                 });
                 $("#scoreTotalKilos").html(scoreTotalKilos.toLocaleString('es-ES', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
+                    minimumFractionDigits: 4,
+                    maximumFractionDigits: 4
                 }));
                 $("#scoreTotalDiferencia").html(scoreTotalDiferencia.toLocaleString('es-ES', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
+                    minimumFractionDigits: 4,
+                    maximumFractionDigits: 4
                 }));
-                 scoreCostoOportunidad = scoreTotalDiferencia / scoreTotalKilos;
+                scoreCostoOportunidad = scoreTotalDiferencia / scoreTotalKilos;
                 $("#scoreCostoOportunidad").html(scoreCostoOportunidad.toLocaleString('es-ES', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
+                    minimumFractionDigits: 4,
+                    maximumFractionDigits: 4
                 }));
             }
 
@@ -617,12 +791,12 @@
                         $("#loading-animation").hide();
                     }
                 });
-                  $.ajax({
+                $.ajax({
                     url: "{{ route('admin.reporteria.obtenerRankingOportunidad') }}",
                     type: "post",
                     data: {
                         _token: "{{ csrf_token() }}",
-                       especie: $("#cboEspecie").val() || [],
+                        especie: $("#cboEspecie").val() || [],
                     },
                     success: function(data) {
                         initializeRankingTable(data);
@@ -654,7 +828,7 @@
             $('#btnFiltrar').off('click').on('click', function(e) {
                 e.preventDefault();
                 fetchAndDisplayData();
-             
+
 
             });
 

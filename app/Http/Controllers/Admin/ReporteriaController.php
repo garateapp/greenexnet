@@ -1212,10 +1212,10 @@ class ReporteriaController extends Controller
     {
         $datos = Fob::where('especie', '=', 'Cherries')
         ->select(
-          
+
             'Liquidacion as instructivo',
             'TC as tasa'
-        )        
+        )
         ->selectRaw('SUM(Kilos_total) as total_kilos')
         ->selectRaw('SUM(Ventas_TO_USD) as MONTO_USD')
         ->selectRaw('SUM(Costos_USD_TO) as costos')
@@ -1224,10 +1224,10 @@ class ReporteriaController extends Controller
         ->get();
 
 
-        
 
 
-        return response()->json($datos); 
+
+        return response()->json($datos);
     }
     public function liquidacionesventa()
     {
@@ -1942,7 +1942,7 @@ class ReporteriaController extends Controller
         ->orderBy('nave')
         ->orderBy("etiqueta")
         ->get();
-        
+
         $datos=$datos->map(function ($item) {
             $item->especie = strtoupper($item->especie ?? '');
             return $item;
@@ -1966,7 +1966,7 @@ class ReporteriaController extends Controller
         ->orderBy('nave')
         ->orderBy("etiqueta")
         ->get();
-        
+
         $datos=$datos->map(function ($item) {
             $item->especie = strtoupper($item->especie ?? '');
             return $item;
@@ -2035,7 +2035,7 @@ class ReporteriaController extends Controller
                 ->where('nave', '!=', '')
                 ->where('cliente', '!=', $cliente->nombre_fantasia)
                 ->select(
-                    
+
                     DB::raw("upper(nave) as nave"),
                     DB::raw("upper(etiqueta) as etiqueta"),
                     DB::raw("upper(variedad) as variedad"),
@@ -2089,6 +2089,7 @@ class ReporteriaController extends Controller
                     'fob_kilo_usd_main' => 0,
                     'venta_kilo_usd_main' => 0,
                 ];
+
                 if ($vista == 1) {
                     $combined[$key]['fob_kilo_usd_resto'] = 0;
                     $combined[$key]['venta_kilo_usd_resto'] = 0;
@@ -2100,6 +2101,9 @@ class ReporteriaController extends Controller
                         $client_key = str_replace(' ', '_', $client);
                         $combined[$key]["fob_kilo_usd_$client_key"] = 0;
                         $combined[$key]["venta_kilo_usd_$client_key"] = 0;
+                         $combined[$key]['resto_kilos_total'] = 0;
+                    $combined[$key]['resto_fob_to_usd'] = 0;
+                    $combined[$key]['resto_ventas_to_usd'] = 0;
                     }
                 }
             }
@@ -2124,6 +2128,7 @@ class ReporteriaController extends Controller
         }
 
         // Process $datosComparativo
+
         foreach ($datosComparativo as $row) {
             $key = $row->nave . '|' . $row->etiqueta . '|' . $row->embalaje . '|' . $row->variedad . '|' . $row->calibre;
             if (isset($combined[$key])) {
@@ -2131,18 +2136,29 @@ class ReporteriaController extends Controller
                     $combined[$key]['resto_kilos_total'] += $row->Kilos_Total;
                     $combined[$key]['resto_fob_to_usd'] += $row->FOB_TO_USD;
                     $combined[$key]['resto_ventas_to_usd'] += $row->Ventas_TO_USD;
-                    $combined[$key]['fob_kilo_usd_resto'] = $combined[$key]['resto_kilos_total'] > 0 
-                        ? $combined[$key]['resto_fob_to_usd'] / $combined[$key]['resto_kilos_total'] 
+                    $combined[$key]['fob_kilo_usd_resto'] = $combined[$key]['resto_kilos_total'] > 0
+                        ? $combined[$key]['resto_fob_to_usd'] / $combined[$key]['resto_kilos_total']
                         : 0;
-                    $combined[$key]['venta_kilo_usd_resto'] = $combined[$key]['resto_kilos_total'] > 0 
-                        ? $combined[$key]['resto_ventas_to_usd'] / $combined[$key]['resto_kilos_total'] 
+                    $combined[$key]['venta_kilo_usd_resto'] = $combined[$key]['resto_kilos_total'] > 0
+                        ? $combined[$key]['resto_ventas_to_usd'] / $combined[$key]['resto_kilos_total']
                         : 0;
                 } else {
                     $client_key = str_replace(' ', '_', $row->cliente);
-                    $combined[$key]["fob_kilo_usd_$client_key"] = $row->Kilos_Total > 0 
-                        ? $row->FOB_TO_USD / $row->Kilos_Total 
+                    $combined[$key]["fob_kilo_usd_$client_key"] = $row->Kilos_Total > 0
+
+                        ? $row->FOB_TO_USD / $row->Kilos_Total
                         : 0;
                     $combined[$key]["venta_kilo_usd_$client_key"] = $row->Ventas_kg ?? 0;
+                    $combined[$key]['resto_kilos_total'] += $row->Kilos_Total;
+                    $combined[$key]['resto_fob_to_usd'] += $row->FOB_TO_USD;
+                     $combined[$key]['fob_kilo_usd_resto'] = $combined[$key]['resto_kilos_total'] > 0
+                        ? $combined[$key]['resto_fob_to_usd'] / $combined[$key]['resto_kilos_total']
+                        : 0;
+                    $combined[$key]['venta_kilo_usd_resto'] = $combined[$key]['resto_kilos_total'] > 0
+                        ? $combined[$key]['resto_ventas_to_usd'] / $combined[$key]['resto_kilos_total']
+                        : 0;
+
+
                 }
             }
         }
@@ -2159,11 +2175,11 @@ class ReporteriaController extends Controller
                 if ($current_nave !== null && $current_etiqueta !== null) {
                     $subtotal_key = $current_nave . '|' . $current_etiqueta;
                     if (isset($subtotals[$subtotal_key])) {
-                        $fob_kilo_usd = $subtotals[$subtotal_key]['kilos_total'] > 0 
-                            ? $subtotals[$subtotal_key]['fob_to_usd'] / $subtotals[$subtotal_key]['kilos_total'] 
+                        $fob_kilo_usd = $subtotals[$subtotal_key]['kilos_total'] > 0
+                            ? $subtotals[$subtotal_key]['fob_to_usd'] / $subtotals[$subtotal_key]['kilos_total']
                             : 0;
-                        $venta_kilo_usd = $subtotals[$subtotal_key]['kilos_total'] > 0 
-                            ? $subtotals[$subtotal_key]['ventas_to_usd'] / $subtotals[$subtotal_key]['kilos_total'] 
+                        $venta_kilo_usd = $subtotals[$subtotal_key]['kilos_total'] > 0
+                            ? $subtotals[$subtotal_key]['ventas_to_usd'] / $subtotals[$subtotal_key]['kilos_total']
                             : 0;
                         $subtotal_row = [
                             'Nave' => $current_nave,
@@ -2190,6 +2206,7 @@ class ReporteriaController extends Controller
                         }
                         $result[] = $subtotal_row;
                         unset($subtotals[$subtotal_key]);
+
                     }
                 }
                 $current_nave = $row['nave'];
@@ -2202,19 +2219,22 @@ class ReporteriaController extends Controller
             $diferencia = 0;
 
             if ($vista == 1) {
-                $avg_fob_resto = $row['fob_kilo_usd_resto'];
-                $diferencia = $avg_fob_resto > 0 ? $row['fob_kilo_usd_main'] - $avg_fob_resto : 0;
+                //$avg_fob_resto = $row['fob_kilo_usd_resto'];
+                //$avg_fob_resto =$total_fob_resto/$total_kilos_resto;
+                //$diferencia = $avg_fob_resto > 0 ? $row['fob_kilo_usd_main'] - $avg_fob_resto : 0;
             } else {
                 $fob_values = [];
                 foreach ($compared_clients as $client) {
                     $client_key = str_replace(' ', '_', $client);
                     $fob_value = $row["fob_kilo_usd_$client_key"];
+                    $fob_resto_value = $row['fob_kilo_usd_resto'] ?? 0;
                     if ($fob_value > 0) {
                         $fob_values[] = $fob_value;
                     }
+
                 }
-                $avg_fob_resto = !empty($fob_values) ? array_sum($fob_values) / count($fob_values) : 0;
-                $diferencia = $avg_fob_resto > 0 ? $row['fob_kilo_usd_main'] - $avg_fob_resto : 0;
+                 //!empty($fob_values) ? array_sum($fob_values) / count($fob_values) : 0;
+                $diferencia = 0;
             }
 
             // Calculate Total Diferencia
@@ -2238,12 +2258,18 @@ class ReporteriaController extends Controller
             if ($vista == 1) {
                 $row_data['FOB Kilo USD Resto de Clientes'] = $row['fob_kilo_usd_resto'];
                 $row_data['Venta Kilo USD Resto de Clientes'] = $row['venta_kilo_usd_resto'];
+                $row_data['Diferencia']=$fob_kilo_usd-$row['fob_kilo_usd_resto'];
+                $row_data['Total Diferencia']=$row['kilos_total'] * $row_data['Diferencia'];
             } else {
                 foreach ($compared_clients as $client) {
                     $client_key = str_replace(' ', '_', $client);
                     $row_data["FOB Kilo USD ($client)"] = $row["fob_kilo_usd_$client_key"];
                     $row_data["Venta Kilo USD ($client)"] = $row["venta_kilo_usd_$client_key"];
+
+
                 }
+                $row_data['Diferencia']=$fob_kilo_usd-$fob_resto_value;
+                $row_data['Total Diferencia']=$row['kilos_total'] * $row_data['Diferencia'];
             }
 
             $result[] = $row_data;
@@ -2253,11 +2279,11 @@ class ReporteriaController extends Controller
         if ($current_nave !== null && $current_etiqueta !== null) {
             $subtotal_key = $current_nave . '|' . $current_etiqueta;
             if (isset($subtotals[$subtotal_key])) {
-                $fob_kilo_usd = $subtotals[$subtotal_key]['kilos_total'] > 0 
-                    ? $subtotals[$subtotal_key]['fob_to_usd'] / $subtotals[$subtotal_key]['kilos_total'] 
+                $fob_kilo_usd = $subtotals[$subtotal_key]['kilos_total'] > 0
+                    ? $subtotals[$subtotal_key]['fob_to_usd'] / $subtotals[$subtotal_key]['kilos_total']
                     : 0;
-                $venta_kilo_usd = $subtotals[$subtotal_key]['kilos_total'] > 0 
-                    ? $subtotals[$subtotal_key]['ventas_to_usd'] / $subtotals[$subtotal_key]['kilos_total'] 
+                $venta_kilo_usd = $subtotals[$subtotal_key]['kilos_total'] > 0
+                    ? $subtotals[$subtotal_key]['ventas_to_usd'] / $subtotals[$subtotal_key]['kilos_total']
                     : 0;
                 $subtotal_row = [
                     'Nave' => $current_nave,
@@ -2357,7 +2383,7 @@ class ReporteriaController extends Controller
 
             // Process main client data
             foreach ($datos as $row) {
-                $key = $row->nave . '|' . $row->etiqueta . '|' . $row->embalaje . '|' . 
+                $key = $row->nave . '|' . $row->etiqueta . '|' . $row->embalaje . '|' .
                        $row->variedad . '|' . $row->calibre;
                 $combined[$key] = [
                     'kilos_total' => $row->Kilos_Total,
@@ -2371,7 +2397,7 @@ class ReporteriaController extends Controller
 
             // Process comparative data
             foreach ($datosComparativo as $row) {
-                $key = $row->nave . '|' . $row->etiqueta . '|' . $row->embalaje . '|' . 
+                $key = $row->nave . '|' . $row->etiqueta . '|' . $row->embalaje . '|' .
                     $row->variedad . '|' . $row->calibre;
                 if (isset($combined[$key])) {
                     Log::info($main_client."-->".$key."-->".$row->Kilos_Total);
@@ -2382,8 +2408,8 @@ class ReporteriaController extends Controller
 
             // Calculate Diferencia and Total Diferencia
             foreach ($combined as $key => $row) {
-                $fob_kilo_usd_resto = $row['resto_kilos_total'] > 0 
-                    ? $row['resto_fob_to_usd'] / $row['resto_kilos_total'] 
+                $fob_kilo_usd_resto = $row['resto_kilos_total'] > 0
+                    ? $row['resto_fob_to_usd'] / $row['resto_kilos_total']
                     : 0;
                 $diferencia = $fob_kilo_usd_resto > 0 ? $row['fob_kilo_usd_main'] - $fob_kilo_usd_resto : 0;
                 $total_diferencia += $diferencia * $row['kilos_total'];
@@ -2391,7 +2417,7 @@ class ReporteriaController extends Controller
                     $total_kilos += $row['kilos_total'];
                 }
 
-                
+
             }
 
             // Calculate opportunity cost
