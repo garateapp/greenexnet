@@ -190,6 +190,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('reporteria/obtenerComparativo', 'ReporteriaController@obtenerComparativo')->name('reporteria.obtenerComparativo');
     Route::get('reporteria/obtenerDataComparativaInicial', 'ReporteriaController@obtenerDataComparativaInicial')->name('reporteria.obtenerDataComparativaInicial');
     Route::post('reporteria/obtenerRankingOportunidad', 'ReporteriaController@obtenerRankingOportunidad')->name('reporteria.obtenerRankingOportunidad');
+    Route::get('reporteria/ObtenerPaises', 'ReporteriaController@ObtenerPaises')->name('reporteria.ObtenerPaises');
     // Embalajes
     Route::delete('embalajes/destroy', 'EmbalajesController@massDestroy')->name('embalajes.massDestroy');
     Route::post('embalajes/parse-csv-import', 'EmbalajesController@parseCsvImport')->name('embalajes.parseCsvImport');
@@ -365,12 +366,12 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::delete('capturador-estructuras/destroy', 'CapturadorEstructuraController@massDestroy')->name('capturador-estructuras.massDestroy');
     Route::post('capturador-estructuras/parse-csv-import', 'CapturadorEstructuraController@parseCsvImport')->name('capturador-estructuras.parseCsvImport');
     Route::post('capturador-estructuras/process-csv-import', 'CapturadorEstructuraController@processCsvImport')->name('capturador-estructuras.processCsvImport');
-    
+
     Route::resource('capturador-estructuras', 'CapturadorEstructuraController');
 
 
     //GoogleSheets
-    
+
 
 
     //Liquidaciones de Cliente
@@ -397,7 +398,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('liq-cx-cabeceras/selprods', 'LiqCxCabeceraController@selprods')->name('liq-cx-cabeceras.selprods');
 
     Route::get('liq-cx-cabeceras/comparativoliquidaciones', 'LiqCxCabeceraController@comparativoliquidaciones')->name('liq-cx-cabeceras.comparativoliquidaciones');
-    
+
     Route::post('liq-cx-cabeceras/download-pdf/{productor}', 'LiqCxCabeceraController@downloadChartsPdf')->name('liq-cx-cabeceras.download-pdf');
     Route::get('liq-cx-cabeceras/generateZip', 'LiqCxCabeceraController@generateZip')->name('liq-cx-cabeceras.generateZip');
     Route::resource('liq-cx-cabeceras', 'LiqCxCabeceraController');
@@ -503,7 +504,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('instructivo-embarques/getpuertocorreobyid/{id}', 'InstructivoEmbarqueController@getpuertocorreobyid')->name('instructivo-embarques.getpuertocorreobyid');
     Route::get('instructivo-embarques/getplantacarga/{id}', 'InstructivoEmbarqueController@getplantacarga')->name('instructivo-embarques.getplantacarga');
 
- 
+
     Route::resource('instructivo-embarques', 'InstructivoEmbarqueController');
 
     // Tipoflete
@@ -602,15 +603,20 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('procesos/process-csv-import', 'ProcesoController@processCsvImport')->name('procesos.processCsvImport');
     Route::resource('procesos', 'ProcesoController');
 
-    
+     // Analisis
+    Route::delete('analisis/destroy', 'AnalisisController@massDestroy')->name('analisis.massDestroy');
+    Route::post('analisis/parse-csv-import', 'AnalisisController@parseCsvImport')->name('analisis.parseCsvImport');
+    Route::post('analisis/process-csv-import', 'AnalisisController@processCsvImport')->name('analisis.processCsvImport');
+    Route::resource('analisis', 'AnalisisController');
+
     //Generador de Liquidaciones
-    
+
 
 Route::post('constructorliquidacion/getProcesos', [ConstructorLiquidacionController::class, 'getProcesos'])->name('constructorliquidacion.getProcesos');
 Route::post('constructorliquidacion/generatepdf', 'ConstructorLiquidacionController@generatepdf')->name('constructorliquidacion.generatepdf');
     //Route::post('constructorliquidacion/getProcesos', 'ConstructorLiquidacionController@getProcesos')->name('constructorliquidacion.getProcesos');
     Route::get('constructorliquidacion/selector', 'ConstructorLiquidacionController@selector')->name('constructorliquidacion.selector');
-    
+
     //Route::resource('constructorliquidacion', 'ConstructorLiquidacionController');
 
 
