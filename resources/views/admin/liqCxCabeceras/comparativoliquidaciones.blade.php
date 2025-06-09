@@ -112,7 +112,12 @@
                                     <option value="">Seleccione un Cliente</option>
                                 </select>
                             </div>
-
+                             <div class="form-group">
+                                <label for="filtroClientePrincipal">País Destino</label>
+                                <select class="form-control select2" id="cboPais" name="cboPais">
+                                    <option value="">Seleccione un País</option>
+                                </select>
+                            </div>
 
 
                             <div class="form-group">
@@ -268,7 +273,7 @@
 
         $(document).ready(function() {
 
-        $("#btnImprimir").off('click').on('click', function() {
+            $("#btnImprimir").off('click').on('click', function() {
                 printSpecificDivs();
             });
 
@@ -276,88 +281,94 @@
 
 
             function printSpecificDivs() {
-    const scoreDiv = document.getElementById('scores');
-    const comparativeTable = document.getElementById('comparativeTable'); // Your main DataTables table
-    const printTableContainer = document.getElementById('printTableContainer'); // The new hidden div
+                const scoreDiv = document.getElementById('scores');
+                const comparativeTable = document.getElementById('comparativeTable'); // Your main DataTables table
+                const printTableContainer = document.getElementById('printTableContainer'); // The new hidden div
 
-    if (!scoreDiv || !comparativeTable || !printTableContainer) {
-        alert('One or more required elements were not found for printing.');
-        return;
-    }
-
-    // Get the current data from your DataTables instance
-    // Assuming 'dataTable' is your global DataTables instance for #comparativeTable
-    if (!dataTable || !$.fn.DataTable.isDataTable('#comparativeTable')) {
-        alert('Data table is not initialized. Please filter data first.');
-        return;
-    }
-
-    const currentTableData = dataTable.rows({
-        page: 'all'
-    }).data().toArray();
-    const currentTableColumns = dataTable.settings().init().columns; // Get original column definitions
-
-    // --- Build the print-specific table's HTML ---
-    let printTableHTML = '<table id="printComparativeTable" style="width:100%; border-collapse: collapse;"><thead><tr>';
-
-    // Generate headers for the print table
-    // Skip DataTables specific columns like 'dt-control' or 'select-checkbox'
-    currentTableColumns.forEach(col => {
-        if (col.className && (col.className.includes('dt-control') || col.className.includes('select-checkbox'))) {
-            // Skip these columns in print
-        } else {
-            printTableHTML += `<th style="border: 1px solid #ccc; padding: 8px; text-align: left; background-color: #f2f2f2;">${col.title}</th>`;
-        }
-    });
-    printTableHTML += '</tr></thead><tbody>';
-
-    // Populate the body of the print table
-    currentTableData.forEach(rowData => {
-        printTableHTML += '<tr>';
-        currentTableColumns.forEach(col => {
-            if (col.className && (col.className.includes('dt-control') || col.className.includes('select-checkbox'))) {
-                // Skip these columns in print
-            } else {
-                let cellData = rowData[col.data];
-                // Apply render function if available and not null
-                if (col.render && cellData !== null && cellData !== undefined) {
-                    // Temporarily create a dummy context for the render function
-                    cellData = col.render(cellData, 'display', rowData);
-                } else if (cellData === null || cellData === undefined) {
-                    cellData = '';
+                if (!scoreDiv || !comparativeTable || !printTableContainer) {
+                    alert('One or more required elements were not found for printing.');
+                    return;
                 }
 
-                // Add class for numeric alignment if needed
-                let cellClass = col.className && col.className.includes('numeric') ? 'text-align: right;' : '';
-                // Add negative color if needed
-                if (col.data === 'Diferencia' || col.data === 'Total Diferencia') {
-                    if (Number(rowData[col.data]) < 0) {
-                        cellClass += 'color: red;';
+                // Get the current data from your DataTables instance
+                // Assuming 'dataTable' is your global DataTables instance for #comparativeTable
+                if (!dataTable || !$.fn.DataTable.isDataTable('#comparativeTable')) {
+                    alert('Data table is not initialized. Please filter data first.');
+                    return;
+                }
+
+                const currentTableData = dataTable.rows({
+                    page: 'all'
+                }).data().toArray();
+                const currentTableColumns = dataTable.settings().init().columns; // Get original column definitions
+
+                // --- Build the print-specific table's HTML ---
+                let printTableHTML =
+                    '<table id="printComparativeTable" style="width:100%; border-collapse: collapse;"><thead><tr>';
+
+                // Generate headers for the print table
+                // Skip DataTables specific columns like 'dt-control' or 'select-checkbox'
+                currentTableColumns.forEach(col => {
+                    if (col.className && (col.className.includes('dt-control') || col.className.includes(
+                            'select-checkbox'))) {
+                        // Skip these columns in print
+                    } else {
+                        printTableHTML +=
+                            `<th style="border: 1px solid #ccc; padding: 8px; text-align: left; background-color: #f2f2f2;">${col.title}</th>`;
                     }
-                }
-                // Apply subtotal row styling
-                let rowClass = '';
-                if (rowData.Etiqueta && rowData.Etiqueta.includes('Subtotal')) {
-                    rowClass = 'background-color: #f0f0f0; font-weight: bold;';
-                }
+                });
+                printTableHTML += '</tr></thead><tbody>';
 
-                printTableHTML += `<td style="border: 1px solid #ccc; padding: 8px; ${cellClass} ${rowClass}">${cellData}</td>`;
-            }
-        });
-        printTableHTML += '</tr>';
-    });
+                // Populate the body of the print table
+                currentTableData.forEach(rowData => {
+                    printTableHTML += '<tr>';
+                    currentTableColumns.forEach(col => {
+                        if (col.className && (col.className.includes('dt-control') || col.className
+                                .includes('select-checkbox'))) {
+                            // Skip these columns in print
+                        } else {
+                            let cellData = rowData[col.data];
+                            // Apply render function if available and not null
+                            if (col.render && cellData !== null && cellData !== undefined) {
+                                // Temporarily create a dummy context for the render function
+                                cellData = col.render(cellData, 'display', rowData);
+                            } else if (cellData === null || cellData === undefined) {
+                                cellData = '';
+                            }
 
-    printTableHTML += '</tbody></table>';
+                            // Add class for numeric alignment if needed
+                            let cellClass = col.className && col.className.includes('numeric') ?
+                                'text-align: right;' : '';
+                            // Add negative color if needed
+                            if (col.data === 'Diferencia' || col.data === 'Total Diferencia') {
+                                if (Number(rowData[col.data]) < 0) {
+                                    cellClass += 'color: red;';
+                                }
+                            }
+                            // Apply subtotal row styling
+                            let rowClass = '';
+                            if (rowData.Etiqueta && rowData.Etiqueta.includes('Subtotal')) {
+                                rowClass = 'background-color: #f0f0f0; font-weight: bold;';
+                            }
 
-    // Set the HTML for the hidden print container
-    printTableContainer.innerHTML = printTableHTML;
+                            printTableHTML +=
+                                `<td style="border: 1px solid #ccc; padding: 8px; ${cellClass} ${rowClass}">${cellData}</td>`;
+                        }
+                    });
+                    printTableHTML += '</tr>';
+                });
 
-    // Create a new window for printing
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write('<html><head><title>Comparativa Liquidaciones</title>');
+                printTableHTML += '</tbody></table>';
 
-    // Add necessary print-specific CSS directly to the print window
-    printWindow.document.write(`
+                // Set the HTML for the hidden print container
+                printTableContainer.innerHTML = printTableHTML;
+
+                // Create a new window for printing
+                const printWindow = window.open('', '_blank');
+                printWindow.document.write('<html><head><title>Comparativa Liquidaciones</title>');
+
+                // Add necessary print-specific CSS directly to the print window
+                printWindow.document.write(`
         <style>
             body { font-family: Arial, sans-serif; margin: 20px; }
             #scores { margin-bottom: 20px; }
@@ -419,19 +430,21 @@
             tfoot { display: table-footer-group; } /* Repeat footer on each page */
         </style>
     `);
-    printWindow.document.write('</head><body>');
+                printWindow.document.write('</head><body>');
 
-    // Append the score div and the *newly generated* print-specific table
-    printWindow.document.write(scoreDiv.outerHTML);
-    printWindow.document.write('<div style="page-break-before: always;"></div>'); // Optional: force new page for table
-    printWindow.document.write(printTableContainer.innerHTML); // Use innerHTML to get the table directly
+                // Append the score div and the *newly generated* print-specific table
+                printWindow.document.write(scoreDiv.outerHTML);
+                printWindow.document.write(
+                '<div style="page-break-before: always;"></div>'); // Optional: force new page for table
+                printWindow.document.write(printTableContainer
+                .innerHTML); // Use innerHTML to get the table directly
 
-    printWindow.document.write('</body></html>');
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
-    // printWindow.close(); // You might want to comment this out during debugging to inspect the print window
-}
+                printWindow.document.write('</body></html>');
+                printWindow.document.close();
+                printWindow.focus();
+                printWindow.print();
+                // printWindow.close(); // You might want to comment this out during debugging to inspect the print window
+            }
 
             $("#loading-animation").show();
             $('.select2').select2({
@@ -441,6 +454,27 @@
 
 
             $("#loading-animation").show();
+            $.ajax({
+                url: "{{ route('admin.reporteria.ObtenerPaises') }}",
+                type: "get",
+                success: function(response) {
+                  const paises=[...new Set(response.map(item => (item.nombre ||
+                        "").toUpperCase()))];
+                         $('#cboPais').select2({
+                        data: paises.map(pais => ({
+                            id: pais,
+                            text: pais
+                        })),
+                        placeholder: "Selecciona Pais",
+                        allowClear: true
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error fetching data:", error);
+                    $("#loading-animation").hide();
+                    alert("Error al cargar los datos");
+                }
+            });
             $.ajax({
                 url: "{{ route('admin.reporteria.obtenerDataComparativaInicial') }}",
                 type: "get",
@@ -736,28 +770,14 @@
                 dataTable.clear();
                 dataTable.rows.add(filteredData).draw();
                 filteredData.forEach(row => {
-                    scoreTotalKilos += row['Suma de Kilos Total'] || 0;
-                    scoreTotalDiferencia += row['Total Diferencia'] || 0;
+                    // scoreTotalKilos += row['Suma de Kilos Total'] || 0;
+                    // scoreTotalDiferencia += row['Total Diferencia'] || 0;
                 });
-                $("#scoreTotalKilos").html(scoreTotalKilos.toLocaleString('es-ES', {
-                    minimumFractionDigits: 4,
-                    maximumFractionDigits: 4
-                }));
-                $("#scoreTotalDiferencia").html(scoreTotalDiferencia.toLocaleString('es-ES', {
-                    minimumFractionDigits: 4,
-                    maximumFractionDigits: 4
-                }));
-                scoreCostoOportunidad = scoreTotalDiferencia / scoreTotalKilos;
-                $("#scoreCostoOportunidad").html(scoreCostoOportunidad.toLocaleString('es-ES', {
-                    minimumFractionDigits: 4,
-                    maximumFractionDigits: 4
-                }));
+
             }
 
             function fetchAndDisplayData() {
-                scoreTotalKilos = 0;
-                scoreTotalDiferencia = 0;
-                scoreCostoOportunidad = 0;
+
 
                 $("#loading-animation").show();
                 $.ajax({
@@ -768,6 +788,7 @@
                         especie: $("#cboEspecie").val() || [],
                         cliente: $("#cboCliente").val() || "",
                         vista: $("input[name='cboCxCompara']:checked").val() || "1",
+                        pais: $("#cboPais").val() || "",
 
                     },
                     success: function(data) {
@@ -797,6 +818,7 @@
                     data: {
                         _token: "{{ csrf_token() }}",
                         especie: $("#cboEspecie").val() || [],
+                         pais: $("#cboPais").val() || "",
                     },
                     success: function(data) {
                         initializeRankingTable(data);
@@ -834,6 +856,30 @@
 
 
             function initializeRankingTable(data) {
+                  scoreTotalKilos = 0;
+                scoreTotalDiferencia = 0;
+                scoreCostoOportunidad = 0;
+                data.forEach(function(item) {
+                    if (item["Cliente"].toUpperCase() == $("#cboCliente").val()) {
+                        scoreTotalKilos += item["Suma de Kilos Total"] || 0;
+                        scoreTotalDiferencia += item["Total Diferencia"] || 0;
+
+                        $("#scoreTotalKilos").html(scoreTotalKilos.toLocaleString('es-ES', {
+                            minimumFractionDigits: 4,
+                            maximumFractionDigits: 4
+                        }));
+                        $("#scoreTotalDiferencia").html(scoreTotalDiferencia.toLocaleString('es-ES', {
+                            minimumFractionDigits: 4,
+                            maximumFractionDigits: 4
+                        }));
+                        scoreCostoOportunidad = scoreTotalDiferencia / scoreTotalKilos;
+                        $("#scoreCostoOportunidad").html(scoreCostoOportunidad.toLocaleString('es-ES', {
+                            minimumFractionDigits: 4,
+                            maximumFractionDigits: 4
+                        }));
+                    }
+                });
+
                 console.log('Initializing Ranking DataTable with data:', data);
 
                 if (rankingTable && $.fn.DataTable.isDataTable('#rankingTable')) {

@@ -1956,6 +1956,7 @@ class ReporteriaController extends Controller
         // }
 
         $datos=Fob::where('nave','!=','')
+
         ->select("nave","etiqueta","variedad","calibre","embalaje",
                     "cliente","especie","ETA_Week",
         DB::raw("SUM(FOB_TO_USD) as FOB_TO_USD"),
@@ -1971,8 +1972,20 @@ class ReporteriaController extends Controller
             $item->especie = strtoupper($item->especie ?? '');
             return $item;
         });
+
         return $datos;
     }
+
+    public function ObtenerPaises()
+    {
+          $pais=DB::connection('sqlsrv')->table('dbo.V_PKG_Despachos')
+            ->select(
+                DB::raw('UPPER(n_pais_destino) as nombre'))
+            ->distinct()
+            ->get();
+        return $pais;
+    }
+
     public function obtenerComparativo(Request $request)
     {
         // Fetch main client
@@ -1985,6 +1998,9 @@ class ReporteriaController extends Controller
         $datos = Fob::whereIn('especie', $request->input('especie', []))
             ->where('nave', '!=', '')
             ->where('cliente', $cliente->nombre_fantasia)
+            ->when($request->filled('pais'), function ($query) use ($request) {
+                $query->where('pais', $request->input('pais'));
+            })
             ->select(
                 DB::raw("upper(nave) as nave"),
                     DB::raw("upper(etiqueta) as etiqueta"),
@@ -2013,6 +2029,9 @@ class ReporteriaController extends Controller
             $datosComparativo = Fob::whereIn('especie', $request->input('especie', []))
                 ->where('nave', '!=', '')
                 ->where('cliente', '!=', $cliente->nombre_fantasia)
+                ->when($request->filled('pais'), function ($query) use ($request) {
+                $query->where('pais', $request->input('pais'));
+            })
                 ->select(
                     DB::raw("upper(nave) as nave"),
                     DB::raw("upper(etiqueta) as etiqueta"),
@@ -2034,6 +2053,9 @@ class ReporteriaController extends Controller
             $datosComparativo = Fob::whereIn('especie', $request->input('especie', []))
                 ->where('nave', '!=', '')
                 ->where('cliente', '!=', $cliente->nombre_fantasia)
+                 ->when($request->filled('pais'), function ($query) use ($request) {
+                $query->where('pais', $request->input('pais'));
+            })
                 ->select(
 
                     DB::raw("upper(nave) as nave"),
@@ -2054,7 +2076,10 @@ class ReporteriaController extends Controller
             ->orderBy('calibre')
                 ->get();
         }
+        foreach ($datosComparativo as $row) {
 
+
+        }
         // Get unique compared clients (for vista = 2)
         $compared_clients = [];
         if ($vista == 2) {
@@ -2340,6 +2365,9 @@ class ReporteriaController extends Controller
             $datos = Fob::whereIn('especie', $especies)
                 ->where('nave', '!=', '')
                 ->where('cliente', $main_client)
+               ->when($request->filled('pais'), function ($query) use ($request) {
+                $query->where('pais', $request->input('pais'));
+            })
                 ->select(
                     DB::raw("upper(nave) as nave"),
                     DB::raw("upper(etiqueta) as etiqueta"),
@@ -2360,6 +2388,9 @@ class ReporteriaController extends Controller
             $datosComparativo = Fob::whereIn('especie', $especies)
                 ->where('nave', '!=', '')
                 ->where('cliente', '!=', $main_client)
+               ->when($request->filled('pais'), function ($query) use ($request) {
+                $query->where('pais', $request->input('pais'));
+            })
                 ->select(
                     DB::raw("upper(nave) as nave"),
                      DB::raw("upper(etiqueta) as etiqueta"),
