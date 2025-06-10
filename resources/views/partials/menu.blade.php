@@ -743,6 +743,16 @@
                             </a>
                         </li>
                     @endcan
+                    @can('analisi_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.analisis.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/analisis") || request()->is("admin/analisis/*") ? "c-active" : "" }}">
+                                <i class="fa-fw far fa-lightbulb c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.analisi.title') }}
+                            </a>
+                        </li>
+                    @endcan
                     @can('valor_flete_access')
                         <li class="c-sidebar-nav-item">
                             <a href="{{ route("admin.valor-fletes.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/valor-fletes") || request()->is("admin/valor-fletes/*") ? "c-active" : "" }}">
