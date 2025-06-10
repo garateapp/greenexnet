@@ -64,6 +64,12 @@ class EmbalajesController extends Controller
             $table->editColumn('caja', function ($row) {
                 return $row->caja ? $row->caja : '';
             });
+            $table->editColumn('cajasxlinea', function ($row) {
+                return $row->cajasxlinea ? $row->cajasxlinea : '';
+            });
+            $table->editColumn('lineasxpallet', function ($row) {
+                return $row->lineasxpallet ? $row->lineasxpallet : '';
+            });
 
             $table->rawColumns(['actions', 'placeholder']);
 
@@ -104,6 +110,8 @@ class EmbalajesController extends Controller
     public function show(Embalaje $embalaje)
     {
         abort_if(Gate::denies('embalaje_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $embalaje->load('embalajeMaterialProductos');
 
         return view('admin.embalajes.show', compact('embalaje'));
     }

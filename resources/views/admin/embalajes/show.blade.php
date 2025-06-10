@@ -82,6 +82,22 @@
     </div>
 </div>
 
-
+<div class="card">
+    <div class="card-header">
+        {{ trans('global.relatedData') }}
+    </div>
+    <ul class="nav nav-tabs" role="tablist" id="relationship-tabs">
+        <li class="nav-item">
+            <a class="nav-link" href="#embalaje_material_productos" role="tab" data-toggle="tab">
+                {{ trans('cruds.materialProducto.title') }}
+            </a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane" role="tabpanel" id="embalaje_material_productos">
+            @includeIf('admin.embalajes.relationships.embalajeMaterialProductos', ['materialProductos' => $embalaje->embalajeMaterialProductos])
+        </div>
+    </div>
+</div>
 
 @endsection

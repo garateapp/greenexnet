@@ -1,56 +1,59 @@
 @extends('layouts.admin')
 @section('content')
-@can('embalaje_create')
+@can('material_producto_create')
     <div style="margin-bottom: 10px;" class="row">
         <div class="col-lg-12">
-            <a class="btn btn-success" href="{{ route('admin.embalajes.create') }}">
-                {{ trans('global.add') }} {{ trans('cruds.embalaje.title_singular') }}
+            <a class="btn btn-success" href="{{ route('admin.material-productos.create') }}">
+                {{ trans('global.add') }} {{ trans('cruds.materialProducto.title_singular') }}
             </a>
             <button class="btn btn-warning" data-toggle="modal" data-target="#csvImportModal">
                 {{ trans('global.app_csvImport') }}
             </button>
-            @include('csvImport.modal', ['model' => 'Embalaje', 'route' => 'admin.embalajes.parseCsvImport'])
+            @include('csvImport.modal', ['model' => 'MaterialProducto', 'route' => 'admin.material-productos.parseCsvImport'])
         </div>
     </div>
 @endcan
 <div class="card">
     <div class="card-header">
-        {{ trans('cruds.embalaje.title_singular') }} {{ trans('global.list') }}
+        {{ trans('cruds.materialProducto.title_singular') }} {{ trans('global.list') }}
     </div>
 
     <div class="card-body">
-        <table class=" table table-bordered table-striped table-hover ajaxTable datatable datatable-Embalaje">
+        <table class=" table table-bordered table-striped table-hover ajaxTable datatable datatable-MaterialProducto">
             <thead>
                 <tr>
                     <th width="10">
 
                     </th>
                     <th>
-                        {{ trans('cruds.embalaje.fields.id') }}
+                        {{ trans('cruds.materialProducto.fields.id') }}
                     </th>
                     <th>
-                        {{ trans('cruds.embalaje.fields.c_embalaje') }}
+                        {{ trans('cruds.materialProducto.fields.embalaje') }}
                     </th>
                     <th>
-                        {{ trans('cruds.embalaje.fields.kgxcaja') }}
+                        {{ trans('cruds.materialProducto.fields.material') }}
                     </th>
                     <th>
-                        {{ trans('cruds.embalaje.fields.cajaxpallet') }}
+                        {{ trans('cruds.material.fields.codigo') }}
                     </th>
                     <th>
-                        {{ trans('cruds.embalaje.fields.altura_pallet') }}
+                        {{ trans('cruds.materialProducto.fields.unidadxcaja') }}
                     </th>
                     <th>
-                        {{ trans('cruds.embalaje.fields.tipo_embarque') }}
+                        {{ trans('cruds.materialProducto.fields.unidadxpallet') }}
                     </th>
                     <th>
-                        {{ trans('cruds.embalaje.fields.caja') }}
+                        {{ trans('cruds.materialProducto.fields.costoxcajaclp') }}
                     </th>
-                     <th>
-                         Cajas x Linea
+                    <th>
+                        {{ trans('cruds.materialProducto.fields.costoxpallet_clp') }}
                     </th>
-                     <th>
-                         Líneas x Pallet
+                    <th>
+                        {{ trans('cruds.materialProducto.fields.costoxcaja_usd') }}
+                    </th>
+                    <th>
+                        {{ trans('cruds.materialProducto.fields.costoxpallet_usd') }}
                     </th>
                     <th>
                         &nbsp;
@@ -63,24 +66,31 @@
                         <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                     </td>
                     <td>
-                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                    </td>
-                    <td>
-                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                    </td>
-                    <td>
-                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                    </td>
-                    <td>
-                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                    </td>
-                    <td>
-                        <select class="search" strict="true">
+                        <select class="search">
                             <option value>{{ trans('global.all') }}</option>
-                            @foreach(App\Models\Embalaje::TIPO_EMBARQUE_SELECT as $key => $item)
-                                <option value="{{ $key }}">{{ $item }}</option>
+                            @foreach($embalajes as $key => $item)
+                                <option value="{{ $item->c_embalaje }}">{{ $item->c_embalaje }}</option>
                             @endforeach
                         </select>
+                    </td>
+                    <td>
+                        <select class="search">
+                            <option value>{{ trans('global.all') }}</option>
+                            @foreach($materials as $key => $item)
+                                <option value="{{ $item->nombre }}">{{ $item->nombre }}</option>
+                            @endforeach
+                        </select>
+                    </td>
+                    <td>
+                    </td>
+                    <td>
+                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
+                    </td>
+                    <td>
+                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
+                    </td>
+                    <td>
+                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                     </td>
                     <td>
                         <input class="search" type="text" placeholder="{{ trans('global.search') }}">
@@ -107,11 +117,11 @@
 <script>
     $(function () {
   let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
-@can('embalaje_delete')
+@can('material_producto_delete')
   let deleteButtonTrans = '{{ trans('global.datatables.delete') }}';
   let deleteButton = {
     text: deleteButtonTrans,
-    url: "{{ route('admin.embalajes.massDestroy') }}",
+    url: "{{ route('admin.material-productos.massDestroy') }}",
     className: 'btn-danger',
     action: function (e, dt, node, config) {
       var ids = $.map(dt.rows({ selected: true }).data(), function (entry) {
@@ -143,30 +153,31 @@
     serverSide: true,
     retrieve: true,
     aaSorting: [],
-    ajax: "{{ route('admin.embalajes.index') }}",
+    ajax: "{{ route('admin.material-productos.index') }}",
     columns: [
       { data: 'placeholder', name: 'placeholder' },
 { data: 'id', name: 'id' },
-{ data: 'c_embalaje', name: 'c_embalaje' },
-{ data: 'kgxcaja', name: 'kgxcaja' },
-{ data: 'cajaxpallet', name: 'cajaxpallet' },
-{ data: 'altura_pallet', name: 'altura_pallet' },
-{ data: 'tipo_embarque', name: 'tipo_embarque' },
-{ data: 'caja', name: 'caja' },
-{ data: 'cajasxlinea', name: 'cajasxlinea' },
-{ data: 'lineasxpallet', name: 'lineasxpallet' },
+{ data: 'embalaje_c_embalaje', name: 'embalaje.c_embalaje' },
+{ data: 'material_nombre', name: 'material.nombre' },
+{ data: 'material.codigo', name: 'material.codigo' },
+{ data: 'unidadxcaja', name: 'unidadxcaja' },
+{ data: 'unidadxpallet', name: 'unidadxpallet' },
+{ data: 'costoxcajaclp', name: 'costoxcajaclp' },
+{ data: 'costoxpallet_clp', name: 'costoxpallet_clp' },
+{ data: 'costoxcaja_usd', name: 'costoxcaja_usd' },
+{ data: 'costoxpallet_usd', name: 'costoxpallet_usd' },
 { data: 'actions', name: '{{ trans('global.actions') }}' }
     ],
     orderCellsTop: true,
     order: [[ 1, 'desc' ]],
     pageLength: 100,
   };
-  let table = $('.datatable-Embalaje').DataTable(dtOverrideGlobals);
+  let table = $('.datatable-MaterialProducto').DataTable(dtOverrideGlobals);
   $('a[data-toggle="tab"]').on('shown.bs.tab click', function(e){
       $($.fn.dataTable.tables(true)).DataTable()
           .columns.adjust();
   });
-
+  
 let visibleColumnsIndexes = null;
 $('.datatable thead').on('input', '.search', function () {
       let strict = $(this).attr('strict') || false

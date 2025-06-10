@@ -619,6 +619,18 @@ Route::post('constructorliquidacion/generatepdf', 'ConstructorLiquidacionControl
 
     //Route::resource('constructorliquidacion', 'ConstructorLiquidacionController');
 
+     // Material
+    Route::delete('materials/destroy', 'MaterialController@massDestroy')->name('materials.massDestroy');
+    Route::post('materials/parse-csv-import', 'MaterialController@parseCsvImport')->name('materials.parseCsvImport');
+    Route::post('materials/process-csv-import', 'MaterialController@processCsvImport')->name('materials.processCsvImport');
+    Route::resource('materials', 'MaterialController');
+
+    // Material Producto
+    Route::delete('material-productos/destroy', 'MaterialProductoController@massDestroy')->name('material-productos.massDestroy');
+    Route::post('material-productos/parse-csv-import', 'MaterialProductoController@parseCsvImport')->name('material-productos.parseCsvImport');
+    Route::post('material-productos/process-csv-import', 'MaterialProductoController@processCsvImport')->name('material-productos.processCsvImport');
+    Route::resource('material-productos', 'MaterialProductoController');
+
 
     Route::get('messenger', 'MessengerController@index')->name('messenger.index');
     Route::get('messenger/create', 'MessengerController@createTopic')->name('messenger.createTopic');
@@ -964,6 +976,7 @@ Route::group(['as' => 'frontend.', 'namespace' => 'Frontend', 'middleware' => ['
     // Personal
     Route::delete('personals/destroy', 'PersonalController@massDestroy')->name('personals.massDestroy');
     Route::resource('personals', 'PersonalController');
+
 
     // Turnos Frecuencia
     Route::delete('turnos-frecuencia/destroy', 'TurnosFrecuenciaController@massDestroy')->name('turnos-frecuencia.massDestroy');

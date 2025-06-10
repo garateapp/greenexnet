@@ -485,25 +485,38 @@
             </ul>
         </li>
 
-        <li class="c-sidebar-nav-dropdown {{ request()->is('admin/embalajes*') ? 'c-show' : '' }}">
-            <a class="c-sidebar-nav-dropdown-toggle" href="#">
-                <i class="fa-fw fas fa-cogs c-sidebar-nav-icon"></i>
-                Operaciones
-            </a>
-            <ul class="c-sidebar-nav-dropdown-items">
-                @can('operaciones_fusionar_folios_access')
-                    <li class="c-sidebar-nav-item">
-                        <a href="{{ route('admin.operaciones.fusionarFolios') }}"
-                            class="c-sidebar-nav-link {{ request()->is('admin/operaciones') || request()->is('admin/operaciones/*') ? 'c-active' : '' }}">
-                            <i class="fa-fw fas fa-documents c-sidebar-nav-icon">
+        @can('operacione_access')
+            <li class="c-sidebar-nav-dropdown {{ request()->is("admin/materials*") ? "c-show" : "" }} {{ request()->is("admin/material-productos*") ? "c-show" : "" }}">
+                <a class="c-sidebar-nav-dropdown-toggle" href="#">
+                    <i class="fa-fw fab fa-algolia c-sidebar-nav-icon">
 
-                            </i>
-                            Fusionar
-                        </a>
-                    </li>
-                @endcan
-            </ul>
-        </li>
+                    </i>
+                    {{ trans('cruds.operacione.title') }}
+                </a>
+                <ul class="c-sidebar-nav-dropdown-items">
+                    @can('material_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.materials.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/materials") || request()->is("admin/materials/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fas fa-toolbox c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.material.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('material_producto_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.material-productos.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/material-productos") || request()->is("admin/material-productos/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fas fa-cogs c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.materialProducto.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                </ul>
+            </li>
+        @endcan
         @can('instructivo_access')
             <li class="c-sidebar-nav-dropdown {{ request()->is("admin/base-recibidors*") ? "c-show" : "" }} {{ request()->is("admin/base-contactos*") ? "c-show" : "" }} {{ request()->is("admin/agente-aduanas*") ? "c-show" : "" }} {{ request()->is("admin/puerto-correos*") ? "c-show" : "" }} {{ request()->is("admin/embarcadors*") ? "c-show" : "" }} {{ request()->is("admin/chofers*") ? "c-show" : "" }} {{ request()->is("admin/planta-cargas*") ? "c-show" : "" }} {{ request()->is("admin/peso-embalajes*") ? "c-show" : "" }} {{ request()->is("admin/navieras*") ? "c-show" : "" }} {{ request()->is("admin/condpagos*") ? "c-show" : "" }} {{ request()->is("admin/correoalso-airs*") ? "c-show" : "" }} {{ request()->is("admin/instructivo-embarques*") ? "c-show" : "" }} {{ request()->is("admin/tipofletes*") ? "c-show" : "" }} {{ request()->is("admin/emision-bls*") ? "c-show" : "" }} {{ request()->is("admin/forma-pagos*") ? "c-show" : "" }} {{ request()->is("admin/mod-venta*") ? "c-show" : "" }} {{ request()->is("admin/clausula-venta*") ? "c-show" : "" }} {{ request()->is("admin/monedas*") ? "c-show" : "" }}">
                 <a class="c-sidebar-nav-dropdown-toggle" href="#">
@@ -710,7 +723,7 @@
                             <i class="fa-fw fas fa-spinner c-sidebar-nav-icon">
 
                             </i>
-                           Generar Liquidación 
+                           Generar Liquidación
                         </a>
                     </li>
                     @can('grupo_access')
@@ -792,7 +805,7 @@
                                 {{ trans('cruds.anticipo.title') }}
                             </a>
                         </li>
-                   
+
                         <li class="c-sidebar-nav-item">
                             <a href="{{ route("admin.interes-anticipos.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/interes-anticipos") || request()->is("admin/interes-anticipos/*") ? "c-active" : "" }}">
                                 <i class="fa-fw far fa-money-bill-alt c-sidebar-nav-icon">

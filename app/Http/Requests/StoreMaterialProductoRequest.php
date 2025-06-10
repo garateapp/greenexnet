@@ -2,48 +2,51 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Embalaje;
+use App\Models\MaterialProducto;
 use Gate;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Response;
 
-class StoreEmbalajeRequest extends FormRequest
+class StoreMaterialProductoRequest extends FormRequest
 {
     public function authorize()
     {
-        return Gate::allows('embalaje_create');
+        return Gate::allows('material_producto_create');
     }
 
     public function rules()
     {
         return [
-            'c_embalaje' => [
-                'string',
-                'required',
-            ],
-            'kgxcaja' => [
+            'embalaje_id' => [
                 'required',
                 'integer',
-                'min:-2147483648',
-                'max:2147483647',
             ],
-            'cajaxpallet' => [
+            'material_id' => [
+                'required',
+                'integer',
+            ],
+            'unidadxcaja' => [
+                'numeric',
+                'required',
+            ],
+            'unidadxpallet' => [
+                'numeric',
+                'required',
+            ],
+            'costoxcajaclp' => [
+                'numeric',
+                'required',
+            ],
+            'costoxpallet_clp' => [
+                'numeric',
+                'required',
+            ],
+            'costoxcaja_usd' => [
+                'numeric',
+                'required',
+            ],
+            'costoxpallet_usd' => [
                 'string',
-                'required',
-            ],
-            'altura_pallet' => [
-                'numeric',
-            ],
-            'caja' => [
-                'string',
-                'required',
-            ],
-            'cajasxlinea' => [
-                'numeric',
-                'required',
-            ],
-            'lineasxpallet' => [
-                'numeric',
                 'required',
             ],
         ];

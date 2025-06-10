@@ -38,6 +38,14 @@ class UpdateEmbalajeRequest extends FormRequest
                 'string',
                 'required',
             ],
+            'cajasxlinea' => [
+                'numeric',
+                'required',
+            ],
+            'lineasxpallet' => [
+                'numeric',
+                'required',
+            ],
         ];
     }
 }

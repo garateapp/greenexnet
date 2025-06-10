@@ -8,16 +8,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Embalaje extends Model
+class Material extends Model
 {
     use SoftDeletes, Auditable, HasFactory;
 
-    public $table = 'embalajes';
-
-    public static $searchable = [
-        'c_embalaje',
-        'kgxcaja',
-    ];
+    public $table = 'materials';
 
     protected $dates = [
         'created_at',
@@ -25,21 +20,16 @@ class Embalaje extends Model
         'deleted_at',
     ];
 
-    public const TIPO_EMBARQUE_SELECT = [
-        'MARITIMO' => 'MARíTIMO',
-        'AEREO'    => 'AÉREO',
-        'TERRESTRE' => 'TERRESTRE',
+    public const UNIDAD_SELECT = [
+        'UNIDAD' => 'UNIDAD',
+        'KILOS'  => 'KILOS',
     ];
 
     protected $fillable = [
-        'c_embalaje',
-        'kgxcaja',
-        'cajaxpallet',
-        'altura_pallet',
-        'tipo_embarque',
-        'caja',
-        'cajasxlinea',
-        'lineasxpallet',
+        'codigo',
+        'nombre',
+        'unidad',
+        'costo_ult_oc',
         'created_at',
         'updated_at',
         'deleted_at',
@@ -50,8 +40,8 @@ class Embalaje extends Model
         return $date->format('Y-m-d H:i:s');
     }
 
-    public function embalajeMaterialProductos()
+    public function materialMaterialProductos()
     {
-        return $this->hasMany(MaterialProducto::class, 'embalaje_id', 'id');
+        return $this->hasMany(MaterialProducto::class, 'material_id', 'id');
     }
 }

@@ -75,6 +75,26 @@
                 @endif
                 <span class="help-block">{{ trans('cruds.embalaje.fields.caja_helper') }}</span>
             </div>
+               <div class="form-group">
+                <label class="required" for="cajasxlinea">Cajas x Línea</label>
+                <input class="form-control {{ $errors->has('cajasxlinea') ? 'is-invalid' : '' }}" type="text" name="cajasxlinea" id="cajasxlinea" value="{{ old('cajasxlinea', $embalaje->cajasxlinea) }}" required>
+                @if($errors->has('cajasxlinea'))
+                    <div class="invalid-feedback">
+                        {{ $errors->first('cajasxlinea') }}
+                    </div>
+                @endif
+
+            </div>
+              <div class="form-group">
+                <label class="required" for="lineasxpallet">Líneas x Pallet</label>
+                <input class="form-control {{ $errors->has('lineasxpallet') ? 'is-invalid' : '' }}" type="text" name="lineasxpallet" id="lineasxpallet" value="{{ old('lineasxpallet', $embalaje->lineasxpallet) }}" required>
+                @if($errors->has('lineasxpallet'))
+                    <div class="invalid-feedback">
+                        {{ $errors->first('lineasxpallet') }}
+                    </div>
+                @endif
+
+            </div>
             <div class="form-group">
                 <button class="btn btn-danger" type="submit">
                     {{ trans('global.save') }}
