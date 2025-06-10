@@ -64,6 +64,7 @@ class Fob extends Model
         'folio_fx',
         'especie',
         'Costos_cajas_USD',
+        'pais'
     ];
 
     // Define the data types for specific columns (optional casting)
@@ -101,5 +102,5 @@ class Fob extends Model
         'Costos_cajas_USD' => 'float',
     ];
 
-    
+
 }

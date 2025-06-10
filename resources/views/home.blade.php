@@ -125,6 +125,8 @@
                                     <select id="filtroCliente" class="form-control select2" multiple="multiple"></select>
                                     <label for="filtroTransporte">Transporte</label>
                                     <select id="filtroTransporte" class="form-control select2" multiple="multiple"></select>
+                                      <label for="filtroPais">País Destino</label>
+                                    <select id="filtroPais" class="form-control select2"></select>
                                     {{-- <h3>Visualización</h3>
                                     <label for="filtroAgrupación">Agrupación</label>
                                     <select id="filtroAgrupación" class="form-control select2">
@@ -270,6 +272,7 @@
                                                         <th>VARIEDAD</th>
                                                         <th>KILOS</th>
                                                         <th>FOB/KG EQ</th>
+                                                        <th>FOB TOTAL</th>
                                                         <th>RNP Estimado</th>
                                                     </tr>
                                                 </thead>
@@ -616,7 +619,7 @@
                     const variedadesSel = ($("#filtroVariedad").val() || []).map(val => val.toUpperCase());
                     const transporteSel = ($("#filtroTransporte").val() || []).map(val => val.toUpperCase());
                     const coloresSel = ($("#filtroFobVariedadColor").val() || []).map(val => val.toUpperCase());
-                    //const etiquetasSel = ($("#filtroFobVariedadEtiqueta").val() || []).map(val => val.toUpperCase());
+                    const PaisSel = ($("#filtroPais").val() || []).map(val => val.toUpperCase());
                     const clientesSel = ($("#filtroCliente").val() || []).map(val => val.toUpperCase());
                     const especiesSel = ($("#filtroEspecie").val() || []).map(val => val.toUpperCase());
                     const agrupacionSel = $("#filtroAgrupación").val();
@@ -638,7 +641,9 @@
                                 .toUpperCase())) &&
                             (especiesSel.length === 0 || especiesSel.includes((item.especie
                                     .toUpperCase() || "")
-                                .toUpperCase()))
+                                .toUpperCase())) &&
+                                PaisSel===item.Pais.toUpperCase() || ""
+
                         );
                     });
                     calcularRNP(datosFiltrados);
@@ -676,6 +681,8 @@
 
                     $("#filtroEspecie").val(especies).trigger("change"); // Actualizar Select2
                     $("#filtroFobVariedadEspecie").val(especies).trigger("change"); // Actualizar Select2
+
+
                 });
 
                 $.ajax({
@@ -719,7 +726,7 @@
                     }
                 });
                 // Escuchar cambios en los filtros
-                $("#filtroEspecie, #filtroVariedad, #filtroCliente, #filtroTransporte, #filtroFamilia").on("change",
+                $("#filtroEspecie, #filtroVariedad, #filtroCliente, #filtroTransporte, #filtroFamilia,#filtroPais").on("change",
                     function() {
                         filtrarYActualizar();
                     });
@@ -738,9 +745,10 @@
                     //const etiquetasSel = ($("#filtroFobVariedadEtiqueta").val() || []).map(val => val.toUpperCase());
                     const clientesSel = ($("#filtroCliente").val() || []).map(val => val.toUpperCase());
                     const especiesSel = ($("#filtroEspecie").val() || []).map(val => val.toUpperCase());
+
                     const agrupacionSel = $("#filtroAgrupación").val();
                     const vistaSel = $("#filtroVista").val();
-
+                    const PaisSel = $("#filtroPais").val() || '';
                     // Filtrar liquidacionesData
                     let datosFiltrados = liquidacionesData.filter(item => {
                         return (
@@ -757,7 +765,7 @@
                                 .toUpperCase())) &&
                             (especiesSel.length === 0 || especiesSel.includes((item.especie ||
                                     "")
-                                ))
+                                )) && PaisSel==item.Pais || ""
                         );
                     });
 
@@ -776,6 +784,7 @@
                     const formatosSel = ($("#filtroFobVariedadFormato").val() || []).map(val => val.toUpperCase());
                     const coloresSel = ($("#filtroFobVariedadColor").val() || []).map(val => val.toUpperCase());
                     const etiquetasSel = ($("#filtroFobVariedadEtiqueta").val() || []).map(val => val.toUpperCase());
+                    const paisSel = ($("#filtroPais").val() || '');
                     const clientesSel = ($("#filtroFobVariedadClientes").val() || []).map(val => val.toUpperCase());
                     const agrupacionSel = $("#filtroAgrupación").val() || "0"; // Si existe
                     const vistaSel = $("#filtroVista").val() || "0";
@@ -802,7 +811,8 @@
                                 .toUpperCase())) &&
                             (especiesSel.length === 0 || especiesSel.includes((item.especie ||
                                     "")
-                                .toUpperCase()))
+                                .toUpperCase())) &&
+                            paisSel==item.Pais.toUpperCase()
                         );
                     });
 
@@ -879,6 +889,8 @@
                         const especiesUnicas = [...new Set(liquidacionesData.map(item => (item.especie || "")))];
                     const transportesUnicos = [...new Set(liquidacionesData.map(item => (item.Transporte || "")
                         .toUpperCase()))];
+                    const paisUnicos = [...new Set(liquidacionesData.map(item => (item.Pais || "")
+                        .toUpperCase()))];
 
                     const filtroFobVariedadCalibre = [...new Set(liquidacionesData.map(item => (item.Calibre || "")
                         .toUpperCase()))];
@@ -936,6 +948,14 @@
                             text: transporte
                         })),
                         placeholder: "Selecciona Transportes",
+                        allowClear: true
+                    });
+                    $("#filtroPais").select2({
+                        data: paisUnicos.map(pais => ({
+                            id: pais,
+                            text: pais
+                        })),
+                        placeholder: "Selecciona Países",
                         allowClear: true
                     });
                     $("#filtroFobVariedadCalibre").select2({
@@ -1142,6 +1162,7 @@
                     const variedadesSel = ($("#filtroVariedad").val() || []).map(val => val.toUpperCase());
                     const transporteSel = ($("#filtroTransporte").val() || []).map(val => val.toUpperCase());
                     const coloresSel = ($("#filtroFobVariedadColor").val() || []).map(val => val.toUpperCase());
+                    const paisSel = ($("#filtroPais").val() || '');
                     //const etiquetasSel = ($("#filtroFobVariedadEtiqueta").val() || []).map(val => val.toUpperCase());
                     const clientesSel = ($("#filtroCliente").val() || []).map(val => val.toUpperCase());
                     const especiesSel = ($("#filtroEspecie").val() || []).map(val => val.toUpperCase());
@@ -1164,7 +1185,7 @@
                                 .toUpperCase())) &&
                             (especiesSel.length === 0 || especiesSel.includes((item.especie.toUpperCase() ||
                                     "")
-                                .toUpperCase()))
+                                .toUpperCase())) &&  paisSel==item.Pais.toUpperCase() || ''
                         );
                     });
                     actualizarTablaVariedadFOBKG(datosFiltrados);
@@ -1212,12 +1233,14 @@
                             datosPorVariedad[variedad] = {
                                 kilosTotal: 0,
                                 sumaFobEquivalente: 0,
-                                totalCajas: 0
+                                totalCajas: 0,
+                                fob_total_usd: 0
                             };
                         }
                         datosPorVariedad[variedad].kilosTotal += item.Kilos_Total || 0;
                         datosPorVariedad[variedad].sumaFobEquivalente += item.FOB_TO_USD || 0;
                         datosPorVariedad[variedad].totalCajas += item.Cajas || 0;
+                        datosPorVariedad[variedad].fob_total_usd += item.FOB_TO_USD || 0;
                     });
 
                     // Generar las filas para la tabla
@@ -1257,6 +1280,11 @@
                                 maximumFractionDigits: 2
                             }) :
                             "0,00";
+                        const fob_total=datos.fob_total_usd.toLocaleString('es-CL', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        })
+                        console.log("Datos por variedad:", variedad, datos);
                         const RnpEstimado = datos.kilosTotal > 0 ?
                             ((datos.sumaFobEquivalente / datos.kilosTotal) - costoKg - ((datos.sumaFobEquivalente /
                                 datos.kilosTotal) * (comision / 100))).toLocaleString('es-CL', {
@@ -1270,6 +1298,7 @@
                 <td>${variedad}</td>
                 <td>${kilos}</td>
                 <td>$${fobCajaEq}</td>
+                <td>${fob_total}</td>
                 <td>$${RnpEstimado}</td>
             </tr>
         `;
@@ -1283,6 +1312,7 @@
                     const variedadesSel = ($("#filtroVariedad").val() || []).map(val => val.toUpperCase());
                     const transporteSel = ($("#filtroTransporte").val() || []).map(val => val.toUpperCase());
                     const coloresSel = ($("#filtroFobVariedadColor").val() || []).map(val => val.toUpperCase());
+                    const paisSel = ($("#filtroPais").val() || []).map(val => val.toUpperCase());
                     //const etiquetasSel = ($("#filtroFobVariedadEtiqueta").val() || []).map(val => val.toUpperCase());
                     const clientesSel = ($("#filtroCliente").val() || []).map(val => val.toUpperCase());
                     const especiesSel = ($("#filtroEspecie").val() || []).map(val => val.toUpperCase());
@@ -1305,7 +1335,7 @@
                                 .toUpperCase())) &&
                             (especiesSel.length === 0 || especiesSel.includes((item.especie
                                     .toUpperCase() || "")
-                                .toUpperCase()))
+                                .toUpperCase())) && paisSel===item.Pais || ""
                         );
                     });
                     actualizarTablaDesempenoClientes(datosFiltrados);
@@ -1832,7 +1862,7 @@
                     const week = Math.ceil((dayOfYear + startOfYear.getDay() + 1) / 7);
                     return `${year}-W${week.toString().padStart(2, '0')}`; // Ej: "2023-W40"
                 }
-                //Gráficos 
+                //Gráficos
                 function actualizarGraficoFobVariedad(datos = liquidacionesData, agrupacion = "0") {
                     // Destruir gráfico existente si hay uno
                     if (window.chartInstanceFobVariedad) {
@@ -2587,7 +2617,7 @@ function transformarDatosParaTreeGrid(data, clientePrincipal, clienteComparado) 
 
         niveles.forEach((nivel, i) => {
             const valor = group.values[nivel];
-            
+
             path.push(valor);
             const id = path.join('|');
             if (!nodeMap.has(id)) {
@@ -2671,7 +2701,7 @@ function transformarDatosParaTreeGrid(data, clientePrincipal, clienteComparado) 
 }
 
 function actualizarComparativaFOBCliente(liquidacionesData) {
-    console.log('Iniciando actualizarComparativaFOBCliente, datos:', liquidacionesData?.length);
+    console.log('Iniciando actualizarComparativaFOBCliente, datos:', liquidacionesData.length);
 
     const $container = $('#gridComparativaFOB');
     if (!$container.length) {
