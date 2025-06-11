@@ -2284,7 +2284,9 @@ class ReporteriaController extends Controller
                 $row_data['FOB Kilo USD Resto de Clientes'] = $row['fob_kilo_usd_resto'];
                 $row_data['Venta Kilo USD Resto de Clientes'] = $row['venta_kilo_usd_resto'];
                 $row_data['Diferencia']=$fob_kilo_usd-$row['fob_kilo_usd_resto'];
+                if($row['fob_kilo_usd_resto'] > 0){
                 $row_data['Total Diferencia']=$row['kilos_total'] * $row_data['Diferencia'];
+                }
             } else {
                 foreach ($compared_clients as $client) {
                     $client_key = str_replace(' ', '_', $client);
@@ -2294,7 +2296,9 @@ class ReporteriaController extends Controller
 
                 }
                 $row_data['Diferencia']=$fob_kilo_usd-$fob_resto_value;
+                if($fob_resto_value){
                 $row_data['Total Diferencia']=$row['kilos_total'] * $row_data['Diferencia'];
+                }
             }
 
             $result[] = $row_data;
@@ -2453,6 +2457,8 @@ class ReporteriaController extends Controller
 
             // Calculate opportunity cost
             $opportunity_cost = $total_kilos > 0 ? $total_diferencia / $total_kilos : 0;
+            if($total_kilos>0){
+
 
             $ranking[] = [
                 'Cliente' => $main_client,
@@ -2460,6 +2466,8 @@ class ReporteriaController extends Controller
                 'Total Diferencia' => $total_diferencia,
                 'Costo Oportunidad' => $opportunity_cost,
             ];
+        }
+            Log::info("Cliente: " . $main_client . " - Kilos: " . $total_kilos . " - Total Diferencia: " . $total_diferencia . " - Costo Oportunidad: " . $opportunity_cost);
         }
 
         // Sort by opportunity cost (descending)

@@ -248,6 +248,7 @@
                                                 <tbody></tbody>
                                             </table>
                                         </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -265,6 +266,13 @@
             <tbody></tbody>
         </table>
     </div>
+    <div class="table-responsive mt-4" id="PrintRankingTableContainer">
+                                            <table id="PrintRankingTable" class="display" style="width:100%">
+                                                <thead></thead>
+                                                <tbody></tbody>
+                                            </table>
+                                        </div>
+
     {{--  --}}
     <script>
         let liquidacionesData = [];
@@ -284,7 +292,8 @@
                 const scoreDiv = document.getElementById('scores');
                 const comparativeTable = document.getElementById('comparativeTable'); // Your main DataTables table
                 const printTableContainer = document.getElementById('printTableContainer'); // The new hidden div
-
+                const printRankingTable= document.getElementById('PrintRankingTable');
+                 const printRankingTableContainer = document.getElementById('PrintRankingTableContainer'); // The new hidden div for ranking
                 if (!scoreDiv || !comparativeTable || !printTableContainer) {
                     alert('One or more required elements were not found for printing.');
                     return;
@@ -363,6 +372,61 @@
                 // Set the HTML for the hidden print container
                 printTableContainer.innerHTML = printTableHTML;
 
+              // --- 2. Process Ranking Table Data ---
+    const selectedClient = $('#cboCliente').val(); // Get the selected client from the filter
+    const rankingDataTableInstance = $('#rankingTable').DataTable(); // Get the DataTables instance for rankingTable
+    if (!rankingDataTableInstance || !$.fn.DataTable.isDataTable('#rankingTable')) {
+        alert('Ranking data table is not initialized. Please filter data first.');
+        return;
+    }
+
+    const currentRankingData = rankingDataTableInstance.rows({ page: 'all' }).data().toArray(); // Get ALL data
+    const currentRankingColumns = rankingDataTableInstance.settings().init().columns;
+
+    let printRankingTableHTML = '<table id="printRankingTable" style="width:100%; border-collapse: collapse;"><thead><tr>';
+
+    // Generate headers for the print ranking table
+    currentRankingColumns.forEach(col => {
+        // We still want the 'Cliente' header to appear, so no change here
+        printRankingTableHTML += `<th style="border: 1px solid #ccc; padding: 8px; text-align: left; background-color: #f2f2f2;">${col.title}</th>`;
+    });
+    printRankingTableHTML += '</tr></thead><tbody>';
+
+    // Iterate through ALL ranking data rows
+    currentRankingData.forEach(rowData => {
+        printRankingTableHTML += '<tr>';
+        currentRankingColumns.forEach(col => {
+            let cellData = rowData[col.data];
+
+            // This is the NEW logic:
+            if (col.data === 'Cliente' && rowData.Cliente.toUpperCase() !== selectedClient.toUpperCase()) {
+                // If it's the 'Cliente' column AND the client name DOES NOT match the selected client, make it empty
+                cellData = '';
+            } else if (col.render && cellData !== null && cellData !== undefined) {
+                // Otherwise, apply render function if available
+                cellData = col.render(cellData, 'display', rowData);
+            } else if (cellData === null || cellData === undefined) {
+                // Or set to empty string if null/undefined
+                cellData = '';
+            }
+
+            let cellClass = '';
+            if (col.className && col.className.includes('numeric')) {
+                cellClass += 'text-align: right;';
+            }
+            if (col.data === 'Total Diferencia' || col.data === 'Costo Oportunidad') {
+                 if (Number(rowData[col.data]) < 0) {
+                    cellClass += 'color: red;';
+                }
+            }
+
+            printRankingTableHTML += `<td style="border: 1px solid #ccc; padding: 8px; ${cellClass}">${cellData}</td>`;
+        });
+        printRankingTableHTML += '</tr>';
+    });
+    printRankingTableHTML += '</tbody></table>';
+    printRankingTableContainer.innerHTML = printRankingTableHTML;
+
                 // Create a new window for printing
                 const printWindow = window.open('', '_blank');
                 printWindow.document.write('<html><head><title>Comparativa Liquidaciones</title>');
@@ -434,6 +498,15 @@
 
                 // Append the score div and the *newly generated* print-specific table
                 printWindow.document.write(scoreDiv.outerHTML);
+                if (selectedClient) {
+        printWindow.document.write('<div class="print-section">');
+        printWindow.document.write(`<h3>Ranking para Cliente Seleccionado</h3>`); // Generic title, as client name is hidden
+        printWindow.document.write(printRankingTableContainer.innerHTML);
+        printWindow.document.write('</div>');
+    } else {
+        // Optionally, add a message if no client was selected for ranking
+        printWindow.document.write('<div class="print-section"><p>Seleccione un cliente para ver el ranking individual.</p></div>');
+    }
                 printWindow.document.write(
                 '<div style="page-break-before: always;"></div>'); // Optional: force new page for table
                 printWindow.document.write(printTableContainer
@@ -613,8 +686,8 @@
                         data: 'Suma de FOB TO USD',
                         className: 'numeric',
                         render: data => data ? Number(data).toLocaleString('es-ES', {
-                            minimumFractionDigits: 4,
-                            maximumFractionDigits: 4
+                            minimumFractionDigits: 2,
+                             maximumFractionDigits: 2,
                         }) : ''
                     },
                     {
@@ -622,8 +695,8 @@
                         data: 'Suma de FOB Kilo USD',
                         className: 'numeric',
                         render: data => data ? Number(data).toLocaleString('es-ES', {
-                            minimumFractionDigits: 4,
-                            maximumFractionDigits: 4
+                            minimumFractionDigits: 2,
+                             maximumFractionDigits: 2,
                         }) : ''
                     },
                     {
@@ -631,8 +704,8 @@
                         data: 'Suma de Venta USD Kilo',
                         className: 'numeric',
                         render: data => data ? Number(data).toLocaleString('es-ES', {
-                            minimumFractionDigits: 4,
-                            maximumFractionDigits: 4
+                            minimumFractionDigits: 2,
+                             maximumFractionDigits: 2,
                         }) : ''
                     },
                     {
@@ -643,8 +716,8 @@
                             if (data === null) return '';
                             const num = Number(data);
                             const formatted = num.toLocaleString('es-ES', {
-                                minimumFractionDigits: 4,
-                                maximumFractionDigits: 4
+                                minimumFractionDigits: 2,
+                                 maximumFractionDigits: 2,
                             });
                             return num < 0 ? `<span class="negative">${formatted}</span>` : formatted;
                         }
@@ -659,8 +732,8 @@
                             const num = Number(data);
 
                             const formatted = num.toLocaleString('es-ES', {
-                                minimumFractionDigits: 4,
-                                maximumFractionDigits: 4
+                                minimumFractionDigits: 2,
+                                 maximumFractionDigits: 2,
                             });
                             return num < 0 ? `<span class="negative">${formatted}</span>` : formatted;
                         }
@@ -680,16 +753,16 @@
                             data: 'FOB Kilo USD Resto de Clientes',
                             className: 'numeric',
                             render: data => data !== null ? Number(data).toLocaleString('es-ES', {
-                                minimumFractionDigits: 4,
-                                maximumFractionDigits: 4
+                                minimumFractionDigits: 2,
+                                 maximumFractionDigits: 2,
                             }) : ''
                         }, {
                             title: 'Venta Kilo USD Resto de Clientes',
                             data: 'Venta Kilo USD Resto de Clientes',
                             className: 'numeric',
                             render: data => data !== null ? Number(data).toLocaleString('es-ES', {
-                                minimumFractionDigits: 4,
-                                maximumFractionDigits: 4
+                                minimumFractionDigits: 2,
+                                 maximumFractionDigits: 2,
                             }) : ''
                         });
                     } else {
@@ -714,8 +787,8 @@
                                 className: 'numeric',
                                 render: data => data !== null ? Number(data).toLocaleString(
                                     'en-US', {
-                                        minimumFractionDigits: 4,
-                                        maximumFractionDigits: 4
+                                        minimumFractionDigits: 2,
+                                         maximumFractionDigits: 2,
                                     }) : ''
                             }, {
                                 title: ventaKey,
@@ -723,8 +796,8 @@
                                 className: 'numeric',
                                 render: data => data !== null ? Number(data).toLocaleString(
                                     'en-US', {
-                                        minimumFractionDigits: 4,
-                                        maximumFractionDigits: 4
+                                        minimumFractionDigits: 2,
+                                         maximumFractionDigits: 2,
                                     }) : ''
                             });
                         });
@@ -865,17 +938,17 @@
                         scoreTotalDiferencia += item["Total Diferencia"] || 0;
 
                         $("#scoreTotalKilos").html(scoreTotalKilos.toLocaleString('es-ES', {
-                            minimumFractionDigits: 4,
-                            maximumFractionDigits: 4
+                            minimumFractionDigits: 2,
+                             maximumFractionDigits: 2,
                         }));
                         $("#scoreTotalDiferencia").html(scoreTotalDiferencia.toLocaleString('es-ES', {
-                            minimumFractionDigits: 4,
-                            maximumFractionDigits: 4
+                            minimumFractionDigits: 2,
+                             maximumFractionDigits: 2,
                         }));
                         scoreCostoOportunidad = scoreTotalDiferencia / scoreTotalKilos;
                         $("#scoreCostoOportunidad").html(scoreCostoOportunidad.toLocaleString('es-ES', {
-                            minimumFractionDigits: 4,
-                            maximumFractionDigits: 4
+                            minimumFractionDigits: 2,
+                             maximumFractionDigits: 2,
                         }));
                     }
                 });
