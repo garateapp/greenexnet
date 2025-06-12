@@ -2533,39 +2533,58 @@ public function obtenerRankingOportunidad(Request $request)
             DB::raw("SUM(FOB_TO_USD) as FOB_TO_USD"),
             DB::raw("SUM(Kilos_Total) as Kilos_Total")
         )
-        ->groupBy('nave', 'etiqueta', 'Peso_neto', 'variedad', 'calibre', 'cliente','pais');
+        // Ensure 'pais' is also in groupBy if it's part of the $key
+        ->groupBy('nave', 'etiqueta', 'Peso_neto', 'variedad', 'calibre', 'cliente', 'pais');
 
     $allData = $query->get();
 
     // 2. Preprocesamiento de datos
     $productGroups = [];
-    $clients = [];
+    $clients = []; // This will hold all unique clients found in the Fob data
 
     // Construir estructura de datos optimizada
     foreach ($allData as $row) {
         $key = $row->nave . '|' . $row->etiqueta . '|' . $row->embalaje . '|' .
                $row->variedad . '|' . $row->calibre;
 
-        if ($request->filled('pais')) {
-            $key .= '|' . $request->input('pais');
-        }
+        // If 'pais' is used in the $key, ensure it's added consistently to the key for all data.
+        // The current $key building is correct if $request->input('pais') is always filled.
+        // However, if $request->filled('pais') is false, $key will not include 'pais'.
+        // This means $productGroups should not have 'pais' in its key generation logic if the filter is not applied.
+        // The groupBy clause includes 'pais', which is good for distinguishing sums if 'pais' is in the DB.
+        // Let's ensure the $key for productGroups accurately reflects the group by without the client.
+        // The original logic is for product groups (combinations of nave, etiqueta, embalaje, variedad, calibre, pais)
+        // If pais is *not* filtered, it will still be in the group by, creating more keys.
+        // The $key building logic should reflect the group by for the product.
 
-        if (!isset($productGroups[$key])) {
-            $productGroups[$key] = [
+        // Corrected key generation for productGroups
+        $productGroupKeyParts = [
+            $row->nave, $row->etiqueta, $row->embalaje, $row->variedad, $row->calibre
+        ];
+        // Only add 'pais' to the key if it's explicitly part of the filtering group and used in query
+        if ($request->filled('pais')) {
+             $productGroupKeyParts[] = $request->input('pais'); // Use the filtered country
+        } else {
+             $productGroupKeyParts[] = $row->pais; // Use the country from the row if not filtered
+        }
+        $productGroupKey = implode('|', $productGroupKeyParts);
+
+        if (!isset($productGroups[$productGroupKey])) {
+            $productGroups[$productGroupKey] = [
                 'total_fob' => 0,
                 'total_kilos' => 0,
                 'clientes' => []
             ];
         }
 
-        $productGroups[$key]['total_fob'] += $row->FOB_TO_USD;
-        $productGroups[$key]['total_kilos'] += $row->Kilos_Total;
-        $productGroups[$key]['clientes'][$row->cliente] = [
+        $productGroups[$productGroupKey]['total_fob'] += $row->FOB_TO_USD;
+        $productGroups[$productGroupKey]['total_kilos'] += $row->Kilos_Total;
+        $productGroups[$productGroupKey]['clientes'][$row->cliente] = [
             'fob' => $row->FOB_TO_USD,
             'kilos' => $row->Kilos_Total
         ];
 
-        $clients[$row->cliente] = true;
+        $clients[$row->cliente] = true; // Collect all unique clients
     }
 
     $all_clients = array_keys($clients);
@@ -2574,44 +2593,53 @@ public function obtenerRankingOportunidad(Request $request)
 
     // 3. Cálculo optimizado para cada cliente
     foreach ($all_clients as $client) {
-        $total_kilos = 0;
-        $total_diferencia = 0;
+        $total_kilos_for_client_in_ranking = 0;
+        $total_diferencia_for_client_in_ranking = 0;
 
-        foreach ($productGroups as $key => $group) {
-            if (!isset($group['clientes'][$client])) continue;
-
-            $clientData = $group['clientes'][$client];
+        foreach ($productGroups as $productGroupKey => $group) {
+            // Get client's data for this specific product group, or default to 0 if not present
+            $clientData = $group['clientes'][$client] ?? ['fob' => 0, 'kilos' => 0];
             $clientKilos = $clientData['kilos'];
             $clientFob = $clientData['fob'];
 
-            // Calcular datos para "otros clientes"
+            // Calculate data for "other clients" within this product group
             $otherFob = $group['total_fob'] - $clientFob;
             $otherKilos = $group['total_kilos'] - $clientKilos;
 
-            // Evitar división por cero
+            // Avoid division by zero
             $clientPricePerKg = $clientKilos > 0 ? $clientFob / $clientKilos : 0;
             $otherPricePerKg = $otherKilos > 0 ? $otherFob / $otherKilos : 0;
 
             $diferencia = $clientPricePerKg - $otherPricePerKg;
 
-            if ($diferencia != 0) {
-                $total_kilos += $clientKilos;
-                $total_diferencia += $diferencia * $clientKilos;
+            // Only add to totals if there's a meaningful difference and the client had kilos
+            if ($diferencia != 0 && $clientKilos > 0) {
+                $total_kilos_for_client_in_ranking += $clientKilos;
+                $total_diferencia_for_client_in_ranking += $diferencia * $clientKilos;
             }
         }
 
-        if ($total_kilos > 0) {
-            $opportunity_cost = $total_diferencia / $total_kilos;
-            $ranking[] = [
-                'Cliente' => $client,
-                'Suma de Kilos Total' => $total_kilos,
-                'Total Diferencia' => $total_diferencia,
-                'Costo Oportunidad' => $opportunity_cost
-            ];
+        // Add client to ranking only if they have any calculated kilos (optional, but good for clean data)
+        // If you truly want all clients to appear even with 0s, remove this if statement.
+        // Based on "si un cliente no tiene ninguna coincidencia debe quedar en 0",
+        // we should keep all clients collected in $all_clients.
+        $opportunity_cost = $total_kilos_for_client_in_ranking > 0 ?
+                            $total_diferencia_for_client_in_ranking / $total_kilos_for_client_in_ranking : 0;
+        if(count($all_clients) == 1){
+            $opportunity_cost = 0; // If there's only one client, opportunity cost is zero
         }
+
+
+
+        $ranking[] = [
+            'Cliente' => $client,
+            'Suma de Kilos Total' => $total_kilos_for_client_in_ranking,
+            'Total Diferencia' => $total_diferencia_for_client_in_ranking,
+            'Costo Oportunidad' => $opportunity_cost
+        ];
     }
 
-    // 4. Búsqueda eficiente del cliente específico
+    // 4. Búsqueda eficiente del cliente específico (no changes needed here)
     $costo_oportunidad = 0;
     $TotalDiferencia = 0;
     $total_kilos = 0;
@@ -2628,7 +2656,7 @@ public function obtenerRankingOportunidad(Request $request)
         }
     }
 
-    // 5. Ordenamiento optimizado
+    // 5. Ordenamiento optimizado (no changes needed here)
     usort($ranking, function($a, $b) {
         return $b['Costo Oportunidad'] <=> $a['Costo Oportunidad'];
     });
