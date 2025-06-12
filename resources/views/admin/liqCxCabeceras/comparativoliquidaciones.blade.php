@@ -112,7 +112,7 @@
                                     <option value="">Seleccione un Cliente</option>
                                 </select>
                             </div>
-                             <div class="form-group">
+                            <div class="form-group">
                                 <label for="filtroClientePrincipal">País Destino</label>
                                 <select class="form-control select2" id="cboPais" name="cboPais">
                                     <option value="">Seleccione un País</option>
@@ -266,12 +266,12 @@
             <tbody></tbody>
         </table>
     </div>
-    <div class="table-responsive mt-4" id="PrintRankingTableContainer">
-                                            <table id="PrintRankingTable" class="display" style="width:100%">
-                                                <thead></thead>
-                                                <tbody></tbody>
-                                            </table>
-                                        </div>
+    <div class="table-responsive mt-4" id="printRankingTableContainer">
+        <table id="PrintRankingTable" class="display" style="width:100%">
+            <thead></thead>
+            <tbody></tbody>
+        </table>
+    </div>
 
     {{--  --}}
     <script>
@@ -288,125 +288,109 @@
 
 
 
-            function printSpecificDivs() {
-                const scoreDiv = document.getElementById('scores');
-                const comparativeTable = document.getElementById('comparativeTable'); // Your main DataTables table
-                const printTableContainer = document.getElementById('printTableContainer'); // The new hidden div
-                const printRankingTable= document.getElementById('PrintRankingTable');
-                 const printRankingTableContainer = document.getElementById('PrintRankingTableContainer'); // The new hidden div for ranking
-                if (!scoreDiv || !comparativeTable || !printTableContainer) {
-                    alert('One or more required elements were not found for printing.');
-                    return;
-                }
+           function printSpecificDivs() {
+    const scoreDiv = document.getElementById('scores');
+    const comparativeTableElement = document.getElementById('comparativeTable'); // The actual HTML table element
+    const rankingTableElement = document.getElementById('rankingTable'); // The actual HTML ranking table element
 
-                // Get the current data from your DataTables instance
-                // Assuming 'dataTable' is your global DataTables instance for #comparativeTable
-                if (!dataTable || !$.fn.DataTable.isDataTable('#comparativeTable')) {
-                    alert('Data table is not initialized. Please filter data first.');
-                    return;
-                }
+    const printTableContainer = document.getElementById('printTableContainer'); // The hidden container for comparative table HTML
+    const printRankingTableContainer = document.getElementById('printRankingTableContainer'); // The hidden container for ranking table HTML
 
-                const currentTableData = dataTable.rows({
-                    page: 'all'
-                }).data().toArray();
-                const currentTableColumns = dataTable.settings().init().columns; // Get original column definitions
-
-                // --- Build the print-specific table's HTML ---
-                let printTableHTML =
-                    '<table id="printComparativeTable" style="width:100%; border-collapse: collapse;"><thead><tr>';
-
-                // Generate headers for the print table
-                // Skip DataTables specific columns like 'dt-control' or 'select-checkbox'
-                currentTableColumns.forEach(col => {
-                    if (col.className && (col.className.includes('dt-control') || col.className.includes(
-                            'select-checkbox'))) {
-                        // Skip these columns in print
-                    } else {
-                        printTableHTML +=
-                            `<th style="border: 1px solid #ccc; padding: 8px; text-align: left; background-color: #f2f2f2;">${col.title}</th>`;
-                    }
-                });
-                printTableHTML += '</tr></thead><tbody>';
-
-                // Populate the body of the print table
-                currentTableData.forEach(rowData => {
-                    printTableHTML += '<tr>';
-                    currentTableColumns.forEach(col => {
-                        if (col.className && (col.className.includes('dt-control') || col.className
-                                .includes('select-checkbox'))) {
-                            // Skip these columns in print
-                        } else {
-                            let cellData = rowData[col.data];
-                            // Apply render function if available and not null
-                            if (col.render && cellData !== null && cellData !== undefined) {
-                                // Temporarily create a dummy context for the render function
-                                cellData = col.render(cellData, 'display', rowData);
-                            } else if (cellData === null || cellData === undefined) {
-                                cellData = '';
-                            }
-
-                            // Add class for numeric alignment if needed
-                            let cellClass = col.className && col.className.includes('numeric') ?
-                                'text-align: right;' : '';
-                            // Add negative color if needed
-                            if (col.data === 'Diferencia' || col.data === 'Total Diferencia') {
-                                if (Number(rowData[col.data]) < 0) {
-                                    cellClass += 'color: red;';
-                                }
-                            }
-                            // Apply subtotal row styling
-                            let rowClass = '';
-                            if (rowData.Etiqueta && rowData.Etiqueta.includes('Subtotal')) {
-                                rowClass = 'background-color: #f0f0f0; font-weight: bold;';
-                            }
-
-                            printTableHTML +=
-                                `<td style="border: 1px solid #ccc; padding: 8px; ${cellClass} ${rowClass}">${cellData}</td>`;
-                        }
-                    });
-                    printTableHTML += '</tr>';
-                });
-
-                printTableHTML += '</tbody></table>';
-
-                // Set the HTML for the hidden print container
-                printTableContainer.innerHTML = printTableHTML;
-
-              // --- 2. Process Ranking Table Data ---
-    const selectedClient = $('#cboCliente').val(); // Get the selected client from the filter
-    const rankingDataTableInstance = document.getElementById('rankingTable');
-    if (!rankingDataTableInstance || !$.fn.DataTable.isDataTable('#rankingTable')) {
-        alert('Ranking data table is not initialized. Please filter data first.');
+    // --- Initial checks for all necessary HTML elements ---
+    if (!scoreDiv || !comparativeTableElement || !rankingTableElement || !printTableContainer || !printRankingTableContainer) {
+        alert('Error: No se encontraron todos los elementos HTML necesarios para imprimir. Asegúrese de que todos los IDs existan en el DOM.');
         return;
     }
 
+    // --- Get DataTables instances ---
+    const dataTableInstance = $('#comparativeTable').DataTable();
+    const rankingDataTableInstance = $('#rankingTable').DataTable();
+
+    if (!dataTableInstance || !$.fn.DataTable.isDataTable('#comparativeTable')) {
+        alert('Error: La tabla comparativa no está inicializada. Por favor, filtre los datos primero.');
+        return;
+    }
+    if (!rankingDataTableInstance || !$.fn.DataTable.isDataTable('#rankingTable')) {
+        alert('Error: La tabla de ranking no está inicializada. Por favor, filtre los datos primero.');
+        return;
+    }
+
+    // --- 1. Process Comparative Table Data ---
+    const currentComparativeData = dataTableInstance.rows({
+        page: 'all'
+    }).data().toArray();
+    const currentComparativeColumns = dataTableInstance.settings().init().columns;
+
+    let printComparativeTableHTML = '<table id="printComparativeTable" style="width:100%; border-collapse: collapse;"><thead><tr>';
+
+    currentComparativeColumns.forEach(col => {
+        if (col.className && (col.className.includes('dt-control') || col.className.includes('select-checkbox'))) {
+            // Skip these columns in print
+        } else {
+            printComparativeTableHTML += `<th style="border: 1px solid #ccc; padding: 8px; text-align: left; background-color: #f2f2f2;">${col.title}</th>`;
+        }
+    });
+    printComparativeTableHTML += '</tr></thead><tbody>';
+
+    currentComparativeData.forEach(rowData => {
+        printComparativeTableHTML += '<tr>';
+        currentComparativeColumns.forEach(col => {
+            if (col.className && (col.className.includes('dt-control') || col.className.includes('select-checkbox'))) {
+                // Skip these columns in print
+            } else {
+                let cellData = rowData[col.data];
+                if (col.render && cellData !== null && cellData !== undefined) {
+                    cellData = col.render(cellData, 'display', rowData);
+                } else if (cellData === null || cellData === undefined) {
+                    cellData = '';
+                }
+
+                let cellClass = col.className && col.className.includes('numeric') ?
+                    'text-align: right;' : '';
+                if (col.data === 'Diferencia' || col.data === 'Total Diferencia') {
+                    if (Number(rowData[col.data]) < 0) {
+                        cellClass += 'color: red;';
+                    }
+                }
+                let rowStyle = '';
+                if (rowData.Etiqueta && rowData.Etiqueta.includes('Subtotal')) {
+                    rowStyle = 'background-color: #f0f0f0; font-weight: bold;';
+                }
+
+                printComparativeTableHTML += `<td style="border: 1px solid #ccc; padding: 8px; ${cellClass} ${rowStyle}">${cellData}</td>`;
+            }
+        });
+        printComparativeTableHTML += '</tr>';
+    });
+
+    printComparativeTableHTML += '</tbody></table>';
+    printTableContainer.innerHTML = printComparativeTableHTML;
+
+    // --- 2. Process Ranking Table Data ---
+    const selectedClient = $('#cboCliente').val(); // Get the selected client from the filter
     const currentRankingData = rankingDataTableInstance.rows({ page: 'all' }).data().toArray(); // Get ALL data
     const currentRankingColumns = rankingDataTableInstance.settings().init().columns;
 
     let printRankingTableHTML = '<table id="printRankingTable" style="width:100%; border-collapse: collapse;"><thead><tr>';
 
-    // Generate headers for the print ranking table
+    // Generate headers for the print ranking table (all headers should appear)
     currentRankingColumns.forEach(col => {
-        // We still want the 'Cliente' header to appear, so no change here
         printRankingTableHTML += `<th style="border: 1px solid #ccc; padding: 8px; text-align: left; background-color: #f2f2f2;">${col.title}</th>`;
     });
     printRankingTableHTML += '</tr></thead><tbody>';
 
-    // Iterate through ALL ranking data rows
+    // Iterate through ALL ranking data rows, conditionally blanking client names
     currentRankingData.forEach(rowData => {
         printRankingTableHTML += '<tr>';
         currentRankingColumns.forEach(col => {
             let cellData = rowData[col.data];
 
-            // This is the NEW logic:
-            if (col.data === 'Cliente' && rowData.Cliente.toUpperCase() !== selectedClient.toUpperCase()) {
-                // If it's the 'Cliente' column AND the client name DOES NOT match the selected client, make it empty
-                cellData = '';
+            // Logic to blank out client names not matching the selected client
+            if (col.data === 'Cliente' && selectedClient && rowData.Cliente.toUpperCase() !== selectedClient.toUpperCase()) {
+                cellData = ''; // Blank out if it's the 'Cliente' column and doesn't match selected
             } else if (col.render && cellData !== null && cellData !== undefined) {
-                // Otherwise, apply render function if available
                 cellData = col.render(cellData, 'display', rowData);
             } else if (cellData === null || cellData === undefined) {
-                // Or set to empty string if null/undefined
                 cellData = '';
             }
 
@@ -427,12 +411,12 @@
     printRankingTableHTML += '</tbody></table>';
     printRankingTableContainer.innerHTML = printRankingTableHTML;
 
-                // Create a new window for printing
-                const printWindow = window.open('', '_blank');
-                printWindow.document.write('<html><head><title>Comparativa Liquidaciones</title>');
+    // --- 3. Create the Print Window ---
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write('<html><head><title>Comparativa Liquidaciones</title>');
 
-                // Add necessary print-specific CSS directly to the print window
-                printWindow.document.write(`
+    // Add necessary print-specific CSS directly to the print window
+    printWindow.document.write(`
         <style>
             body { font-family: Arial, sans-serif; margin: 20px; }
             #scores { margin-bottom: 20px; }
@@ -492,32 +476,42 @@
             tr { page-break-inside: avoid; page-break-after: auto; }
             thead { display: table-header-group; } /* Repeat header on each page */
             tfoot { display: table-footer-group; } /* Repeat footer on each page */
+
+            /* Spacing between sections */
+            .print-section {
+                margin-bottom: 30px; /* Space between score, comparative, and ranking */
+            }
         </style>
     `);
-                printWindow.document.write('</head><body>');
+    printWindow.document.write('</head><body>');
 
-                // Append the score div and the *newly generated* print-specific table
-                printWindow.document.write(scoreDiv.outerHTML);
-                if (selectedClient) {
-        printWindow.document.write('<div class="print-section">');
-        printWindow.document.write(`<h3>Ranking para Cliente Seleccionado</h3>`); // Generic title, as client name is hidden
-        printWindow.document.write(printRankingTableContainer.innerHTML);
-        printWindow.document.write('</div>');
+    // Append sections in the desired order
+    printWindow.document.write('<div class="print-section">');
+    printWindow.document.write(scoreDiv.outerHTML);
+    printWindow.document.write('</div>');
+
+    // Ranking Table (conditional title based on client selection)
+    printWindow.document.write('<div class="print-section">');
+    if (selectedClient) {
+        printWindow.document.write(`<h3>Ranking de Clientes (Cliente Seleccionado: ${selectedClient})</h3>`);
     } else {
-        // Optionally, add a message if no client was selected for ranking
-        printWindow.document.write('<div class="print-section"><p>Seleccione un cliente para ver el ranking individual.</p></div>');
+        printWindow.document.write(`<h3>Ranking de Clientes (Todos)</h3>`); // If no client selected, show all clients with names
     }
-                printWindow.document.write(
-                '<div style="page-break-before: always;"></div>'); // Optional: force new page for table
-                printWindow.document.write(printTableContainer
-                .innerHTML); // Use innerHTML to get the table directly
+    printWindow.document.write(printRankingTableContainer.innerHTML);
+    printWindow.document.write('</div>');
 
-                printWindow.document.write('</body></html>');
-                printWindow.document.close();
-                printWindow.focus();
-                printWindow.print();
-                // printWindow.close(); // You might want to comment this out during debugging to inspect the print window
-            }
+    // Comparative Table (always printed)
+    printWindow.document.write(
+        '<div style="page-break-before: always;" class="print-section"></div>'); // Force new page and add spacing class
+    printWindow.document.write('<h3>Tabla Comparativa</h3>'); // Add title for the comparative table
+    printWindow.document.write(printTableContainer.innerHTML);
+
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    // printWindow.close();
+}
 
             $("#loading-animation").show();
             $('.select2').select2({
@@ -531,9 +525,9 @@
                 url: "{{ route('admin.reporteria.ObtenerPaises') }}",
                 type: "get",
                 success: function(response) {
-                  const paises=[...new Set(response.map(item => (item.nombre ||
+                    const paises = [...new Set(response.map(item => (item.nombre ||
                         "").toUpperCase()))];
-                         $('#cboPais').select2({
+                    $('#cboPais').select2({
                         data: paises.map(pais => ({
                             id: pais,
                             text: pais
@@ -579,7 +573,7 @@
                         "")))];
                     const semanasUnicas = [...new Set(liquidacionesData.map(item => (item.ETA_Week ||
                         "")))];
-                    console.log("Unique clientes:", clientesUnicos.length);
+                    console.log("Unique clientes:", clientesUnicos);
                     console.log("Unique especies:", especiesUnicas.length);
                     $('#cboCliente').select2({
                         data: clientesUnicos.map(cliente => ({
@@ -631,6 +625,7 @@
             let scoreTotalKilos = 0;
             let scoreTotalDiferencia = 0;
             let scoreCostoOportunidad = 0;
+            let rankingTable = null;
 
             function initializeDataTable(data) {
                 console.log('Initializing DataTable with data:', data);
@@ -687,7 +682,7 @@
                         className: 'numeric',
                         render: data => data ? Number(data).toLocaleString('es-ES', {
                             minimumFractionDigits: 2,
-                             maximumFractionDigits: 2,
+                            maximumFractionDigits: 2,
                         }) : ''
                     },
                     {
@@ -696,7 +691,7 @@
                         className: 'numeric',
                         render: data => data ? Number(data).toLocaleString('es-ES', {
                             minimumFractionDigits: 2,
-                             maximumFractionDigits: 2,
+                            maximumFractionDigits: 2,
                         }) : ''
                     },
                     {
@@ -705,7 +700,7 @@
                         className: 'numeric',
                         render: data => data ? Number(data).toLocaleString('es-ES', {
                             minimumFractionDigits: 2,
-                             maximumFractionDigits: 2,
+                            maximumFractionDigits: 2,
                         }) : ''
                     },
                     {
@@ -717,7 +712,7 @@
                             const num = Number(data);
                             const formatted = num.toLocaleString('es-ES', {
                                 minimumFractionDigits: 2,
-                                 maximumFractionDigits: 2,
+                                maximumFractionDigits: 2,
                             });
                             return num < 0 ? `<span class="negative">${formatted}</span>` : formatted;
                         }
@@ -733,7 +728,7 @@
 
                             const formatted = num.toLocaleString('es-ES', {
                                 minimumFractionDigits: 2,
-                                 maximumFractionDigits: 2,
+                                maximumFractionDigits: 2,
                             });
                             return num < 0 ? `<span class="negative">${formatted}</span>` : formatted;
                         }
@@ -754,7 +749,7 @@
                             className: 'numeric',
                             render: data => data !== null ? Number(data).toLocaleString('es-ES', {
                                 minimumFractionDigits: 2,
-                                 maximumFractionDigits: 2,
+                                maximumFractionDigits: 2,
                             }) : ''
                         }, {
                             title: 'Venta Kilo USD Resto de Clientes',
@@ -762,7 +757,7 @@
                             className: 'numeric',
                             render: data => data !== null ? Number(data).toLocaleString('es-ES', {
                                 minimumFractionDigits: 2,
-                                 maximumFractionDigits: 2,
+                                maximumFractionDigits: 2,
                             }) : ''
                         });
                     } else {
@@ -788,7 +783,7 @@
                                 render: data => data !== null ? Number(data).toLocaleString(
                                     'en-US', {
                                         minimumFractionDigits: 2,
-                                         maximumFractionDigits: 2,
+                                        maximumFractionDigits: 2,
                                     }) : ''
                             }, {
                                 title: ventaKey,
@@ -797,7 +792,7 @@
                                 render: data => data !== null ? Number(data).toLocaleString(
                                     'en-US', {
                                         minimumFractionDigits: 2,
-                                         maximumFractionDigits: 2,
+                                        maximumFractionDigits: 2,
                                     }) : ''
                             });
                         });
@@ -891,8 +886,8 @@
                     data: {
                         _token: "{{ csrf_token() }}",
                         especie: $("#cboEspecie").val() || [],
-                         pais: $("#cboPais").val() || "",
-                          cliente: $("#cboCliente").val() || "",
+                        pais: $("#cboPais").val() || "",
+                        cliente: $("#cboCliente").val() || "",
                     },
                     success: function(data) {
                         initializeRankingTable(data);
@@ -932,22 +927,22 @@
             function initializeRankingTable(data) {
 
 
-                        $("#scoreTotalKilos").html(data.total_kilos.toLocaleString('es-ES', {
-                            minimumFractionDigits: 2,
-                             maximumFractionDigits: 2,
-                        }));
-                        $("#scoreTotalDiferencia").html(data.TotalDiferencia.toLocaleString('es-ES', {
-                            minimumFractionDigits: 2,
-                             maximumFractionDigits: 2,
-                        }));
-                        if(data.costo_oportunidad === null || data.costo_oportunidad === undefined){
-                            data.costo_oprtunidad = 0;
-                        }
+                $("#scoreTotalKilos").html(data.total_kilos.toLocaleString('es-ES', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                }));
+                $("#scoreTotalDiferencia").html(data.TotalDiferencia.toLocaleString('es-ES', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                }));
+                if (data.costo_oportunidad === null || data.costo_oportunidad === undefined) {
+                    data.costo_oprtunidad = 0;
+                }
 
-                        $("#scoreCostoOportunidad").html( data.costo_oportunidad.toLocaleString('es-ES', {
-                            minimumFractionDigits: 2,
-                             maximumFractionDigits: 2,
-                        }));
+                $("#scoreCostoOportunidad").html(data.costo_oportunidad.toLocaleString('es-ES', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                }));
 
 
 
