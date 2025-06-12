@@ -374,7 +374,7 @@
 
               // --- 2. Process Ranking Table Data ---
     const selectedClient = $('#cboCliente').val(); // Get the selected client from the filter
-    const rankingDataTableInstance = $('#rankingTable').DataTable(); // Get the DataTables instance for rankingTable
+    const rankingDataTableInstance = document.getElementById('rankingTable');
     if (!rankingDataTableInstance || !$.fn.DataTable.isDataTable('#rankingTable')) {
         alert('Ranking data table is not initialized. Please filter data first.');
         return;
@@ -892,6 +892,7 @@
                         _token: "{{ csrf_token() }}",
                         especie: $("#cboEspecie").val() || [],
                          pais: $("#cboPais").val() || "",
+                          cliente: $("#cboCliente").val() || "",
                     },
                     success: function(data) {
                         initializeRankingTable(data);
@@ -929,29 +930,23 @@
 
 
             function initializeRankingTable(data) {
-                  scoreTotalKilos = 0;
-                scoreTotalDiferencia = 0;
-                scoreCostoOportunidad = 0;
-                data.forEach(function(item) {
-                    if (item["Cliente"].toUpperCase() == $("#cboCliente").val()) {
-                        scoreTotalKilos += item["Suma de Kilos Total"] || 0;
-                        scoreTotalDiferencia += item["Total Diferencia"] || 0;
 
-                        $("#scoreTotalKilos").html(scoreTotalKilos.toLocaleString('es-ES', {
+
+                        $("#scoreTotalKilos").html(data.total_kilos.toLocaleString('es-ES', {
                             minimumFractionDigits: 2,
                              maximumFractionDigits: 2,
                         }));
-                        $("#scoreTotalDiferencia").html(scoreTotalDiferencia.toLocaleString('es-ES', {
+                        $("#scoreTotalDiferencia").html(data.TotalDiferencia.toLocaleString('es-ES', {
                             minimumFractionDigits: 2,
                              maximumFractionDigits: 2,
                         }));
-                        scoreCostoOportunidad = scoreTotalDiferencia / scoreTotalKilos;
-                        $("#scoreCostoOportunidad").html(scoreCostoOportunidad.toLocaleString('es-ES', {
+
+                        $("#scoreCostoOportunidad").html( data.costo_oprtunidad.toLocaleString('es-ES', {
                             minimumFractionDigits: 2,
                              maximumFractionDigits: 2,
                         }));
-                    }
-                });
+
+
 
                 console.log('Initializing Ranking DataTable with data:', data);
 
@@ -1015,7 +1010,7 @@
                 ];
 
                 rankingTable = $('#rankingTable').DataTable({
-                    data: data,
+                    data: data.ranking,
                     columns: columns,
                     pageLength: 100,
                     responsive: true,
