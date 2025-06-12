@@ -940,8 +940,11 @@
                             minimumFractionDigits: 2,
                              maximumFractionDigits: 2,
                         }));
+                        if(data.costo_oportunidad === null || data.costo_oportunidad === undefined){
+                            data.costo_oprtunidad = 0;
+                        }
 
-                        $("#scoreCostoOportunidad").html( data.costo_oprtunidad.toLocaleString('es-ES', {
+                        $("#scoreCostoOportunidad").html( data.costo_oportunidad.toLocaleString('es-ES', {
                             minimumFractionDigits: 2,
                              maximumFractionDigits: 2,
                         }));
