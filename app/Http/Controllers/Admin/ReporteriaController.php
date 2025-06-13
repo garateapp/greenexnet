@@ -2343,345 +2343,355 @@ class ReporteriaController extends Controller
 
         return response()->json($result);
     }
-    // public function obtenerRankingOportunidad(Request $request)
-    // {
-    //     // Get species from request
-    //     $especies = $request->input('especie', []);
-    //     if (empty($especies)) {
-    //         return response()->json(['error' => 'Especies no especificadas'], 400);
-    //     }
-
-    //     // Get all unique clients for the species
-    //     $all_clients = Fob::whereIn('especie', $especies)
-    //         ->where('nave', '!=', '')
-
-    //           ->when($request->filled('pais'), function ($query) use ($request) {
-    //             $query->where('pais', $request->input('pais'));
-    //         })
-
-    //         ->distinct()
-    //         ->pluck('cliente')
-    //         ->toArray();
-    //     $all_clients = array_unique($all_clients);
-    //     sort($all_clients);
-
-    //     $ranking = [];
-
-    //     // Process each client as the main client
-    //     foreach ($all_clients as $main_client) {
-    //         // Fetch data for main client
-    //         $total_kilos=0;
-    //         $datos = Fob::whereIn('especie', $especies)
-    //             ->where('nave', '!=', '')
-    //             ->where('cliente', $main_client)
-
-    //            ->when($request->filled('pais'), function ($query) use ($request) {
-    //             $query->where('pais', $request->input('pais'));
-    //         })
-    //             ->select(
-    //                 DB::raw("upper(nave) as nave"),
-    //                 DB::raw("upper(etiqueta) as etiqueta"),
-    //                 DB::raw("upper(variedad) as variedad"),
-    //                 "calibre",
-    //                "Peso_neto as embalaje",
-    //                 DB::raw("SUM(FOB_TO_USD) as FOB_TO_USD"),
-    //                 DB::raw("SUM(Kilos_Total) as Kilos_Total")
-    //             )
-    //             ->groupBy("nave", "etiqueta", "Peso_neto", "variedad", "calibre")
-    //             ->orderBy('nave')
-    //             ->orderBy('etiqueta')
-    //             ->orderBy('variedad')
-    //             ->orderBy('calibre')
-    //             ->get();
-
-
-
-    //         // Fetch data for other clients
-    //         $datosComparativo = Fob::whereIn('especie', $especies)
-    //             ->where('nave', '!=', '')
-    //             ->where('cliente', '!=', $main_client)
-    //             ->whereIn('especie', $request->input('especie', []))
-    //            ->when($request->filled('pais'), function ($query) use ($request) {
-    //                 $query->where('pais', $request->input('pais'));
-    //             })
-    //             ->select(
-    //                 DB::raw("upper(nave) as nave"),
-    //                  DB::raw("upper(etiqueta) as etiqueta"),
-    //                 DB::raw("upper(variedad) as variedad"),
-    //                 "calibre",
-    //                "Peso_neto as embalaje",
-    //                 DB::raw("SUM(FOB_TO_USD) as FOB_TO_USD"),
-    //                 DB::raw("SUM(Kilos_Total) as Kilos_Total")
-    //             )
-    //             ->groupBy("nave", "etiqueta", "Peso_neto", "variedad", "calibre")
-    //             ->orderBy('nave')
-    //             ->orderBy('etiqueta')
-    //             ->orderBy('variedad')
-    //             ->orderBy('calibre')
-    //             ->get();
-
-    //         // Initialize combined data
-    //         $combined = [];
-    //         $total_kilos = 0.0;
-    //         $total_diferencia = 0.0;
-    //         $keyMain='';
-    //         $keyComparativo='';
-    //         // Process main client data
-    //         foreach ($datos as $row) {
-    //             $keyMain = $row->nave . '|' . $row->etiqueta . '|' . $row->embalaje . '|' .
-    //                    $row->variedad . '|' . $row->calibre ;
-    //             if($request->input('pais')!=null && $request->input('pais')!=''){
-    //                 $keyMain = $row->nave . '|' . $row->etiqueta . '|' . $row->embalaje . '|' .
-    //                    $row->variedad . '|' . $row->calibre .'|'.$request->input('pais');
-    //             }
-    //             $combined[$keyMain] = [
-    //                 'kilos_total' => $row->Kilos_Total,
-    //                 'fob_to_usd' => $row->FOB_TO_USD,
-    //                 'fob_kilo_usd_main' => $row->Kilos_Total > 0 ? $row->FOB_TO_USD / $row->Kilos_Total : 0,
-    //                 'resto_fob_to_usd' => 0,
-    //                 'resto_kilos_total' => 0,
-    //             ];
-
-    //             $total_kilos += $row->Kilos_Total;
-    //         }
-
-    //         // Process comparative data
-    //         foreach ($datosComparativo as $row) {
-    //             $keyComparativo = $row->nave . '|' . $row->etiqueta . '|' . $row->embalaje . '|' .
-    //                 $row->variedad . '|' . $row->calibre;
-    //                  if($request->input('pais')!=null && $request->input('pais')!=''){
-    //                 $keyComparativo = $row->nave . '|' . $row->etiqueta . '|' . $row->embalaje . '|' .
-    //                    $row->variedad . '|' . $row->calibre .'|'.$request->input('pais');
-    //             }
-
-    //             if ($keyMain === $keyComparativo) {
-    //                 Log::info($main_client."-->".$keyMain."-->".$row->Kilos_Total);
-    //                 $combined[$keyMain]['resto_fob_to_usd'] += $row->FOB_TO_USD;
-    //                 $combined[$keyMain]['resto_kilos_total'] += $row->Kilos_Total;
-    //             }
-    //             else{
-    //                 $combined[$keyMain]['resto_fob_to_usd'] += 0;
-    //                 $combined[$keyMain]['resto_kilos_total'] += 0;
-    //             }
-    //         }
-
-    //         // Calculate Diferencia and Total Diferencia
-    //         foreach ($combined as $keyMain => $row) {
-    //             $fob_kilo_usd_resto = $row['resto_kilos_total'] > 0
-    //                 ? $row['resto_fob_to_usd'] / $row['resto_kilos_total']
-    //                 : 0;
-    //             $diferencia = $fob_kilo_usd_resto > 0 ? $row['fob_kilo_usd_main'] - $fob_kilo_usd_resto : 0;
-    //             $total_diferencia += $diferencia * $row['kilos_total'];
-    //             if($diferencia>0 || $diferencia<0){
-    //                 $total_kilos += $row['kilos_total'];
-    //             }
-
-
-    //         }
-
-    //         // Calculate opportunity cost
-    //         $opportunity_cost = $total_kilos > 0 ? $total_diferencia / $total_kilos : 0;
-
-
-    //             if($total_kilos==0){
-
-
-    //                 $ranking[] = [
-    //                     'Cliente' => $main_client,
-    //                     'Suma de Kilos Total' => $total_kilos,
-    //                     'Total Diferencia' => $total_diferencia,
-    //                     'Costo Oportunidad' => $opportunity_cost,
-    //                 ];
-    //             }
-    //     }
-    //     $costo_oportunidad = 0;
-    //     $TotalDiferencia=0;
-    //     $total_kilos=0;
-    //     foreach ($ranking as $item) {
-    //         if(strtoupper($item['Cliente'])==strtoupper($request->input('cliente'))){
-    //             $costo_oportunidad = $item['Costo Oportunidad'];
-    //             $TotalDiferencia = $item['Total Diferencia'];
-    //             $total_kilos = $item['Suma de Kilos Total'];
-    //         }
-
-
-    //     }
-
-    //       Log::info("Cliente: " . $main_client . " - Kilos: " . $total_kilos . " - Total Diferencia: " . $total_diferencia . " - Costo Oportunidad: " . $opportunity_cost);
-    //     // Sort by opportunity cost (descending)
-    //     usort($ranking, function($a, $b) {
-    //         return $b['Costo Oportunidad'] <=> $a['Costo Oportunidad'];
-    //     });
-
-    //     // Add rank
-    //     foreach ($ranking as $index => &$item) {
-    //         $item['Ranking'] = $index + 1;
-    //     }
-
-    //     return response()->json(["ranking" => $ranking, "costo_oportunidad" => $costo_oportunidad,"TotalDiferencia" =>$TotalDiferencia, "total_kilos" => $total_kilos], 200);
-    // }
-public function obtenerRankingOportunidad(Request $request)
-{
-    $especies = $request->input('especie', []);
-    if (empty($especies)) {
-        return response()->json(['error' => 'Especies no especificadas'], 400);
-    }
-
-    // 1. Optimización: Obtener todos los datos necesarios en una sola consulta
-    $query = Fob::whereIn('especie', $especies)
-        ->where('nave', '!=', '')
-        ->when($request->filled('pais'), function ($query) use ($request) {
-            $query->where('pais', $request->input('pais'));
-        })
-        ->select(
-            DB::raw("UPPER(nave) as nave"),
-            DB::raw("UPPER(etiqueta) as etiqueta"),
-            DB::raw("UPPER(variedad) as variedad"),
-            'calibre',
-            'Peso_neto as embalaje',
-            'cliente','pais',
-            DB::raw("SUM(FOB_TO_USD) as FOB_TO_USD"),
-            DB::raw("SUM(Kilos_Total) as Kilos_Total")
-        )
-        // Ensure 'pais' is also in groupBy if it's part of the $key
-        ->groupBy('nave', 'etiqueta', 'Peso_neto', 'variedad', 'calibre', 'cliente', 'pais');
-
-    $allData = $query->get();
-
-    // 2. Preprocesamiento de datos
-    $productGroups = [];
-    $clients = []; // This will hold all unique clients found in the Fob data
-
-    // Construir estructura de datos optimizada
-    foreach ($allData as $row) {
-        $key = $row->nave . '|' . $row->etiqueta . '|' . $row->embalaje . '|' .
-               $row->variedad . '|' . $row->calibre;
-
-        // If 'pais' is used in the $key, ensure it's added consistently to the key for all data.
-        // The current $key building is correct if $request->input('pais') is always filled.
-        // However, if $request->filled('pais') is false, $key will not include 'pais'.
-        // This means $productGroups should not have 'pais' in its key generation logic if the filter is not applied.
-        // The groupBy clause includes 'pais', which is good for distinguishing sums if 'pais' is in the DB.
-        // Let's ensure the $key for productGroups accurately reflects the group by without the client.
-        // The original logic is for product groups (combinations of nave, etiqueta, embalaje, variedad, calibre, pais)
-        // If pais is *not* filtered, it will still be in the group by, creating more keys.
-        // The $key building logic should reflect the group by for the product.
-
-        // Corrected key generation for productGroups
-        $productGroupKeyParts = [
-            $row->nave, $row->etiqueta, $row->embalaje, $row->variedad, $row->calibre
-        ];
-        // Only add 'pais' to the key if it's explicitly part of the filtering group and used in query
-        if ($request->filled('pais')) {
-             $productGroupKeyParts[] = $request->input('pais'); // Use the filtered country
-        } else {
-             $productGroupKeyParts[] = $row->pais; // Use the country from the row if not filtered
-        }
-        $productGroupKey = implode('|', $productGroupKeyParts);
-
-        if (!isset($productGroups[$productGroupKey])) {
-            $productGroups[$productGroupKey] = [
-                'total_fob' => 0,
-                'total_kilos' => 0,
-                'clientes' => []
-            ];
+    public function obtenerRankingOportunidad(Request $request)
+    {
+        // Get species from request
+        $especies = $request->input('especie', []);
+        if (empty($especies)) {
+            return response()->json(['error' => 'Especies no especificadas'], 400);
         }
 
-        $productGroups[$productGroupKey]['total_fob'] += $row->FOB_TO_USD;
-        $productGroups[$productGroupKey]['total_kilos'] += $row->Kilos_Total;
-        $productGroups[$productGroupKey]['clientes'][$row->cliente] = [
-            'fob' => $row->FOB_TO_USD,
-            'kilos' => $row->Kilos_Total
-        ];
+        // Get all unique clients for the species
+        $all_clients = Fob::whereIn('especie', $especies)
+            ->where('nave', '!=', '')
 
-        $clients[$row->cliente] = true; // Collect all unique clients
-    }
+              ->when($request->filled('pais'), function ($query) use ($request) {
+                $query->where('pais', $request->input('pais'));
+            })
 
-    $all_clients = array_keys($clients);
-    sort($all_clients);
-    $ranking = [];
+            ->distinct()
+            ->pluck('cliente')
+            ->toArray();
+        $all_clients = array_unique($all_clients);
+        sort($all_clients);
 
-    // 3. Cálculo optimizado para cada cliente
-    foreach ($all_clients as $client) {
-        $total_kilos_for_client_in_ranking = 0;
-        $total_diferencia_for_client_in_ranking = 0;
+        $ranking = [];
 
-        foreach ($productGroups as $productGroupKey => $group) {
-            // Get client's data for this specific product group, or default to 0 if not present
-            $clientData = $group['clientes'][$client] ?? ['fob' => 0, 'kilos' => 0];
-            $clientKilos = $clientData['kilos'];
-            $clientFob = $clientData['fob'];
+        // Process each client as the main client
+        foreach ($all_clients as $main_client) {
+            // Fetch data for main client
+            $total_kilos=0;
+            $datos = Fob::whereIn('especie', $especies)
+                ->where('nave', '!=', '')
+                ->where('cliente', $main_client)
 
-            // Calculate data for "other clients" within this product group
-            $otherFob = $group['total_fob'] - $clientFob;
-            $otherKilos = $group['total_kilos'] - $clientKilos;
+               ->when($request->filled('pais'), function ($query) use ($request) {
+                $query->where('pais', $request->input('pais'));
+            })
+                ->select(
+                    DB::raw("upper(nave) as nave"),
+                    DB::raw("upper(etiqueta) as etiqueta"),
+                    DB::raw("upper(variedad) as variedad"),
+                    "calibre",
+                   "Peso_neto as embalaje",
+                    DB::raw("SUM(FOB_TO_USD) as FOB_TO_USD"),
+                    DB::raw("SUM(Kilos_Total) as Kilos_Total")
+                )
+                ->groupBy("nave", "etiqueta", "Peso_neto", "variedad", "calibre")
+                ->orderBy('nave')
+                ->orderBy('etiqueta')
+                ->orderBy('variedad')
+                ->orderBy('calibre')
+                ->get();
 
-            // Avoid division by zero
-            $clientPricePerKg = $clientKilos > 0 ? $clientFob / $clientKilos : 0;
-            $otherPricePerKg = $otherKilos > 0 ? $otherFob / $otherKilos : 0;
 
-            $diferencia = $clientPricePerKg - $otherPricePerKg;
 
-            // Only add to totals if there's a meaningful difference and the client had kilos
-            if ($diferencia != 0 && $clientKilos > 0) {
-                $total_kilos_for_client_in_ranking += $clientKilos;
-                $total_diferencia_for_client_in_ranking += $diferencia * $clientKilos;
+            // Fetch data for other clients
+            $datosComparativo = Fob::whereIn('especie', $especies)
+                ->where('nave', '!=', '')
+                ->where('cliente', '!=', $main_client)
+                ->whereIn('especie', $request->input('especie', []))
+               ->when($request->filled('pais'), function ($query) use ($request) {
+                    $query->where('pais', $request->input('pais'));
+                })
+                ->select(
+                    DB::raw("upper(nave) as nave"),
+                     DB::raw("upper(etiqueta) as etiqueta"),
+                    DB::raw("upper(variedad) as variedad"),
+                    "calibre",
+                   "Peso_neto as embalaje",
+                    DB::raw("SUM(FOB_TO_USD) as FOB_TO_USD"),
+                    DB::raw("SUM(Kilos_Total) as Kilos_Total")
+                )
+                ->groupBy("nave", "etiqueta", "Peso_neto", "variedad", "calibre")
+                ->orderBy('nave')
+                ->orderBy('etiqueta')
+                ->orderBy('variedad')
+                ->orderBy('calibre')
+                ->get();
+
+            // Initialize combined data
+            $combined = [];
+            $total_kilos = 0.0;
+            $total_diferencia = 0.0;
+            $keyMain='';
+            $keyComparativo='';
+            // Process main client data
+            foreach ($datos as $row) {
+                $keyMain = $row->nave . '|' . $row->etiqueta . '|' . $row->embalaje . '|' .
+                       $row->variedad . '|' . $row->calibre ;
+                if($request->input('pais')!=null && $request->input('pais')!=''){
+                    $keyMain = $row->nave . '|' . $row->etiqueta . '|' . $row->embalaje . '|' .
+                       $row->variedad . '|' . $row->calibre .'|'.$request->input('pais');
+                }
+                $combined[$keyMain] = [
+                    'kilos_total' => $row->Kilos_Total,
+                    'fob_to_usd' => $row->FOB_TO_USD,
+                    'fob_kilo_usd_main' => $row->Kilos_Total > 0 ? $row->FOB_TO_USD / $row->Kilos_Total : 0,
+                    'resto_fob_to_usd' => 0,
+                    'resto_kilos_total' => 0,
+                ];
+
+                $total_kilos += $row->Kilos_Total;
             }
+
+            // Process comparative data
+            foreach ($datosComparativo as $row) {
+                $keyComparativo = $row->nave . '|' . $row->etiqueta . '|' . $row->embalaje . '|' .
+                    $row->variedad . '|' . $row->calibre;
+                     if($request->input('pais')!=null && $request->input('pais')!=''){
+                    $keyComparativo = $row->nave . '|' . $row->etiqueta . '|' . $row->embalaje . '|' .
+                       $row->variedad . '|' . $row->calibre .'|'.$request->input('pais');
+                }
+
+                if ($keyMain === $keyComparativo) {
+                  //  Log::info($main_client."-->".$keyMain."-->".$keyComparativo."-->".$row->Kilos_Total);
+                    $combined[$keyMain]['resto_fob_to_usd'] += $row->FOB_TO_USD;
+                    $combined[$keyMain]['resto_kilos_total'] += $row->Kilos_Total;
+                }
+                else{
+                    $combined[$keyMain]['resto_fob_to_usd'] += 0;
+                    $combined[$keyMain]['resto_kilos_total'] += 0;
+                }
+            }
+
+            // Calculate Diferencia and Total Diferencia
+            $total_kilos=0;
+            $total_diferencia = 0;
+            $total_kilos = 0;
+            $diferencia = 0;
+            foreach ($combined as $keyMain => $row) {
+                Log::debug("message", ['CLiente'=>$main_client,'keyMain' => $keyMain, 'row' => $row]);
+                $fob_kilo_usd_resto = $row['resto_kilos_total'] > 0
+                    ? $row['resto_fob_to_usd'] / $row['resto_kilos_total']
+                    : 0;
+
+                $diferencia = $fob_kilo_usd_resto > 0 ? $row['fob_kilo_usd_main'] - $fob_kilo_usd_resto : 0;
+                $total_diferencia += $diferencia * $row['kilos_total'];
+                //if($diferencia>0 || $diferencia<0){
+                    $total_kilos += $row['kilos_total'];
+                //}
+
+
+            }
+
+            // Calculate opportunity cost
+            $opportunity_cost = $total_kilos > 0 ? $total_diferencia / $total_kilos : 0;
+
+
+                if($opportunity_cost!=0){
+
+
+                    $ranking[] = [
+                        'Cliente' => $main_client,
+                        'Suma de Kilos Total' => $total_kilos,
+                        'Total Diferencia' => $total_diferencia,
+                        'Costo Oportunidad' => $opportunity_cost,
+                    ];
+                }
         }
-
-        // Add client to ranking only if they have any calculated kilos (optional, but good for clean data)
-        // If you truly want all clients to appear even with 0s, remove this if statement.
-        // Based on "si un cliente no tiene ninguna coincidencia debe quedar en 0",
-        // we should keep all clients collected in $all_clients.
-        $opportunity_cost = $total_kilos_for_client_in_ranking > 0 ?
-                            $total_diferencia_for_client_in_ranking / $total_kilos_for_client_in_ranking : 0;
-        if(count($all_clients) == 1){
-            $opportunity_cost = 0; // If there's only one client, opportunity cost is zero
-        }
-
-
-
-        $ranking[] = [
-            'Cliente' => $client,
-            'Suma de Kilos Total' => $total_kilos_for_client_in_ranking,
-            'Total Diferencia' => $total_diferencia_for_client_in_ranking,
-            'Costo Oportunidad' => $opportunity_cost
-        ];
-    }
-
-    // 4. Búsqueda eficiente del cliente específico (no changes needed here)
-    $costo_oportunidad = 0;
-    $TotalDiferencia = 0;
-    $total_kilos = 0;
-
-    $clienteBuscado = $request->input('cliente');
-    if ($clienteBuscado) {
+        $costo_oportunidad = 0;
+        $TotalDiferencia=0;
+        $total_kilos=0;
         foreach ($ranking as $item) {
-            if (strcasecmp($item['Cliente'], $clienteBuscado) === 0) {
+            if(strtoupper($item['Cliente'])==strtoupper($request->input('cliente'))){
                 $costo_oportunidad = $item['Costo Oportunidad'];
                 $TotalDiferencia = $item['Total Diferencia'];
                 $total_kilos = $item['Suma de Kilos Total'];
-                break;
             }
+
+
         }
+
+          Log::info("Cliente: " . $main_client . " - Kilos: " . $total_kilos . " - Total Diferencia: " . $total_diferencia . " - Costo Oportunidad: " . $opportunity_cost);
+        // Sort by opportunity cost (descending)
+        usort($ranking, function($a, $b) {
+            return $b['Costo Oportunidad'] <=> $a['Costo Oportunidad'];
+        });
+
+        // Add rank
+        foreach ($ranking as $index => &$item) {
+            $item['Ranking'] = $index + 1;
+        }
+
+        return response()->json(["ranking" => $ranking, "costo_oportunidad" => $costo_oportunidad,"TotalDiferencia" =>$TotalDiferencia, "total_kilos" => $total_kilos], 200);
     }
+// public function obtenerRankingOportunidad(Request $request)
+// {
+//     $especies = $request->input('especie', []);
+//     if (empty($especies)) {
+//         return response()->json(['error' => 'Especies no especificadas'], 400);
+//     }
 
-    // 5. Ordenamiento optimizado (no changes needed here)
-    usort($ranking, function($a, $b) {
-        return $b['Costo Oportunidad'] <=> $a['Costo Oportunidad'];
-    });
+//     // 1. Optimización: Obtener todos los datos necesarios en una sola consulta
+//     $query = Fob::whereIn('especie', $especies)
+//         ->where('nave', '!=', '')
+//         ->when($request->filled('pais'), function ($query) use ($request) {
+//             $query->where('pais', $request->input('pais'));
+//         })
+//         ->select(
+//             DB::raw("UPPER(nave) as nave"),
+//             DB::raw("UPPER(etiqueta) as etiqueta"),
+//             DB::raw("UPPER(variedad) as variedad"),
+//             'calibre',
+//             'Peso_neto as embalaje',
+//             'cliente','pais',
+//             DB::raw("SUM(FOB_TO_USD) as FOB_TO_USD"),
+//             DB::raw("SUM(Kilos_Total) as Kilos_Total")
+//         )
+//         // Ensure 'pais' is also in groupBy if it's part of the $key
+//         ->groupBy('nave', 'etiqueta', 'Peso_neto', 'variedad', 'calibre', 'cliente', 'pais');
 
-    foreach ($ranking as $index => &$item) {
-        $item['Ranking'] = $index + 1;
-    }
+//     $allData = $query->get();
 
-    return response()->json([
-        "ranking" => $ranking,
-        "costo_oportunidad" => $costo_oportunidad,
-        "TotalDiferencia" => $TotalDiferencia,
-        "total_kilos" => $total_kilos
-    ], 200);
-}
+//     // 2. Preprocesamiento de datos
+//     $productGroups = [];
+//     $clients = []; // This will hold all unique clients found in the Fob data
+
+//     // Construir estructura de datos optimizada
+//     foreach ($allData as $row) {
+//         $key = $row->nave . '|' . $row->etiqueta . '|' . $row->embalaje . '|' .
+//                $row->variedad . '|' . $row->calibre;
+
+//         // If 'pais' is used in the $key, ensure it's added consistently to the key for all data.
+//         // The current $key building is correct if $request->input('pais') is always filled.
+//         // However, if $request->filled('pais') is false, $key will not include 'pais'.
+//         // This means $productGroups should not have 'pais' in its key generation logic if the filter is not applied.
+//         // The groupBy clause includes 'pais', which is good for distinguishing sums if 'pais' is in the DB.
+//         // Let's ensure the $key for productGroups accurately reflects the group by without the client.
+//         // The original logic is for product groups (combinations of nave, etiqueta, embalaje, variedad, calibre, pais)
+//         // If pais is *not* filtered, it will still be in the group by, creating more keys.
+//         // The $key building logic should reflect the group by for the product.
+
+//         // Corrected key generation for productGroups
+//         $productGroupKeyParts = [
+//             $row->nave, $row->etiqueta, $row->embalaje, $row->variedad, $row->calibre
+//         ];
+//         // Only add 'pais' to the key if it's explicitly part of the filtering group and used in query
+//         if ($request->filled('pais')) {
+//              $productGroupKeyParts[] = $request->input('pais'); // Use the filtered country
+//         } else {
+//              $productGroupKeyParts[] = $row->pais; // Use the country from the row if not filtered
+//         }
+//         $productGroupKey = implode('|', $productGroupKeyParts);
+
+//         if (!isset($productGroups[$productGroupKey])) {
+//             $productGroups[$productGroupKey] = [
+//                 'total_fob' => 0,
+//                 'total_kilos' => 0,
+//                 'clientes' => []
+//             ];
+//         }
+
+//         $productGroups[$productGroupKey]['total_fob'] += $row->FOB_TO_USD;
+//         $productGroups[$productGroupKey]['total_kilos'] += $row->Kilos_Total;
+//         $productGroups[$productGroupKey]['clientes'][$row->cliente] = [
+//             'fob' => $row->FOB_TO_USD,
+//             'kilos' => $row->Kilos_Total
+//         ];
+
+//         $clients[$row->cliente] = true; // Collect all unique clients
+//     }
+
+//     $all_clients = array_keys($clients);
+//     sort($all_clients);
+//     $ranking = [];
+
+//     // 3. Cálculo optimizado para cada cliente
+//     foreach ($all_clients as $client) {
+//         $total_kilos_for_client_in_ranking = 0;
+//         $total_diferencia_for_client_in_ranking = 0;
+//         Log::info("Procesando cliente: " . $client);
+//         Log::debug("Datos del cliente: ", $productGroups);
+//         foreach ($productGroups as $productGroupKey => $group) {
+//             // Get client's data for this specific product group, or default to 0 if not present
+//             $clientData = $group['clientes'][$client] ?? ['fob' => 0, 'kilos' => 0];
+//             $clientKilos = $clientData['kilos'];
+//             $clientFob = $clientData['fob'];
+
+//             // Calculate data for "other clients" within this product group
+//             $otherFob = $group['total_fob'] - $clientFob;
+//             $otherKilos = $group['total_kilos'] - $clientKilos;
+
+//             // Avoid division by zero
+//             $clientPricePerKg = $clientKilos > 0 ? $clientFob / $clientKilos : 0;
+//             $otherPricePerKg = $otherKilos > 0 ? $otherFob / $otherKilos : 0;
+//             if($clientPricePerKg == 0 && $otherPricePerKg == 0){
+//              $diferencia=0;
+//             }
+//             else{
+//             $diferencia = $clientPricePerKg - $otherPricePerKg;
+//             }
+//             // Only add to totals if there's a meaningful difference and the client had kilos
+//             if ($diferencia != 0 && $clientKilos > 0) {
+//                 $total_kilos_for_client_in_ranking += $clientKilos;
+//                 $total_diferencia_for_client_in_ranking += $diferencia * $clientKilos;
+//             }
+//         }
+
+//         // Add client to ranking only if they have any calculated kilos (optional, but good for clean data)
+//         // If you truly want all clients to appear even with 0s, remove this if statement.
+//         // Based on "si un cliente no tiene ninguna coincidencia debe quedar en 0",
+//         // we should keep all clients collected in $all_clients.
+//         $opportunity_cost = $total_kilos_for_client_in_ranking > 0 ?
+//                             $total_diferencia_for_client_in_ranking / $total_kilos_for_client_in_ranking : 0;
+//         if(count($all_clients) == 1){
+//             $opportunity_cost = 0; // If there's only one client, opportunity cost is zero
+//         }
+
+
+
+//         $ranking[] = [
+//             'Cliente' => $client,
+//             'Suma de Kilos Total' => $total_kilos_for_client_in_ranking,
+//             'Total Diferencia' => $total_diferencia_for_client_in_ranking,
+//             'Costo Oportunidad' => $opportunity_cost
+//         ];
+//     }
+
+//     // 4. Búsqueda eficiente del cliente específico (no changes needed here)
+//     $costo_oportunidad = 0;
+//     $TotalDiferencia = 0;
+//     $total_kilos = 0;
+
+//     $clienteBuscado = $request->input('cliente');
+//     if ($clienteBuscado) {
+//         foreach ($ranking as $item) {
+//             if (strcasecmp($item['Cliente'], $clienteBuscado) === 0) {
+//                 $costo_oportunidad = $item['Costo Oportunidad'];
+//                 $TotalDiferencia = $item['Total Diferencia'];
+//                 $total_kilos = $item['Suma de Kilos Total'];
+//                 break;
+//             }
+//         }
+//     }
+
+//     // 5. Ordenamiento optimizado (no changes needed here)
+//     usort($ranking, function($a, $b) {
+//         return $b['Costo Oportunidad'] <=> $a['Costo Oportunidad'];
+//     });
+
+//     foreach ($ranking as $index => &$item) {
+//         $item['Ranking'] = $index + 1;
+//     }
+
+//     return response()->json([
+//         "ranking" => $ranking,
+//         "costo_oportunidad" => $costo_oportunidad,
+//         "TotalDiferencia" => $TotalDiferencia,
+//         "total_kilos" => $total_kilos
+//     ], 200);
+// }
     public function ConsolidadoLiquidaciones()
     {
         $fg = $this;
