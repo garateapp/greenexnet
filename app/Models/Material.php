@@ -23,6 +23,19 @@ class Material extends Model
     public const UNIDAD_SELECT = [
         'UNIDAD' => 'UNIDAD',
         'KILOS'  => 'KILOS',
+        'METRO' => 'METRO',
+        'LITRO' => 'LITRO',
+        'CAJA' => 'CAJA',
+        'PAQUETE' => 'PAQUETE',
+        'BOLSA' => 'BOLSA',
+        'PULGADA' => 'PULGADA',
+        'YARDAS' => 'YARDAS',
+        'TONELADA' => 'TONELADA',
+        'GRAMO' => 'GRAMO',
+        'MILILITRO' => 'MILILITRO',
+        'CENTIMETRO' => 'CENTIMETRO',
+        'LATA' => 'LATA',
+        'BOTELLA' => 'BOTELLA',
     ];
 
     protected $fillable = [
