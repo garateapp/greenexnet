@@ -2353,6 +2353,7 @@
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             });
+        }
              function formatInteger(value) {
             return parseFloat(value).toLocaleString('es-CL', {
                 minimumFractionDigits: 2,
