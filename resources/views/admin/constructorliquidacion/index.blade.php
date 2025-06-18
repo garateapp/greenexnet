@@ -2164,7 +2164,6 @@
                     <th>Especie</th>
                     <th>Variedad</th>
                     <th>Etiqueta</th>
-                    <th>Serie</th>
                     <th>Curva Calibre</th>
                     <th>Cajas Equivalentes</th>
                     <th>Kilos Totales</th>
