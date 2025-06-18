@@ -27,9 +27,9 @@ use App\Imports\ExcelConversor;
 use App\Models\Proceso;
 //use App\Models\Analisis;
 use App\Models\Anticipo;
-use App\Models\recepcion;
-use App\Models\valorflete;
-use App\Models\valorEnvase;
+use App\Models\Recepcion;
+use App\Models\ValorFlete;
+use App\Models\ValorEnvase;
 use App\Models\InteresAnticipo;
 use Illuminate\Support\Str;
 use App\Exports\ComparativaExport;
@@ -43,7 +43,7 @@ use Knp\Snappy\Pdf;
 class ConstructorLiquidacionController extends Controller
 {
 use CsvImportTrait;
-   
+
 
     public function selector(Request $request)
     {
@@ -73,7 +73,7 @@ use CsvImportTrait;
         ->where('temporada', $temporada)->get();
         // $analisis=Analisis::where('productor_id', $productor)
         // ->where('temporada', $temporada)->get();
-       
+
         // Verifica si se encontraron resultados
         if (!$result) {
             return response()->json(['message' => 'No se encontraron resultados'], 404);
@@ -98,7 +98,7 @@ use CsvImportTrait;
         return view('admin.constructorliquidacion.index', compact('productors', 'temporada', 'especie'));
     }
     public function generatepdf(Request $request){
-       
+
          // Validar la solicitud
          $request->validate([
             'tabs' => 'required|array',
@@ -145,10 +145,10 @@ use CsvImportTrait;
         ]))
             ->header('Content-Type', 'application/pdf')
             ->header('Content-Disposition', 'inline; filename="Liquidación-'.$productor->nombre.'-'.date('Y-m-d').'.pdf"');
- 
+
         // Descargar el PDF
        // return $pdf_pdf->download('Liquidación-'.$productor->nombre.'-'.date('Y-m-d').'.pdf');
     }
-    
+
 
 }
