@@ -55,7 +55,10 @@ class Proceso extends Model
     {
         return $this->belongsTo(Productor::class, 'productor_id');
     }
-
+public function especie()
+    {
+        return $this->belongsTo(Especy::class, 'especie_id');
+    }
     public function getFechaProcesoAttribute($value)
     {
         return $value ? Carbon::parse($value)->format(config('panel.date_format')) : null;

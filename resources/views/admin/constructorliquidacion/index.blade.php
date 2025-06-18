@@ -865,6 +865,7 @@
             <table>
                 <thead>
                     <tr class="section-header">
+                        <th>Especie</th>
                         <th>Variedad</th>
                         <th>Categoría</th>
                         <th>Norma</th>
