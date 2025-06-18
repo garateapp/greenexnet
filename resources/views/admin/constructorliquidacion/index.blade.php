@@ -717,14 +717,14 @@
                                 }
 
 
-                                $("#fletehuerto").text((response.valorflete.valor ? response
-                                    .valorflete.valor : 0).toLocaleString(
-                                    'es-CL', {
-                                        minimumFractionDigits: 2,
-                                        maximumFractionDigits: 2
-                                    }));
+                                // $("#fletehuerto").text((response.valorflete.valor ? response
+                                //     .valorflete.valor : 0).toLocaleString(
+                                //     'es-CL', {
+                                //         minimumFractionDigits: 2,
+                                //         maximumFractionDigits: 2
+                                //     }));
                                 valorflete=0;
-                                if (response.valorflete.count > 0) {
+                                if (response.valorflete.length > 0) {
                                     response.valorflete.forEach(element => {
                                         valorflete += parseFloat(element.valor);
                                     });
