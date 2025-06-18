@@ -2125,7 +2125,7 @@
                 <tr class="total-row">
                     <td></td>
                     <td>Total ${variedad}</td>
-                    <td></td>
+
                     <td></td>
                     <td></td>
                     <td class="number">1.0000</td>
@@ -2356,8 +2356,8 @@
         }
              function formatInteger(value) {
             return parseFloat(value).toLocaleString('es-CL', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
             });
         }
 
