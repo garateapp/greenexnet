@@ -2259,6 +2259,7 @@
 
                 htmlOutput += `
                     <tr class="total-row">
+                        <td></td>
                         <td colspan="2">Total ${etiqueta}</td>
                         <td></td>
                         <td class="number">1.0000</td>
@@ -2278,6 +2279,7 @@
             htmlOutput += `
                 <tr class="total-row">
                     <td>Total ${variedad}</td>
+                    <td></td>
                     <td></td>
                     <td></td>
                     <td class="number">1.0000</td>
@@ -2305,6 +2307,7 @@
     htmlOutput += `
                 <tr class="total-row">
                     <td>Total General</td>
+                    <td></td>
                     <td></td>
                     <td></td>
                     <td class="number">1.0000</td>
