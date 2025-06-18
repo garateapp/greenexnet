@@ -65,7 +65,7 @@
                             @foreach ($productors as $id => $entry)
                                 <option value="{{ $id }}" {{ old('productor_id') == $id ? 'selected' : '' }}>
                                     {{ $entry }}</option>
-                                <option value="7" selected>EL maiten</option>
+
                             @endforeach
                         </select>
                     </div>
@@ -82,7 +82,7 @@
                         <label for="filtroFamilia">Especie</label>
                         <select class="form-control select2" name="especie_id" id="especie_id" required multiple>
                             @foreach ($especie as $id => $entry)
-                                <option value="{{ $id }}" {{ 7 == $id ? 'selected' : '' }}>
+                                <option value="{{ $id }}" {{ old('especie_id') == $id ? 'selected' : '' }}>
                                     {{ $entry }}</option>
                             @endforeach
                         </select>
@@ -102,7 +102,7 @@
                         <div class="col-md-12">
                             <div class="card-body">
                                 <ul class="nav nav-tabs col-lg-12" id="CtaCte" role="tablist">
-                                   
+
                                     <!-- Pestaña Cuenta Corriente -->
                                     <li class="nav-item" role="presentation">
                                         <button class="nav-link " id="CuentaCorriente-tab" data-bs-toggle="tab"
@@ -148,17 +148,17 @@
                                     </li>
                                 </ul>
                                 <div class="tab-content" id="CtaCtejContent">
-                                   
+
                                     <div class="tab-pane fade active show" id="CuentaCorriente" role="tabpanel"
                                         aria-labelledby="CuentaCorriente-tab">
                                         <div id="CuentaCorrienteContent">
-                                          
+
                                             <!-- Contenido Cuenta Corriente -->
-                                          
+
 
 
                                             <table id="ctacteTable">
-                                               
+
                                                 <tr class="section-header">
                                                     <td colspan="8" style="text-align:center">CUENTA CORRIENTE</td>
                                                 </tr>
@@ -181,14 +181,14 @@
 
                                                 <!-- Sección Ventas -->
                                                 <tr>
-                                                    <td colspan="5">Total venta cerezas exportación temporada 2024-2025
+                                                    <td colspan="5">Total venta exportación temporada 2024-2025
                                                     </td>
                                                     <td>CAT 1</td>
                                                     <td>US$</td>
                                                     <td class="currency" id="suma-CAT-1"></td>
                                                 </tr>
                                                 <tr>
-                                                    <td colspan="5">Total venta cerezas exportación temporada 2024-2025
+                                                    <td colspan="5">Total venta exportación temporada 2024-2025
                                                     </td>
                                                     <td>CAT 2</td>
                                                     <td>US$</td>
@@ -314,11 +314,11 @@
                                     <div class="tab-pane fade " id="BceMasa" role="tabpanel"
                                         aria-labelledby="BceMasa-tab">
                                         <div id="BceMasaContent">
-                                          
+
 
 
                                             <table>
-                                              
+
                                                 <tr class="section-header">
                                                     <td colspan="5" style="text-align: center;">BALANCE DE MASAS</td>
                                                 </tr>
@@ -359,7 +359,7 @@
                                                 <tr>
                                                     <td colspan="8">&nbsp;</td>
                                                 </tr>
-                                               
+
                                                 <tbody id="norma">
                                                 </tbody>
 
@@ -383,7 +383,7 @@
                                                 <tr>
                                                     <td colspan="10">&nbsp;</td>
                                                 </tr>
-                                               
+
                                                 <tbody id="norma-semana">
                                                 </tbody>
 
@@ -404,7 +404,7 @@
                                                 <tr>
                                                     <td colspan="9">&nbsp;</td>
                                                 </tr>
-                                              
+
                                                 <tbody id="fuera-norma">
                                                 </tbody>
                                             </table>
@@ -423,7 +423,7 @@
                                                 <tr>
                                                     <td colspan="5">&nbsp;</td>
                                                 </tr>
-                                               
+
 
                                                <tbody id="comercial">
                                                 </tbody>
@@ -454,7 +454,7 @@
             //Generación de PDF
             // Función principal para generar el PDF
     // Función principal para generar el PDF
-   
+
      // Función para generar el PDF
      function generatePdf_pdf() {
         // Lista de pestañas
@@ -697,7 +697,8 @@
                                                 </tr>`
                                     );
                                 });
-                                $("#fechaFacturacion").text(response.anticipos[0]
+                                if (response.anticipos.length === 0) {
+                                   $("#fechaFacturacion").text(response.anticipos[0]
                                     .fecha_documento);
                                 $("#valorFacturacion").text(response.anticipos[0].valor
                                     .toLocaleString('es-CL', {
@@ -709,6 +710,8 @@
                                         minimumFractionDigits: 2,
                                         maximumFractionDigits: 2
                                     }));
+                                }
+
 
                                 $("#fletehuerto").text((response.valorflete.valor ? response
                                     .valorflete.valor : 0).toLocaleString(
@@ -1179,7 +1182,7 @@
                                         .toFixed(0);
                                     htmlOutputNorma += `
             <tr class="total-row">
-                
+
                 <td colspan="1">Total ${etiqueta}</td>
                 <td></td>
                 <td class="number">1.0000</td>
@@ -1344,7 +1347,7 @@
 
                             // Generar HTML de la tabla
                             let htmlOutput_v2 = `
-           
+
                     <tr class="section-header">
                         <th>Variedad</th>
                         <th>Etiqueta</th>
@@ -1357,7 +1360,7 @@
                         <th>RNP Total</th>
                         <th>RNP Kilo</th>
                     </tr>
-              
+
         `;
 
                             // Ordenar variedades
@@ -1559,11 +1562,11 @@
                                             'negative' : '';
                                         htmlOutput_v2 += `
                         <tr class="total-row">
-                            
+
                             <td colspan="2">Total Semana ${semana_v2}</td>
                              <td></td>
                             <td class="number">1.0000</td>
-                            
+
                             <td class="number">${cajasEquivalentesSemana_v2}</td>
                             <td class="number">${datosSemana_v2.total_kilos.toFixed(2)}</td>
                             <td class="number ${rnpClassSemana_v2}">${datosSemana_v2.rnp_total.toFixed(2)}</td>
@@ -1587,7 +1590,7 @@
                                         'negative' : '';
                                     htmlOutput_v2 += `
                     <tr class="total-row">
-                        
+
                         <td colspan="2">Total ${etiqueta_v2}</td>
                         <td> </td>
                         <td> </td>
@@ -1772,7 +1775,7 @@
                                 etiquetasPorVariedad_fn);
 
                             // Generar HTML de la tabla
-                            let htmlOutput_fn = `   
+                            let htmlOutput_fn = `
             <tr class="section-header">
                 <th>Variedad</th>
                 <th>Etiqueta</th>
@@ -1973,9 +1976,9 @@
                                             'negative' : '';
                                         htmlOutput_fn += `
                 <tr class="total-row">
-                    
+
                     <td colspan="3">Total Semana ${semana_fn}</td>
-                   
+
                     <td class="number" style="text-align:center;">${cajasEquivalentesSemana_fn}</td>
                     <td class="number">${datosSemana_fn.total_kilos.toFixed(2)}</td>
                     <td class="number ${rnpClassSemana_fn}">${datosSemana_fn.rnp_total.toFixed(2)}</td>
@@ -1999,7 +2002,7 @@
                                         'negative' : '';
                                     htmlOutput_fn += `
             <tr class="total-row">
-            
+
                 <td colspan="2">Total ${etiqueta_fn}</td>
                 <td> </td>
                 <td> </td>
@@ -2075,7 +2078,7 @@
     </tr>
 `;
 
-                            
+
 
                             // Insertar el HTML en el contenedor
                             $('#fuera-norma').html(htmlOutput_fn);
@@ -2142,7 +2145,7 @@
 
         // Generar HTML de la tabla
         let htmlOutput_cat = `
-            
+
                     <tr class="section-header">
                         <th style="text-align: center">Variedad</th>
                         <th style="text-align: center">Categoría</th>
@@ -2150,8 +2153,8 @@
                         <th style="text-align: center">Precio Comercial Total</th>
                         <th style="text-align: center">Precio Comercial Kilo</th>
                     </tr>
-               
-               
+
+
         `;
 
         // Ordenar variedades
@@ -2215,10 +2218,10 @@
             </tr>
         `;
 
-       
+
 
         // Insertar el HTML en el contenedor
-        $('#comercial').html(htmlOutput_cat); 
+        $('#comercial').html(htmlOutput_cat);
                 //Comercial
 
                         },
@@ -2241,7 +2244,7 @@
                     });
                 }
             });
-          
+
 
         });
     </script>
