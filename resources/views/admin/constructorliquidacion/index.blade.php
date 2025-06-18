@@ -894,7 +894,7 @@
                                     $.each(datosCategoria.normas, function(j,
                                         fila) {
                                         let cajasEquivalentes = (fila
-                                                .total_kilos / 5)
+                                                .total_kilos / 9)
                                             .toFixed(1);
                                         let variedadCell = (i === 0 &&
                                                 j === 0) ? variedad :
