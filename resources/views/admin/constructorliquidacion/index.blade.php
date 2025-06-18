@@ -2008,7 +2008,7 @@
                         let etiquetas = Object.keys(datosAgrupadosNorma[especie][variedad]).sort();
                         let rowspanVariedad = 0;
 
-                        // Calcular rowspan total por variedad
+                        // Calcular rowspan total por variedad //
                         $.each(etiquetas, function(i_etiqueta, etiqueta) {
                             let calibres = Object.keys(datosAgrupadosNorma[especie][
                                 variedad][etiqueta].calibres);
@@ -2075,6 +2075,8 @@
 
                                 isFirstEtiquetaRow = false;
                                 isFirstVariedadRow = false;
+
+                                // Acumular totales por etiqueta
 
                                 // Acumular totales
                                 totalVariedad.cajas_equivalentes += parseFloat(
