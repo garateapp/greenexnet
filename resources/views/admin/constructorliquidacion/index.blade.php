@@ -2099,7 +2099,7 @@
 
     // Agrupar datos por especie, variedad y etiqueta
     $.each(response.result, function(index, item) {
-        if (item.norma.toUpperCase() === 'CAT 1') {
+        if (item.categoria.toUpperCase() === 'CAT 1') {
             let variedad = item.variedad;
             let etiqueta = item.etiqueta;
             let calibre = item.calibre;
