@@ -2039,7 +2039,7 @@
                                 let datosCalibre = datosEtiqueta.calibres[calibre];
 
                                 let curvaCalibre = datosEtiqueta.total_kilos ?
-                                    (((datosCalibre.total_kilos / datosEtiqueta.total_kilos).toFixed(4)) : '0.0000') ;
+                                    (datosCalibre.total_kilos / datosEtiqueta.total_kilos).toFixed(4) : '0.0000';
                                     curvaCalibre=(curvaCalibre*100);
                                     curvaCalibre = curvaCalibre+' %';
                                 let cajasEquivalentes = (datosCalibre.total_kilos /
