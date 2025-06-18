@@ -653,21 +653,9 @@
                                             costo_comercial;
                                     }
                                 });
-                                console.log('Sumas por categoría:', sumasPorCategoria['CAT1']);
+
                                 $.each(sumasPorCategoria, function(categoria, sumas) {
-                                    console.log(`${categoria}:`);
-                                    console.log(
-                                        `  Resultado Kilo: ${sumas.resultado_kilo.toFixed(2)}`
-                                    );
-                                    console.log(
-                                        `  Resultado Total: ${sumas.resultado_total.toFixed(2)}`
-                                    );
-                                    console.log(
-                                        `  Total Comercial: ${sumas.total_comercial.toFixed(2)}`
-                                    );
-                                    console.log(
-                                        `  Total Kilos: ${sumas.total_kilos.toFixed(2)}`
-                                    );
+
                                 });
 
                                 valorTotal = parseFloat(sumasPorCategoria['CAT1']
@@ -1009,6 +997,7 @@
                                 // Fila de total por variedad
                                 htmlOutput += `
                 <tr class="total-row">
+                    <td></td>
                     <td>Total ${variedad}</td>
                     <td> </td>
                     <td> </td>
@@ -1189,8 +1178,7 @@
                                     rnp_kilo_sum: 0,
                                     rnp_kilo_kilos: 0
                                 };
-                                let etiquetas = Object.keys(datosAgrupadosNorma[especie][
-                                        variedad])
+                                let etiquetas = Object.keys(datosAgrupadosNorma[especie][variedad])
                                     .sort();
                                 let rowspanVariedad = 0;
 
