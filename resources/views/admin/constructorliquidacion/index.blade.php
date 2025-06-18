@@ -1173,6 +1173,7 @@
 
                             // Ordenar variedades
                             let variedades = Object.keys(datosAgrupadosNorma).sort();
+                            let especies = Object.keys(datosAgrupadosNorma).sort();
                             let totalVariedad = {};
 
                             // Inicializar totales por variedad
