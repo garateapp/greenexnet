@@ -1176,6 +1176,9 @@
                             let totalVariedad = {};
 
                             // Inicializar totales por variedad
+                            $.each(especies, function(index, especie) {
+
+
                             $.each(variedades, function(index, variedad) {
 
                                 totalVariedad[variedad] = {
@@ -1185,7 +1188,7 @@
                                     rnp_kilo_sum: 0,
                                     rnp_kilo_kilos: 0
                                 };
-                                let etiquetas = Object.keys(datosAgrupadosNorma[
+                                let etiquetas = Object.keys(datosAgrupadosNorma[especie][
                                         variedad])
                                     .sort();
                                 let rowspanVariedad = 0;
@@ -1318,6 +1321,7 @@
                                         datosEtiqueta
                                         .rnp_kilo_kilos;
                                 });
+                            });
                             });
 
                             // Filas de total por variedad y total general
