@@ -697,7 +697,7 @@
                                                 </tr>`
                                     );
                                 });
-                                if (response.anticipos.length === 0) {
+                                if (response.anticipos.length > 0) {
                                    $("#fechaFacturacion").text(response.anticipos[0]
                                     .fecha_documento);
                                 $("#valorFacturacion").text(response.anticipos[0].valor
