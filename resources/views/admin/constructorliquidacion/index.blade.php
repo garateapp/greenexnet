@@ -1185,7 +1185,7 @@
                                             .rnp_kilo_kilos).toFixed(4) :
                                         '0.0000';
                                     datosEtiqueta.cajas_equivalentes = (
-                                            datosEtiqueta.total_kilos / )
+                                            datosEtiqueta.total_kilos /9 )
                                         .toFixed(0);
                                     htmlOutputNorma += `
             <tr class="total-row">
