@@ -2333,6 +2333,7 @@
                 <tr class="total-row">
                     <td>Total general</td>
                     <td></td>
+                    <td></td>
                     <td class="number">${totalGeneral.total_kilos.toFixed(2)}</td>
                     <td class="number">${totalGeneral.precio_total.toFixed(2)}</td>
                     <td class="number">${precioKiloGeneral}</td>
