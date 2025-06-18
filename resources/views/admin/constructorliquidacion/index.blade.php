@@ -13,11 +13,11 @@
         }
 
         /* th,
-                                        td {
-                                            border: 1px solid #dddddd;
-                                            padding: 8px;
-                                            text-align: left;
-                                        } */
+                                            td {
+                                                border: 1px solid #dddddd;
+                                                padding: 8px;
+                                                text-align: left;
+                                            } */
 
         .currency {
             text-align: right;
@@ -985,7 +985,7 @@
                                                     .cajas_equivalentes +=
                                                     parseFloat(
                                                         cajasEquivalentes
-                                                        );
+                                                    );
                                                 totalVariedad
                                                     .total_kilos +=
                                                     fila
@@ -994,8 +994,8 @@
                                     });
 
 
-                                // Fila de total por variedad
-                                htmlOutput += `
+                                    // Fila de total por variedad
+                                    htmlOutput += `
                 <tr class="total-row">
                     <td></td>
                     <td>Total ${variedad}</td>
@@ -1006,12 +1006,14 @@
                 </tr>
             `;
 
-                                // Acumular al total general
-                                totalGeneral.cajas_equivalentes += totalVariedad
-                                    .cajas_equivalentes;
-                                totalGeneral.total_kilos += totalVariedad.total_kilos;
+                                    // Acumular al total general
+                                    totalGeneral.cajas_equivalentes +=
+                                        totalVariedad
+                                        .cajas_equivalentes;
+                                    totalGeneral.total_kilos += totalVariedad
+                                        .total_kilos;
+                                });
                             });
-                             });
 
                             // Fila de total general
                             htmlOutput += `
@@ -1869,199 +1871,14 @@
                             $('#fuera-norma').html(htmlOutput_fn);
 
 
+
+
+
+                            llenarNorma(response);
+
                             //Comercial
-                            const categoriasPermitidas_cat = ['Comercial', 'Pre Calibre',
-                                'Desecho', 'Merma'
-                            ];
-
-                            // Objeto para agrupar por variedad y categoría
-                            let datosAgrupados_cat = {};
-                            let totalGeneral_cat = {
-                                total_kilos: 0,
-                                precio_total: 0,
-                                precio_kilo_sum: 0,
-                                precio_kilo_kilos: 0
-                            };
-                            let etiquetasPorVariedad_cat = {};
-
-                            // Agrupar datos
-                            let data_cat = response.result;
-                            $.each(data_cat, function(index_cat, item_cat) {
-                                let categoria_cat = item_cat.categoria;
-                                if (categoriasPermitidas_cat.includes(categoria_cat)) {
-                                    let variedad_cat = item_cat.variedad;
-                                    let etiqueta_cat = item_cat.etiqueta ||
-                                    ''; // Para contar etiquetas
-                                    let totalKilos_cat = parseFloat(item_cat.total_kilos
-                                        .replace(',', '.')) || 0;
-                                    let precioTotal_cat = parseFloat(item_cat
-                                        .total_comercial.replace(',', '.')) || 0;
-                                    let precioKilo_cat = parseFloat(item_cat
-                                        .precio_comercial.replace(',', '.')) || 0;
-
-                                    // Inicializar estructuras
-                                    if (!datosAgrupados_cat[variedad_cat]) {
-                                        datosAgrupados_cat[variedad_cat] = {};
-                                        etiquetasPorVariedad_cat[variedad_cat] =
-                                            new Set();
-                                    }
-                                    if (!datosAgrupados_cat[variedad_cat][
-                                        categoria_cat]) {
-                                        datosAgrupados_cat[variedad_cat][
-                                            categoria_cat] = {
-                                                total_kilos: 0,
-                                                precio_total: 0,
-                                                precio_kilo_sum: 0,
-                                                precio_kilo_kilos: 0
-                                            };
-                                    }
-                                    if (etiqueta_cat) {
-                                        etiquetasPorVariedad_cat[variedad_cat].add(
-                                            etiqueta_cat);
-                                    }
-
-                                    // Acumular valores
-                                    datosAgrupados_cat[variedad_cat][categoria_cat]
-                                        .total_kilos += totalKilos_cat;
-                                    datosAgrupados_cat[variedad_cat][categoria_cat]
-                                        .precio_total += precioTotal_cat;
-                                    datosAgrupados_cat[variedad_cat][categoria_cat]
-                                        .precio_kilo_sum += precioKilo_cat *
-                                        totalKilos_cat;
-                                    datosAgrupados_cat[variedad_cat][categoria_cat]
-                                        .precio_kilo_kilos += totalKilos_cat;
-
-                                    // Acumular total general
-                                    totalGeneral_cat.total_kilos += totalKilos_cat;
-                                    totalGeneral_cat.precio_total += precioTotal_cat;
-                                    totalGeneral_cat.precio_kilo_sum += precioKilo_cat *
-                                        totalKilos_cat;
-                                    totalGeneral_cat.precio_kilo_kilos +=
-                                    totalKilos_cat;
-                                }
-                            });
-
-                            // Convertir Sets a arrays y contar etiquetas
-                            $.each(etiquetasPorVariedad_cat, function(variedad_cat,
-                                etiquetasSet_cat) {
-                                etiquetasPorVariedad_cat[variedad_cat] = {
-                                    numeroEtiquetas: etiquetasSet_cat.size,
-                                    etiquetas: Array.from(etiquetasSet_cat)
-                                };
-                            });
-                            console.log('Etiquetas distintas por variedad (Categorías):',
-                                etiquetasPorVariedad_cat);
-
-                            // Generar HTML de la tabla
-                            let htmlOutput_cat = `
-
-                    <tr class="section-header">
-                        <th style="text-align: center">Variedad</th>
-                        <th style="text-align: center">Categoría</th>
-                        <th style="text-align: center">Kilos</th>
-                        <th style="text-align: center">Precio Comercial Total</th>
-                        <th style="text-align: center">Precio Comercial Kilo</th>
-                    </tr>
-
-
-        `;
-
-                            // Ordenar variedades
-                            let variedades_cat = Object.keys(datosAgrupados_cat).sort();
-                            let totalVariedad_cat = {};
-
-                            $.each(variedades_cat, function(index_cat, variedad_cat) {
-                                totalVariedad_cat[variedad_cat] = {
-                                    total_kilos: 0,
-                                    precio_total: 0,
-                                    precio_kilo_sum: 0,
-                                    precio_kilo_kilos: 0
-                                };
-                                let categorias_cat = Object.keys(datosAgrupados_cat[
-                                    variedad_cat]).sort();
-                                let rowspanVariedad_cat = categorias_cat.length;
-
-                                let isFirstVariedadRow_cat = true;
-
-                                // Iterar sobre categorías
-                                $.each(categorias_cat, function(i_cat, categoria_cat) {
-                                    let datosCategoria_cat = datosAgrupados_cat[
-                                        variedad_cat][categoria_cat];
-                                    let precioKilo_cat = datosCategoria_cat
-                                        .precio_kilo_kilos ? (datosCategoria_cat
-                                            .precio_kilo_sum /
-                                            datosCategoria_cat.precio_kilo_kilos
-                                            ).toFixed(2) : '0.00';
-                                    let variedadCell_cat =
-                                        isFirstVariedadRow_cat ?
-                                        `<td rowspan="${rowspanVariedad_cat}">${variedad_cat}</td>` :
-                                        '';
-
-                                    htmlOutput_cat += `
-                    <tr>
-                        ${variedadCell_cat}
-                        <td style="text-align: center">${categoria_cat}</td>
-                        <td class="number">${datosCategoria_cat.total_kilos.toFixed(2)}</td>
-                        <td class="number">${datosCategoria_cat.precio_total.toFixed(2)}</td>
-                        <td class="number">${precioKilo_cat}</td>
-                    </tr>
-                `;
-
-                                    isFirstVariedadRow_cat = false;
-
-                                    // Acumular totales por variedad
-                                    totalVariedad_cat[variedad_cat]
-                                        .total_kilos += datosCategoria_cat
-                                        .total_kilos;
-                                    totalVariedad_cat[variedad_cat]
-                                        .precio_total += datosCategoria_cat
-                                        .precio_total;
-                                    totalVariedad_cat[variedad_cat]
-                                        .precio_kilo_sum += datosCategoria_cat
-                                        .precio_kilo_sum;
-                                    totalVariedad_cat[variedad_cat]
-                                        .precio_kilo_kilos += datosCategoria_cat
-                                        .precio_kilo_kilos;
-                                });
-
-                                // Total por variedad
-                                let precioKiloVariedad_cat = totalVariedad_cat[
-                                        variedad_cat].precio_kilo_kilos ? (
-                                        totalVariedad_cat[variedad_cat]
-                                        .precio_kilo_sum / totalVariedad_cat[
-                                            variedad_cat].precio_kilo_kilos).toFixed(
-                                    2) : '0.00';
-                                htmlOutput_cat += `
-                <tr class="total-row">
-                    <td>Total ${variedad_cat}</td>
-                    <td> </td>
-                    <td class="number">${totalVariedad_cat[variedad_cat].total_kilos.toFixed(0)}</td>
-                    <td class="number">${totalVariedad_cat[variedad_cat].precio_total.toFixed(2)}</td>
-                    <td class="number">${precioKiloVariedad_cat}</td>
-                </tr>
-            `;
-                            });
-
-                            // Total general
-                            let precioKiloGeneral_cat = totalGeneral_cat.precio_kilo_kilos ? (
-                                totalGeneral_cat.precio_kilo_sum / totalGeneral_cat
-                                .precio_kilo_kilos).toFixed(2) : '0.00';
-                            htmlOutput_cat += `
-            <tr class="total-row">
-                <td>Total general</td>
-                <td> </td>
-                <td class="number">${totalGeneral_cat.total_kilos.toFixed(0)}</td>
-                <td class="number">${totalGeneral_cat.precio_total.toFixed(2)}</td>
-                <td class="number">${precioKiloGeneral_cat}</td>
-            </tr>
-        `;
-
-
-
-                            // Insertar el HTML en el contenedor
-                            $('#comercial').html(htmlOutput_cat);
-                            //Comercial
-                        llenarNorma(response);
+                            llenarComercial(response);
+                            //Fin Comercial
 
                         },
                         error: function(xhr, status, error) {
@@ -2083,87 +1900,93 @@
                     });
                 }
             });
+
             function llenarNorma(response) {
-    // Definir orden de calibres
-    const ordenCalibres = ['7J', '6J', '5J', '4J', '3J', '2J', 'J', 'XL'];
+                // Definir orden de calibres
+                const ordenCalibres = ['7J', '6J', '5J', '4J', '3J', '2J', 'J', 'XL'];
 
-    // Objeto para agrupar por especie, variedad y etiqueta
-    let datosAgrupadosNorma = {};
-    let totalGeneralNorma = {
-        cajas_equivalentes: 0,
-        total_kilos: 0,
-        rnp_total: 0,
-        rnp_kilo_sum: 0,
-        rnp_kilo_kilos: 0
-    };
-
-    // Agrupar datos por especie, variedad y etiqueta
-    $.each(response.result, function(index, item) {
-        if (item.categoria.toUpperCase() === 'CAT 1') {
-            let variedad = item.variedad;
-            let etiqueta = item.etiqueta;
-            let calibre = item.calibre;
-            let especie = item.especie.nombre;
-
-            // Renombrar especies según normativa
-            switch (especie) {
-                case "Plums":
-                    especie = "Ciruela";
-                    break;
-                case "Nectarines":
-                    especie = "Nectarín";
-                    break;
-                case "Peaches":
-                    especie = "Durazno";
-                    break;
-            }
-
-            let totalKilos = parseFloat(item.total_kilos.replace(',', '.')) || 0;
-            let rnpTotal = parseFloat(item.resultado_total.replace(',', '.')) || 0;
-            let rnpKilo = parseFloat(item.resultado_kilo.replace(',', '.')) || 0;
-
-            if (!datosAgrupadosNorma[especie]) {
-                datosAgrupadosNorma[especie] = {};
-            }
-            if (!datosAgrupadosNorma[especie][variedad]) {
-                datosAgrupadosNorma[especie][variedad] = {};
-            }
-            if (!datosAgrupadosNorma[especie][variedad][etiqueta]) {
-                datosAgrupadosNorma[especie][variedad][etiqueta] = {
-                    calibres: {},
+                // Objeto para agrupar por especie, variedad y etiqueta
+                let datosAgrupadosNorma = {};
+                let totalGeneralNorma = {
+                    cajas_equivalentes: 0,
                     total_kilos: 0,
                     rnp_total: 0,
                     rnp_kilo_sum: 0,
                     rnp_kilo_kilos: 0
                 };
-            }
-            if (!datosAgrupadosNorma[especie][variedad][etiqueta].calibres[calibre]) {
-                datosAgrupadosNorma[especie][variedad][etiqueta].calibres[calibre] = {
-                    total_kilos: 0,
-                    rnp_total: 0,
-                    rnp_kilo: 0
-                };
-            }
 
-            datosAgrupadosNorma[especie][variedad][etiqueta].calibres[calibre].total_kilos += totalKilos;
-            datosAgrupadosNorma[especie][variedad][etiqueta].calibres[calibre].rnp_total += rnpTotal;
-            datosAgrupadosNorma[especie][variedad][etiqueta].calibres[calibre].rnp_kilo += rnpKilo;
+                // Agrupar datos por especie, variedad y etiqueta
+                $.each(response.result, function(index, item) {
+                    if (item.categoria.toUpperCase() === 'CAT 1') {
+                        let variedad = item.variedad;
+                        let etiqueta = item.etiqueta;
+                        let calibre = item.calibre;
+                        let especie = item.especie.nombre;
 
-            datosAgrupadosNorma[especie][variedad][etiqueta].total_kilos += totalKilos;
-            datosAgrupadosNorma[especie][variedad][etiqueta].rnp_total += rnpTotal;
-            datosAgrupadosNorma[especie][variedad][etiqueta].rnp_kilo_sum += rnpKilo * totalKilos;
-            datosAgrupadosNorma[especie][variedad][etiqueta].rnp_kilo_kilos += totalKilos;
-        }
-    });
+                        // Renombrar especies según normativa
+                        switch (especie) {
+                            case "Plums":
+                                especie = "Ciruela";
+                                break;
+                            case "Nectarines":
+                                especie = "Nectarín";
+                                break;
+                            case "Peaches":
+                                especie = "Durazno";
+                                break;
+                        }
 
-    // Generar HTML de la tabla
-    let htmlOutput = `
+                        let totalKilos = parseFloat(item.total_kilos.replace(',', '.')) || 0;
+                        let rnpTotal = parseFloat(item.resultado_total.replace(',', '.')) || 0;
+                        let rnpKilo = parseFloat(item.resultado_kilo.replace(',', '.')) || 0;
+
+                        if (!datosAgrupadosNorma[especie]) {
+                            datosAgrupadosNorma[especie] = {};
+                        }
+                        if (!datosAgrupadosNorma[especie][variedad]) {
+                            datosAgrupadosNorma[especie][variedad] = {};
+                        }
+                        if (!datosAgrupadosNorma[especie][variedad][etiqueta]) {
+                            datosAgrupadosNorma[especie][variedad][etiqueta] = {
+                                calibres: {},
+                                total_kilos: 0,
+                                rnp_total: 0,
+                                rnp_kilo_sum: 0,
+                                rnp_kilo_kilos: 0
+                            };
+                        }
+                        if (!datosAgrupadosNorma[especie][variedad][etiqueta].calibres[calibre]) {
+                            datosAgrupadosNorma[especie][variedad][etiqueta].calibres[calibre] = {
+                                total_kilos: 0,
+                                rnp_total: 0,
+                                rnp_kilo: 0
+                            };
+                        }
+
+                        datosAgrupadosNorma[especie][variedad][etiqueta].calibres[calibre].total_kilos +=
+                            totalKilos;
+                        datosAgrupadosNorma[especie][variedad][etiqueta].calibres[calibre].rnp_total +=
+                            rnpTotal;
+                        datosAgrupadosNorma[especie][variedad][etiqueta].calibres[calibre].rnp_kilo +=
+                            rnpKilo;
+
+                        datosAgrupadosNorma[especie][variedad][etiqueta].total_kilos += totalKilos;
+                        datosAgrupadosNorma[especie][variedad][etiqueta].rnp_total += rnpTotal;
+                        datosAgrupadosNorma[especie][variedad][etiqueta].rnp_kilo_sum += rnpKilo *
+                            totalKilos;
+                        datosAgrupadosNorma[especie][variedad][etiqueta].rnp_kilo_kilos += totalKilos;
+                    }
+                });
+
+                // Generar HTML de la tabla
+                let htmlOutput = `
         <table>
             <thead>
                 <tr class="section-header">
                     <th>Especie</th>
                     <th>Variedad</th>
                     <th>Etiqueta</th>
+                    <th>Calibre</th>
                     <th>Curva Calibre</th>
                     <th>Cajas Equivalentes</th>
                     <th>Kilos Totales</th>
@@ -2174,58 +1997,68 @@
             <tbody>
     `;
 
-    // Ordenar especies y variedades
-    let especies = Object.keys(datosAgrupadosNorma).sort();
-    let totalPorVariedad = {};
+                // Ordenar especies y variedades
+                let especies = Object.keys(datosAgrupadosNorma).sort();
+                let totalPorVariedad = {};
 
-    $.each(especies, function(i_especie, especie) {
-        let variedades = Object.keys(datosAgrupadosNorma[especie]).sort();
+                $.each(especies, function(i_especie, especie) {
+                    let variedades = Object.keys(datosAgrupadosNorma[especie]).sort();
 
-        $.each(variedades, function(i_variedad, variedad) {
-            let etiquetas = Object.keys(datosAgrupadosNorma[especie][variedad]).sort();
-            let rowspanVariedad = 0;
+                    $.each(variedades, function(i_variedad, variedad) {
+                        let etiquetas = Object.keys(datosAgrupadosNorma[especie][variedad]).sort();
+                        let rowspanVariedad = 0;
 
-            // Calcular rowspan total por variedad
-            $.each(etiquetas, function(i_etiqueta, etiqueta) {
-                let calibres = Object.keys(datosAgrupadosNorma[especie][variedad][etiqueta].calibres);
-                rowspanVariedad += calibres.length;
-            });
+                        // Calcular rowspan total por variedad
+                        $.each(etiquetas, function(i_etiqueta, etiqueta) {
+                            let calibres = Object.keys(datosAgrupadosNorma[especie][
+                                variedad][etiqueta].calibres);
+                            rowspanVariedad += calibres.length;
+                        });
 
-            let isFirstVariedadRow = true;
-            let totalVariedad = {
-                cajas_equivalentes: 0,
-                total_kilos: 0,
-                rnp_total: 0,
-                rnp_kilo_sum: 0,
-                rnp_kilo_kilos: 0
-            };
+                        let isFirstVariedadRow = true;
+                        let totalVariedad = {
+                            cajas_equivalentes: 0,
+                            total_kilos: 0,
+                            rnp_total: 0,
+                            rnp_kilo_sum: 0,
+                            rnp_kilo_kilos: 0
+                        };
 
-            $.each(etiquetas, function(i_etiqueta, etiqueta) {
-                let datosEtiqueta = datosAgrupadosNorma[especie][variedad][etiqueta];
-                let calibres = Object.keys(datosEtiqueta.calibres).sort((a, b) =>
-                    ordenCalibres.indexOf(a) - ordenCalibres.indexOf(b)
-                );
-                let rowspanEtiqueta = calibres.length;
-                let isFirstEtiquetaRow = true;
+                        $.each(etiquetas, function(i_etiqueta, etiqueta) {
+                            let datosEtiqueta = datosAgrupadosNorma[especie][variedad][
+                                etiqueta
+                            ];
+                            let calibres = Object.keys(datosEtiqueta.calibres).sort((a,
+                                b) =>
+                                ordenCalibres.indexOf(a) - ordenCalibres.indexOf(b)
+                            );
+                            let rowspanEtiqueta = calibres.length;
+                            let isFirstEtiquetaRow = true;
 
-                $.each(calibres, function(i_calibre, calibre) {
-                    let datosCalibre = datosEtiqueta.calibres[calibre];
+                            $.each(calibres, function(i_calibre, calibre) {
+                                let datosCalibre = datosEtiqueta.calibres[calibre];
 
-                    let curvaCalibre = datosEtiqueta.total_kilos ?
-                        (datosCalibre.total_kilos / datosEtiqueta.total_kilos).toFixed(4) : '0.0000';
-                    let cajasEquivalentes = (datosCalibre.total_kilos / 9).toFixed(0);
+                                let curvaCalibre = datosEtiqueta.total_kilos ?
+                                    (datosCalibre.total_kilos / datosEtiqueta
+                                        .total_kilos).toFixed(4) : '0.0000';
+                                let cajasEquivalentes = (datosCalibre.total_kilos /
+                                    9).toFixed(0);
 
-                    let rnpKilo = datosCalibre.rnp_kilo.toFixed(4);
-                    let rnpClass = datosCalibre.rnp_total < 0 || datosCalibre.rnp_kilo < 0 ? 'negative' : '';
+                                let rnpKilo = datosCalibre.rnp_kilo.toFixed(4);
+                                let rnpClass = datosCalibre.rnp_total < 0 ||
+                                    datosCalibre.rnp_kilo < 0 ? 'negative' : '';
 
-                    let especieCell = i_variedad === 0 && i_etiqueta === 0 && i_calibre === 0 ?
-                        `<td>${especie}</td>` : '<td></td>';
-                    let variedadCell = isFirstEtiquetaRow && i_calibre === 0 ?
-                        `<td>${variedad}</td>` : '<td></td>';
-                    let etiquetaCell = isFirstEtiquetaRow && i_calibre === 0 ?
-                        `<td>${etiqueta}</td>` : '<td></td>';
+                                let especieCell = i_variedad === 0 && i_etiqueta ===
+                                    0 && i_calibre === 0 ?
+                                    `<td>${especie}</td>` : '<td></td>';
+                                let variedadCell = isFirstEtiquetaRow &&
+                                    i_calibre === 0 ?
+                                    `<td>${variedad}</td>` : '<td></td>';
+                                let etiquetaCell = isFirstEtiquetaRow &&
+                                    i_calibre === 0 ?
+                                    `<td>${etiqueta}</td>` : '<td></td>';
 
-                    htmlOutput += `
+                                htmlOutput += `
                         <tr>
                             ${especieCell}
                             ${variedadCell}
@@ -2239,24 +2072,30 @@
                         </tr>
                     `;
 
-                    isFirstEtiquetaRow = false;
-                    isFirstVariedadRow = false;
+                                isFirstEtiquetaRow = false;
+                                isFirstVariedadRow = false;
 
-                    // Acumular totales
-                    totalVariedad.cajas_equivalentes += parseFloat(cajasEquivalentes);
-                    totalVariedad.total_kilos += datosCalibre.total_kilos;
-                    totalVariedad.rnp_total += datosCalibre.rnp_total;
-                    totalVariedad.rnp_kilo_sum += datosCalibre.rnp_kilo * datosCalibre.total_kilos;
-                    totalVariedad.rnp_kilo_kilos += datosCalibre.total_kilos;
-                });
+                                // Acumular totales
+                                totalVariedad.cajas_equivalentes += parseFloat(
+                                    cajasEquivalentes);
+                                totalVariedad.total_kilos += datosCalibre
+                                    .total_kilos;
+                                totalVariedad.rnp_total += datosCalibre.rnp_total;
+                                totalVariedad.rnp_kilo_sum += datosCalibre
+                                    .rnp_kilo * datosCalibre.total_kilos;
+                                totalVariedad.rnp_kilo_kilos += datosCalibre
+                                    .total_kilos;
+                            });
 
-                // Fila de total por etiqueta
-                let rnpKiloEtiqueta = datosEtiqueta.rnp_kilo_kilos ?
-                    (datosEtiqueta.rnp_kilo_sum / datosEtiqueta.rnp_kilo_kilos).toFixed(4) : '0.0000';
-                let cajasEtiqueta = (datosEtiqueta.total_kilos / 9).toFixed(0);
-                let rnpClassEtiqueta = datosEtiqueta.rnp_total < 0 || parseFloat(rnpKiloEtiqueta) < 0 ? 'negative' : '';
+                            // Fila de total por etiqueta
+                            let rnpKiloEtiqueta = datosEtiqueta.rnp_kilo_kilos ?
+                                (datosEtiqueta.rnp_kilo_sum / datosEtiqueta.rnp_kilo_kilos)
+                                .toFixed(4) : '0.0000';
+                            let cajasEtiqueta = (datosEtiqueta.total_kilos / 9).toFixed(0);
+                            let rnpClassEtiqueta = datosEtiqueta.rnp_total < 0 ||
+                                parseFloat(rnpKiloEtiqueta) < 0 ? 'negative' : '';
 
-                htmlOutput += `
+                            htmlOutput += `
                     <tr class="total-row">
                         <td></td>
                         <td colspan="2">Total ${etiqueta}</td>
@@ -2268,14 +2107,16 @@
                         <td class="number ${rnpClassEtiqueta}">${rnpKiloEtiqueta}</td>
                     </tr>
                 `;
-            });
+                        });
 
-            // Fila de total por variedad
-            let rnpKiloVariedad = totalVariedad.rnp_kilo_kilos ?
-                (totalVariedad.rnp_kilo_sum / totalVariedad.rnp_kilo_kilos).toFixed(4) : '0.0000';
-            let rnpClassVariedad = totalVariedad.rnp_total < 0 || parseFloat(rnpKiloVariedad) < 0 ? 'negative' : '';
+                        // Fila de total por variedad
+                        let rnpKiloVariedad = totalVariedad.rnp_kilo_kilos ?
+                            (totalVariedad.rnp_kilo_sum / totalVariedad.rnp_kilo_kilos).toFixed(4) :
+                            '0.0000';
+                        let rnpClassVariedad = totalVariedad.rnp_total < 0 || parseFloat(
+                            rnpKiloVariedad) < 0 ? 'negative' : '';
 
-            htmlOutput += `
+                        htmlOutput += `
                 <tr class="total-row">
                     <td>Total ${variedad}</td>
                     <td></td>
@@ -2289,21 +2130,22 @@
                 </tr>
             `;
 
-            // Acumular al total general
-            totalGeneralNorma.cajas_equivalentes += totalVariedad.cajas_equivalentes;
-            totalGeneralNorma.total_kilos += totalVariedad.total_kilos;
-            totalGeneralNorma.rnp_total += totalVariedad.rnp_total;
-            totalGeneralNorma.rnp_kilo_sum += totalVariedad.rnp_kilo_sum;
-            totalGeneralNorma.rnp_kilo_kilos += totalVariedad.rnp_kilo_kilos;
-        });
-    });
+                        // Acumular al total general
+                        totalGeneralNorma.cajas_equivalentes += totalVariedad.cajas_equivalentes;
+                        totalGeneralNorma.total_kilos += totalVariedad.total_kilos;
+                        totalGeneralNorma.rnp_total += totalVariedad.rnp_total;
+                        totalGeneralNorma.rnp_kilo_sum += totalVariedad.rnp_kilo_sum;
+                        totalGeneralNorma.rnp_kilo_kilos += totalVariedad.rnp_kilo_kilos;
+                    });
+                });
 
-    // Fila de total general
-    let rnpKiloGeneral = totalGeneralNorma.rnp_kilo_kilos ?
-        (totalGeneralNorma.rnp_kilo_sum / totalGeneralNorma.rnp_kilo_kilos).toFixed(4) : '0.0000';
-    let rnpClassGeneral = totalGeneralNorma.rnp_total < 0 || parseFloat(rnpKiloGeneral) < 0 ? 'negative' : '';
+                // Fila de total general
+                let rnpKiloGeneral = totalGeneralNorma.rnp_kilo_kilos ?
+                    (totalGeneralNorma.rnp_kilo_sum / totalGeneralNorma.rnp_kilo_kilos).toFixed(4) : '0.0000';
+                let rnpClassGeneral = totalGeneralNorma.rnp_total < 0 || parseFloat(rnpKiloGeneral) < 0 ?
+                    'negative' : '';
 
-    htmlOutput += `
+                htmlOutput += `
                 <tr class="total-row">
                     <td>Total General</td>
                     <td></td>
@@ -2319,8 +2161,186 @@
         </table>
     `;
 
-    $('#norma').html(htmlOutput); // Insertar en contenedor
-}
+                $('#norma').html(htmlOutput); // Insertar en contenedor
+            }
+
+            function llenarComercial(response) {
+                const categoriasPermitidas = ['Comercial', 'Pre Calibre', 'Desecho', 'Merma','Sobre Calibre'];
+
+                // Objeto para agrupar por especie, variedad y categoría
+                let datosAgrupados = {};
+                let totalGeneral = {
+                    total_kilos: 0,
+                    precio_total: 0,
+                    precio_kilo_sum: 0,
+                    precio_kilo_kilos: 0
+                };
+
+                // Agrupar datos por especie, variedad y categoría
+                $.each(response.result, function(index, item) {
+                    if (categoriasPermitidas.includes(item.categoria)) {
+                        let especie = item.especie.nombre;
+                        switch (especie) {
+                            case "Plums":
+                                especie = "Ciruela";
+                                break;
+                            case "Nectarines":
+                                especie = "Nectarín";
+                                break;
+                            case "Peaches":
+                                especie = "Durazno";
+                                break;
+                        }
+
+                        let variedad = item.variedad;
+                        let categoria = item.categoria;
+
+                        let totalKilos = parseFloat(item.total_kilos.replace(',', '.')) || 0;
+                        let precioTotal = parseFloat(item.total_comercial.replace(',', '.')) || 0;
+                        let precioKilo = parseFloat(item.precio_comercial.replace(',', '.')) || 0;
+
+                        // Inicializar estructura si no existe
+                        if (!datosAgrupados[especie]) {
+                            datosAgrupados[especie] = {};
+                        }
+                        if (!datosAgrupados[especie][variedad]) {
+                            datosAgrupados[especie][variedad] = {};
+                        }
+                        if (!datosAgrupados[especie][variedad][categoria]) {
+                            datosAgrupados[especie][variedad][categoria] = {
+                                total_kilos: 0,
+                                precio_total: 0,
+                                precio_kilo_sum: 0,
+                                precio_kilo_kilos: 0
+                            };
+                        }
+
+                        // Acumular valores
+                        datosAgrupados[especie][variedad][categoria].total_kilos += totalKilos;
+                        datosAgrupados[especie][variedad][categoria].precio_total += precioTotal;
+                        datosAgrupados[especie][variedad][categoria].precio_kilo_sum += precioKilo *
+                            totalKilos;
+                        datosAgrupados[especie][variedad][categoria].precio_kilo_kilos += totalKilos;
+
+                        // Totales generales
+                        totalGeneral.total_kilos += totalKilos;
+                        totalGeneral.precio_total += precioTotal;
+                        totalGeneral.precio_kilo_sum += precioKilo * totalKilos;
+                        totalGeneral.precio_kilo_kilos += totalKilos;
+                    }
+                });
+
+                // Generar HTML de la tabla
+                let htmlOutput = `
+        <table>
+            <thead>
+                <tr class="section-header">
+                    <th style="text-align:center">Especie</th>
+                    <th style="text-align:center">Variedad</th>
+                    <th style="text-align:center">Categoría</th>
+                    <th style="text-align:center">Kilos</th>
+                    <th style="text-align:center">Precio Comercial Total</th>
+                    <th style="text-align:center">Precio Comercial Kilo</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+                // Ordenar especies alfabéticamente
+                let especies = Object.keys(datosAgrupados).sort();
+
+                $.each(especies, function(i_especie, especie) {
+                    let datosPorEspecie = datosAgrupados[especie];
+                    let variedades = Object.keys(datosPorEspecie).sort();
+                    let rowspanEspecie = 0;
+
+                    // Contar cantidad de filas necesarias para este rowspan
+                    $.each(variedades, function(i_var, var_nombre) {
+                        let categorias = Object.keys(datosPorEspecie[var_nombre]);
+                        rowspanEspecie += categorias.length + 1; // +1 para fila de subtotal
+                    });
+
+                    let isFirstVariedadRow = true;
+
+                    $.each(variedades, function(i_variedad, variedad) {
+                        let datosPorVariedad = datosPorEspecie[variedad];
+                        let categorias = Object.keys(datosPorVariedad).sort();
+                        let rowspanVariedad = categorias.length;
+
+                        let totalVariedad = {
+                            total_kilos: 0,
+                            precio_total: 0,
+                            precio_kilo_sum: 0,
+                            precio_kilo_kilos: 0
+                        };
+
+                        $.each(categorias, function(i_categoria, categoria) {
+                            let datosCategoria = datosPorVariedad[categoria];
+
+                            let precioKilo = datosCategoria.precio_kilo_kilos ?
+                                (datosCategoria.precio_kilo_sum / datosCategoria
+                                    .precio_kilo_kilos).toFixed(2) : '0.00';
+
+                            let especieCell = i_categoria === 0 && isFirstVariedadRow ?
+                                `<td rowspan="${rowspanEspecie}">${especie}</td>` : '';
+                            let variedadCell = i_categoria === 0 ?
+                                `<td rowspan="${rowspanVariedad}">${variedad}</td>` : '';
+
+                            htmlOutput += `
+                    <tr>
+                        ${especieCell}
+                        ${variedadCell}
+                        <td style="text-align:center">${categoria}</td>
+                        <td class="number">${datosCategoria.total_kilos.toFixed(2)}</td>
+                        <td class="number">${datosCategoria.precio_total.toFixed(2)}</td>
+                        <td class="number">${precioKilo}</td>
+                    </tr>
+                `;
+
+                            // Acumular totales por variedad
+                            totalVariedad.total_kilos += datosCategoria.total_kilos;
+                            totalVariedad.precio_total += datosCategoria.precio_total;
+                            totalVariedad.precio_kilo_sum += datosCategoria.precio_kilo_sum;
+                            totalVariedad.precio_kilo_kilos += datosCategoria
+                                .precio_kilo_kilos;
+
+                            isFirstVariedadRow = false;
+                        });
+
+                        // Subtotal por variedad
+                        let precioKiloVariedad = totalVariedad.precio_kilo_kilos ?
+                            (totalVariedad.precio_kilo_sum / totalVariedad.precio_kilo_kilos)
+                            .toFixed(2) : '0.00';
+                        htmlOutput += `
+                <tr class="total-row">
+                    <td>Total ${variedad}</td>
+                    <td></td>
+                    <td class="number">${totalVariedad.total_kilos.toFixed(2)}</td>
+                    <td class="number">${totalVariedad.precio_total.toFixed(2)}</td>
+                    <td class="number">${precioKiloVariedad}</td>
+                </tr>
+            `;
+                    });
+                });
+
+                // Total general
+                let precioKiloGeneral = totalGeneral.precio_kilo_kilos ?
+                    (totalGeneral.precio_kilo_sum / totalGeneral.precio_kilo_kilos).toFixed(2) : '0.00';
+
+                htmlOutput += `
+                <tr class="total-row">
+                    <td>Total general</td>
+                    <td></td>
+                    <td class="number">${totalGeneral.total_kilos.toFixed(2)}</td>
+                    <td class="number">${totalGeneral.precio_total.toFixed(2)}</td>
+                    <td class="number">${precioKiloGeneral}</td>
+                </tr>
+            </tbody>
+        </table>
+    `;
+
+                $('#comercial').html(htmlOutput);
+            }
 
         });
     </script>
