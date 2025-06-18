@@ -999,7 +999,7 @@
                                                     .total_kilos;
                                             });
                                     });
-                                });
+
 
                                 // Fila de total por variedad
                                 htmlOutput += `
@@ -1017,6 +1017,7 @@
                                     .cajas_equivalentes;
                                 totalGeneral.total_kilos += totalVariedad.total_kilos;
                             });
+                             });
 
                             // Fila de total general
                             htmlOutput += `
