@@ -1231,7 +1231,7 @@
                                         let rnpKilo = datosCalibre
                                             .rnp_kilo.toFixed(4);
                                         let
-                                        let especieCell = isFirstCellRow ?
+                                        especieCell = isFirstCellRow ?
                                             `<td rowspan="${rowspanVariedad}">${especie}</td>` :
                                             '';
                                         let variedadCell =
