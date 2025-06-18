@@ -1129,7 +1129,7 @@
                                                 4) : '0.0000';
                                         let cajasEquivalentes = (
                                                 datosCalibre
-                                                .total_kilos 9)
+                                                .total_kilos /9)
                                             .toFixed(0);
                                         let rnpKilo = datosCalibre
                                             .rnp_kilo.toFixed(4);
