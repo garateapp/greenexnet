@@ -723,9 +723,12 @@
                                         minimumFractionDigits: 2,
                                         maximumFractionDigits: 2
                                     }));
+                                valorflete=0;
                                 if (response.valorflete.count > 0) {
-                                    $("#fletehuerto").text(response.valorflete.valor ? response
-                                        .valorflete.valor : 0).toLocaleString(
+                                    response.valorflete.forEach(element => {
+                                        valorflete += parseFloat(element.valor);
+                                    });
+                                    $("#fletehuerto").text(valorflete ? valorflete : 0).toLocaleString(
                                         'es-CL', {
                                             minimumFractionDigits: 2,
                                             maximumFractionDigits: 2
@@ -1126,7 +1129,7 @@
                                                 4) : '0.0000';
                                         let cajasEquivalentes = (
                                                 datosCalibre
-                                                .total_kilos / 5)
+                                                .total_kilos 9)
                                             .toFixed(0);
                                         let rnpKilo = datosCalibre
                                             .rnp_kilo.toFixed(4);
@@ -1182,7 +1185,7 @@
                                             .rnp_kilo_kilos).toFixed(4) :
                                         '0.0000';
                                     datosEtiqueta.cajas_equivalentes = (
-                                            datosEtiqueta.total_kilos / 5)
+                                            datosEtiqueta.total_kilos / )
                                         .toFixed(0);
                                     htmlOutputNorma += `
             <tr class="total-row">
@@ -1557,7 +1560,7 @@
                                             .toFixed(4) : '0.0000';
                                         let cajasEquivalentesSemana_v2 =
                                             (datosSemana_v2
-                                                .total_kilos / 5)
+                                                .total_kilos / 9)
                                             .toFixed(0);
                                         let rnpClassSemana_v2 =
                                             datosSemana_v2.rnp_total <
@@ -1586,7 +1589,7 @@
                                             .rnp_kilo_kilos).toFixed(4) :
                                         '0.0000';
                                     totalEtiqueta_v2.cajas_equivalentes = (
-                                            totalEtiqueta_v2.total_kilos / 5)
+                                            totalEtiqueta_v2.total_kilos /9)
                                         .toFixed(0);
                                     let rnpClassEtiqueta_v2 = totalEtiqueta_v2
                                         .rnp_total < 0 || parseFloat(
@@ -1971,7 +1974,7 @@
                                             .toFixed(4) : '0.0000';
                                         let cajasEquivalentesSemana_fn =
                                             (datosSemana_fn
-                                                .total_kilos / 5)
+                                                .total_kilos / 9)
                                             .toFixed(0);
                                         let rnpClassSemana_fn =
                                             datosSemana_fn.rnp_total <
@@ -1998,7 +2001,7 @@
                                             .rnp_kilo_kilos).toFixed(4) :
                                         '0.0000';
                                     totalEtiqueta_fn.cajas_equivalentes = (
-                                            totalEtiqueta_fn.total_kilos / 5)
+                                            totalEtiqueta_fn.total_kilos / 9)
                                         .toFixed(0);
                                     let rnpClassEtiqueta_fn = totalEtiqueta_fn
                                         .rnp_total < 0 || parseFloat(
