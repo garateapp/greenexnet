@@ -2317,7 +2317,7 @@
         </table>
     `;
 
-    $('#normaContent').html(htmlOutput); // Insertar en contenedor
+    $('#norma').html(htmlOutput); // Insertar en contenedor
 }
 
         });
