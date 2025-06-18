@@ -971,6 +971,11 @@
                                                         j === 0) ?
                                                     variedad :
                                                     ' ';
+                                                let especieCell = (
+                                                        i === 0 &&
+                                                        j === 0) ?
+                                                    especie :
+                                                    ' ';
                                                 let categoriaCell =
                                                     isFirstRow ?
                                                     categoria : ' ';
@@ -1060,6 +1065,21 @@
 
 
                                     let variedad = item.variedad;
+                                    let especie = item.especie.nombre;
+                                    switch (especie) {
+                                        case "Plums":
+                                            especie = "Ciruela";
+                                            break;
+                                        case "Nectarines":
+                                            especie = "Nectarin";
+                                            break;
+                                        case "Peaches":
+                                            especie = "Durazno";
+                                    }
+                                    if (!datosAgrupadosNorma[especie]) {
+                                        datosAgrupadosNorma[especie] = {};
+                                    }
+
                                     let etiqueta = item.etiqueta;
                                     let calibre = item.calibre;
                                     let totalKilos = parseFloat(item.total_kilos
@@ -1072,11 +1092,11 @@
                                         .replace(
                                             ',', '.')) || 0;
 
-                                    if (!datosAgrupadosNorma[variedad]) {
-                                        datosAgrupadosNorma[variedad] = {};
+                                    if (!datosAgrupadosNorma[especie][variedad]) {
+                                        datosAgrupadosNorma[especie][variedad] = {};
                                     }
-                                    if (!datosAgrupadosNorma[variedad][etiqueta]) {
-                                        datosAgrupadosNorma[variedad][etiqueta] = {
+                                    if (!datosAgrupadosNorma[especie][variedad][etiqueta]) {
+                                        datosAgrupadosNorma[especie][variedad][etiqueta] = {
                                             calibres: {},
                                             total_kilos: 0,
                                             cajas_equivalentes: 0,
@@ -1085,10 +1105,10 @@
                                             rnp_kilo_kilos: 0
                                         };
                                     }
-                                    if (!datosAgrupadosNorma[variedad][etiqueta]
+                                    if (!datosAgrupadosNorma[especie][variedad][etiqueta]
                                         .calibres[
                                             calibre]) {
-                                        datosAgrupadosNorma[variedad][etiqueta]
+                                        datosAgrupadosNorma[especie][variedad][etiqueta]
                                             .calibres[
                                                 calibre] = {
                                                 total_kilos: 0,
@@ -1097,30 +1117,32 @@
                                             };
                                     }
 
-                                    datosAgrupadosNorma[variedad][etiqueta].calibres[
+                                    datosAgrupadosNorma[especie][variedad][etiqueta].calibres[
                                             calibre]
                                         .total_kilos += totalKilos;
-                                    datosAgrupadosNorma[variedad][etiqueta].calibres[
+                                    datosAgrupadosNorma[especie][variedad][etiqueta].calibres[
                                             calibre]
                                         .rnp_total += rnpTotal;
-                                    datosAgrupadosNorma[variedad][etiqueta].calibres[
+                                    datosAgrupadosNorma[especie][variedad][etiqueta].calibres[
                                             calibre]
                                         .rnp_kilo += rnpKilo;
-                                    datosAgrupadosNorma[variedad][etiqueta]
+                                    datosAgrupadosNorma[especie][variedad][etiqueta]
                                         .total_kilos +=
                                         totalKilos;
-                                    datosAgrupadosNorma[variedad][etiqueta].rnp_total +=
+                                    datosAgrupadosNorma[especie][variedad][etiqueta].rnp_total +=
                                         rnpTotal;
-                                    datosAgrupadosNorma[variedad][etiqueta]
+                                    datosAgrupadosNorma[especie][variedad][etiqueta]
                                         .rnp_kilo_sum +=
                                         rnpKilo * totalKilos;
-                                    datosAgrupadosNorma[variedad][etiqueta]
+                                    datosAgrupadosNorma[especie][variedad][etiqueta]
                                         .rnp_kilo_kilos +=
                                         totalKilos;
                                 }
                             });
                             // Contar etiquetas distintas por variedad
                             let etiquetasPorVariedad = {};
+                            $.each(datosAgrupadosNorma, function(especie, datosEspecie) {
+
                             $.each(datosAgrupadosNorma, function(variedad, datosVariedad) {
                                 let etiquetasUnicas = Object.keys(datosVariedad);
                                 etiquetasPorVariedad[variedad] = {
@@ -1128,12 +1150,14 @@
                                     etiquetas: etiquetasUnicas
                                 };
                             });
+                        });
 
                             // Generar HTML de la tabla
                             let htmlOutputNorma = `
     <table>
         <thead>
             <tr class="section-header">
+                <th>Especie</th>
                 <th>Variedad</th>
                 <th>Etiqueta</th>
                 <th>Serie</th>
@@ -1151,6 +1175,7 @@
                             let variedades = Object.keys(datosAgrupadosNorma).sort();
                             let totalVariedad = {};
 
+                            // Inicializar totales por variedad
                             $.each(variedades, function(index, variedad) {
 
                                 totalVariedad[variedad] = {
@@ -1168,18 +1193,18 @@
                                 // Calcular rowspan para la variedad
                                 $.each(etiquetas, function(i, etiqueta) {
                                     let calibres = Object.keys(
-                                        datosAgrupadosNorma[
+                                        datosAgrupadosNorma[especie][
                                             variedad][etiqueta].calibres);
                                     rowspanVariedad += calibres.length;
                                 });
-
+                                let isFirstCellRow  = true;
                                 let isFirstVariedadRow = true;
 
                                 // Iterar sobre etiquetas
                                 $.each(etiquetas, function(i, etiqueta) {
                                     console.log('Etiqueta:', etiqueta, 'cont?i',
                                         i);
-                                    let datosEtiqueta = datosAgrupadosNorma[
+                                    let datosEtiqueta = datosAgrupadosNorma[especie][
                                         variedad][etiqueta];
                                     let calibres = Object.keys(datosEtiqueta
                                         .calibres).sort((a, b) =>
@@ -1205,6 +1230,10 @@
                                             .toFixed(0);
                                         let rnpKilo = datosCalibre
                                             .rnp_kilo.toFixed(4);
+                                        let
+                                        let especieCell = isFirstCellRow ?
+                                            `<td rowspan="${rowspanVariedad}">${especie}</td>` :
+                                            '';
                                         let variedadCell =
                                             isFirstVariedadRow ?
                                             `<td rowspan="${rowspanVariedad+etiquetas.length}">${variedad}</td>` :
@@ -1216,6 +1245,7 @@
 
                                         htmlOutputNorma += `
                 <tr>
+                    ${especieCell}
                     ${variedadCell}
                     ${etiquetaCell}
                     <td>${calibre}</td>
@@ -1229,7 +1259,7 @@
 
                                         isFirstEtiquetaRow = false;
                                         isFirstVariedadRow = false;
-
+                                        isFirstCellRow = false;
                                         // Acumular totales por variedad
                                         totalVariedad[variedad]
                                             .cajas_equivalentes +=
