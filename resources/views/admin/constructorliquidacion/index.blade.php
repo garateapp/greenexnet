@@ -2220,11 +2220,11 @@
                     let rnpClass = datosCalibre.rnp_total < 0 || datosCalibre.rnp_kilo < 0 ? 'negative' : '';
 
                     let especieCell = i_variedad === 0 && i_etiqueta === 0 && i_calibre === 0 ?
-                        `<td>${especie}</td>` : '';
+                        `<td>${especie}</td>` : '<td></td>';
                     let variedadCell = isFirstEtiquetaRow && i_calibre === 0 ?
-                        `<td>${variedad}</td>` : '';
+                        `<td>${variedad}</td>` : '<td></td>';
                     let etiquetaCell = isFirstEtiquetaRow && i_calibre === 0 ?
-                        `<td>${etiqueta}</td>` : '';
+                        `<td>${etiqueta}</td>` : '<td></td>';
 
                     htmlOutput += `
                         <tr>
