@@ -13,11 +13,11 @@
         }
 
         /* th,
-                                    td {
-                                        border: 1px solid #dddddd;
-                                        padding: 8px;
-                                        text-align: left;
-                                    } */
+                                        td {
+                                            border: 1px solid #dddddd;
+                                            padding: 8px;
+                                            text-align: left;
+                                        } */
 
         .currency {
             text-align: right;
@@ -65,7 +65,6 @@
                             @foreach ($productors as $id => $entry)
                                 <option value="{{ $id }}" {{ old('productor_id') == $id ? 'selected' : '' }}>
                                     {{ $entry }}</option>
-
                             @endforeach
                         </select>
                     </div>
@@ -106,8 +105,8 @@
                                     <!-- Pestaña Cuenta Corriente -->
                                     <li class="nav-item" role="presentation">
                                         <button class="nav-link " id="CuentaCorriente-tab" data-bs-toggle="tab"
-                                            data-bs-target="#CuentaCorriente" type="button" role="tab" aria-controls="CuentaCorriente"
-                                            aria-selected="true">
+                                            data-bs-target="#CuentaCorriente" type="button" role="tab"
+                                            aria-controls="CuentaCorriente" aria-selected="true">
                                             Cuenta Corriente
                                         </button>
                                     </li>
@@ -323,7 +322,8 @@
                                                     <td colspan="5" style="text-align: center;">BALANCE DE MASAS</td>
                                                 </tr>
                                                 <tr>
-                                                    <td colspan="5" style="text-align: center;" class="productorNombre">
+                                                    <td colspan="5" style="text-align: center;"
+                                                        class="productorNombre">
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -353,7 +353,8 @@
                                                         NORMA</td>
                                                 </tr>
                                                 <tr>
-                                                    <td colspan="8" style="text-align: center;" class="productorNombre">
+                                                    <td colspan="8" style="text-align: center;"
+                                                        class="productorNombre">
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -372,13 +373,16 @@
                                         <div id="NormaSemanaContent">
                                             <table>
                                                 <tr class="section-header">
-                                                    <td colspan="10" style="text-align: center;" >EXPORTACIÓN DENTRO DE NORMA</td>
+                                                    <td colspan="10" style="text-align: center;">EXPORTACIÓN DENTRO DE
+                                                        NORMA</td>
                                                 </tr>
                                                 <tr>
-                                                    <td colspan="10" style="text-align: center;" >Detalle por semana de embarque</td>
+                                                    <td colspan="10" style="text-align: center;">Detalle por semana de
+                                                        embarque</td>
                                                 </tr>
                                                 <tr>
-                                                    <td colspan="10" style="text-align: center;" class="productorNombre"></td>
+                                                    <td colspan="10" style="text-align: center;"
+                                                        class="productorNombre"></td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="10">&nbsp;</td>
@@ -396,10 +400,12 @@
                                         <div id="FueraNormaContent">
                                             <table>
                                                 <tr class="section-header">
-                                                    <td colspan="9" style="text-align: center;" >EXPORTACIÓN FUERA DE NORMA</td>
+                                                    <td colspan="9" style="text-align: center;">EXPORTACIÓN FUERA DE
+                                                        NORMA</td>
                                                 </tr>
                                                 <tr>
-                                                    <td colspan="9" style="text-align: center;" class="productorNombre"></td>
+                                                    <td colspan="9" style="text-align: center;"
+                                                        class="productorNombre"></td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="9">&nbsp;</td>
@@ -418,14 +424,15 @@
                                                     <td colspan="5" style="text-align: center;">COMERCIAL</td>
                                                 </tr>
                                                 <tr>
-                                                    <td colspan="5" style="text-align: center;" class="productorNombre"></td>
+                                                    <td colspan="5" style="text-align: center;"
+                                                        class="productorNombre"></td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="5">&nbsp;</td>
                                                 </tr>
 
 
-                                               <tbody id="comercial">
+                                                <tbody id="comercial">
                                                 </tbody>
                                             </table>
                                         </div>
@@ -438,12 +445,12 @@
             </div>
         </div>
     </div>
-<!-- jsPDF -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-<!-- html2canvas -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script>
+    <!-- html2canvas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
         $(document).ready(function() {
 
 
@@ -453,65 +460,85 @@
 
             //Generación de PDF
             // Función principal para generar el PDF
-    // Función principal para generar el PDF
+            // Función principal para generar el PDF
 
-     // Función para generar el PDF
-     function generatePdf_pdf() {
-        // Lista de pestañas
-        const tabs_pdf = [
-            { id: '#CuentaCorriente', name: 'Cuenta Corriente' },
-            { id: '#BceMasa', name: 'Balance de Masas' },
-            { id: '#Norma', name: 'Norma' },
-            { id: '#NormaSemana', name: 'Norma Con Semana' },
-            { id: '#FueraNorma', name: 'Fuera de Norma' },
-            { id: '#Comercial', name: 'Comercial' }
-        ];
+            // Función para generar el PDF
+            function generatePdf_pdf() {
+                // Lista de pestañas
+                const tabs_pdf = [{
+                        id: '#CuentaCorriente',
+                        name: 'Cuenta Corriente'
+                    },
+                    {
+                        id: '#BceMasa',
+                        name: 'Balance de Masas'
+                    },
+                    {
+                        id: '#Norma',
+                        name: 'Norma'
+                    },
+                    {
+                        id: '#NormaSemana',
+                        name: 'Norma Con Semana'
+                    },
+                    {
+                        id: '#FueraNorma',
+                        name: 'Fuera de Norma'
+                    },
+                    {
+                        id: '#Comercial',
+                        name: 'Comercial'
+                    }
+                ];
 
-        // Capturar el HTML de cada pestaña
-        const tabContents_pdf = tabs_pdf.map(tab_pdf => {
-            const $tabPane_pdf = $(tab_pdf.id);
-            const content_pdf = $tabPane_pdf.html();
-            if (!content_pdf) {
-                console.warn(`El tab ${tab_pdf.name} está vacío.`);
+                // Capturar el HTML de cada pestaña
+                const tabContents_pdf = tabs_pdf.map(tab_pdf => {
+                    const $tabPane_pdf = $(tab_pdf.id);
+                    const content_pdf = $tabPane_pdf.html();
+                    if (!content_pdf) {
+                        console.warn(`El tab ${tab_pdf.name} está vacío.`);
+                    }
+                    return {
+                        name: tab_pdf.name,
+                        html: content_pdf
+                    };
+                });
+
+                // Enviar el contenido al backend
+                $.ajax({
+                    url: "{{ route('admin.constructorliquidacion.generatepdf') }}", // Ruta del controlador
+                    method: 'POST',
+                    data: {
+                        tabs: tabContents_pdf,
+                        productor_id: $('#productor_id').val(),
+                        productornombre: $(".productorNombre").text(),
+                        temporada: $('#temporada').val(),
+                        especie_id: $('#especie_id').val(),
+                        _token: $('meta[name="csrf-token"]').attr('content') // CSRF token
+                    },
+                    success: function(response_pdf) {
+                        // Crear un enlace para descargar el PDF
+                        const blob_pdf = new Blob([response_pdf], {
+                            type: 'application/pdf'
+                        });
+                        const link_pdf = document.createElement('a');
+                        link_pdf.href = window.URL.createObjectURL(blob_pdf);
+                        link_pdf.download = 'Liquidacion-' + productor_nombre + '-' + $('#temporada')
+                            .val() + '.pdf';
+                        link_pdf.click();
+                        window.URL.revokeObjectURL(link_pdf.href);
+                    },
+                    error: function(xhr_pdf, status_pdf, error_pdf) {
+                        console.error('Error al generar el PDF:', error_pdf);
+                        alert('Error al generar el PDF. Por favor, intenta de nuevo.');
+                    },
+                    xhrFields: {
+                        responseType: 'blob' // Necesario para manejar el archivo PDF
+                    }
+                });
             }
-            return {
-                name: tab_pdf.name,
-                html: content_pdf
-            };
-        });
-
-        // Enviar el contenido al backend
-        $.ajax({
-            url: "{{ route('admin.constructorliquidacion.generatepdf') }}", // Ruta del controlador
-            method: 'POST',
-            data: {
-                tabs: tabContents_pdf,
-                productor_id: $('#productor_id').val(),
-                productornombre:$(".productorNombre").text(),
-                temporada: $('#temporada').val(),
-                especie_id: $('#especie_id').val(),
-                _token: $('meta[name="csrf-token"]').attr('content') // CSRF token
-            },
-            success: function(response_pdf) {
-                // Crear un enlace para descargar el PDF
-                const blob_pdf = new Blob([response_pdf], { type: 'application/pdf' });
-                const link_pdf = document.createElement('a');
-                link_pdf.href = window.URL.createObjectURL(blob_pdf);
-                link_pdf.download = 'Liquidacion-'+productor_nombre+'-'+$('#temporada').val()+'.pdf';
-                link_pdf.click();
-                window.URL.revokeObjectURL(link_pdf.href);
-            },
-            error: function(xhr_pdf, status_pdf, error_pdf) {
-                console.error('Error al generar el PDF:', error_pdf);
-                alert('Error al generar el PDF. Por favor, intenta de nuevo.');
-            },
-            xhrFields: {
-                responseType: 'blob' // Necesario para manejar el archivo PDF
-            }
-        });
-    }
-    // Fin de la función generatePdf_pdf
-            let productor_nombre='';
+            // Fin de la función generatePdf_pdf
+            let productor_nombre = '';
             $('#productor_id').select2();
             $('#temporada').select2();
             $('#especie_id').select2();
@@ -544,7 +571,7 @@
                                 });
                                 $('#productorRut').text(response.productor.rut);
                                 $('.productorNombre').text(response.productor.nombre);
-                                productor_nombre=response.productor.nombre;
+                                productor_nombre = response.productor.nombre;
 
                                 let sumasPorCategoria = {
                                     'CAT1': {
@@ -593,9 +620,10 @@
 
                                 // Iterar sobre los datos obtenidos
                                 $.each(response.result, function(index, item) {
-                                    let categoria = item.categoria.replace(" ", "").toUpperCase();
-                                    if(categoria=="SUPERMERCADO") {
-                                        categoria='CAT1';
+                                    let categoria = item.categoria.replace(" ", "")
+                                        .toUpperCase();
+                                    if (categoria == "SUPERMERCADO") {
+                                        categoria = 'CAT1';
                                     }
 
 
@@ -702,18 +730,18 @@
                                     );
                                 });
                                 if (response.anticipos.length > 0) {
-                                   $("#fechaFacturacion").text(response.anticipos[0]
-                                    .fecha_documento);
-                                $("#valorFacturacion").text(response.anticipos[0].valor
-                                    .toLocaleString('es-CL', {
-                                        minimumFractionDigits: 2,
-                                        maximumFractionDigits: 2
-                                    }));
-                                $("#valorTotalFacturacion").text(valorTotalAnticipos
-                                    .toLocaleString('es-CL', {
-                                        minimumFractionDigits: 2,
-                                        maximumFractionDigits: 2
-                                    }));
+                                    $("#fechaFacturacion").text(response.anticipos[0]
+                                        .fecha_documento);
+                                    $("#valorFacturacion").text(response.anticipos[0].valor
+                                        .toLocaleString('es-CL', {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2
+                                        }));
+                                    $("#valorTotalFacturacion").text(valorTotalAnticipos
+                                        .toLocaleString('es-CL', {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2
+                                        }));
                                 }
 
 
@@ -723,16 +751,17 @@
                                 //         minimumFractionDigits: 2,
                                 //         maximumFractionDigits: 2
                                 //     }));
-                                valorflete=0;
+                                valorflete = 0;
                                 if (response.valorflete.length > 0) {
                                     response.valorflete.forEach(element => {
                                         valorflete += parseFloat(element.valor);
                                     });
-                                    $("#fletehuerto").text(valorflete ? valorflete : 0).toLocaleString(
-                                        'es-CL', {
-                                            minimumFractionDigits: 2,
-                                            maximumFractionDigits: 2
-                                        });
+                                    $("#fletehuerto").text(valorflete ? valorflete : 0)
+                                        .toLocaleString(
+                                            'es-CL', {
+                                                minimumFractionDigits: 2,
+                                                maximumFractionDigits: 2
+                                            });
                                     $("#trBonificacionfletehuerto").show();
                                     bonificacion = response.valorflete.condicion * response
                                         .valorflete.valor * (-1);
@@ -827,16 +856,29 @@
                             $.each(response.result, function(index, item) {
                                 let variedad = item.variedad;
                                 let categoria = item.categoria;
+                                let especie = item.especie.nombre;
+                                switch (especie) {
+                                    case "Plums":
+                                        especie = "Ciruela";
+                                        break;
+                                    case "Nectarines":
+                                        especie = "Nectarin";
+                                        break;
+                                    case "Peaches":
+                                        especie = "Durazno";
+                                }
                                 let norma = item.norma ||
                                     ''; // Manejar norma null o vacía
                                 let totalKilos = parseFloat(item.total_kilos.replace(
                                     ',', '.')) || 0;
-
-                                if (!datosAgrupados[variedad]) {
-                                    datosAgrupados[variedad] = {};
+                                if (!datosAgrupados[especie]) {
+                                    datosAgrupados[especie] = {};
                                 }
-                                if (!datosAgrupados[variedad][categoria]) {
-                                    datosAgrupados[variedad][categoria] = {
+                                if (!datosAgrupados[especie][variedad]) {
+                                    datosAgrupados[especie][variedad] = {};
+                                }
+                                if (!datosAgrupados[especie][variedad][categoria]) {
+                                    datosAgrupados[especie][variedad][categoria] = {
                                         normas: [],
                                         total_kilos: 0,
                                         cajas_equivalentes: 0
@@ -844,19 +886,23 @@
                                 }
 
                                 // Buscar si la norma ya existe
-                                let normaExistente = datosAgrupados[variedad][categoria]
+                                let normaExistente = datosAgrupados[especie][variedad][
+                                        categoria
+                                    ]
                                     .normas.find(n => n.norma === norma);
                                 if (normaExistente) {
                                     normaExistente.total_kilos += totalKilos;
                                 } else {
-                                    datosAgrupados[variedad][categoria].normas.push({
-                                        norma: norma,
-                                        total_kilos: totalKilos
-                                    });
+                                    datosAgrupados[especie][variedad][categoria].normas
+                                        .push({
+                                            norma: norma,
+                                            total_kilos: totalKilos
+                                        });
                                 }
 
                                 // Acumular totales por categoría
-                                datosAgrupados[variedad][categoria].total_kilos +=
+                                datosAgrupados[especie][variedad][categoria]
+                                    .total_kilos +=
                                     totalKilos;
                             });
 
@@ -877,41 +923,61 @@
         `;
 
                             // Ordenar variedades alfabéticamente
+                            let especiesNorma = Object.keys(datosAgrupados).sort();
                             let variedadesNorma = Object.keys(datosAgrupados).sort();
 
                             // Iterar sobre cada variedad
-                            $.each(variedadesNorma, function(index, variedad) {
-                                let totalVariedad = {
-                                    cajas_equivalentes: 0,
-                                    total_kilos: 0
-                                };
-                                let categorias = Object.keys(datosAgrupados[variedad])
+                            $.each(especiesNorma, function(index, especie) {
+                                // Ordenar variedades por nombre
+                                variedadesNorma = Object.keys(datosAgrupados[especie])
                                     .sort();
+                                if (variedadesNorma.length === 0) return;
 
-                                // Iterar sobre cada categoría
-                                $.each(categorias, function(i, categoria) {
-                                    let datosCategoria = datosAgrupados[
-                                        variedad][categoria];
-                                    let isFirstRow = true;
 
-                                    // Ordenar normas
-                                    datosCategoria.normas.sort((a, b) => a
-                                        .norma < b.norma ? -1 : 1);
+                                $.each(variedadesNorma, function(index, variedad) {
+                                    let totalVariedad = {
+                                        cajas_equivalentes: 0,
+                                        total_kilos: 0
+                                    };
+                                    let categorias = Object.keys(datosAgrupados[
+                                            especie][variedad])
+                                        .sort();
 
-                                    // Generar filas para cada norma
-                                    $.each(datosCategoria.normas, function(j,
-                                        fila) {
-                                        let cajasEquivalentes = (fila
-                                                .total_kilos / 9)
-                                            .toFixed(1);
-                                        let variedadCell = (i === 0 &&
-                                                j === 0) ? variedad :
-                                            ' ';
-                                        let categoriaCell = isFirstRow ?
-                                            categoria : ' ';
+                                    // Iterar sobre cada categoría
+                                    $.each(categorias, function(i, categoria) {
+                                        let datosCategoria =
+                                            datosAgrupados[especie][
+                                                variedad
+                                            ][categoria];
+                                        let isFirstRow = true;
 
-                                        htmlOutput += `
+                                        // Ordenar normas
+                                        datosCategoria.normas.sort((a,
+                                                b) => a
+                                            .norma < b.norma ? -1 :
+                                            1);
+
+                                        // Generar filas para cada norma
+                                        $.each(datosCategoria.normas,
+                                            function(j,
+                                                fila) {
+                                                let cajasEquivalentes =
+                                                    (fila
+                                                        .total_kilos /
+                                                        9)
+                                                    .toFixed(1);
+                                                let variedadCell = (
+                                                        i === 0 &&
+                                                        j === 0) ?
+                                                    variedad :
+                                                    ' ';
+                                                let categoriaCell =
+                                                    isFirstRow ?
+                                                    categoria : ' ';
+
+                                                htmlOutput += `
                         <tr>
+                            <td>${especie}</td>
                             <td>${variedadCell}</td>
                             <td>${categoriaCell}</td>
                             <td>${fila.norma || ' '}</td>
@@ -919,15 +985,19 @@
                             <td class="number">${fila.total_kilos.toFixed(2)}</td>
                         </tr>
                     `;
-                                        isFirstRow = false;
+                                                isFirstRow = false;
 
-                                        // Acumular totales por variedad
-                                        totalVariedad
-                                            .cajas_equivalentes +=
-                                            parseFloat(
-                                                cajasEquivalentes);
-                                        totalVariedad.total_kilos +=
-                                            fila.total_kilos;
+                                                // Acumular totales por variedad
+                                                totalVariedad
+                                                    .cajas_equivalentes +=
+                                                    parseFloat(
+                                                        cajasEquivalentes
+                                                        );
+                                                totalVariedad
+                                                    .total_kilos +=
+                                                    fila
+                                                    .total_kilos;
+                                            });
                                     });
                                 });
 
@@ -1130,7 +1200,7 @@
                                                 4) : '0.0000';
                                         let cajasEquivalentes = (
                                                 datosCalibre
-                                                .total_kilos /9)
+                                                .total_kilos / 9)
                                             .toFixed(0);
                                         let rnpKilo = datosCalibre
                                             .rnp_kilo.toFixed(4);
@@ -1186,7 +1256,7 @@
                                             .rnp_kilo_kilos).toFixed(4) :
                                         '0.0000';
                                     datosEtiqueta.cajas_equivalentes = (
-                                            datosEtiqueta.total_kilos /9 )
+                                            datosEtiqueta.total_kilos / 9)
                                         .toFixed(0);
                                     htmlOutputNorma += `
             <tr class="total-row">
@@ -1275,7 +1345,8 @@
                             data_v2 = response.result;
                             // Agrupar datos
                             $.each(data_v2, function(index_v2, item_v2) {
-                                if ( item_v2.norma.toUpperCase() === 'CAT 1' || item_v2.norma.toUpperCase() === 'CAT 1') {
+                                if (item_v2.norma.toUpperCase() === 'CAT 1' || item_v2
+                                    .norma.toUpperCase() === 'CAT 1') {
                                     let variedad_v2 = item_v2.variedad;
                                     let etiqueta_v2 = item_v2.etiqueta;
                                     let semana_v2 = item_v2.eta_week.toString();
@@ -1590,7 +1661,7 @@
                                             .rnp_kilo_kilos).toFixed(4) :
                                         '0.0000';
                                     totalEtiqueta_v2.cajas_equivalentes = (
-                                            totalEtiqueta_v2.total_kilos /9)
+                                            totalEtiqueta_v2.total_kilos / 9)
                                         .toFixed(0);
                                     let rnpClassEtiqueta_v2 = totalEtiqueta_v2
                                         .rnp_total < 0 || parseFloat(
@@ -1718,7 +1789,8 @@
                                         datosAgrupados_fn[variedad_fn] = {};
                                     if (!datosAgrupados_fn[variedad_fn][etiqueta_fn])
                                         datosAgrupados_fn[variedad_fn][
-                                        etiqueta_fn] = {};
+                                            etiqueta_fn
+                                        ] = {};
                                     if (!datosAgrupados_fn[variedad_fn][etiqueta_fn][
                                             semana_fn
                                         ]) {
@@ -1820,7 +1892,7 @@
                                             etiqueta_fn
                                         ]).sort((a, b) => a - b);
                                     $.each(semanas_fn, function(j_fn,
-                                    semana_fn) {
+                                        semana_fn) {
                                         let calibres_fn = Object.keys(
                                             datosAgrupados_fn[
                                                 variedad_fn][
@@ -1831,7 +1903,7 @@
                                             1; // +1 por total semana
                                     });
                                     rowspanVariedad_fn +=
-                                    1; // +1 por total etiqueta
+                                        1; // +1 por total etiqueta
                                 });
 
                                 let isFirstVariedadRow_fn = true;
@@ -1853,7 +1925,7 @@
 
                                     // Calcular rowspan para la etiqueta
                                     $.each(semanas_fn, function(j_fn,
-                                    semana_fn) {
+                                        semana_fn) {
                                         let calibres_fn = Object.keys(
                                             datosAgrupados_fn[
                                                 variedad_fn][
@@ -1868,11 +1940,12 @@
 
                                     // Iterar sobre semanas
                                     $.each(semanas_fn, function(j_fn,
-                                    semana_fn) {
+                                        semana_fn) {
                                         let datosSemana_fn =
                                             datosAgrupados_fn[
                                                 variedad_fn][
-                                                etiqueta_fn][semana_fn];
+                                                etiqueta_fn
+                                            ][semana_fn];
                                         let calibres_fn = Object.keys(
                                                 datosSemana_fn.calibres)
                                             .sort((a, b) =>
@@ -1943,7 +2016,7 @@
                                                 .cajas_equivalentes +=
                                                 parseFloat(
                                                     cajasEquivalentes_fn
-                                                    );
+                                                );
                                             totalEtiqueta_fn
                                                 .total_kilos +=
                                                 datosCalibre_fn
@@ -2025,7 +2098,7 @@
                                     totalVariedad_fn[variedad_fn]
                                         .cajas_equivalentes += parseFloat(
                                             totalEtiqueta_fn.cajas_equivalentes
-                                            );
+                                        );
                                     totalVariedad_fn[variedad_fn].total_kilos +=
                                         totalEtiqueta_fn.total_kilos;
                                     totalVariedad_fn[variedad_fn].rnp_total +=
@@ -2092,67 +2165,91 @@
                             $('#fuera-norma').html(htmlOutput_fn);
 
 
-                //Comercial
-                const categoriasPermitidas_cat = ['Comercial', 'Pre Calibre', 'Desecho', 'Merma'];
+                            //Comercial
+                            const categoriasPermitidas_cat = ['Comercial', 'Pre Calibre',
+                                'Desecho', 'Merma'
+                            ];
 
-        // Objeto para agrupar por variedad y categoría
-        let datosAgrupados_cat = {};
-        let totalGeneral_cat = { total_kilos: 0, precio_total: 0, precio_kilo_sum: 0, precio_kilo_kilos: 0 };
-        let etiquetasPorVariedad_cat = {};
+                            // Objeto para agrupar por variedad y categoría
+                            let datosAgrupados_cat = {};
+                            let totalGeneral_cat = {
+                                total_kilos: 0,
+                                precio_total: 0,
+                                precio_kilo_sum: 0,
+                                precio_kilo_kilos: 0
+                            };
+                            let etiquetasPorVariedad_cat = {};
 
-        // Agrupar datos
-        let data_cat = response.result;
-        $.each(data_cat, function(index_cat, item_cat) {
-            let categoria_cat = item_cat.categoria;
-            if (categoriasPermitidas_cat.includes(categoria_cat)) {
-                let variedad_cat = item_cat.variedad;
-                let etiqueta_cat = item_cat.etiqueta || ''; // Para contar etiquetas
-                let totalKilos_cat = parseFloat(item_cat.total_kilos.replace(',', '.')) || 0;
-                let precioTotal_cat = parseFloat(item_cat.total_comercial.replace(',', '.')) || 0;
-                let precioKilo_cat = parseFloat(item_cat.precio_comercial.replace(',', '.')) || 0;
+                            // Agrupar datos
+                            let data_cat = response.result;
+                            $.each(data_cat, function(index_cat, item_cat) {
+                                let categoria_cat = item_cat.categoria;
+                                if (categoriasPermitidas_cat.includes(categoria_cat)) {
+                                    let variedad_cat = item_cat.variedad;
+                                    let etiqueta_cat = item_cat.etiqueta ||
+                                    ''; // Para contar etiquetas
+                                    let totalKilos_cat = parseFloat(item_cat.total_kilos
+                                        .replace(',', '.')) || 0;
+                                    let precioTotal_cat = parseFloat(item_cat
+                                        .total_comercial.replace(',', '.')) || 0;
+                                    let precioKilo_cat = parseFloat(item_cat
+                                        .precio_comercial.replace(',', '.')) || 0;
 
-                // Inicializar estructuras
-                if (!datosAgrupados_cat[variedad_cat]) {
-                    datosAgrupados_cat[variedad_cat] = {};
-                    etiquetasPorVariedad_cat[variedad_cat] = new Set();
-                }
-                if (!datosAgrupados_cat[variedad_cat][categoria_cat]) {
-                    datosAgrupados_cat[variedad_cat][categoria_cat] = {
-                        total_kilos: 0,
-                        precio_total: 0,
-                        precio_kilo_sum: 0,
-                        precio_kilo_kilos: 0
-                    };
-                }
-                if (etiqueta_cat) {
-                    etiquetasPorVariedad_cat[variedad_cat].add(etiqueta_cat);
-                }
+                                    // Inicializar estructuras
+                                    if (!datosAgrupados_cat[variedad_cat]) {
+                                        datosAgrupados_cat[variedad_cat] = {};
+                                        etiquetasPorVariedad_cat[variedad_cat] =
+                                            new Set();
+                                    }
+                                    if (!datosAgrupados_cat[variedad_cat][
+                                        categoria_cat]) {
+                                        datosAgrupados_cat[variedad_cat][
+                                            categoria_cat] = {
+                                                total_kilos: 0,
+                                                precio_total: 0,
+                                                precio_kilo_sum: 0,
+                                                precio_kilo_kilos: 0
+                                            };
+                                    }
+                                    if (etiqueta_cat) {
+                                        etiquetasPorVariedad_cat[variedad_cat].add(
+                                            etiqueta_cat);
+                                    }
 
-                // Acumular valores
-                datosAgrupados_cat[variedad_cat][categoria_cat].total_kilos += totalKilos_cat;
-                datosAgrupados_cat[variedad_cat][categoria_cat].precio_total += precioTotal_cat;
-                datosAgrupados_cat[variedad_cat][categoria_cat].precio_kilo_sum += precioKilo_cat * totalKilos_cat;
-                datosAgrupados_cat[variedad_cat][categoria_cat].precio_kilo_kilos += totalKilos_cat;
+                                    // Acumular valores
+                                    datosAgrupados_cat[variedad_cat][categoria_cat]
+                                        .total_kilos += totalKilos_cat;
+                                    datosAgrupados_cat[variedad_cat][categoria_cat]
+                                        .precio_total += precioTotal_cat;
+                                    datosAgrupados_cat[variedad_cat][categoria_cat]
+                                        .precio_kilo_sum += precioKilo_cat *
+                                        totalKilos_cat;
+                                    datosAgrupados_cat[variedad_cat][categoria_cat]
+                                        .precio_kilo_kilos += totalKilos_cat;
 
-                // Acumular total general
-                totalGeneral_cat.total_kilos += totalKilos_cat;
-                totalGeneral_cat.precio_total += precioTotal_cat;
-                totalGeneral_cat.precio_kilo_sum += precioKilo_cat * totalKilos_cat;
-                totalGeneral_cat.precio_kilo_kilos += totalKilos_cat;
-            }
-        });
+                                    // Acumular total general
+                                    totalGeneral_cat.total_kilos += totalKilos_cat;
+                                    totalGeneral_cat.precio_total += precioTotal_cat;
+                                    totalGeneral_cat.precio_kilo_sum += precioKilo_cat *
+                                        totalKilos_cat;
+                                    totalGeneral_cat.precio_kilo_kilos +=
+                                    totalKilos_cat;
+                                }
+                            });
 
-        // Convertir Sets a arrays y contar etiquetas
-        $.each(etiquetasPorVariedad_cat, function(variedad_cat, etiquetasSet_cat) {
-            etiquetasPorVariedad_cat[variedad_cat] = {
-                numeroEtiquetas: etiquetasSet_cat.size,
-                etiquetas: Array.from(etiquetasSet_cat)
-            };
-        });
-        console.log('Etiquetas distintas por variedad (Categorías):', etiquetasPorVariedad_cat);
+                            // Convertir Sets a arrays y contar etiquetas
+                            $.each(etiquetasPorVariedad_cat, function(variedad_cat,
+                                etiquetasSet_cat) {
+                                etiquetasPorVariedad_cat[variedad_cat] = {
+                                    numeroEtiquetas: etiquetasSet_cat.size,
+                                    etiquetas: Array.from(etiquetasSet_cat)
+                                };
+                            });
+                            console.log('Etiquetas distintas por variedad (Categorías):',
+                                etiquetasPorVariedad_cat);
 
-        // Generar HTML de la tabla
-        let htmlOutput_cat = `
+                            // Generar HTML de la tabla
+                            let htmlOutput_cat = `
 
                     <tr class="section-header">
                         <th style="text-align: center">Variedad</th>
@@ -2165,24 +2262,38 @@
 
         `;
 
-        // Ordenar variedades
-        let variedades_cat = Object.keys(datosAgrupados_cat).sort();
-        let totalVariedad_cat = {};
+                            // Ordenar variedades
+                            let variedades_cat = Object.keys(datosAgrupados_cat).sort();
+                            let totalVariedad_cat = {};
 
-        $.each(variedades_cat, function(index_cat, variedad_cat) {
-            totalVariedad_cat[variedad_cat] = { total_kilos: 0, precio_total: 0, precio_kilo_sum: 0, precio_kilo_kilos: 0 };
-            let categorias_cat = Object.keys(datosAgrupados_cat[variedad_cat]).sort();
-            let rowspanVariedad_cat = categorias_cat.length;
+                            $.each(variedades_cat, function(index_cat, variedad_cat) {
+                                totalVariedad_cat[variedad_cat] = {
+                                    total_kilos: 0,
+                                    precio_total: 0,
+                                    precio_kilo_sum: 0,
+                                    precio_kilo_kilos: 0
+                                };
+                                let categorias_cat = Object.keys(datosAgrupados_cat[
+                                    variedad_cat]).sort();
+                                let rowspanVariedad_cat = categorias_cat.length;
 
-            let isFirstVariedadRow_cat = true;
+                                let isFirstVariedadRow_cat = true;
 
-            // Iterar sobre categorías
-            $.each(categorias_cat, function(i_cat, categoria_cat) {
-                let datosCategoria_cat = datosAgrupados_cat[variedad_cat][categoria_cat];
-                let precioKilo_cat = datosCategoria_cat.precio_kilo_kilos ? (datosCategoria_cat.precio_kilo_sum / datosCategoria_cat.precio_kilo_kilos).toFixed(2) : '0.00';
-                let variedadCell_cat = isFirstVariedadRow_cat ? `<td rowspan="${rowspanVariedad_cat}">${variedad_cat}</td>` : '';
+                                // Iterar sobre categorías
+                                $.each(categorias_cat, function(i_cat, categoria_cat) {
+                                    let datosCategoria_cat = datosAgrupados_cat[
+                                        variedad_cat][categoria_cat];
+                                    let precioKilo_cat = datosCategoria_cat
+                                        .precio_kilo_kilos ? (datosCategoria_cat
+                                            .precio_kilo_sum /
+                                            datosCategoria_cat.precio_kilo_kilos
+                                            ).toFixed(2) : '0.00';
+                                    let variedadCell_cat =
+                                        isFirstVariedadRow_cat ?
+                                        `<td rowspan="${rowspanVariedad_cat}">${variedad_cat}</td>` :
+                                        '';
 
-                htmlOutput_cat += `
+                                    htmlOutput_cat += `
                     <tr>
                         ${variedadCell_cat}
                         <td style="text-align: center">${categoria_cat}</td>
@@ -2192,18 +2303,31 @@
                     </tr>
                 `;
 
-                isFirstVariedadRow_cat = false;
+                                    isFirstVariedadRow_cat = false;
 
-                // Acumular totales por variedad
-                totalVariedad_cat[variedad_cat].total_kilos += datosCategoria_cat.total_kilos;
-                totalVariedad_cat[variedad_cat].precio_total += datosCategoria_cat.precio_total;
-                totalVariedad_cat[variedad_cat].precio_kilo_sum += datosCategoria_cat.precio_kilo_sum;
-                totalVariedad_cat[variedad_cat].precio_kilo_kilos += datosCategoria_cat.precio_kilo_kilos;
-            });
+                                    // Acumular totales por variedad
+                                    totalVariedad_cat[variedad_cat]
+                                        .total_kilos += datosCategoria_cat
+                                        .total_kilos;
+                                    totalVariedad_cat[variedad_cat]
+                                        .precio_total += datosCategoria_cat
+                                        .precio_total;
+                                    totalVariedad_cat[variedad_cat]
+                                        .precio_kilo_sum += datosCategoria_cat
+                                        .precio_kilo_sum;
+                                    totalVariedad_cat[variedad_cat]
+                                        .precio_kilo_kilos += datosCategoria_cat
+                                        .precio_kilo_kilos;
+                                });
 
-            // Total por variedad
-            let precioKiloVariedad_cat = totalVariedad_cat[variedad_cat].precio_kilo_kilos ? (totalVariedad_cat[variedad_cat].precio_kilo_sum / totalVariedad_cat[variedad_cat].precio_kilo_kilos).toFixed(2) : '0.00';
-            htmlOutput_cat += `
+                                // Total por variedad
+                                let precioKiloVariedad_cat = totalVariedad_cat[
+                                        variedad_cat].precio_kilo_kilos ? (
+                                        totalVariedad_cat[variedad_cat]
+                                        .precio_kilo_sum / totalVariedad_cat[
+                                            variedad_cat].precio_kilo_kilos).toFixed(
+                                    2) : '0.00';
+                                htmlOutput_cat += `
                 <tr class="total-row">
                     <td>Total ${variedad_cat}</td>
                     <td> </td>
@@ -2212,11 +2336,13 @@
                     <td class="number">${precioKiloVariedad_cat}</td>
                 </tr>
             `;
-        });
+                            });
 
-        // Total general
-        let precioKiloGeneral_cat = totalGeneral_cat.precio_kilo_kilos ? (totalGeneral_cat.precio_kilo_sum / totalGeneral_cat.precio_kilo_kilos).toFixed(2) : '0.00';
-        htmlOutput_cat += `
+                            // Total general
+                            let precioKiloGeneral_cat = totalGeneral_cat.precio_kilo_kilos ? (
+                                totalGeneral_cat.precio_kilo_sum / totalGeneral_cat
+                                .precio_kilo_kilos).toFixed(2) : '0.00';
+                            htmlOutput_cat += `
             <tr class="total-row">
                 <td>Total general</td>
                 <td> </td>
@@ -2228,9 +2354,9 @@
 
 
 
-        // Insertar el HTML en el contenedor
-        $('#comercial').html(htmlOutput_cat);
-                //Comercial
+                            // Insertar el HTML en el contenedor
+                            $('#comercial').html(htmlOutput_cat);
+                            //Comercial
 
                         },
                         error: function(xhr, status, error) {
