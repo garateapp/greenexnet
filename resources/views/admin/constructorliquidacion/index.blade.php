@@ -593,7 +593,7 @@
 
                                 // Iterar sobre los datos obtenidos
                                 $.each(response.result, function(index, item) {
-                                    let categoria = item.categoria.replace(" ", "");
+                                    let categoria = item.categoria.replace(" ", "").toUpperCase();
 
                                     // Convertir los valores a números, manejando comas como separador decimal
                                     let resultadoKilo = parseFloat(item.resultado_kilo
