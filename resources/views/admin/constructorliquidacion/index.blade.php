@@ -187,7 +187,7 @@
                                                     <td>US$</td>
                                                     <td class="currency" id="suma-CAT-1"></td>
                                                 </tr>
-                                                <tr>
+                                                <tr style="display: none;" id="trCATII">
                                                     <td colspan="5">Total venta exportación temporada 2024-2025
                                                     </td>
                                                     <td>CAT 2</td>
@@ -260,7 +260,7 @@
                                                 <!-- Nota de Débito y Factura -->
                                                 <tr>
                                                     <td colspan="4">&nbsp;</td>
-                                                    <td colspan="2" id="fecha_tipo_cambio">TC 28-04-2025</td>
+                                                    <td colspan="2" id="fecha_tipo_cambio">TC 30-06-2025</td>
                                                     <td colspan="1">$</td>
                                                     <td class="currency" id="TC"></td>
                                                 </tr>
@@ -268,7 +268,7 @@
                                                     <td colspan="8">NOTA DE DÉBITO</td>
                                                 </tr>
                                                 <tr>
-                                                    <td colspan="5">Ajuste final cerezas exportación</td>
+                                                    <td colspan="5">Ajuste final exportación</td>
                                                     <td>Neto</td>
                                                     <td>$</td>
                                                     <td class="currency" id="NDVAlorNeto"></td>
@@ -290,7 +290,7 @@
                                                     <td colspan="8">FACTURA</td>
                                                 </tr>
                                                 <tr>
-                                                    <td colspan="5">Cerezas comercial</td>
+                                                    <td colspan="5">Comercial</td>
                                                     <td>Neto</td>
                                                     <td>$</td>
                                                     <td class="currency" id="FVAlorNeto"></td>
@@ -594,7 +594,7 @@
                                 // Iterar sobre los datos obtenidos
                                 $.each(response.result, function(index, item) {
                                     let categoria = item.categoria.replace(" ", "").toUpperCase();
-                                    if(item.categoria.replace(" ", "").toUpperCase()=="SUPERMERCADO") {
+                                    if(categoria=="SUPERMERCADO") {
                                         categoria='CAT1';
                                     }
 
