@@ -974,8 +974,8 @@
                             <td>${variedadCell}</td>
                             <td>${categoriaCell}</td>
                             <td>${fila.norma || ' '}</td>
-                            <td class="number">${cajasEquivalentes}</td>
-                            <td class="number">${fila.total_kilos.toFixed(2)}</td>
+                            <td class="number">${formatInteger(cajasEquivalentes)}</td>
+                            <td class="number">${formatInteger(fila.total_kilos.toFixed(0))}</td>
                         </tr>
                     `;
                                                 isFirstRow = false;
@@ -1001,8 +1001,8 @@
                     <td>Total ${variedad}</td>
                     <td> </td>
                     <td> </td>
-                    <td class="number">${totalVariedad.cajas_equivalentes.toFixed(1)}</td>
-                    <td class="number">${totalVariedad.total_kilos.toFixed(2)}</td>
+                    <td class="number">${formatInteger(totalVariedad.cajas_equivalentes.toFixed(1))}</td>
+                    <td class="number">${formatInteger(totalVariedad.total_kilos.toFixed(2))}</td>
                 </tr>
             `;
 
@@ -1022,8 +1022,8 @@
                 <td> </td>
                 <td> </td>
                 <td> </td>
-                <td class="number">${totalGeneral.cajas_equivalentes.toFixed(1)}</td>
-                <td class="number">${totalGeneral.total_kilos.toFixed(2)}</td>
+                <td class="number">${formatInteger(totalGeneral.cajas_equivalentes.toFixed(1))}</td>
+                <td class="number">${formatInteger(totalGeneral.total_kilos.toFixed(0))}</td>
             </tr>
         `;
 
