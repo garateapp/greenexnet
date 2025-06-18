@@ -1019,6 +1019,7 @@
                 <td>Total general</td>
                 <td> </td>
                 <td> </td>
+                <td> </td>
                 <td class="number">${totalGeneral.cajas_equivalentes.toFixed(1)}</td>
                 <td class="number">${totalGeneral.total_kilos.toFixed(2)}</td>
             </tr>
@@ -2381,6 +2382,7 @@
                             // Insertar el HTML en el contenedor
                             $('#comercial').html(htmlOutput_cat);
                             //Comercial
+                        llenarNorma(response);
 
                         },
                         error: function(xhr, status, error) {
@@ -2402,7 +2404,242 @@
                     });
                 }
             });
+            function llenarNorma(response) {
+    // Definir orden de calibres
+    const ordenCalibres = ['7J', '6J', '5J', '4J', '3J', '2J', 'J', 'XL'];
 
+    // Objeto para agrupar por especie, variedad y etiqueta
+    let datosAgrupadosNorma = {};
+    let totalGeneralNorma = {
+        cajas_equivalentes: 0,
+        total_kilos: 0,
+        rnp_total: 0,
+        rnp_kilo_sum: 0,
+        rnp_kilo_kilos: 0
+    };
+
+    // Agrupar datos por especie, variedad y etiqueta
+    $.each(response.result, function(index, item) {
+        if (item.norma.toUpperCase() === 'CAT 1') {
+            let variedad = item.variedad;
+            let etiqueta = item.etiqueta;
+            let calibre = item.calibre;
+            let especie = item.especie.nombre;
+
+            // Renombrar especies según normativa
+            switch (especie) {
+                case "Plums":
+                    especie = "Ciruela";
+                    break;
+                case "Nectarines":
+                    especie = "Nectarín";
+                    break;
+                case "Peaches":
+                    especie = "Durazno";
+                    break;
+            }
+
+            let totalKilos = parseFloat(item.total_kilos.replace(',', '.')) || 0;
+            let rnpTotal = parseFloat(item.resultado_total.replace(',', '.')) || 0;
+            let rnpKilo = parseFloat(item.resultado_kilo.replace(',', '.')) || 0;
+
+            if (!datosAgrupadosNorma[especie]) {
+                datosAgrupadosNorma[especie] = {};
+            }
+            if (!datosAgrupadosNorma[especie][variedad]) {
+                datosAgrupadosNorma[especie][variedad] = {};
+            }
+            if (!datosAgrupadosNorma[especie][variedad][etiqueta]) {
+                datosAgrupadosNorma[especie][variedad][etiqueta] = {
+                    calibres: {},
+                    total_kilos: 0,
+                    rnp_total: 0,
+                    rnp_kilo_sum: 0,
+                    rnp_kilo_kilos: 0
+                };
+            }
+            if (!datosAgrupadosNorma[especie][variedad][etiqueta].calibres[calibre]) {
+                datosAgrupadosNorma[especie][variedad][etiqueta].calibres[calibre] = {
+                    total_kilos: 0,
+                    rnp_total: 0,
+                    rnp_kilo: 0
+                };
+            }
+
+            datosAgrupadosNorma[especie][variedad][etiqueta].calibres[calibre].total_kilos += totalKilos;
+            datosAgrupadosNorma[especie][variedad][etiqueta].calibres[calibre].rnp_total += rnpTotal;
+            datosAgrupadosNorma[especie][variedad][etiqueta].calibres[calibre].rnp_kilo += rnpKilo;
+
+            datosAgrupadosNorma[especie][variedad][etiqueta].total_kilos += totalKilos;
+            datosAgrupadosNorma[especie][variedad][etiqueta].rnp_total += rnpTotal;
+            datosAgrupadosNorma[especie][variedad][etiqueta].rnp_kilo_sum += rnpKilo * totalKilos;
+            datosAgrupadosNorma[especie][variedad][etiqueta].rnp_kilo_kilos += totalKilos;
+        }
+    });
+
+    // Generar HTML de la tabla
+    let htmlOutput = `
+        <table>
+            <thead>
+                <tr class="section-header">
+                    <th>Especie</th>
+                    <th>Variedad</th>
+                    <th>Etiqueta</th>
+                    <th>Serie</th>
+                    <th>Curva Calibre</th>
+                    <th>Cajas Equivalentes</th>
+                    <th>Kilos Totales</th>
+                    <th>RNP Total</th>
+                    <th>RNP Kilo</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    // Ordenar especies y variedades
+    let especies = Object.keys(datosAgrupadosNorma).sort();
+    let totalPorVariedad = {};
+
+    $.each(especies, function(i_especie, especie) {
+        let variedades = Object.keys(datosAgrupadosNorma[especie]).sort();
+
+        $.each(variedades, function(i_variedad, variedad) {
+            let etiquetas = Object.keys(datosAgrupadosNorma[especie][variedad]).sort();
+            let rowspanVariedad = 0;
+
+            // Calcular rowspan total por variedad
+            $.each(etiquetas, function(i_etiqueta, etiqueta) {
+                let calibres = Object.keys(datosAgrupadosNorma[especie][variedad][etiqueta].calibres);
+                rowspanVariedad += calibres.length;
+            });
+
+            let isFirstVariedadRow = true;
+            let totalVariedad = {
+                cajas_equivalentes: 0,
+                total_kilos: 0,
+                rnp_total: 0,
+                rnp_kilo_sum: 0,
+                rnp_kilo_kilos: 0
+            };
+
+            $.each(etiquetas, function(i_etiqueta, etiqueta) {
+                let datosEtiqueta = datosAgrupadosNorma[especie][variedad][etiqueta];
+                let calibres = Object.keys(datosEtiqueta.calibres).sort((a, b) =>
+                    ordenCalibres.indexOf(a) - ordenCalibres.indexOf(b)
+                );
+                let rowspanEtiqueta = calibres.length;
+                let isFirstEtiquetaRow = true;
+
+                $.each(calibres, function(i_calibre, calibre) {
+                    let datosCalibre = datosEtiqueta.calibres[calibre];
+
+                    let curvaCalibre = datosEtiqueta.total_kilos ?
+                        (datosCalibre.total_kilos / datosEtiqueta.total_kilos).toFixed(4) : '0.0000';
+                    let cajasEquivalentes = (datosCalibre.total_kilos / 9).toFixed(0);
+
+                    let rnpKilo = datosCalibre.rnp_kilo.toFixed(4);
+                    let rnpClass = datosCalibre.rnp_total < 0 || datosCalibre.rnp_kilo < 0 ? 'negative' : '';
+
+                    let especieCell = i_variedad === 0 && i_etiqueta === 0 && i_calibre === 0 ?
+                        `<td>${especie}</td>` : '';
+                    let variedadCell = isFirstEtiquetaRow && i_calibre === 0 ?
+                        `<td>${variedad}</td>` : '';
+                    let etiquetaCell = isFirstEtiquetaRow && i_calibre === 0 ?
+                        `<td>${etiqueta}</td>` : '';
+
+                    htmlOutput += `
+                        <tr>
+                            ${especieCell}
+                            ${variedadCell}
+                            ${etiquetaCell}
+                            <td>${calibre}</td>
+                            <td class="number">${curvaCalibre}</td>
+                            <td class="number">${cajasEquivalentes}</td>
+                            <td class="number">${datosCalibre.total_kilos.toFixed(2)}</td>
+                            <td class="number ${rnpClass}">${datosCalibre.rnp_total.toFixed(2)}</td>
+                            <td class="number ${rnpClass}">${rnpKilo}</td>
+                        </tr>
+                    `;
+
+                    isFirstEtiquetaRow = false;
+                    isFirstVariedadRow = false;
+
+                    // Acumular totales
+                    totalVariedad.cajas_equivalentes += parseFloat(cajasEquivalentes);
+                    totalVariedad.total_kilos += datosCalibre.total_kilos;
+                    totalVariedad.rnp_total += datosCalibre.rnp_total;
+                    totalVariedad.rnp_kilo_sum += datosCalibre.rnp_kilo * datosCalibre.total_kilos;
+                    totalVariedad.rnp_kilo_kilos += datosCalibre.total_kilos;
+                });
+
+                // Fila de total por etiqueta
+                let rnpKiloEtiqueta = datosEtiqueta.rnp_kilo_kilos ?
+                    (datosEtiqueta.rnp_kilo_sum / datosEtiqueta.rnp_kilo_kilos).toFixed(4) : '0.0000';
+                let cajasEtiqueta = (datosEtiqueta.total_kilos / 9).toFixed(0);
+                let rnpClassEtiqueta = datosEtiqueta.rnp_total < 0 || parseFloat(rnpKiloEtiqueta) < 0 ? 'negative' : '';
+
+                htmlOutput += `
+                    <tr class="total-row">
+                        <td colspan="2">Total ${etiqueta}</td>
+                        <td></td>
+                        <td class="number">1.0000</td>
+                        <td class="number">${cajasEtiqueta}</td>
+                        <td class="number">${datosEtiqueta.total_kilos.toFixed(2)}</td>
+                        <td class="number ${rnpClassEtiqueta}">${datosEtiqueta.rnp_total.toFixed(2)}</td>
+                        <td class="number ${rnpClassEtiqueta}">${rnpKiloEtiqueta}</td>
+                    </tr>
+                `;
+            });
+
+            // Fila de total por variedad
+            let rnpKiloVariedad = totalVariedad.rnp_kilo_kilos ?
+                (totalVariedad.rnp_kilo_sum / totalVariedad.rnp_kilo_kilos).toFixed(4) : '0.0000';
+            let rnpClassVariedad = totalVariedad.rnp_total < 0 || parseFloat(rnpKiloVariedad) < 0 ? 'negative' : '';
+
+            htmlOutput += `
+                <tr class="total-row">
+                    <td>Total ${variedad}</td>
+                    <td></td>
+                    <td></td>
+                    <td class="number">1.0000</td>
+                    <td class="number">${totalVariedad.cajas_equivalentes.toFixed(0)}</td>
+                    <td class="number">${totalVariedad.total_kilos.toFixed(2)}</td>
+                    <td class="number ${rnpClassVariedad}">${totalVariedad.rnp_total.toFixed(2)}</td>
+                    <td class="number ${rnpClassVariedad}">${rnpKiloVariedad}</td>
+                </tr>
+            `;
+
+            // Acumular al total general
+            totalGeneralNorma.cajas_equivalentes += totalVariedad.cajas_equivalentes;
+            totalGeneralNorma.total_kilos += totalVariedad.total_kilos;
+            totalGeneralNorma.rnp_total += totalVariedad.rnp_total;
+            totalGeneralNorma.rnp_kilo_sum += totalVariedad.rnp_kilo_sum;
+            totalGeneralNorma.rnp_kilo_kilos += totalVariedad.rnp_kilo_kilos;
+        });
+    });
+
+    // Fila de total general
+    let rnpKiloGeneral = totalGeneralNorma.rnp_kilo_kilos ?
+        (totalGeneralNorma.rnp_kilo_sum / totalGeneralNorma.rnp_kilo_kilos).toFixed(4) : '0.0000';
+    let rnpClassGeneral = totalGeneralNorma.rnp_total < 0 || parseFloat(rnpKiloGeneral) < 0 ? 'negative' : '';
+
+    htmlOutput += `
+                <tr class="total-row">
+                    <td>Total General</td>
+                    <td></td>
+                    <td></td>
+                    <td class="number">1.0000</td>
+                    <td class="number">${totalGeneralNorma.cajas_equivalentes.toFixed(0)}</td>
+                    <td class="number">${totalGeneralNorma.total_kilos.toFixed(2)}</td>
+                    <td class="number ${rnpClassGeneral}">${totalGeneralNorma.rnp_total.toFixed(2)}</td>
+                    <td class="number ${rnpClassGeneral}">${rnpKiloGeneral}</td>
+                </tr>
+            </tbody>
+        </table>
+    `;
+
+    $('#normaContent').html(htmlOutput); // Insertar en contenedor
+}
 
         });
     </script>
