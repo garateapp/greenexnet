@@ -2039,12 +2039,12 @@
                                 let datosCalibre = datosEtiqueta.calibres[calibre];
 
                                 let curvaCalibre = datosEtiqueta.total_kilos ?
-                                    (datosCalibre.total_kilos / datosEtiqueta
-                                        .total_kilos).toFixed(4) : '0.0000';
+                                    (((datosCalibre.total_kilos / datosEtiqueta
+                                        .total_kilos).toFixed(4))*100 : '0.0000') + '%';
                                 let cajasEquivalentes = (datosCalibre.total_kilos /
                                     9).toFixed(0);
 
-                                let rnpKilo = datosCalibre.rnp_kilo.toFixed(4);
+                                let rnpKilo = datosCalibre.rnp_kilo.toFixed(2);
                                 let rnpClass = datosCalibre.rnp_total < 0 ||
                                     datosCalibre.rnp_kilo < 0 ? 'negative' : '';
 
@@ -2066,9 +2066,9 @@
                             <td>${calibre}</td>
                             <td class="number">${curvaCalibre}</td>
                             <td class="number">${cajasEquivalentes}</td>
-                            <td class="number">${datosCalibre.total_kilos.toFixed(2)}</td>
-                            <td class="number ${rnpClass}">${datosCalibre.rnp_total.toFixed(2)}</td>
-                            <td class="number ${rnpClass}">${rnpKilo}</td>
+                            <td class="number">${formatInteger(datosCalibre.total_kilos.toFixed(0))}</td>
+                            <td class="number ${rnpClass}">${formatCurrency(datosCalibre.rnp_total.toFixed(2))}</td>
+                            <td class="number ${rnpClass}">${formatCurrency(rnpKilo)}</td>
                         </tr>
                     `;
 
@@ -2095,6 +2095,7 @@
                             let rnpClassEtiqueta = datosEtiqueta.rnp_total < 0 ||
                                 parseFloat(rnpKiloEtiqueta) < 0 ? 'negative' : '';
 
+
                             htmlOutput += `
                     <tr class="total-row">
                         <td></td>
@@ -2103,9 +2104,9 @@
                         <td></td>
                         <td class="number">1.0000</td>
                         <td class="number">${cajasEtiqueta}</td>
-                        <td class="number">${datosEtiqueta.total_kilos.toFixed(2)}</td>
-                        <td class="number ${rnpClassEtiqueta}">${datosEtiqueta.rnp_total.toFixed(2)}</td>
-                        <td class="number ${rnpClassEtiqueta}">${rnpKiloEtiqueta}</td>
+                        <td class="number">${formatInteger(datosEtiqueta.total_kilos.toFixed(2))}</td>
+                        <td class="number ${rnpClassEtiqueta}">${formatCurrency(datosEtiqueta.rnp_total.toFixed(2))}</td>
+                        <td class="number ${rnpClassEtiqueta}">${formatCurrency(rnpKiloEtiqueta)}</td>
                     </tr>
                 `;
                         });
@@ -2125,10 +2126,10 @@
                     <td></td>
                     <td></td>
                     <td class="number">1.0000</td>
-                    <td class="number">${totalVariedad.cajas_equivalentes.toFixed(0)}</td>
-                    <td class="number">${totalVariedad.total_kilos.toFixed(2)}</td>
-                    <td class="number ${rnpClassVariedad}">${totalVariedad.rnp_total.toFixed(2)}</td>
-                    <td class="number ${rnpClassVariedad}">${rnpKiloVariedad}</td>
+                    <td class="number">${formatInteger(totalVariedad.cajas_equivalentes.toFixed(0))}</td>
+                    <td class="number">${formatInteger(totalVariedad.total_kilos.toFixed(0))}</td>
+                    <td class="number ${rnpClassVariedad}">${formatCurrency(totalVariedad.rnp_total.toFixed(2))}</td>
+                    <td class="number ${rnpClassVariedad}">${formatCurrency(rnpKiloVariedad)}</td>
                 </tr>
             `;
 
@@ -2154,10 +2155,10 @@
                     <td></td>
                     <td></td>
                     <td class="number">1.0000</td>
-                    <td class="number">${totalGeneralNorma.cajas_equivalentes.toFixed(0)}</td>
-                    <td class="number">${totalGeneralNorma.total_kilos.toFixed(2)}</td>
-                    <td class="number ${rnpClassGeneral}">${totalGeneralNorma.rnp_total.toFixed(2)}</td>
-                    <td class="number ${rnpClassGeneral}">${rnpKiloGeneral}</td>
+                    <td class="number">${formatCurrency(totalGeneralNorma.cajas_equivalentes.toFixed(0))}</td>
+                    <td class="number">${formatInteger(totalGeneralNorma.total_kilos.toFixed(0))}</td>
+                    <td class="number ${rnpClassGeneral}">${formatCurrency(totalGeneralNorma.rnp_total.toFixed(2))}</td>
+                    <td class="number ${rnpClassGeneral}">${formatCurrency(rnpKiloGeneral)}</td>
                 </tr>
             </tbody>
         </table>
@@ -2293,9 +2294,9 @@
                         ${especieCell}
                         ${variedadCell}
                         <td style="text-align:center">${categoria}</td>
-                        <td class="number">${datosCategoria.total_kilos.toFixed(2)}</td>
-                        <td class="number">${datosCategoria.precio_total.toFixed(2)}</td>
-                        <td class="number">${precioKilo}</td>
+                        <td class="number">${formatInteger(datosCategoria.total_kilos.toFixed(0))}</td>
+                        <td class="number">${formatCurrency(datosCategoria.precio_total.toFixed(2))}</td>
+                        <td class="number">${formatCurrency(precioKilo)}</td>
                     </tr>
                 `;
 
@@ -2317,9 +2318,9 @@
                 <tr class="total-row">
                     <td>Total ${variedad}</td>
                     <td></td>
-                    <td class="number">${totalVariedad.total_kilos.toFixed(2)}</td>
-                    <td class="number">${totalVariedad.precio_total.toFixed(2)}</td>
-                    <td class="number">${precioKiloVariedad}</td>
+                    <td class="number">${formatInteger(totalVariedad.total_kilos.toFixed(0))}</td>
+                    <td class="number">${formatCurrency(totalVariedad.precio_total.toFixed(2))}</td>
+                    <td class="number">${formatCurrency(precioKiloVariedad)}</td>
                 </tr>
             `;
                     });
@@ -2334,9 +2335,9 @@
                     <td>Total general</td>
                     <td></td>
                     <td></td>
-                    <td class="number">${totalGeneral.total_kilos.toFixed(2)}</td>
-                    <td class="number">${totalGeneral.precio_total.toFixed(2)}</td>
-                    <td class="number">${precioKiloGeneral}</td>
+                    <td class="number">${formatInteger(totalGeneral.total_kilos.toFixed(0))}</td>
+                    <td class="number">${formatCurrency(totalGeneral.precio_total.toFixed(2))}</td>
+                    <td class="number">${formatCurrency(precioKiloGeneral)}</td>
                 </tr>
             </tbody>
         </table>
@@ -2344,6 +2345,17 @@
 
                 $('#comercial').html(htmlOutput);
             }
+            function formatCurrency(value) {
+            return parseFloat(value).toLocaleString('es-CL', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+             function formatInteger(value) {
+            return parseFloat(value).toLocaleString('es-CL', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
 
         });
     </script>
