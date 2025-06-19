@@ -2684,7 +2684,7 @@
 
                 // Función principal para generar todos los gráficos
                 function generateCharts(data) {
-                    const groupedData = groupByProducerAndVariety(data);
+                    const groupedData = data;
                     groupedData.forEach(group => {
                         createChart(group.productor, group.variedad, group.data);
                     });
