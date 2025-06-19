@@ -97,34 +97,50 @@ use CsvImportTrait;
         $especie= Especy::pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
         return view('admin.constructorliquidacion.index', compact('productors', 'temporada', 'especie'));
     }
- public function generatepdf(Request $request)
+  public function generatepdf(Request $request)
 {
+    // Validar entrada
     $request->validate([
         'tabs' => 'required|array',
+        'tabs.*.name' => 'required|string',
+        'tabs.*.html' => 'required|string',
         'chartImages' => 'nullable|array'
     ]);
 
-    $tabs = $request->input('tabs');
+    // Procesar pestañas
+    $tabs = $request->input('tabs', []);
     $chartImages = $request->input('chartImages', []);
 
+    \Log::info("Gráficos recibidos:", ['chartImages' => count($chartImages)]);
+
+    // Datos para la vista
     $data = [
         'tabs' => $tabs,
-        'chartImages' => $chartImages,
+        //'chartImages' => $chartImages,
         'logo_path' => public_path('storage/cabecera_pdf.jpg'),
         'footer_path' => public_path('storage/footer_pdf.jpg'),
     ];
 
-    $pdf = PDF::loadView('admin.constructorliquidacion.tabs', $data)
-        ->setPaper('a4', 'portrait');
-    $pdf->setOptions([
-        'isHtml5ParserEnabled' => true,
-        'isRemoteEnabled' => true,
-        'isPhpEnabled' => true,
-            'dpi' => 200,
-            'defaultFont' => 'Arial',
-            'chroot' => base_path(), // Allow access to entire project
-    ]);
-    return $pdf->stream("Liquidación-" . now()->format('Y-m-d') . ".pdf");
+    // Generar PDF
+    $snappy = new Pdf('/usr/bin/wkhtmltopdf');
+
+    $html = view('admin.constructorliquidacion.tabs', $data)->render();
+
+    $productor = Productor::find($request->input('productor_id'));
+
+    return response($snappy->getOutputFromHtml($html, [
+        'orientation' => 'Portrait',
+        'page-size' => 'A4',
+        'margin-top' => '10mm',
+        'margin-bottom' => '10mm',
+        'margin-left' => '10mm',
+        'margin-right' => '10mm',
+        'dpi' => 150,
+        'enable-local-file-access' => true,
+        'no-stop-slow-scripts' => true
+    ]))->header('Content-Type', 'application/pdf')
+      ->header('Content-Disposition', 'inline; filename="Liquidacion-' . $productor->nombre . '-' . date('Y-m-d') . '.pdf"');
 }
+
 
 }
