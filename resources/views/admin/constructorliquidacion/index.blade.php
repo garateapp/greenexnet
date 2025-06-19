@@ -2611,7 +2611,7 @@
                             }
                         ],
                         title: {
-                            text: `${productor} - ${variedad}`,
+                            text: `${especie} - ${variedad}`,
                             align: 'center'
                         },
                         stroke: {
@@ -2673,7 +2673,7 @@
                         }
                     };
 
-                    const chartId = `chart_${productor}_${variedad}`.replace(/ /g, '_').replace(/[^a-zA-Z0-9_]/g,
+                    const chartId = `chart_${especie}_${variedad}`.replace(/ /g, '_').replace(/[^a-zA-Z0-9_]/g,
                         '');
                     $('#charts').append(`<div class="chart-container" id="${chartId}"></div>`);
 
