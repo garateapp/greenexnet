@@ -2234,10 +2234,10 @@
 
                             if(!groupedDataChart[variedad]) {
                                 groupedDataChart[variedad] = {
-                                    especie=especie,
-                                    variedad=variedad,
-                                    etiqueta=etiqueta,
-                                    calibre=calibre,
+                                    especie:especie,
+                                    variedad:variedad,
+                                    etiqueta:etiqueta,
+                                    calibre:calibre,
                                     curvaCalibre: curvaCalibre,
                                     rnp_kilo: rnpKilo,
                                 };
