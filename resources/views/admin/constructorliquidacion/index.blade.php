@@ -692,27 +692,29 @@
                                         minimumFractionDigits: 2,
                                         maximumFractionDigits: 2
                                     }));
-                                    valorNoExportable = parseFloat(sumasPorCategoria['Merma']
+                                    valorNoExportable = parseFloat(sumasPorCategoria['MERMA']
                                             .costo_comercial) +
-                                        parseFloat(sumasPorCategoria['Desecho']
+                                        parseFloat(sumasPorCategoria['DESECHO']
                                         .costo_comercial) +
                                         parseFloat(
-                                            sumasPorCategoria['Precalibre'].costo_comercial) +
+                                            sumasPorCategoria['PRECALIBRE'].costo_comercial) +
                                         parseFloat(
-                                            sumasPorCategoria['Comercial'].costo_comercial);
+                                            sumasPorCategoria['COMERCIAL'].costo_comercial) +
+                                        parseFloat(sumasPorCategoria['SOBRECALIBRE'].costo_comercial);
                                     $("#valorNoExportable").text(valorNoExportable
                                         .toLocaleString(
                                             'es-CL', {
                                                 minimumFractionDigits: 2,
                                                 maximumFractionDigits: 2
                                             }));
-                                    kilosNoExportable = parseFloat(sumasPorCategoria['Merma']
+                                    kilosNoExportable = parseFloat(sumasPorCategoria['MERMA']
                                             .total_kilos) +
-                                        parseFloat(sumasPorCategoria['Desecho'].total_kilos) +
+                                        parseFloat(sumasPorCategoria['DESECHO'].total_kilos) +
                                         parseFloat(
-                                            sumasPorCategoria['Precalibre'].total_kilos) +
+                                            sumasPorCategoria['PRECALIBRE'].total_kilos) +
                                         parseFloat(
-                                            sumasPorCategoria['Comercial'].total_kilos);
+                                            sumasPorCategoria['COMERCIAL'].total_kilos)+
+                                        parseFloat(sumasPorCategoria['SOBRECALIBRE'].total_kilos);
                                     $("#kilosNoExportable").text(kilosNoExportable
                                         .toLocaleString(
                                             'es-CL', {
