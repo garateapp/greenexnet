@@ -679,7 +679,9 @@
                                     });
 
                                     $.each(sumasPorCategoria, function(categoria, sumas) {
-
+                                        console.log(
+                                            `Categoría: ${categoria}, Resultado Kilo: ${sumas.resultado_kilo}, Resultado Total: ${sumas.resultado_total}, Total Comercial: ${sumas.total_comercial}, Total Kilos: ${sumas.total_kilos}, Costo Comercial: ${sumas.costo_comercial}`
+                                        );
                                     });
 
                                     valorTotal = parseFloat(sumasPorCategoria['CAT1']
@@ -2197,7 +2199,7 @@
                             ${variedadCell}
                             ${etiquetaCell}
                             <td>${calibre}</td>
-                            <td class="number">${curvaCalibre}</td>
+                            <td class="number">${formatCurrency(curvaCalibre)}</td>
                             <td class="number">${cajasEquivalentes}</td>
                             <td class="number">${formatInteger(datosCalibre.total_kilos.toFixed(0))}</td>
                             <td class="number ${rnpClass}">${formatCurrency(datosCalibre.rnp_total.toFixed(2))}</td>
