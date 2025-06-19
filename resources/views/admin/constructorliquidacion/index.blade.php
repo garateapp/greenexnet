@@ -505,8 +505,8 @@
                             name: 'Norma'
                         },
                         {
-                            id: '#NormaSemana',
-                            name: 'Norma Con Semana'
+                            id: '#Graficos',
+                            name: 'Gráficos'
                         },
                         {
                             id: '#FueraNorma',

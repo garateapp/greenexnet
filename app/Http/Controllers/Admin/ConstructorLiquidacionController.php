@@ -129,8 +129,12 @@ use CsvImportTrait;
             'footer_path' => public_path('storage/footer_pdf.jpg'),
         ];
 
-        $snappy_pdf = new Pdf('C:\\wkhtmltopdf\\bin\\wkhtmltopdf'); // Adjust path
+        //$snappy_pdf = new Pdf('C:\\wkhtmltopdf\\bin\\wkhtmltopdf'); // Adjust path
+
+        $snappy_pdf= new Pdf('/usr/bin/wkhtmltopdf');
+
         $html_pdf = view('admin.constructorliquidacion.tabs', $data_pdf)->render();
+
 
         return response($snappy_pdf->getOutputFromHtml($html_pdf, [
             'orientation' => 'Portrait',
