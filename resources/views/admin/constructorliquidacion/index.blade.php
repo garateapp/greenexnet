@@ -2542,25 +2542,7 @@
                     });
                 }
 
-                function groupByProducerAndVariety(data) {
-                    const grouped = {};
-                    data.forEach(item => {
-                        const key = `${item.variedad}`;
-                        if (!grouped[key]) {
-                            grouped[key] = {
 
-                                variedad: item.variedad,
-                                data: []
-                            };
-                        }
-                        grouped[key].data.push({
-                            calibre: item.calibre,
-                            curvacalibre: parseFloat(item.curvacalibre),
-                            rnp_kilo: parseFloat(item.rnp_kilo)
-                        });
-                    });
-                    return Object.values(grouped);
-                }
 
                 // Función para calcular el promedio de rnp_kilo
                 function calculateAverageRnpKilo(data) {
