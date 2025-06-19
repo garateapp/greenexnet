@@ -116,7 +116,14 @@ use CsvImportTrait;
 
     $pdf = PDF::loadView('admin.constructorliquidacion.tabs', $data)
         ->setPaper('a4', 'portrait');
-
+    $pdf->setOptions([
+        'isHtml5ParserEnabled' => true,
+        'isRemoteEnabled' => true,
+        'isPhpEnabled' => true,
+            'dpi' => 200,
+            'defaultFont' => 'Arial',
+            'chroot' => base_path(), // Allow access to entire project
+    ]);
     return $pdf->stream("Liquidación-" . now()->format('Y-m-d') . ".pdf");
 }
 

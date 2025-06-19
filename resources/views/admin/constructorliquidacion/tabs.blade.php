@@ -5,87 +5,50 @@
     <meta charset="UTF-8">
     <title>Liquidación</title>
     <style>
+         <style>
+       @page {
+            margin: 80px 20px 80px 20px; /* Adjust margins to accommodate header/footer */
+        }
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            font-size: 10px;
         }
-
-        table {
+        .header, .footer {
+            position: fixed;
+            left: 0;
+            right: 0;
             width: 100%;
-            border-collapse: collapse;
-            break-inside: avoid;
         }
-
-        th,
-        td {
-            border: 1px solid #000;
-            padding: 4px 6px;
-            text-align: left;
-            vertical-align: middle;
+        .header {
+            top: -60px; /* Adjust to fit within margin */
+            height: 60px;
         }
-
-        thead {
-            display: table-header-group;
+        .footer {
+            bottom: -60px; /* Adjust to fit within margin */
+            height: 60px;
         }
-
-        tbody {
-            display: table-row-group;
+        .header img, .footer img {
+            width: 100%;
+            height: auto;
         }
-
-        tr {
-            break-inside: avoid;
+        .page {
+            page-break-after: always;
+            margin-top: 80px; /* Space for header */
+            margin-bottom: 80px; /* Space for footer */
         }
-
-        .section-header {
-            background-color: #f2f2f2;
-            font-weight: bold;
+        .chart-container {
+            margin: 20px 0;
             text-align: center;
         }
-
-        .total-row {
-            font-weight: bold;
-            background-color: #e0e0e0;
-        }
-
-        .number {
-            text-align: right;
-        }
-
-        .negative {
-            color: red;
-        }
-
-        .table-title {
-            text-align: center;
-            font-weight: bold;
-            margin-bottom: 10px;
-            font-size: 12px;
-        }
-
-        img {
+        .chart-container img {
             max-width: 100%;
             height: auto;
         }
-
-        .tab-content {
-            page-break-before: always;
-            break-before: always;
-        }
-
-        .header {
+        h2 {
             text-align: center;
-            font-size: 10px;
+            font-size: 18pt;
         }
-
-        .footer {
-            text-align: center;
-            font-size: 10px;
-        }
-
-        @page {
-            margin: 40mm 10mm 40mm 10mm;
-        }
+    </style>
     </style>
 </head>
 
