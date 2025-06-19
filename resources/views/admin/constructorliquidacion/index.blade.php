@@ -13,11 +13,11 @@
         }
 
         /* th,
-                                                            td {
-                                                                border: 1px solid #dddddd;
-                                                                padding: 8px;
-                                                                text-align: left;
-                                                            } */
+                                                                td {
+                                                                    border: 1px solid #dddddd;
+                                                                    padding: 8px;
+                                                                    text-align: left;
+                                                                } */
 
         .currency {
             text-align: right;
@@ -565,7 +565,8 @@
                                 let filename = 'Liquidación.pdf';
 
                                 if (disposition && disposition.indexOf('filename=') !== -1) {
-                                    const matches = /filename="?([^"]+)"?/exec(disposition);
+                                    const filenameRegex = new RegExp('filename="?([^"]+)"?', 'i');
+                                    const matches = filenameRegex.exec(disposition);
                                     if (matches && matches[1]) {
                                         filename = matches[1];
                                     }
