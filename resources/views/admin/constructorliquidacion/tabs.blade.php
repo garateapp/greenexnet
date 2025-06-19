@@ -131,6 +131,8 @@
 </head>
 
 <body>
+
+
     <!-- Footer -->
 
 
@@ -140,6 +142,7 @@
             <!-- Header -->
 
             <div class="tab-content">
+                <!-- Header -->
                 <div class="header">
                     @php
                         $headerImagePath = public_path('/img/cabecera_pdf.jpg');
@@ -150,6 +153,7 @@
                         <p class="error">Header image not found: {{ $headerImagePath }}</p>
                     @endif
                 </div>
+
                 {!! $tab['html'] !!}
                 <!-- Footer -->
                 <div class="footer">
@@ -162,14 +166,15 @@
                         <p class="error">Footer image not found: {{ $footerImagePath }}</p>
                     @endif
                 </div>
+
             </div>
-            {{-- @foreach ($chartImages as $chart)
+            @foreach ($chartImages as $chart)
                 <div style="page-break-before: always;">
                     <h3>{{ $chart['id'] }}</h3>
                     <img src="{{ $chart['image'] }}" alt="Gráfico {{ $chart['id'] }}"
                         style="width: 100%; max-width: 800px; height: auto;" />
                 </div>
-            @endforeach| --}}
+            @endforeach
     </div>
 </body>
 
