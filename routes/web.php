@@ -2,9 +2,10 @@
 
 //use Illuminate\Routing\Route;
 use App\Http\Controllers\Admin\ReporteriaController;
-use App\Http\Controllers\Admin\ConstructorLiquidacionController;
-use App\Models\TratoContratistas;
 
+use App\Http\Controllers\Admin\TarjadoController;
+use App\Models\TratoContratistas;
+//use Google\Service\CloudRun\Route;
 
 //use Illuminate\Routing\Route;
 
@@ -332,11 +333,11 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('hand-packs/lectorQr','HandPackController@lectorQr')->name('hand-packs.lectorQr');
     Route::resource('hand-packs', 'HandPackController');
 
-    // Conversor Xls
-    Route::delete('conversor-xls/destroy', 'ConversorXlsController@massDestroy')->name('conversor-xls.massDestroy');
-    Route::post('conversor-xls/parse-csv-import', 'ConversorXlsController@parseCsvImport')->name('conversor-xls.parseCsvImport');
-    Route::post('conversor-xls/process-csv-import', 'ConversorXlsController@processCsvImport')->name('conversor-xls.processCsvImport');
-    Route::resource('conversor-xls', 'ConversorXlsController');
+    // // Conversor Xls
+    // Route::delete('conversor-xls/destroy', 'ConversorXlsController@massDestroy')->name('conversor-xls.massDestroy');
+    // Route::post('conversor-xls/parse-csv-import', 'ConversorXlsController@parseCsvImport')->name('conversor-xls.parseCsvImport');
+    // Route::post('conversor-xls/process-csv-import', 'ConversorXlsController@processCsvImport')->name('conversor-xls.processCsvImport');
+    // Route::resource('conversor-xls', 'ConversorXlsController');
 
     // Tipos Seccion Conversor
     Route::delete('tipos-seccion-conversors/destroy', 'TiposSeccionConversorController@massDestroy')->name('tipos-seccion-conversors.massDestroy');
@@ -609,10 +610,16 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('analisis/process-csv-import', 'AnalisisController@processCsvImport')->name('analisis.processCsvImport');
     Route::resource('analisis', 'AnalisisController');
 
+
+    //tarjador
+    Route::post('tarjado/getTarjado','TarjadoController@getTarjado')->name('tarjado.getTarjado');
+    Route::post('tarjado/getMaterialesUtilizados','TarjadoController@getMaterialesUtilizados')->name('tarjado.getMaterialesUtilizados');
+    Route::resource('tarjado', 'TarjadoController');
+
     //Generador de Liquidaciones
 
 
-Route::post('constructorliquidacion/getProcesos', [ConstructorLiquidacionController::class, 'getProcesos'])->name('constructorliquidacion.getProcesos');
+Route::post('constructorliquidacion/getProcesos', 'ConstructorLiquidacionController@getProcesos')->name('constructorliquidacion.getProcesos');
 Route::post('constructorliquidacion/generatepdf', 'ConstructorLiquidacionController@generatepdf')->name('constructorliquidacion.generatepdf');
     //Route::post('constructorliquidacion/getProcesos', 'ConstructorLiquidacionController@getProcesos')->name('constructorliquidacion.getProcesos');
     Route::get('constructorliquidacion/selector', 'ConstructorLiquidacionController@selector')->name('constructorliquidacion.selector');
@@ -791,196 +798,196 @@ Route::group(['as' => 'frontend.', 'namespace' => 'Frontend', 'middleware' => ['
     Route::resource('tipo-fletes', 'TipoFleteController');
 
     // Buscar Guias Aclaradas
-    Route::delete('buscar-guias-aclaradas/destroy', 'BuscarGuiasAclaradasController@massDestroy')->name('buscar-guias-aclaradas.massDestroy');
-    Route::resource('buscar-guias-aclaradas', 'BuscarGuiasAclaradasController');
+    // Route::delete('buscar-guias-aclaradas/destroy', 'BuscarGuiasAclaradasController@massDestroy')->name('buscar-guias-aclaradas.massDestroy');
+    // Route::resource('buscar-guias-aclaradas', 'BuscarGuiasAclaradasController');
 
-    // Consulta Arancelaria
-    Route::delete('consulta-arancelaria/destroy', 'ConsultaArancelariaController@massDestroy')->name('consulta-arancelaria.massDestroy');
-    Route::resource('consulta-arancelaria', 'ConsultaArancelariaController');
+    // // Consulta Arancelaria
+    // Route::delete('consulta-arancelaria/destroy', 'ConsultaArancelariaController@massDestroy')->name('consulta-arancelaria.massDestroy');
+    // Route::resource('consulta-arancelaria', 'ConsultaArancelariaController');
 
-    // Impresion Dips
-    Route::delete('impresion-dips/destroy', 'ImpresionDipsController@massDestroy')->name('impresion-dips.massDestroy');
-    Route::resource('impresion-dips', 'ImpresionDipsController');
+    // // Impresion Dips
+    // Route::delete('impresion-dips/destroy', 'ImpresionDipsController@massDestroy')->name('impresion-dips.massDestroy');
+    // Route::resource('impresion-dips', 'ImpresionDipsController');
 
-    // Multi Impresion Dips
-    Route::delete('multi-impresion-dips/destroy', 'MultiImpresionDipsController@massDestroy')->name('multi-impresion-dips.massDestroy');
-    Route::resource('multi-impresion-dips', 'MultiImpresionDipsController');
+    // // Multi Impresion Dips
+    // Route::delete('multi-impresion-dips/destroy', 'MultiImpresionDipsController@massDestroy')->name('multi-impresion-dips.massDestroy');
+    // Route::resource('multi-impresion-dips', 'MultiImpresionDipsController');
 
-    // Dips Aprobadas
-    Route::delete('dips-aprobadas/destroy', 'DipsAprobadasController@massDestroy')->name('dips-aprobadas.massDestroy');
-    Route::resource('dips-aprobadas', 'DipsAprobadasController');
+    // // Dips Aprobadas
+    // Route::delete('dips-aprobadas/destroy', 'DipsAprobadasController@massDestroy')->name('dips-aprobadas.massDestroy');
+    // Route::resource('dips-aprobadas', 'DipsAprobadasController');
 
-    // Buscar Batch
-    Route::delete('buscar-batches/destroy', 'BuscarBatchController@massDestroy')->name('buscar-batches.massDestroy');
-    Route::resource('buscar-batches', 'BuscarBatchController');
+    // // Buscar Batch
+    // Route::delete('buscar-batches/destroy', 'BuscarBatchController@massDestroy')->name('buscar-batches.massDestroy');
+    // Route::resource('buscar-batches', 'BuscarBatchController');
 
-    // Guias En Batch
-    Route::delete('guias-en-batches/destroy', 'GuiasEnBatchController@massDestroy')->name('guias-en-batches.massDestroy');
-    Route::resource('guias-en-batches', 'GuiasEnBatchController');
+    // // Guias En Batch
+    // Route::delete('guias-en-batches/destroy', 'GuiasEnBatchController@massDestroy')->name('guias-en-batches.massDestroy');
+    // Route::resource('guias-en-batches', 'GuiasEnBatchController');
 
-    // Crear Batch
-    Route::delete('crear-batches/destroy', 'CrearBatchController@massDestroy')->name('crear-batches.massDestroy');
-    Route::resource('crear-batches', 'CrearBatchController');
+    // // Crear Batch
+    // Route::delete('crear-batches/destroy', 'CrearBatchController@massDestroy')->name('crear-batches.massDestroy');
+    // Route::resource('crear-batches', 'CrearBatchController');
 
-    // Hawb Batch
-    Route::delete('hawb-batches/destroy', 'HawbBatchController@massDestroy')->name('hawb-batches.massDestroy');
-    Route::resource('hawb-batches', 'HawbBatchController');
+    // // Hawb Batch
+    // Route::delete('hawb-batches/destroy', 'HawbBatchController@massDestroy')->name('hawb-batches.massDestroy');
+    // Route::resource('hawb-batches', 'HawbBatchController');
 
     // User Alerts
     Route::delete('user-alerts/destroy', 'UserAlertsController@massDestroy')->name('user-alerts.massDestroy');
     Route::resource('user-alerts', 'UserAlertsController', ['except' => ['edit', 'update']]);
 
-    // Faq Category
-    Route::delete('faq-categories/destroy', 'FaqCategoryController@massDestroy')->name('faq-categories.massDestroy');
-    Route::resource('faq-categories', 'FaqCategoryController');
+    // // Faq Category
+    // Route::delete('faq-categories/destroy', 'FaqCategoryController@massDestroy')->name('faq-categories.massDestroy');
+    // Route::resource('faq-categories', 'FaqCategoryController');
 
-    // Faq Question
-    Route::delete('faq-questions/destroy', 'FaqQuestionController@massDestroy')->name('faq-questions.massDestroy');
-    Route::resource('faq-questions', 'FaqQuestionController');
+    // // Faq Question
+    // Route::delete('faq-questions/destroy', 'FaqQuestionController@massDestroy')->name('faq-questions.massDestroy');
+    // Route::resource('faq-questions', 'FaqQuestionController');
 
-    // Courses
-    Route::delete('courses/destroy', 'CoursesController@massDestroy')->name('courses.massDestroy');
-    Route::post('courses/media', 'CoursesController@storeMedia')->name('courses.storeMedia');
-    Route::post('courses/ckmedia', 'CoursesController@storeCKEditorImages')->name('courses.storeCKEditorImages');
-    Route::resource('courses', 'CoursesController');
+    // // Courses
+    // Route::delete('courses/destroy', 'CoursesController@massDestroy')->name('courses.massDestroy');
+    // Route::post('courses/media', 'CoursesController@storeMedia')->name('courses.storeMedia');
+    // Route::post('courses/ckmedia', 'CoursesController@storeCKEditorImages')->name('courses.storeCKEditorImages');
+    // Route::resource('courses', 'CoursesController');
 
-    // Lessons
-    Route::delete('lessons/destroy', 'LessonsController@massDestroy')->name('lessons.massDestroy');
-    Route::post('lessons/media', 'LessonsController@storeMedia')->name('lessons.storeMedia');
-    Route::post('lessons/ckmedia', 'LessonsController@storeCKEditorImages')->name('lessons.storeCKEditorImages');
-    Route::resource('lessons', 'LessonsController');
+    // // Lessons
+    // Route::delete('lessons/destroy', 'LessonsController@massDestroy')->name('lessons.massDestroy');
+    // Route::post('lessons/media', 'LessonsController@storeMedia')->name('lessons.storeMedia');
+    // Route::post('lessons/ckmedia', 'LessonsController@storeCKEditorImages')->name('lessons.storeCKEditorImages');
+    // Route::resource('lessons', 'LessonsController');
 
-    // Tests
-    Route::delete('tests/destroy', 'TestsController@massDestroy')->name('tests.massDestroy');
-    Route::resource('tests', 'TestsController');
+    // // Tests
+    // Route::delete('tests/destroy', 'TestsController@massDestroy')->name('tests.massDestroy');
+    // Route::resource('tests', 'TestsController');
 
-    // Questions
-    Route::delete('questions/destroy', 'QuestionsController@massDestroy')->name('questions.massDestroy');
-    Route::post('questions/media', 'QuestionsController@storeMedia')->name('questions.storeMedia');
-    Route::post('questions/ckmedia', 'QuestionsController@storeCKEditorImages')->name('questions.storeCKEditorImages');
-    Route::resource('questions', 'QuestionsController');
+    // // Questions
+    // Route::delete('questions/destroy', 'QuestionsController@massDestroy')->name('questions.massDestroy');
+    // Route::post('questions/media', 'QuestionsController@storeMedia')->name('questions.storeMedia');
+    // Route::post('questions/ckmedia', 'QuestionsController@storeCKEditorImages')->name('questions.storeCKEditorImages');
+    // Route::resource('questions', 'QuestionsController');
 
-    // Question Options
-    Route::delete('question-options/destroy', 'QuestionOptionsController@massDestroy')->name('question-options.massDestroy');
-    Route::resource('question-options', 'QuestionOptionsController');
+    // // Question Options
+    // Route::delete('question-options/destroy', 'QuestionOptionsController@massDestroy')->name('question-options.massDestroy');
+    // Route::resource('question-options', 'QuestionOptionsController');
 
-    // Test Results
-    Route::delete('test-results/destroy', 'TestResultsController@massDestroy')->name('test-results.massDestroy');
-    Route::resource('test-results', 'TestResultsController');
+    // // Test Results
+    // Route::delete('test-results/destroy', 'TestResultsController@massDestroy')->name('test-results.massDestroy');
+    // Route::resource('test-results', 'TestResultsController');
 
-    // Test Answers
-    Route::delete('test-answers/destroy', 'TestAnswersController@massDestroy')->name('test-answers.massDestroy');
-    Route::resource('test-answers', 'TestAnswersController');
+    // // Test Answers
+    // Route::delete('test-answers/destroy', 'TestAnswersController@massDestroy')->name('test-answers.massDestroy');
+    // Route::resource('test-answers', 'TestAnswersController');
 
-    // Task Status
-    Route::delete('task-statuses/destroy', 'TaskStatusController@massDestroy')->name('task-statuses.massDestroy');
-    Route::resource('task-statuses', 'TaskStatusController');
+    // // Task Status
+    // Route::delete('task-statuses/destroy', 'TaskStatusController@massDestroy')->name('task-statuses.massDestroy');
+    // Route::resource('task-statuses', 'TaskStatusController');
 
-    // Task Tag
-    Route::delete('task-tags/destroy', 'TaskTagController@massDestroy')->name('task-tags.massDestroy');
-    Route::resource('task-tags', 'TaskTagController');
+    // // Task Tag
+    // Route::delete('task-tags/destroy', 'TaskTagController@massDestroy')->name('task-tags.massDestroy');
+    // Route::resource('task-tags', 'TaskTagController');
 
-    // Task
-    Route::delete('tasks/destroy', 'TaskController@massDestroy')->name('tasks.massDestroy');
-    Route::post('tasks/media', 'TaskController@storeMedia')->name('tasks.storeMedia');
-    Route::post('tasks/ckmedia', 'TaskController@storeCKEditorImages')->name('tasks.storeCKEditorImages');
-    Route::resource('tasks', 'TaskController');
+    // // Task
+    // Route::delete('tasks/destroy', 'TaskController@massDestroy')->name('tasks.massDestroy');
+    // Route::post('tasks/media', 'TaskController@storeMedia')->name('tasks.storeMedia');
+    // Route::post('tasks/ckmedia', 'TaskController@storeCKEditorImages')->name('tasks.storeCKEditorImages');
+    // Route::resource('tasks', 'TaskController');
 
-    // Tasks Calendar
-    Route::resource('tasks-calendars', 'TasksCalendarController', ['except' => ['create', 'store', 'edit', 'update', 'show', 'destroy']]);
+    // // Tasks Calendar
+    // Route::resource('tasks-calendars', 'TasksCalendarController', ['except' => ['create', 'store', 'edit', 'update', 'show', 'destroy']]);
 
-    // Inhumados
-    Route::delete('inhumados/destroy', 'InhumadosController@massDestroy')->name('inhumados.massDestroy');
-    Route::resource('inhumados', 'InhumadosController');
+    // // Inhumados
+    // Route::delete('inhumados/destroy', 'InhumadosController@massDestroy')->name('inhumados.massDestroy');
+    // Route::resource('inhumados', 'InhumadosController');
 
-    // Cliente
-    Route::delete('clientes/destroy', 'ClienteController@massDestroy')->name('clientes.massDestroy');
-    Route::resource('clientes', 'ClienteController');
+    // // Cliente
+    // Route::delete('clientes/destroy', 'ClienteController@massDestroy')->name('clientes.massDestroy');
+    // Route::resource('clientes', 'ClienteController');
 
-    // Dussi
-    Route::delete('dussis/destroy', 'DussiController@massDestroy')->name('dussis.massDestroy');
-    Route::resource('dussis', 'DussiController');
+    // // Dussi
+    // Route::delete('dussis/destroy', 'DussiController@massDestroy')->name('dussis.massDestroy');
+    // Route::resource('dussis', 'DussiController');
 
-    // Batch
-    Route::delete('batches/destroy', 'BatchController@massDestroy')->name('batches.massDestroy');
-    Route::resource('batches', 'BatchController');
+    // // Batch
+    // Route::delete('batches/destroy', 'BatchController@massDestroy')->name('batches.massDestroy');
+    // Route::resource('batches', 'BatchController');
 
-    // Aclaracionguia
-    Route::delete('aclaracionguia/destroy', 'AclaracionguiaController@massDestroy')->name('aclaracionguia.massDestroy');
-    Route::resource('aclaracionguia', 'AclaracionguiaController');
+    // // Aclaracionguia
+    // Route::delete('aclaracionguia/destroy', 'AclaracionguiaController@massDestroy')->name('aclaracionguia.massDestroy');
+    // Route::resource('aclaracionguia', 'AclaracionguiaController');
 
-    // Ingresos
-    Route::delete('ingresos/destroy', 'IngresosController@massDestroy')->name('ingresos.massDestroy');
-    Route::resource('ingresos', 'IngresosController');
+    // // Ingresos
+    // Route::delete('ingresos/destroy', 'IngresosController@massDestroy')->name('ingresos.massDestroy');
+    // Route::resource('ingresos', 'IngresosController');
 
-    // Guias Dussi
-    Route::delete('guias-dussis/destroy', 'GuiasDussiController@massDestroy')->name('guias-dussis.massDestroy');
-    Route::resource('guias-dussis', 'GuiasDussiController');
+    // // Guias Dussi
+    // Route::delete('guias-dussis/destroy', 'GuiasDussiController@massDestroy')->name('guias-dussis.massDestroy');
+    // Route::resource('guias-dussis', 'GuiasDussiController');
 
-    // Ingreso Bulto
-    Route::delete('ingreso-bultos/destroy', 'IngresoBultoController@massDestroy')->name('ingreso-bultos.massDestroy');
-    Route::resource('ingreso-bultos', 'IngresoBultoController');
+    // // Ingreso Bulto
+    // Route::delete('ingreso-bultos/destroy', 'IngresoBultoController@massDestroy')->name('ingreso-bultos.massDestroy');
+    // Route::resource('ingreso-bultos', 'IngresoBultoController');
 
-    // Estados Saep
-    Route::delete('estados-saeps/destroy', 'EstadosSaepController@massDestroy')->name('estados-saeps.massDestroy');
-    Route::resource('estados-saeps', 'EstadosSaepController');
+    // // Estados Saep
+    // Route::delete('estados-saeps/destroy', 'EstadosSaepController@massDestroy')->name('estados-saeps.massDestroy');
+    // Route::resource('estados-saeps', 'EstadosSaepController');
 
-    // Motivo Saep
-    Route::delete('motivo-saeps/destroy', 'MotivoSaepController@massDestroy')->name('motivo-saeps.massDestroy');
-    Route::resource('motivo-saeps', 'MotivoSaepController');
+    // // Motivo Saep
+    // Route::delete('motivo-saeps/destroy', 'MotivoSaepController@massDestroy')->name('motivo-saeps.massDestroy');
+    // Route::resource('motivo-saeps', 'MotivoSaepController');
 
-    // Bodega
-    Route::delete('bodegas/destroy', 'BodegaController@massDestroy')->name('bodegas.massDestroy');
-    Route::resource('bodegas', 'BodegaController');
+    // // Bodega
+    // Route::delete('bodegas/destroy', 'BodegaController@massDestroy')->name('bodegas.massDestroy');
+    // Route::resource('bodegas', 'BodegaController');
 
-    // Ingreso Cadena Custodia
-    Route::delete('ingreso-cadena-custodia/destroy', 'IngresoCadenaCustodiaController@massDestroy')->name('ingreso-cadena-custodia.massDestroy');
-    Route::resource('ingreso-cadena-custodia', 'IngresoCadenaCustodiaController');
+    // // Ingreso Cadena Custodia
+    // Route::delete('ingreso-cadena-custodia/destroy', 'IngresoCadenaCustodiaController@massDestroy')->name('ingreso-cadena-custodia.massDestroy');
+    // Route::resource('ingreso-cadena-custodia', 'IngresoCadenaCustodiaController');
 
-    // Estado Abandono
-    Route::delete('estado-abandonos/destroy', 'EstadoAbandonoController@massDestroy')->name('estado-abandonos.massDestroy');
-    Route::resource('estado-abandonos', 'EstadoAbandonoController');
+    // // Estado Abandono
+    // Route::delete('estado-abandonos/destroy', 'EstadoAbandonoController@massDestroy')->name('estado-abandonos.massDestroy');
+    // Route::resource('estado-abandonos', 'EstadoAbandonoController');
 
-    // Correlativo
-    Route::delete('correlativos/destroy', 'CorrelativoController@massDestroy')->name('correlativos.massDestroy');
-    Route::resource('correlativos', 'CorrelativoController');
+    // // Correlativo
+    // Route::delete('correlativos/destroy', 'CorrelativoController@massDestroy')->name('correlativos.massDestroy');
+    // Route::resource('correlativos', 'CorrelativoController');
 
-    // Datos Caja
-    Route::delete('datos-cajas/destroy', 'DatosCajaController@massDestroy')->name('datos-cajas.massDestroy');
-    Route::resource('datos-cajas', 'DatosCajaController');
+    // // Datos Caja
+    // Route::delete('datos-cajas/destroy', 'DatosCajaController@massDestroy')->name('datos-cajas.massDestroy');
+    // Route::resource('datos-cajas', 'DatosCajaController');
 
-    // Entidad
-    Route::delete('entidads/destroy', 'EntidadController@massDestroy')->name('entidads.massDestroy');
-    Route::resource('entidads', 'EntidadController');
+    // // Entidad
+    // Route::delete('entidads/destroy', 'EntidadController@massDestroy')->name('entidads.massDestroy');
+    // Route::resource('entidads', 'EntidadController');
 
-    // Area
-    Route::delete('areas/destroy', 'AreaController@massDestroy')->name('areas.massDestroy');
-    Route::resource('areas', 'AreaController');
+    // // Area
+    // Route::delete('areas/destroy', 'AreaController@massDestroy')->name('areas.massDestroy');
+    // Route::resource('areas', 'AreaController');
 
-    // Locacion
-    Route::delete('locacions/destroy', 'LocacionController@massDestroy')->name('locacions.massDestroy');
-    Route::resource('locacions', 'LocacionController');
+    // // Locacion
+    // Route::delete('locacions/destroy', 'LocacionController@massDestroy')->name('locacions.massDestroy');
+    // Route::resource('locacions', 'LocacionController');
 
-    // Turno
-    Route::delete('turnos/destroy', 'TurnoController@massDestroy')->name('turnos.massDestroy');
-    Route::resource('turnos', 'TurnoController');
+    // // Turno
+    // Route::delete('turnos/destroy', 'TurnoController@massDestroy')->name('turnos.massDestroy');
+    // Route::resource('turnos', 'TurnoController');
 
-    // Frecuencia Turno
-    Route::delete('frecuencia-turnos/destroy', 'FrecuenciaTurnoController@massDestroy')->name('frecuencia-turnos.massDestroy');
-    Route::resource('frecuencia-turnos', 'FrecuenciaTurnoController');
+    // // Frecuencia Turno
+    // Route::delete('frecuencia-turnos/destroy', 'FrecuenciaTurnoController@massDestroy')->name('frecuencia-turnos.massDestroy');
+    // Route::resource('frecuencia-turnos', 'FrecuenciaTurnoController');
 
-    // Cargo
-    Route::delete('cargos/destroy', 'CargoController@massDestroy')->name('cargos.massDestroy');
-    Route::resource('cargos', 'CargoController');
+    // // Cargo
+    // Route::delete('cargos/destroy', 'CargoController@massDestroy')->name('cargos.massDestroy');
+    // Route::resource('cargos', 'CargoController');
 
-    // Personal
-    Route::delete('personals/destroy', 'PersonalController@massDestroy')->name('personals.massDestroy');
-    Route::resource('personals', 'PersonalController');
+    // // Personal
+    // Route::delete('personals/destroy', 'PersonalController@massDestroy')->name('personals.massDestroy');
+    // Route::resource('personals', 'PersonalController');
 
 
-    // Turnos Frecuencia
-    Route::delete('turnos-frecuencia/destroy', 'TurnosFrecuenciaController@massDestroy')->name('turnos-frecuencia.massDestroy');
-    Route::resource('turnos-frecuencia', 'TurnosFrecuenciaController');
+    // // Turnos Frecuencia
+    // Route::delete('turnos-frecuencia/destroy', 'TurnosFrecuenciaController@massDestroy')->name('turnos-frecuencia.massDestroy');
+    // Route::resource('turnos-frecuencia', 'TurnosFrecuenciaController');
 
     Route::get('frontend/profile', 'ProfileController@index')->name('profile.index');
     Route::post('frontend/profile', 'ProfileController@update')->name('profile.update');
@@ -988,16 +995,16 @@ Route::group(['as' => 'frontend.', 'namespace' => 'Frontend', 'middleware' => ['
     Route::post('frontend/profile/password', 'ProfileController@password')->name('profile.password');
 
 
-    Route::get('global-search', 'GlobalSearchController@search')->name('globalSearch');
-    Route::get('messenger', 'MessengerController@index')->name('messenger.index');
-    Route::get('messenger/create', 'MessengerController@createTopic')->name('messenger.createTopic');
-    Route::post('messenger', 'MessengerController@storeTopic')->name('messenger.storeTopic');
-    Route::get('messenger/inbox', 'MessengerController@showInbox')->name('messenger.showInbox');
-    Route::get('messenger/outbox', 'MessengerController@showOutbox')->name('messenger.showOutbox');
-    Route::get('messenger/{topic}', 'MessengerController@showMessages')->name('messenger.showMessages');
-    Route::delete('messenger/{topic}', 'MessengerController@destroyTopic')->name('messenger.destroyTopic');
-    Route::post('messenger/{topic}/reply', 'MessengerController@replyToTopic')->name('messenger.reply');
-    Route::get('messenger/{topic}/reply', 'MessengerController@showReply')->name('messenger.showReply');
+    // Route::get('global-search', 'GlobalSearchController@search')->name('globalSearch');
+    // Route::get('messenger', 'MessengerController@index')->name('messenger.index');
+    // Route::get('messenger/create', 'MessengerController@createTopic')->name('messenger.createTopic');
+    // Route::post('messenger', 'MessengerController@storeTopic')->name('messenger.storeTopic');
+    // Route::get('messenger/inbox', 'MessengerController@showInbox')->name('messenger.showInbox');
+    // Route::get('messenger/outbox', 'MessengerController@showOutbox')->name('messenger.showOutbox');
+    // Route::get('messenger/{topic}', 'MessengerController@showMessages')->name('messenger.showMessages');
+    // Route::delete('messenger/{topic}', 'MessengerController@destroyTopic')->name('messenger.destroyTopic');
+    // Route::post('messenger/{topic}/reply', 'MessengerController@replyToTopic')->name('messenger.reply');
+    // Route::get('messenger/{topic}/reply', 'MessengerController@showReply')->name('messenger.showReply');
 });
 Route::group(['prefix' => 'profile', 'as' => 'profile.', 'namespace' => 'Auth', 'middleware' => ['auth']], function () {
     // Change password
