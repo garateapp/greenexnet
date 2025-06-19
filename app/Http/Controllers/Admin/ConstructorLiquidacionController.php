@@ -38,8 +38,8 @@ use Psy\Readline\Hoa\Console;
 use Symfony\Component\Console\Logger\ConsoleLogger;
 use App\Models\Productor;
 use App\Models\Especy;
-use Barryvdh\DomPDF\Facade\Pdf;
-//use Knp\Snappy\Pdf;
+//use Barryvdh\DomPDF\Facade\Pdf;
+use Knp\Snappy\Pdf;
 class ConstructorLiquidacionController extends Controller
 {
 use CsvImportTrait;
