@@ -604,28 +604,35 @@
                                             total_kilos: 0,
                                             costo_comercial: 0
                                         },
-                                        'Comercial': {
+                                        'COMERCIAL': {
                                             resultado_kilo: 0,
                                             resultado_total: 0,
                                             total_comercial: 0,
                                             total_kilos: 0,
                                             costo_comercial: 0
                                         },
-                                        'Desecho': {
+                                        'DESECHO': {
                                             resultado_kilo: 0,
                                             resultado_total: 0,
                                             total_comercial: 0,
                                             total_kilos: 0,
                                             costo_comercial: 0
                                         },
-                                        'Precalibre': {
+                                        'PRECALIBRE': {
                                             resultado_kilo: 0,
                                             resultado_total: 0,
                                             total_comercial: 0,
                                             total_kilos: 0,
                                             costo_comercial: 0
                                         },
-                                        'Merma': {
+                                        'MERMA': {
+                                            resultado_kilo: 0,
+                                            resultado_total: 0,
+                                            total_comercial: 0,
+                                            total_kilos: 0,
+                                            costo_comercial: 0
+                                        },
+                                        'SOBRECALIBRE': {
                                             resultado_kilo: 0,
                                             resultado_total: 0,
                                             total_comercial: 0,
