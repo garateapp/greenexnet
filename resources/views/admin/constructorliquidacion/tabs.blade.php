@@ -1,29 +1,28 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <meta charset="UTF-8">
     <style>
         @page {
-            margin: 40mm 10mm 40mm 10mm;
-            /* Match wkhtmltopdf */
+            margin-top: 40mm;
+            margin-bottom: 40mm;
+            margin-left: 10mm;
+            margin-right: 10mm;
         }
 
         body {
             font-family: Arial, sans-serif;
             margin: 0;
+            font-size: 10px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
             break-inside: auto;
-            font-size: 10px;
         }
 
-        th,
-        td {
+        th, td {
             border: 1px solid #000;
             padding: 6px;
             text-align: left;
@@ -40,7 +39,6 @@
 
         tr {
             break-inside: avoid;
-            break-after: auto;
         }
 
         .section-header {
@@ -58,61 +56,13 @@
             text-align: right;
         }
 
-        .number.negative {
+        .negative {
             color: red;
         }
 
         .productor-nombre {
             font-weight: bold;
             text-align: center;
-        }
-
-        .tab-content {
-            display: block;
-            page-break-before: always !important;
-            break-before: always !important;
-            clear: both;
-            min-height: 1px;
-            margin-top: 40mm;
-            /* Prevent header overlap */
-        }
-
-        .tab-content:first-child {
-            page-break-before: avoid !important;
-            break-before: avoid !important;
-            margin-top: 0;
-        }
-
-        .header {
-            position: fixed;
-            top: 5mm;
-            left: 10mm;
-            right: 10mm;
-            height: 30mm;
-            text-align: center;
-            z-index: 1000;
-        }
-
-        .footer {
-            position: fixed;
-            bottom: 5mm;
-            left: 10mm;
-            right: 10mm;
-            height: 30mm;
-            text-align: center;
-            z-index: 1000;
-        }
-
-        .header img,
-        .footer img {
-            max-height: 25mm;
-            width: auto;
-            vertical-align: middle;
-        }
-
-        .content-wrapper {
-            padding: 40mm 10mm 40mm 10mm;
-            /* Prevent overlap */
         }
 
         .table-title {
@@ -122,60 +72,58 @@
             font-size: 12px;
         }
 
-        td[rowspan],
-        td[colspan] {
-            border: 1px solid #000 !important;
-            box-sizing: border-box;
+        img {
+            max-width: 100%;
+            height: auto;
         }
     </style>
 </head>
-
 <body>
 
+    <!-- Header visible solo en PDF -->
+    <div style="text-align: center; font-weight: bold;">
+         @php
+            $headerImagePath = public_path('/img/cabecera_pdf.jpg');
+        @endphp
+        @if (file_exists($headerImagePath))
+            <img src="{{ $headerImagePath }}" alt="Header" alt="Cabecera" style="max-height: 25mm; width: auto;">
+        @else
+            <p class="error">Header image not found: {{ $headerImagePath }}</p>
+        @endif
 
-    <!-- Footer -->
-
-
-    <!-- Content -->
-    <div class="content-wrapper">
-        @foreach ($tabs as $index => $tab)
-            <!-- Header -->
-
-            <div class="tab-content">
-                <!-- Header -->
-                <div class="header">
-                    @php
-                        $headerImagePath = public_path('/img/cabecera_pdf.jpg');
-                    @endphp
-                    @if (file_exists($headerImagePath))
-                        <img src="{{ $headerImagePath }}" alt="Header">
-                    @else
-                        <p class="error">Header image not found: {{ $headerImagePath }}</p>
-                    @endif
-                </div>
-
-                {!! $tab['html'] !!}
-                <!-- Footer -->
-                <div class="footer">
-                    @php
-                        $footerImagePath = public_path('/img/footer_pdf.jpg');
-                    @endphp
-                    @if (file_exists($footerImagePath))
-                        <img src="{{ $footerImagePath }}" alt="Footer">
-                    @else
-                        <p class="error">Footer image not found: {{ $footerImagePath }}</p>
-                    @endif
-                </div>
-
-            </div>
-            @foreach ($chartImages as $chart)
-                <div style="page-break-before: always;">
-                    <h3>{{ $chart['id'] }}</h3>
-                    <img src="{{ $chart['image'] }}" alt="Gráfico {{ $chart['id'] }}"
-                        style="width: 100%; max-width: 800px; height: auto;" />
-                </div>
-            @endforeach
     </div>
-</body>
 
+    <!-- Contenido dinámico de tabs -->
+    @foreach ($tabs as $tab)
+        <div class="tab-content" style="page-break-before: always;">
+            {!! $tab['html'] !!}
+        </div>
+    @endforeach
+
+    <!-- Gráficos -->
+    @if (!empty($chartImages))
+        @foreach ($chartImages as $chart)
+            @if (!empty($chart['image']))
+                <div style="page-break-before: always; text-align: center;">
+                    <h3>{{ $chart['id'] }}</h3>
+                    <img src="{{ $chart['image'] }}" alt="Gráfico {{ $chart['id'] }}" style="width: 100%; max-width: 700px; height: auto;" />
+                </div>
+            @endif
+        @endforeach
+    @endif
+
+    <!-- Footer visible solo en PDF -->
+    <div style="position: fixed; bottom: 5mm; left: 10mm; right: 10mm; text-align: center;">
+          @php
+            $footerImagePath = public_path('/img/footer_pdf.jpg');
+        @endphp
+        @if (file_exists($footerImagePath))
+            <img src="{{ $footerImagePath }}" alt="Footer" style="max-height: 25mm; width: auto;">
+        @else
+            <p class="error">Footer image not found: {{ $footerImagePath }}</p>
+        @endif
+
+    </div>
+
+</body>
 </html>
