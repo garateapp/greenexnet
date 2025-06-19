@@ -141,21 +141,36 @@
 
             <div class="tab-content">
                 <div class="header">
-                    <img src="{{ $logo_path }}" alt="Logo">
+                    @php
+                        $headerImagePath = public_path('/img/cabecera_pdf.jpg');
+                    @endphp
+                    @if (file_exists($headerImagePath))
+                        <img src="{{ $headerImagePath }}" alt="Header">
+                    @else
+                        <p class="error">Header image not found: {{ $headerImagePath }}</p>
+                    @endif
                 </div>
-
                 {!! $tab['html'] !!}
+                <!-- Footer -->
                 <div class="footer">
-                    <img src="{{ $footer_path }}" alt="Footer">
+                    @php
+                        $footerImagePath = public_path('/img/footer_pdf.jpg');
+                    @endphp
+                    @if (file_exists($footerImagePath))
+                        <img src="{{ $footerImagePath }}" alt="Footer">
+                    @else
+                        <p class="error">Footer image not found: {{ $footerImagePath }}</p>
+                    @endif
                 </div>
             </div>
-            @foreach ($chartImages as $chart)
+            {{-- @foreach ($chartImages as $chart)
                 <div style="page-break-before: always;">
                     <h3>{{ $chart['id'] }}</h3>
                     <img src="{{ $chart['image'] }}" alt="Gráfico {{ $chart['id'] }}"
                         style="width: 100%; max-width: 800px; height: auto;" />
                 </div>
-            @endforeach|
+            @endforeach| --}}
     </div>
 </body>
+
 </html>
