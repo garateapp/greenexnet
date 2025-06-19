@@ -116,7 +116,7 @@ use CsvImportTrait;
     // Datos para la vista
     $data = [
         'tabs' => $tabs,
-        'chartImages' => $chartImages,
+        //'chartImages' => $chartImages,
         'logo_path' => public_path('storage/cabecera_pdf.jpg'),
         'footer_path' => public_path('storage/footer_pdf.jpg'),
     ];
@@ -139,7 +139,7 @@ use CsvImportTrait;
         'enable-local-file-access' => true,
         'no-stop-slow-scripts' => true
     ]))->header('Content-Type', 'application/pdf')
-      ->header('Content-Disposition', 'inline; filename="Liquidación-' . $productor->nombre . '-' . date('Y-m-d') . '.pdf"');
+      ->header('Content-Disposition', 'inline; filename="Liquidacion-' . $productor->nombre . '-' . date('Y-m-d') . '.pdf"');
 }
 
 
