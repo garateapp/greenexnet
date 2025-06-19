@@ -2231,7 +2231,7 @@
                             <td class="number ${rnpClass}">${formatCurrency(rnpKilo)}</td>
                         </tr>
                     `;
-
+                            //generamos un objeto para la grafica
                             if(!groupedDataChart[variedad]) {
                                 groupedDataChart[variedad] = {
                                     especie:especie,
