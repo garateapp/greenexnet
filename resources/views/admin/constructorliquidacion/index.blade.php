@@ -2344,7 +2344,7 @@
     `;
 
                     $('#norma').html(htmlOutput); // Insertar en contenedor
-                    generateCharts(groupedDataChart); // Llamar a la función de gráficos
+                    generateCharts(Object.values(groupedDataChart)); // Llamar a la función de gráficos
                 }
 
                 function llenarComercial(response) {
@@ -2686,7 +2686,7 @@
                 function generateCharts(data) {
                     const groupedData = data;
                     groupedData.forEach(group => {
-                        createChart(group.productor, group.variedad, group.data);
+                        createChart(group.especie, group.variedad, group.data);
                     });
                 }
             }
