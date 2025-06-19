@@ -46,9 +46,6 @@ class EspecieController extends Controller
             $table->editColumn('id', function ($row) {
                 return $row->id ? $row->id : '';
             });
-            $table->editColumn('id_pro_p_familias', function ($row) {
-                return $row->id_pro_p_familias ? $row->id_pro_p_familias : '';
-            });
             $table->editColumn('codigo', function ($row) {
                 return $row->codigo ? $row->codigo : '';
             });
@@ -96,7 +93,7 @@ class EspecieController extends Controller
     {
         abort_if(Gate::denies('especy_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $especy->load('especieVariedads', 'especieEtiquetasXEspecies');
+        $especy->load('especieVariedads', 'especieEtiquetasXEspecies', 'especieAnticipos');
 
         return view('admin.especies.show', compact('especy'));
     }

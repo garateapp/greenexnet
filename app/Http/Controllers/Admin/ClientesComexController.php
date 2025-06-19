@@ -96,7 +96,7 @@ class ClientesComexController extends Controller
     {
         abort_if(Gate::denies('clientes_comex_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $clientesComex->load('clientecomexMetasClienteComexes');
+        $clientesComex->load('clientecomexMetasClienteComexes', 'clienteBaseRecibidors');
 
         return view('admin.clientesComexes.show', compact('clientesComex'));
     }

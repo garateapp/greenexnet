@@ -58,6 +58,30 @@
     </div>
 </div>
 
-
+<div class="card">
+    <div class="card-header">
+        {{ trans('global.relatedData') }}
+    </div>
+    <ul class="nav nav-tabs" role="tablist" id="relationship-tabs">
+        <li class="nav-item">
+            <a class="nav-link" href="#clientecomex_metas_cliente_comexes" role="tab" data-toggle="tab">
+                {{ trans('cruds.metasClienteComex.title') }}
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#cliente_base_recibidors" role="tab" data-toggle="tab">
+                {{ trans('cruds.baseRecibidor.title') }}
+            </a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane" role="tabpanel" id="clientecomex_metas_cliente_comexes">
+            @includeIf('admin.clientesComexes.relationships.clientecomexMetasClienteComexes', ['metasClienteComexes' => $clientesComex->clientecomexMetasClienteComexes])
+        </div>
+        <div class="tab-pane" role="tabpanel" id="cliente_base_recibidors">
+            @includeIf('admin.clientesComexes.relationships.clienteBaseRecibidors', ['baseRecibidors' => $clientesComex->clienteBaseRecibidors])
+        </div>
+    </div>
+</div>
 
 @endsection

@@ -134,13 +134,13 @@ class LiqCxCabeceraController extends Controller
     // public function pdfliq()
     // {
     //     $pdf=LiqPdf::distinct()->pluck('productor'); //$pdf=LiqPdf::where('productor','=',$productor)->get();
-        
+
     //     foreach ($pdf as $item) {
 
     //         $this->generarGrafico($item,"600","350");
     //     }
     //    // $this->generarGrafico($productor,"600","350");
-    //     return response()->json($pdf);   
+    //     return response()->json($pdf);
 
     // }
     public function downloadChartsPdf(Request $request, $productor)
@@ -174,14 +174,14 @@ $maxAttempts = 5; // Número máximo de intentos
 $delaySeconds = 3; // Segundos de espera entre intentos
 
 // Ruta absoluta en public/storage
-    
+
     // Guardar el PDF temporalmente
     $filename = 'charts_' . str_replace(' ', '_', $productor) . '.pdf';
     $path = public_path('/storage/' . $filename); // Ruta relativa en public/storage/($filename);
     \Log::info("Path--> ".$path);
     $pdf->save($path);
     $sourcePath = $path; // Ruta relativa en storage/app/
-$destinationPath = public_path('storage/' . $filename); 
+$destinationPath = public_path('storage/' . $filename);
 
     // Devolver la URL para la descarga
     return response()->json([
@@ -215,7 +215,7 @@ public function pdf(){
         $productorData = LiqPdf::all();
         // Obtener productores únicos
         $producers = LiqPdf::distinct()->pluck('productor')->sort()->values()->toArray();
-       
+
         return view('admin.liqCxCabeceras.selprods', compact('productorData', 'producers'));
     }
     public function generarGrafico($nombre,$ancho,$alto)
@@ -236,7 +236,7 @@ public function pdf(){
                 ->waitUntilNetworkIdle()
                 ->save($imagePath);
         //}
-    
+
         return $imagePath;
      }
     // app/Http/Controllers/Admin/FrutaController.php
@@ -343,18 +343,18 @@ protected function generatePdfZip(array $imagePaths)
             substr($uniqid, 20, 12);
     }
     public function sinproceso(Request $request){
-        
+
             $despachos = DB::connection('sqlsrv')->table("V_PKG_Despachos")
             ->selectRaw("COUNT('folio') as folios")
             ->where('tipo_g_despacho', '=', 'GDP')
             ->where('numero_embarque', '=', str_replace('i', '', str_replace('I', '', $request->instructivo)))
-            ->where('valor_unitario', '=', 0)   
+            ->where('valor_unitario', '=', 0)
             ->get();
             if($despachos[0]->folios>0){
-                   return response()->json(['success' => false, 'message' => 'Existen despachos sin proceso.'], 200);  
+                   return response()->json(['success' => false, 'message' => 'Existen despachos sin proceso.'], 200);
             }
             else{
-                return response()->json(['success' => true, 'message' => 'No existen despachos sin proceso.'], 200);  
+                return response()->json(['success' => true, 'message' => 'No existen despachos sin proceso.'], 200);
             }
     }
     public function edit(LiqCxCabecera $liqCxCabecera)
@@ -400,7 +400,7 @@ protected function generatePdfZip(array $imagePaths)
     {
 
         $liquidacion = LiquidacionesCx::where('liqcabecera_id', $request->id)->orderBy('folio_fx', 'asc')->get();
-       
+
 
 
         return response()->json(['success' => true, 'message' => 'Campo actualizado con éxito', 'data' => $liquidacion]);
@@ -419,15 +419,15 @@ protected function generatePdfZip(array $imagePaths)
         $ed=ExcelDato::where('instructivo', $request->instructivo)->first();
         $ed->tasa=$request->tasa_intercambio;
         $liqCxCabecera->update($request->all());
-        
-        
+
+
         $ed->save();
         $fob = Fob::where('Liquidacion', $request->instructivo)->get();
         foreach ($fob as $item) {
             $item->tc = $request->tasa_intercambio;
             $item->save();
         }
-        
+
 
         return redirect()->route('admin.liq-cx-cabeceras.index');
     }
@@ -559,8 +559,8 @@ protected function generatePdfZip(array $imagePaths)
         $liqs = $this->ConsolidadoLiquidacionesUnitario($id);
         \Log::info("Total de registros en liqs: " . count($liqs));
         \Log::info("liqs: ", $liqs->toArray());
-    
-       
+
+
         $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->where('id', $id)->get();
         $fob = Fob::where('Liquidacion',$liqCxCabeceras[0]->instructivo)->get(); // Busca solo uno
         if ($fob) {
@@ -581,17 +581,17 @@ protected function generatePdfZip(array $imagePaths)
         }
         foreach ($liqs as $liq) {
             //$fob = Fob::where('Liquidacion', $liq['Liquidacion'])->first();
-           
-           // \Log::info("liq. " . json_encode($liq));     
+
+           // \Log::info("liq. " . json_encode($liq));
 
             // Buscar la variedad y la especie antes de insert/update
             $variedad = Variedad::where('nombre', $liq["variedad"])->first();
             $especie = $variedad ? Especy::where('id', $variedad->especie_id)->first() : null;
-            
+
             // Datos comunes para inserción o actualización
             $datosFob = [
-                'cliente' => $liq['cliente'] ?? null,  
-                'nave' => $liq['nave'],              
+                'cliente' => $liq['cliente'] ?? null,
+                'nave' => $liq['nave'],
                 'Liquidacion' => $liq['Liquidacion'] ?? null,
                 'ETA' => $liq['ETA'],
                 'ETA_Week' => $liq['ETA_Week'],
@@ -635,8 +635,8 @@ protected function generatePdfZip(array $imagePaths)
                 'especie' => $especie->nombre ?? null,
                 'Costos_cajas_USD' => $liq['Costos_cajas_USD'] ?? null,
             ];
-        
-           
+
+
             try {
                 $fob = new Fob();
                 $resultado = $fob->create($datosFob);
@@ -644,14 +644,14 @@ protected function generatePdfZip(array $imagePaths)
             } catch (\Exception $e) {
                 \Log::error("Error al crear Fob para Liquidacion {$liq['Liquidacion']}: " . $e->getMessage());
             }
-           
-            
+
+
         }
         // Obtener cabeceras
-       
 
-        
-        
+
+
+
 
         foreach ($liqCxCabeceras as $liqCxCabecera) {
             try {
@@ -751,7 +751,7 @@ protected function generatePdfZip(array $imagePaths)
         //$liq = new Liquidaciones();
 
         // Obtener la sesión correctamente
-        
+
 
         // Obtener cabeceras
         $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->whereIn('instructivo',[
@@ -776,7 +776,7 @@ protected function generatePdfZip(array $imagePaths)
             'I2425619',
             'I2425658',
             'I2425647'])->get();
-        
+
         //Obtener cabeceras de JWM y Maoheng
         //$liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->whereIn('cliente_id',[19] )->whereNotNull('nave_id')->get();
 
@@ -788,23 +788,23 @@ protected function generatePdfZip(array $imagePaths)
                 \Log::info("fob: " . json_encode($fob));
             }
                 foreach ($fob as $item) {
-                    
+
                     $item->delete();
                 }
             //}
             foreach ($liqs as $liq) {
                 //$fob = Fob::where('Liquidacion', $liq['Liquidacion'])->first();
-               
-               // \Log::info("liq. " . json_encode($liq));     
-    
+
+               // \Log::info("liq. " . json_encode($liq));
+
                 // Buscar la variedad y la especie antes de insert/update
                 $variedad = Variedad::where('nombre', $liq["variedad"])->first();
                 $especie = $variedad ? Especy::where('id', $variedad->especie_id)->first() : null;
-                
+
                 // Datos comunes para inserción o actualización
                 $datosFob = [
-                    'cliente' => $liq['cliente'] ?? null,  
-                    'nave' => $liq['nave'],              
+                    'cliente' => $liq['cliente'] ?? null,
+                    'nave' => $liq['nave'],
                     'Liquidacion' => $liq['Liquidacion'] ?? null,
                     'ETA' => $liq['ETA'],
                     'ETA_Week' => $liq['ETA_Week'],
@@ -848,8 +848,8 @@ protected function generatePdfZip(array $imagePaths)
                     'especie' => $especie->nombre ?? null,
                     'Costos_cajas_USD' => $liq['Costos_cajas_USD'] ?? null,
                 ];
-            
-               
+
+
                 try {
                     $fob = new Fob();
                     $resultado = $fob->create($datosFob);
@@ -857,8 +857,8 @@ protected function generatePdfZip(array $imagePaths)
                 } catch (\Exception $e) {
                     \Log::error("Error al crear Fob para Liquidacion {$liq['Liquidacion']}: " . $e->getMessage());
                 }
-               
-                
+
+
             }
 
             // try {
@@ -881,7 +881,7 @@ protected function generatePdfZip(array $imagePaths)
             //             // Verificamos si el folio del despacho está en la lista
             //             $folioMatch = in_array($despacho->folio, $folios);
             //             if ($item['folio_fx'] === $despacho->folio || $folioMatch) {
-                            
+
 
 
             //                     Log::info('Comparando:', [
@@ -891,7 +891,7 @@ protected function generatePdfZip(array $imagePaths)
             //                         'calibre' => [$item['calibre'], trim($despacho->n_calibre), strcasecmp($item['calibre'], trim($despacho->n_calibre)) === 0],
             //                         'etiqueta' => [$item['etiqueta'], trim($despacho->n_etiqueta), strcasecmp($item['etiqueta'], trim($despacho->n_etiqueta)) === 0],
             //                     ]);
-                            
+
             //             }
 
             //             return $folioMatch &&
@@ -1094,7 +1094,7 @@ protected function generatePdfZip(array $imagePaths)
                 $total_ventas = $total_ventas + $item->cantidad * (float)(str_replace(',', '.', $item->precio_unitario));
                 // Log::info("Total Venta: " . $total_ventas);
             }
-           
+
             $porcComision = '0,06';
             foreach ($detalle as $item) {
 
@@ -1217,7 +1217,7 @@ protected function generatePdfZip(array $imagePaths)
                 $Flete_Aereo = ($flete_exportadora / $total_kilos) * $Peso_neto; //BQ
                 $Flete_Aereo_TO = $Flete_Aereo * $Cajas; //BR
                 $Costos_cajas_RMB = $Imp_destino_caja_RMB + $Costo_log_Caja_RMB + $Ent_Al_mercado_Caja_RMB + $Costo_mercado_caja_RMB + $Otros_costos_dest_Caja_RMB +$RMB_Flete_Domestico_Caja+
-                $Comision_Caja + $Flete_marit_Caja_RMB + ($Ajuste_impuesto_USD)  + ($Flete_Aereo * $TC)+(($notacredito/$total_kilos)*$Peso_neto); //AR   Se saca  ($Otros_Impuestos_JWM_Impuestos * $TC) + - ($Otros_Ingresos_abonos * $TC) para que no afecte al FOB 
+                $Comision_Caja + $Flete_marit_Caja_RMB + ($Ajuste_impuesto_USD)  + ($Flete_Aereo * $TC)+(($notacredito/$total_kilos)*$Peso_neto); //AR   Se saca  ($Otros_Impuestos_JWM_Impuestos * $TC) + - ($Otros_Ingresos_abonos * $TC) para que no afecte al FOB
                 //=+AF3+AH3+AJ3+AL3+AN3+AB3+AP3+(CA3*AV3)+(BO3*AV3)-(CC3*AV3)+(BQ3*AV3)
                 $RMB_Costos_TO = $Costos_cajas_RMB * $Cajas; //AS
                 $Resultados_caja_RMB =  $RMB_Caja - $Costos_cajas_RMB;  //AT  Verificar con Haydelin
@@ -1253,8 +1253,8 @@ protected function generatePdfZip(array $imagePaths)
                 $folio_fx = $item->folio_fx;
                 $notacredito_caja = (($notacredito == 0 ? 0 : ($notacredito) ) / $total_kilos) * $Peso_neto; //CA
                 $notacredito_total = $notacredito_caja * $Cajas; //CB
-                
-                
+
+
 
                 //$embalaje_dato_origen'=>$item->embalaje_id, //CI
 
@@ -1378,6 +1378,6 @@ protected function generatePdfZip(array $imagePaths)
         $fob=FOB::all();
         return view('admin.liqCxCabeceras.comparativoliquidaciones', compact('fob'));
     }
-   
-        
+
+
 }

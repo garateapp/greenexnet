@@ -176,3 +176,130 @@ table.dataTable thead .sorting_desc {
             margin-left: 25px;
         }
          /*end of Switch styling */
+@media print {
+    /* Step 1: Hide everything by default (very aggressively) */
+    body * {
+        visibility: hidden !important;
+        display: none !important;
+        /* Also ensure no margins/padding are pushing things out of view */
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* Step 2: Make your desired containers visible and positioned */
+    /* They should be block-level and cover the entire print area */
+    #score,
+    #comparativeTableContainer {
+        visibility: visible !important;
+        display: block !important;
+        position: absolute !important;
+        left: 0 !important;
+        width: 100% !important;
+        padding: 20px !important; /* Add some internal padding */
+        box-sizing: border-box !important;
+        page-break-after: avoid !important; /* Keep div on same page if possible */
+    }
+
+    /* Position the second div immediately after the first */
+    #comparativeTableContainer {
+        top: 250px !important; /* Adjust this value based on the height of your #score div and desired spacing */
+        /* A more dynamic way would be to wrap both in another div and make that parent block */
+    }
+
+    /* If you want them to stack naturally without absolute positioning: */
+    /* You'd remove 'position: absolute', 'left', 'top' from #score and #comparativeTableContainer */
+    /* And potentially wrap both in a parent div, then target that parent: */
+    /*
+    .print-area {
+        visibility: visible !important;
+        display: block !important;
+        width: 100% !important;
+        margin: 0 auto !important;
+        padding: 20px !important;
+    }
+    .print-area * {
+        visibility: visible !important;
+        display: revert !important;
+    }
+    */
+
+
+    /* Step 3: Ensure ALL content INSIDE your target divs is also visible */
+    /* This is critical for nested elements like table rows, cells, text, etc. */
+    #score *,
+    #comparativeTableContainer table,
+    #comparativeTableContainer thead,
+    #comparativeTableContainer tbody,
+    #comparativeTableContainer tfoot, /* Include if your table uses a footer */
+    #comparativeTableContainer tr,
+    #comparativeTableContainer th,
+    #comparativeTableContainer td {
+        visibility: visible !important;
+        display: revert !important; /* Revert to their natural display (table, table-row, table-cell, block, inline etc.) */
+    }
+
+    /* Step 4: Specific DataTables UI elements to hide (toolbar, pagination, search) */
+    #comparativeTableContainer .dataTables_wrapper .dataTables_length,
+    #comparativeTableContainer .dataTables_wrapper .dataTables_filter,
+    #comparativeTableContainer .dataTables_wrapper .dataTables_info,
+    #comparativeTableContainer .dataTables_wrapper .dataTables_paginate,
+    #comparativeTableContainer .dt-buttons {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
+    /* Step 5: Table-specific styling for print */
+    #comparativeTableContainer table.dataTable {
+        width: 100% !important;
+        margin: 0 !important;
+        font-size: 9pt !important;
+        border-collapse: collapse !important;
+    }
+
+    /* Ensure THEAD and its contents are unequivocally shown */
+    #comparativeTableContainer table.dataTable .dataTables_scroll {
+        visibility: visible !important;
+        display: table-header-group !important; /* Makes header repeat on new pages */
+        background-color: #f2f2f2 !important; /* Optional: light background */
+        -webkit-print-color-adjust: exact !important; /* For background color printing */
+        print-color-adjust: exact !important;
+    }
+
+    #comparativeTableContainer table.dataTable thead tr {
+        visibility: visible !important;
+        display: table-row !important;
+    }
+
+    #comparativeTableContainer table.dataTable thead th {
+        visibility: visible !important;
+        display: table-cell !important;
+        font-size: 9pt !important;
+        padding: 5px !important;
+        border: 1px solid #ccc !important;
+        white-space: normal !important; /* Allow text wrapping */
+    }
+
+    /* Hide DataTables-specific header cells (checkbox, control icon) */
+    #comparativeTableContainer table.dataTable thead th.select-checkbox,
+    #comparativeTableContainer table.dataTable thead th.dt-control {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
+    /* Style for table body cells */
+    #comparativeTableContainer table.dataTable tbody td {
+        padding: 5px !important;
+        border: 1px solid #ccc !important;
+        white-space: normal !important;
+    }
+
+    /* Prevent rows from breaking across pages */
+    #comparativeTableContainer table.dataTable tbody tr {
+        page-break-inside: avoid !important;
+    }
+
+    /* Handle DataTables Responsive if active (hide collapse icons/rows) */
+    #comparativeTableContainer table.dataTable.dtr-inline > tbody > tr.child,
+    #comparativeTableContainer table.dataTable.dtr-inline > tbody > tr.parent {
+        display: none !important;
+}

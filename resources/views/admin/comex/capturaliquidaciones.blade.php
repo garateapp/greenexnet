@@ -292,7 +292,7 @@ dd($datosExcel);
                                     $totalesColumna = [];
 
                                     // Procesar datos de los items
-
+                                    
                                     foreach ($items as $fila) {
                                         foreach ($fila as $columna) {
                                             $coordenada = $columna['coordenada'];
@@ -301,9 +301,11 @@ dd($datosExcel);
 
                                             $col = preg_replace('/[0-9]/', '', $coordenada); // Extraer letras (columna)
                                             $row = preg_replace('/[A-Z]/', '', $coordenada); // Extraer números (fila)
-
+                                          
                                             $tabla[$row][$col][$propiedad] = $valor;
-
+                                            // if($row==39 && $col=='K'){
+                                            //     dd($tabla);
+                                            // }
                                             // Determinar la última letra
                                             if (strcmp($col, $UltimaLetra) > 0) {
                                                 $UltimaLetra = $col;
@@ -321,13 +323,14 @@ dd($datosExcel);
                                                 $totalesColumna[$col] = 0;
                                             }
                                             $totalesColumna[$col] += (float)$valor;
+
                                         }
                                     }
 
                                 @endphp
 
                                 {{-- Mostrar filas y calcular totales --}}
-
+                                
                                 @foreach ($tabla as $row => $columnas)
                                     @php
                                         $totalFila = 0;
@@ -337,13 +340,14 @@ dd($datosExcel);
                                         }
                                     @endphp
                                     <tr>
-
+                                      
                                         @foreach ($columnas as $col => $valores) {{-- Solo procesa columnas presentes en $columnas --}}
                                         <td>
                                             @foreach ($valores as $propiedad => $valor)
 
 
-
+                                                {{ $propiedad }}: {{ $valor }}<br>
+                                                
                                                 {{ $valor }}<br>
 
                                             @endforeach

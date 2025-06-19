@@ -10,10 +10,14 @@
     "require": {
         "php": "^7.3|^8.0",
         "artisaninweb/laravel-soap": "^0.3.0",
+        "barryvdh/laravel-dompdf": "^2.2",
+        "barryvdh/laravel-snappy": "^1.0",
         "doctrine/dbal": "^3.0",
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^2.0",
+        "google/apiclient": "^2.18",
         "guzzlehttp/guzzle": "^7.0.1",
+        "knplabs/knp-snappy": "^1.5",
         "laravel-bi/laravel-bi": "^1.1",
         "laravel/dusk": "^6.11",
         "laravel/framework": "^8.70.1",
@@ -26,6 +30,7 @@
         "maatwebsite/excel": "^3.1",
         "nuovo/spreadsheet-reader": "^0.5.11",
         "pusher/pusher-php-server": "^7.2",
+        "spatie/browsershot": "^3.61",
         "spatie/laravel-medialibrary": "^9.11.2",
         "yajra/laravel-datatables-oracle": "^9.18"
     },

@@ -24,8 +24,8 @@
             <div class="col-md-2">&nbsp;</div>
         </div>
     </div>
-   
-  
+
+
     <script>
         $(document).ready(function() {
             $("#cboProductor").select2({
@@ -34,7 +34,7 @@
                 });
             // Datos pasados desde el controlador
             const data = @json($productorData);
-           
+
 
             $("#cboProductor").on("change", function() {
                 const selectedProductor = $(this).val();
@@ -53,7 +53,7 @@
                     console.warn('No data found for productor:', selectedProductor);
                 }
             });
-            
+
             //generateCharts(data);
 
             // Función para agrupar datos por productor y variedad
@@ -79,7 +79,7 @@
 
             // Función para calcular el promedio de rnp_kilo
             function calculateAverageRnpKilo(data)
-            {            
+            {
             const sum = data.reduce((acc, item) => acc + item.rnp_kilo, 0);
             return sum / data.length;
             }
@@ -94,7 +94,7 @@
         function createChart(productor, variedad, chartData) {
             const sortedData = sortCalibres(chartData);
             const calibres = sortedData.map(item => item.calibre);
-            const curvacalibre = sortedData.map(item => item.curvacalibre);
+            const curvacalibre = sortedData.map(item => item.);
             const rnpKilo = sortedData.map(item => item.rnp_kilo);
             const avgRnpKilo = calculateAverageRnpKilo(sortedData);
             const avgRnpKiloArray = sortedData.map(() => avgRnpKilo);
@@ -153,12 +153,12 @@
                 opacity: 0.9
             },
             offsetY: -25,
-            dropShadow: { 
-                enabled: true, 
-                top: 1, 
-                left: 1, 
-                blur: 1, 
-                opacity: 0.65 
+            dropShadow: {
+                enabled: true,
+                top: 1,
+                left: 1,
+                blur: 1,
+                opacity: 0.65
             }
         },
                 tooltip: {
@@ -178,7 +178,7 @@
         function generateCharts(data) {
             const groupedData = groupByProducerAndVariety(data);
             groupedData.forEach(group => {
-                createChart(group.productor, group.variedad, group.data);
+                createChart(group.especie,group.variedad, group.data);
             });
         }
 

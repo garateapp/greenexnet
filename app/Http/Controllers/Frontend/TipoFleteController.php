@@ -4,77 +4,77 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\CsvImportTrait;
-use App\Http\Requests\MassDestroyTipoFleteRequest;
-use App\Http\Requests\StoreTipoFleteRequest;
-use App\Http\Requests\UpdateTipoFleteRequest;
-use App\Models\TipoFlete;
+use App\Http\Requests\MassDestroyTipofleteRequest;
+use App\Http\Requests\StoreTipofleteRequest;
+use App\Http\Requests\UpdateTipofleteRequest;
+use App\Models\Tipoflete;
 use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class TipoFleteController extends Controller
+class TipofleteController extends Controller
 {
     use CsvImportTrait;
 
     public function index()
     {
-        abort_if(Gate::denies('tipo_flete_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('tipoflete_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $tipoFletes = TipoFlete::all();
+        $tipofletes = Tipoflete::all();
 
-        return view('frontend.tipoFletes.index', compact('tipoFletes'));
+        return view('frontend.tipofletes.index', compact('tipofletes'));
     }
 
     public function create()
     {
-        abort_if(Gate::denies('tipo_flete_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('tipoflete_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        return view('frontend.tipoFletes.create');
+        return view('frontend.tipofletes.create');
     }
 
-    public function store(StoreTipoFleteRequest $request)
+    public function store(StoreTipofleteRequest $request)
     {
-        $tipoFlete = TipoFlete::create($request->all());
+        $tipoflete = Tipoflete::create($request->all());
 
-        return redirect()->route('frontend.tipo-fletes.index');
+        return redirect()->route('frontend.tipofletes.index');
     }
 
-    public function edit(TipoFlete $tipoFlete)
+    public function edit(Tipoflete $tipoflete)
     {
-        abort_if(Gate::denies('tipo_flete_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('tipoflete_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        return view('frontend.tipoFletes.edit', compact('tipoFlete'));
+        return view('frontend.tipofletes.edit', compact('tipoflete'));
     }
 
-    public function update(UpdateTipoFleteRequest $request, TipoFlete $tipoFlete)
+    public function update(UpdateTipofleteRequest $request, Tipoflete $tipoflete)
     {
-        $tipoFlete->update($request->all());
+        $tipoflete->update($request->all());
 
-        return redirect()->route('frontend.tipo-fletes.index');
+        return redirect()->route('frontend.tipofletes.index');
     }
 
-    public function show(TipoFlete $tipoFlete)
+    public function show(Tipoflete $tipoflete)
     {
-        abort_if(Gate::denies('tipo_flete_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('tipoflete_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        return view('frontend.tipoFletes.show', compact('tipoFlete'));
+        return view('frontend.tipofletes.show', compact('tipoflete'));
     }
 
-    public function destroy(TipoFlete $tipoFlete)
+    public function destroy(Tipoflete $tipoflete)
     {
-        abort_if(Gate::denies('tipo_flete_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('tipoflete_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $tipoFlete->delete();
+        $tipoflete->delete();
 
         return back();
     }
 
-    public function massDestroy(MassDestroyTipoFleteRequest $request)
+    public function massDestroy(MassDestroyTipofleteRequest $request)
     {
-        $tipoFletes = TipoFlete::find(request('ids'));
+        $tipofletes = Tipoflete::find(request('ids'));
 
-        foreach ($tipoFletes as $tipoFlete) {
-            $tipoFlete->delete();
+        foreach ($tipofletes as $tipoflete) {
+            $tipoflete->delete();
         }
 
         return response(null, Response::HTTP_NO_CONTENT);

@@ -23,7 +23,6 @@ class Especy extends Model
     protected $fillable = [
         'codigo',
         'nombre',
-        'id_pro_p_familias',
         'created_at',
         'updated_at',
         'deleted_at',
@@ -42,5 +41,10 @@ class Especy extends Model
     public function especieEtiquetasXEspecies()
     {
         return $this->hasMany(EtiquetasXEspecy::class, 'especie_id', 'id');
+    }
+
+    public function especieAnticipos()
+    {
+        return $this->hasMany(Anticipo::class, 'especie_id', 'id');
     }
 }
