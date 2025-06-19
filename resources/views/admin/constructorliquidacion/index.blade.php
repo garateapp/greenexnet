@@ -544,7 +544,7 @@
                             });
                             processed++;
                             if (processed === chartContainers.length) {
-
+                                console.log(chartImages);
                                 // Enviar el contenido al backend
                                 $.ajax({
                                     url: "{{ route('admin.constructorliquidacion.generatepdf') }}", // Ruta del controlador

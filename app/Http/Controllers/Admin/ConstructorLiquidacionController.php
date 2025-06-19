@@ -97,65 +97,50 @@ use CsvImportTrait;
         $especie= Especy::pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
         return view('admin.constructorliquidacion.index', compact('productors', 'temporada', 'especie'));
     }
-    public function generatepdf(Request $request){
+  public function generatepdf(Request $request)
+{
+    // Validar entrada
+    $request->validate([
+        'tabs' => 'required|array',
+        'tabs.*.name' => 'required|string',
+        'tabs.*.html' => 'required|string',
+        'chartImages' => 'nullable|array'
+    ]);
 
-         // Validar la solicitud
-         $request->validate([
-            'tabs' => 'required|array',
-            'tabs.*.name' => 'required|string',
-            'tabs.*.html' => 'required|string',
-        ]);
-        $productor =Productor::find($request->input('productor_id'))->first();
-         $chartImages = $request->input('chartImages', []);
-    \Log::info('Header image path:', ['path' => public_path('img/cabecera_pdf.jpg')]);
-    \Log::info('Footer image path:', ['path' => public_path('img/footer_pdf.jpg')]);
-         // Preparar datos para la vista
-         $tabs_pdf = $request->input('tabs');
-         $tabs_processed_pdf = array_map(function ($tab_pdf) {
-            $productor_nombre_pdf = '';
-            if ($tab_pdf['name'] === 'Norma Con Semana') {
-                if (preg_match('/<td[^>]*class="productorNombre"[^>]*>([^<]*)<\/td>/i', $tab_pdf['html'], $matches_pdf)) {
-                    $productor_nombre_pdf = $matches_pdf[1];
-                }
-            }
-            return [
-                'name' => $tab_pdf['name'],
-                'html' => $tab_pdf['html'],
-                'productor_nombre' => $productor_nombre_pdf,
-            ];
-        }, $tabs_pdf);
+    // Procesar pestañas
+    $tabs = $request->input('tabs', []);
+    $chartImages = $request->input('chartImages', []);
 
-        $data_pdf = [
-            'tabs' => $tabs_processed_pdf,
-            'chartImages' => $chartImages,
-            'logo_path' => public_path('storage/cabecera_pdf.jpg'),
-            'footer_path' => public_path('storage/footer_pdf.jpg'),
-        ];
+    \Log::info("Gráficos recibidos:", ['chartImages' => count($chartImages)]);
 
-        //$snappy_pdf = new Pdf('C:\\wkhtmltopdf\\bin\\wkhtmltopdf'); // Adjust path
+    // Datos para la vista
+    $data = [
+        'tabs' => $tabs,
+        'chartImages' => $chartImages,
+        'logo_path' => public_path('storage/cabecera_pdf.jpg'),
+        'footer_path' => public_path('storage/footer_pdf.jpg'),
+    ];
 
-        $snappy_pdf= new Pdf('/usr/bin/wkhtmltopdf');
+    // Generar PDF
+    $snappy = new Pdf('/usr/bin/wkhtmltopdf');
 
-        $html_pdf = view('admin.constructorliquidacion.tabs', $data_pdf)->render();
+    $html = view('admin.constructorliquidacion.tabs', $data)->render();
 
+    $productor = Productor::find($request->input('productor_id'));
 
-        return response($snappy_pdf->getOutputFromHtml($html_pdf, [
-            'orientation' => 'Portrait',
-            'page-size' => 'A4',
-            'margin-top' => '10mm',
-            'margin-bottom' => '10mm',
-            'margin-left' => '10mm',
-            'margin-right' => '10mm',
-            'dpi' => 150,
-            'enable-local-file-access' => true,
-            'no-stop-slow-scripts' => true,
-        ]))
-            ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'inline; filename="Liquidación-'.$productor->nombre.'-'.date('Y-m-d').'.pdf"');
-
-        // Descargar el PDF
-       // return $pdf_pdf->download('Liquidación-'.$productor->nombre.'-'.date('Y-m-d').'.pdf');
-    }
+    return response($snappy->getOutputFromHtml($html, [
+        'orientation' => 'Portrait',
+        'page-size' => 'A4',
+        'margin-top' => '10mm',
+        'margin-bottom' => '10mm',
+        'margin-left' => '10mm',
+        'margin-right' => '10mm',
+        'dpi' => 150,
+        'enable-local-file-access' => true,
+        'no-stop-slow-scripts' => true
+    ]))->header('Content-Type', 'application/pdf')
+      ->header('Content-Disposition', 'inline; filename="Liquidación-' . $productor->nombre . '-' . date('Y-m-d') . '.pdf"');
+}
 
 
 }
