@@ -513,6 +513,14 @@
                                 {{ trans('cruds.materialProducto.title') }}
                             </a>
                         </li>
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.tarjado.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/material-productos") || request()->is("admin/material-productos/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fas fa-cogs c-sidebar-nav-icon">
+
+                                </i>
+                                Estado Tarjado
+                            </a>
+                        </li>
                     @endcan
                 </ul>
             </li>
