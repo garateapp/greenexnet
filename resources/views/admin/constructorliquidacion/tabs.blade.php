@@ -82,15 +82,7 @@
 
     <!-- Header visible solo en PDF -->
     <div style="text-align: center; font-weight: bold;">
-         @php
-            $headerImagePath = public_path('/img/cabecera_pdf.jpg');
-        @endphp
-        @if (file_exists($headerImagePath))
-            <img src="{{ $headerImagePath }}" alt="Header" alt="Cabecera" style="max-height: 25mm; width: auto;">
-        @else
-            <p class="error">Header image not found: {{ $headerImagePath }}</p>
-        @endif
-
+        <img src="{{ $logo_path }}" alt="Cabecera" style="max-height: 25mm; width: auto;">
     </div>
 
     <!-- Contenido dinámico de tabs -->
@@ -114,15 +106,7 @@
 
     <!-- Footer visible solo en PDF -->
     <div style="position: fixed; bottom: 5mm; left: 10mm; right: 10mm; text-align: center;">
-          @php
-            $footerImagePath = public_path('/img/footer_pdf.jpg');
-        @endphp
-        @if (file_exists($footerImagePath))
-            <img src="{{ $footerImagePath }}" alt="Footer" style="max-height: 25mm; width: auto;">
-        @else
-            <p class="error">Footer image not found: {{ $footerImagePath }}</p>
-        @endif
-
+        <img src="{{ $footer_path }}" alt="Footer" style="max-height: 25mm; width: auto;">
     </div>
 
 </body>
