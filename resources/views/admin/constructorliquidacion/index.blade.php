@@ -2686,7 +2686,7 @@
                 function generateCharts(data) {
                     const groupedData = data;
                     groupedData.forEach(group => {
-                        createChart(group.especie, group.variedad, group.data);
+                        createChart(group.especie, group.variedad, data);
                     });
                 }
             }
