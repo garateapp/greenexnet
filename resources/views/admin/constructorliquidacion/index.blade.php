@@ -532,7 +532,7 @@
                     });
                     const chartImages = [];
                     let processed = 0;
-
+                     const chartContainers = $('.chart-container');
                     chartContainers.each(function() {
                         const chartId = $(this).attr('id');
                         html2canvas(document.querySelector(`#${chartId}`), {
