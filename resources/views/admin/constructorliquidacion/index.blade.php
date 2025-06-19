@@ -565,7 +565,7 @@
                                 let filename = 'Liquidación.pdf';
 
                                 if (disposition && disposition.indexOf('filename=') !== -1) {
-                                    const matches = /filename="?([^\"]+)"?/exec(disposition);
+                                    const matches = /filename="?([^"]+)"?/exec(disposition);
                                     if (matches && matches[1]) {
                                         filename = matches[1];
                                     }
