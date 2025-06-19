@@ -106,7 +106,9 @@ use CsvImportTrait;
             'tabs.*.html' => 'required|string',
         ]);
         $productor =Productor::find($request->input('productor_id'))->first();
-
+         $chartImages = $request->input('chartImages', []);
+    \Log::info('Header image path:', ['path' => public_path('img/cabecera_pdf.jpg')]);
+    \Log::info('Footer image path:', ['path' => public_path('img/footer_pdf.jpg')]);
          // Preparar datos para la vista
          $tabs_pdf = $request->input('tabs');
          $tabs_processed_pdf = array_map(function ($tab_pdf) {
@@ -125,6 +127,7 @@ use CsvImportTrait;
 
         $data_pdf = [
             'tabs' => $tabs_processed_pdf,
+            'chartImages' => $chartImages,
             'logo_path' => public_path('storage/cabecera_pdf.jpg'),
             'footer_path' => public_path('storage/footer_pdf.jpg'),
         ];

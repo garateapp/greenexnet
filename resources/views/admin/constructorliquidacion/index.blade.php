@@ -504,14 +504,14 @@
                             id: '#Norma',
                             name: 'Norma'
                         },
-                        {
-                            id: '#Graficos',
-                            name: 'Gráficos'
-                        },
-                        {
-                            id: '#FueraNorma',
-                            name: 'Fuera de Norma'
-                        },
+                        // {
+                        //     id: '#Graficos',
+                        //     name: 'Gráficos'
+                        // },
+                        // {
+                        //     id: '#FueraNorma',
+                        //     name: 'Fuera de Norma'
+                        // },
                         {
                             id: '#Comercial',
                             name: 'Comercial'
@@ -530,6 +530,18 @@
                             html: content_pdf
                         };
                     });
+                     const chartImages = [];
+            let processed = 0;
+
+            chartContainers.each(function() {
+                const chartId = $(this).attr('id');
+                html2canvas(document.querySelector(`#${chartId}`), { scale: 2 }).then(canvas => {
+                    chartImages.push({
+                        id: chartId,
+                        image: canvas.toDataURL('image/png')
+                    });
+                    processed++;
+                    if (processed === chartContainers.length) {
 
                     // Enviar el contenido al backend
                     $.ajax({
@@ -541,7 +553,8 @@
                             productornombre: $(".productorNombre").text(),
                             temporada: $('#temporada').val(),
                             especie_id: $('#especie_id').val(),
-                            _token: $('meta[name="csrf-token"]').attr('content') // CSRF token
+                            _token: $('meta[name="csrf-token"]').attr('content'), // CSRF token
+                             chartImages: chartImages
                         },
                         success: function(response_pdf) {
                             // Crear un enlace para descargar el PDF

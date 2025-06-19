@@ -106,7 +106,7 @@
 </head>
 
 <body>
-    
+
 
     <!-- Footer -->
 
@@ -115,18 +115,23 @@
     <div class="content-wrapper">
         @foreach ($tabs as $index => $tab)
          <!-- Header -->
-    
+
             <div class="tab-content">
                 <div class="header">
                     <img src="{{ $logo_path }}" alt="Logo">
                 </div>
-              
+
                     {!! $tab['html'] !!}
                     <div class="footer">
                         <img src="{{ $footer_path }}" alt="Footer">
                     </div>
             </div>
-           
+                @endforeach
+             @foreach ($chartImages as $chart)
+    <div>
+        {{ $chart['image'] }}
+    </div>
+
         @endforeach
     </div>
 </body>
