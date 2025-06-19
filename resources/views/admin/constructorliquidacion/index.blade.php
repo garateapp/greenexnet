@@ -13,11 +13,11 @@
         }
 
         /* th,
-                                                td {
-                                                    border: 1px solid #dddddd;
-                                                    padding: 8px;
-                                                    text-align: left;
-                                                } */
+                                                    td {
+                                                        border: 1px solid #dddddd;
+                                                        padding: 8px;
+                                                        text-align: left;
+                                                    } */
 
         .currency {
             text-align: right;
@@ -148,6 +148,13 @@
                                             data-bs-target="#Comercial" type="button" role="tab"
                                             aria-controls="Comercial" aria-selected="true">
                                             Comercial
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="Graficos-tab" data-bs-toggle="tab"
+                                            data-bs-target="#Graficos" type="button" role="tab"
+                                            aria-controls="Graficos" aria-selected="true">
+                                            Gráficos
                                         </button>
                                     </li>
                                 </ul>
@@ -442,6 +449,9 @@
                                             </table>
                                         </div>
                                     </div>
+                                    <div class="tab-pane fade" id="Graficos" role="tabpanel">
+                                        <div id="charts"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -667,7 +677,7 @@
 
                                         // Sumar solo si la categoría está en el objeto
                                         if (sumasPorCategoria.hasOwnProperty(
-                                            categoria)) {
+                                                categoria)) {
                                             sumasPorCategoria[categoria]
                                                 .resultado_kilo +=
                                                 resultadoKilo;
@@ -695,19 +705,20 @@
                                             .resultado_total) +
                                         parseFloat(sumasPorCategoria['CATII'].resultado_total);
                                     $("#valorTotalUsd").text(valorTotal.toLocaleString(
-                                    'es-CL', {
-                                        minimumFractionDigits: 2,
-                                        maximumFractionDigits: 2
-                                    }));
+                                        'es-CL', {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2
+                                        }));
                                     valorNoExportable = parseFloat(sumasPorCategoria['MERMA']
                                             .costo_comercial) +
                                         parseFloat(sumasPorCategoria['DESECHO']
-                                        .costo_comercial) +
+                                            .costo_comercial) +
                                         parseFloat(
                                             sumasPorCategoria['PRECALIBRE'].costo_comercial) +
                                         parseFloat(
                                             sumasPorCategoria['COMERCIAL'].costo_comercial) +
-                                        parseFloat(sumasPorCategoria['SOBRECALIBRE'].costo_comercial);
+                                        parseFloat(sumasPorCategoria['SOBRECALIBRE']
+                                            .costo_comercial);
                                     $("#valorNoExportable").text(valorNoExportable
                                         .toLocaleString(
                                             'es-CL', {
@@ -720,8 +731,9 @@
                                         parseFloat(
                                             sumasPorCategoria['PRECALIBRE'].total_kilos) +
                                         parseFloat(
-                                            sumasPorCategoria['COMERCIAL'].total_kilos)+
-                                        parseFloat(sumasPorCategoria['SOBRECALIBRE'].total_kilos);
+                                            sumasPorCategoria['COMERCIAL'].total_kilos) +
+                                        parseFloat(sumasPorCategoria['SOBRECALIBRE']
+                                            .total_kilos);
                                     $("#kilosNoExportable").text(kilosNoExportable
                                         .toLocaleString(
                                             'es-CL', {
@@ -845,10 +857,10 @@
                                     }));
                                     NDValorTotal = NDValorNeto + NDValorIva;
                                     $("#NDVAlorTotal").text(NDValorTotal.toLocaleString(
-                                    'es-CL', {
-                                        minimumFractionDigits: 0,
-                                        maximumFractionDigits: 0
-                                    }));
+                                        'es-CL', {
+                                            minimumFractionDigits: 0,
+                                            maximumFractionDigits: 0
+                                        }));
                                     FacturaValorNeto = sumasPorCategoria['COMERCIAL']
                                         .resultado_total;
                                     $("#FVAlorNeto").text(FacturaValorNeto.toLocaleString(
@@ -1013,7 +1025,7 @@
                                                             i ===
                                                             0 &&
                                                             j === 0
-                                                            ) ?
+                                                        ) ?
                                                         variedad :
                                                         ' ';
                                                     let especieCell =
@@ -1021,7 +1033,7 @@
                                                             i ===
                                                             0 &&
                                                             j === 0
-                                                            ) ?
+                                                        ) ?
                                                         especie :
                                                         ' ';
                                                     let categoriaCell =
@@ -1137,7 +1149,8 @@
                                             datosAgrupados_v2[
                                                 variedad_v2] = {};
                                         if (!datosAgrupados_v2[variedad_v2][
-                                            etiqueta_v2])
+                                                etiqueta_v2
+                                            ])
                                             datosAgrupados_v2[variedad_v2][
                                                 etiqueta_v2
                                             ] = {};
@@ -1321,12 +1334,12 @@
                                             $.each(calibres_v2,
                                                 function(
                                                     k_v2, calibre_v2
-                                                    ) {
+                                                ) {
                                                     let datosCalibre_v2 =
                                                         datosSemana_v2
                                                         .calibres[
                                                             calibre_v2
-                                                            ];
+                                                        ];
                                                     let curvaCalibre_v2 =
                                                         datosSemana_v2
                                                         .total_kilos ?
@@ -1458,7 +1471,7 @@
                                             '0.0000';
                                         totalEtiqueta_v2.cajas_equivalentes = (
                                                 totalEtiqueta_v2.total_kilos / 9
-                                                )
+                                            )
                                             .toFixed(0);
                                         let rnpClassEtiqueta_v2 =
                                             totalEtiqueta_v2
@@ -1511,7 +1524,7 @@
                                     let rnpClassVariedad_v2 = totalVariedad_v2[
                                             variedad_v2]
                                         .rnp_total < 0 || parseFloat(
-                                        rnpKiloVariedad_v2) <
+                                            rnpKiloVariedad_v2) <
                                         0 ? 'negative' : '';
                                     htmlOutput_v2 += `
                 <tr class="total-row">
@@ -1597,7 +1610,8 @@
                                         if (!datosAgrupados_fn[variedad_fn])
                                             datosAgrupados_fn[variedad_fn] = {};
                                         if (!datosAgrupados_fn[variedad_fn][
-                                            etiqueta_fn])
+                                                etiqueta_fn
+                                            ])
                                             datosAgrupados_fn[variedad_fn][
                                                 etiqueta_fn
                                             ] = {};
@@ -1785,12 +1799,12 @@
                                             $.each(calibres_fn,
                                                 function(
                                                     k_fn, calibre_fn
-                                                    ) {
+                                                ) {
                                                     let datosCalibre_fn =
                                                         datosSemana_fn
                                                         .calibres[
                                                             calibre_fn
-                                                            ];
+                                                        ];
                                                     let cajasEquivalentes_fn =
                                                         (datosCalibre_fn
                                                             .total_kilos /
@@ -1908,7 +1922,7 @@
                                             '0.0000';
                                         totalEtiqueta_fn.cajas_equivalentes = (
                                                 totalEtiqueta_fn.total_kilos / 9
-                                                )
+                                            )
                                             .toFixed(0);
                                         let rnpClassEtiqueta_fn =
                                             totalEtiqueta_fn
@@ -1958,7 +1972,7 @@
                                     let rnpClassVariedad_fn = totalVariedad_fn[
                                             variedad_fn]
                                         .rnp_total < 0 || parseFloat(
-                                        rnpKiloVariedad_fn) <
+                                            rnpKiloVariedad_fn) <
                                         0 ? 'negative' : '';
                                     htmlOutput_fn += `
         <tr class="total-row">
@@ -2036,7 +2050,7 @@
                         });
                     }
                 });
-
+                let groupedDataChart = {};
                 function llenarNorma(response) {
                     // Definir orden de calibres
                     const ordenCalibres = ['7J', '6J', '5J', '4J', '3J', '2J', 'J', 'XL'];
@@ -2075,6 +2089,8 @@
                             let totalKilos = parseFloat(item.total_kilos.replace(',', '.')) || 0;
                             let rnpTotal = parseFloat(item.resultado_total.replace(',', '.')) || 0;
                             let rnpKilo = parseFloat(item.resultado_kilo.replace(',', '.')) || 0;
+
+
 
                             if (!datosAgrupadosNorma[especie]) {
                                 datosAgrupadosNorma[especie] = {};
@@ -2216,6 +2232,18 @@
                         </tr>
                     `;
 
+                            if(!groupedDataChart[variedad]) {
+                                groupedDataChart[variedad] = {
+                                    especie=especie,
+                                    variedad=variedad,
+                                    etiqueta=etiqueta,
+                                    calibre=calibre,
+                                    curvaCalibre: curvaCalibre,
+                                    rnp_kilo: rnpKilo,
+                                };
+                            }
+
+
                                     isFirstEtiquetaRow = false;
                                     isFirstVariedadRow = false;
 
@@ -2285,7 +2313,7 @@
 
                             // Acumular al total general
                             totalGeneralNorma.cajas_equivalentes += totalVariedad
-                            .cajas_equivalentes;
+                                .cajas_equivalentes;
                             totalGeneralNorma.total_kilos += totalVariedad.total_kilos;
                             totalGeneralNorma.rnp_total += totalVariedad.rnp_total;
                             totalGeneralNorma.rnp_kilo_sum += totalVariedad.rnp_kilo_sum;
@@ -2316,6 +2344,7 @@
     `;
 
                     $('#norma').html(htmlOutput); // Insertar en contenedor
+                    generateCharts(groupedDataChart); // Llamar a la función de gráficos
                 }
 
                 function llenarComercial(response) {
@@ -2510,6 +2539,172 @@
                     return parseFloat(value).toLocaleString('es-CL', {
                         minimumFractionDigits: 0,
                         maximumFractionDigits: 0
+                    });
+                }
+
+                function groupByProducerAndVariety(data) {
+                    const grouped = {};
+                    data.forEach(item => {
+                        const key = `${item.variedad}`;
+                        if (!grouped[key]) {
+                            grouped[key] = {
+
+                                variedad: item.variedad,
+                                data: []
+                            };
+                        }
+                        grouped[key].data.push({
+                            calibre: item.calibre,
+                            curvacalibre: parseFloat(item.curvacalibre),
+                            rnp_kilo: parseFloat(item.rnp_kilo)
+                        });
+                    });
+                    return Object.values(grouped);
+                }
+
+                // Función para calcular el promedio de rnp_kilo
+                function calculateAverageRnpKilo(data) {
+                    const sum = data.reduce((acc, item) => acc + item.rnp_kilo, 0);
+                    return sum / data.length;
+                }
+
+                // Función para ordenar calibres
+                function sortCalibres(data) {
+                    // const calibreOrder = ['5J', '4J', '3J', '2J', 'J', 'XL', 'L'];
+                    return data;
+                }
+
+                // Función para generar un gráfico con ApexCharts
+                function createChart(especie,variedad,chartData) {
+                    const sortedData = sortCalibres(chartData);
+                    const calibres = sortedData.map(item => item.calibre);
+                    const curvacalibre = sortedData.map(item => item.curvacalibre);
+                    const rnpKilo = sortedData.map(item => item.rnp_kilo);
+                    const avgRnpKilo = calculateAverageRnpKilo(sortedData);
+                    const avgRnpKiloArray = sortedData.map(() => avgRnpKilo);
+
+                    const options = {
+                        chart: {
+                            type: 'line',
+                            height: 400,
+                            //toolbar: { show: true, export: { csv: false, svg: false, png: true } }
+                            toolbar: {
+                                show: false
+                            },
+                        },
+                        series: [{
+                                name: 'Curva Calibre',
+                                type: 'column',
+                                data: curvacalibre
+                            },
+                            {
+                                name: 'RNP por Kilo',
+                                type: 'line',
+                                data: rnpKilo
+                            },
+                            {
+                                name: 'Promedio RNP por Kilo',
+                                type: 'line',
+                                data: avgRnpKiloArray
+                            }
+                        ],
+                        xaxis: {
+                            categories: calibres,
+                            title: {
+                                text: 'Calibre'
+                            }
+                        },
+                        yaxis: [{
+                                title: {
+                                    text: 'Curva Calibre'
+                                },
+                                decimalsInFloat: 2
+                            },
+                            {
+                                opposite: true,
+                                title: {
+                                    text: 'RNP por Kilo'
+                                },
+                                decimalsInFloat: 2
+                            }
+                        ],
+                        title: {
+                            text: `${productor} - ${variedad}`,
+                            align: 'center'
+                        },
+                        stroke: {
+                            width: [0, 4, 4]
+                        },
+                        colors: ['#1f77b4', '#ff7f0e', '#2ca02c'],
+                        dataLabels: {
+                            enabled: true,
+                            enabledOnSeries: [0, 1],
+                            formatter: function(val, opts) {
+                                const seriesIndex = opts.seriesIndex;
+                                const dataPointIndex = opts.dataPointIndex;
+                                const allSeries = opts.w.config.series;
+                                const values = [
+                                    allSeries[0].data[dataPointIndex] || 0, // Curva Calibre
+                                    allSeries[1].data[dataPointIndex] || 0, // RNP por Kilo
+                                    allSeries[2].data[dataPointIndex] || 0 // Promedio RNP por Kilo
+                                ];
+
+                                // Hide label if too close to another series (within 0.5 units)
+                                if (seriesIndex === 1 && Math.abs(values[1] - values[0]) < 0.2) return '';
+                                if (seriesIndex === 2 && (Math.abs(values[2] - values[1]) < 0.2 || Math.abs(
+                                        values[2] - values[0]) < 0.2)) return '';
+
+                                return val.toFixed(2);
+                            },
+                            style: {
+                                fontSize: '22px',
+                                colors: ['#1f77b4', '#ff7f0e',
+                                    '#2ca02c'] // 2. Match data label colors to series colors
+                            },
+                            background: {
+                                enabled: true, // Background disabled as per original
+                                foreColor: '#000000',
+                                padding: 4,
+                                background: '#FFFFFF',
+                                borderRadius: 2,
+                                borderWidth: 1,
+                                borderColor: '#ffffff',
+                                opacity: 0.9
+                            },
+                            offsetY: -25,
+                            dropShadow: {
+                                enabled: true,
+                                top: 1,
+                                left: 1,
+                                blur: 1,
+                                opacity: 0.65
+                            }
+                        },
+                        tooltip: {
+                            y: [{
+                                formatter: val => val.toFixed(2)
+                            }, {
+                                formatter: val => val.toFixed(2)
+                            }, {
+                                formatter: val => val.toFixed(2)
+                            }]
+                        }
+                    };
+
+                    const chartId = `chart_${productor}_${variedad}`.replace(/ /g, '_').replace(/[^a-zA-Z0-9_]/g,
+                        '');
+                    $('#charts').append(`<div class="chart-container" id="${chartId}"></div>`);
+
+                    const chart = new ApexCharts(document.querySelector(`#${chartId}`), options);
+                    chart.render();
+                    return chartId;
+                }
+
+                // Función principal para generar todos los gráficos
+                function generateCharts(data) {
+                    const groupedData = groupByProducerAndVariety(data);
+                    groupedData.forEach(group => {
+                        createChart(group.productor, group.variedad, group.data);
                     });
                 }
             }
