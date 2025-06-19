@@ -131,8 +131,6 @@
 </head>
 
 <body>
-
-
     <!-- Footer -->
 
 
@@ -157,8 +155,7 @@
                     <img src="{{ $chart['image'] }}" alt="Gráfico {{ $chart['id'] }}"
                         style="width: 100%; max-width: 800px; height: auto;" />
                 </div>
-            @endforeach
+            @endforeach|
     </div>
 </body>
-
 </html>
