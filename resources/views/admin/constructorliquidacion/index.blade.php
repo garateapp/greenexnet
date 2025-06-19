@@ -849,14 +849,14 @@
                                         minimumFractionDigits: 0,
                                         maximumFractionDigits: 0
                                     }));
-                                    FacturaValorNeto = sumasPorCategoria['Comercial']
+                                    FacturaValorNeto = sumasPorCategoria['COMERCIAL']
                                         .resultado_total;
                                     $("#FVAlorNeto").text(FacturaValorNeto.toLocaleString(
                                         'es-CL', {
                                             minimumFractionDigits: 0,
                                             maximumFractionDigits: 0
                                         }));
-                                    FVAlorIva = sumasPorCategoria['Comercial'].resultado_total *
+                                    FVAlorIva = sumasPorCategoria['COMERCIAL'].resultado_total *
                                         0.19;
                                     $("#FVAlorIva").text(FVAlorIva.toLocaleString('es-CL', {
                                         minimumFractionDigits: 0,
