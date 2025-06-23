@@ -115,5 +115,5 @@ class ZktecoController extends Controller
         return response($responseContent, 200)
             ->header('Content-Type', 'text/plain');
     }
-}
+
 }
