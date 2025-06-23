@@ -101,16 +101,30 @@ class ZktecoController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function handleIClockGet(Request $request)
+     public function handleIClockGet(Request $request)
     {
         Log::info('ZKTeco GET Request Received', $request->all());
 
         $deviceSN = $request->query('SN'); // Número de serie del dispositivo
 
-        // ZKTeco espera una respuesta específica para los GET.
-        // Si no tienes comandos que enviar al dispositivo, puedes enviar "OK" o "GET OPTION".
-        // O responder con comandos como "CMD:CHECK" para que el dispositivo solicite actualizaciones.
-        // Aquí un ejemplo básico:
-        return response("OK", 200);
+        // La respuesta que el ZKTeco espera para GET es una serie de comandos.
+        // `GET ATTLOG` le dice al dispositivo que envíe todos los registros de asistencia pendientes.
+        // `INFO,0` es un comando general para obtener información del dispositivo (a veces requerido antes de otros comandos).
+        // `OK` simplemente confirma la conexión sin pedir nada específico.
+        // `GET OPTION` también puede ser un comando para ver sus configuraciones.
+
+        // Vamos a probar con GET ATTLOG para forzar el envío de logs de asistencia.
+        // NOTA: Si esto funciona, tendrás que implementar una lógica más inteligente
+        // para cuándo pedir los logs (ej. cada X minutos, o solo una vez por GET,
+        // o después de recibir un marcaje para confirmar que se envió todo).
+
+        $responseContent = "GET ATTLOG\r\n"; // \r\n es importante para el protocolo ZKTeco
+        // $responseContent = "INFO,0\r\n"; // Otra opción si GET ATTLOG no funciona solo
+        // $responseContent = "OK"; // Tu respuesta actual
+
+        Log::info('ZKTeco GET Response Sent', ['response' => $responseContent]);
+
+        return response($responseContent, 200)
+            ->header('Content-Type', 'text/plain'); // Asegurarse que es texto plano
     }
 }
