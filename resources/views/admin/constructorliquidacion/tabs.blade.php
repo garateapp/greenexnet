@@ -99,12 +99,19 @@
 
     <!-- Gráficos -->
     @if (!empty($chartImages))
+    dd($chartImages);
         @foreach ($chartImages as $chart)
             @if (!empty($chart['image']))
                 <div style="page-break-before: always; text-align: center;">
+                      <div style="text-align: center; font-weight: bold;">
+        <img src="{{ $logo_path }}" alt="Cabecera" style="max-height: 25mm; width: auto;">
+    </div>
                     <h3>{{ $chart['id'] }}</h3>
                     <img src="{{ $chart['image'] }}" alt="Gráfico {{ $chart['id'] }}" style="width: 100%; max-width: 700px; height: auto;" />
                 </div>
+                <div style="position: fixed; bottom: 5mm; left: 10mm; right: 10mm; text-align: center;">
+        <img src="{{ $footer_path }}" alt="Footer" style="max-height: 25mm; width: auto;">
+    </div>
             @endif
         @endforeach
     @endif
