@@ -868,6 +868,12 @@
                                                 minimumFractionDigits: 2,
                                                 maximumFractionDigits: 2
                                             });
+                                            if(bonificacion==0){
+                                                $("#trBonificacionfletehuerto").hide();
+                                            }
+                                            else{
+                                                $("#trBonificacionfletehuerto").show();
+                                            }
 
                                     } else {
                                         $("#trBonificacionfletehuerto").hide();
@@ -883,6 +889,12 @@
                                                     minimumFractionDigits: 2,
                                                     maximumFractionDigits: 2
                                                 });
+                                        if(multiresiduos==0){
+                                            $("#trAnalisisMultiresiduosVirus").hide();
+                                        }
+                                        else{
+                                            $("#trAnalisisMultiresiduosVirus").show();
+                                        }
                                     }
                                     else{
                                         $("#trAnalisisMultiresiduosVirus").hide();
