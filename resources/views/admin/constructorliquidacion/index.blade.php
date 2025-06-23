@@ -728,7 +728,8 @@
                                             `Categoría: ${categoria}, Resultado Kilo: ${sumas.resultado_kilo}, Resultado Total: ${sumas.resultado_total}, Total Comercial: ${sumas.total_comercial}, Total Kilos: ${sumas.total_kilos}, Costo Comercial: ${sumas.costo_comercial}`
                                         );
                                     });
-
+                                     FacturaValorNeto = sumasPorCategoria['COMERCIAL']
+                                        .totalComercial;
                                     valorTotal = parseFloat(sumasPorCategoria['CAT1']
                                             .resultado_total) +
                                         parseFloat(sumasPorCategoria['CATII'].resultado_total);
@@ -896,8 +897,7 @@
                                             minimumFractionDigits: 0,
                                             maximumFractionDigits: 0
                                         }));
-                                    FVAlorIva = sumasPorCategoria['COMERCIAL'].totalComercial *
-                                        0.19;
+                                    FVAlorIva = FacturaValorNeto *0.19;
                                     $("#FVAlorIva").text(FVAlorIva.toLocaleString('es-CL', {
                                         minimumFractionDigits: 0,
                                         maximumFractionDigits: 0
