@@ -729,7 +729,7 @@
                                         );
                                     });
                                      FacturaValorNeto = sumasPorCategoria['COMERCIAL']
-                                        .totalComercial;
+                                        .total_comercial;
                                     valorTotal = parseFloat(sumasPorCategoria['CAT1']
                                             .resultado_total) +
                                         parseFloat(sumasPorCategoria['CATII'].resultado_total);
