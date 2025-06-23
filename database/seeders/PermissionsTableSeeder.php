@@ -15,229 +15,69 @@ class PermissionsTableSeeder extends Seeder
     public function run()
     {
         $permissions = [
-            [
-                'id'    => 750,
-                'title' => 'confeccion_liquidacion_access',
+                      [
+                'id'    => 806,
+                'title' => 'multiresiduo_create',
             ],
             [
-                'id'    => 751,
-                'title' => 'grupo_create',
+                'id'    => 807,
+                'title' => 'multiresiduo_edit',
             ],
             [
-                'id'    => 752,
-                'title' => 'grupo_edit',
+                'id'    => 808,
+                'title' => 'multiresiduo_show',
             ],
             [
-                'id'    => 753,
-                'title' => 'grupo_show',
+                'id'    => 809,
+                'title' => 'multiresiduo_delete',
             ],
             [
-                'id'    => 754,
-                'title' => 'grupo_delete',
+                'id'    => 810,
+                'title' => 'multiresiduo_access',
             ],
             [
-                'id'    => 755,
-                'title' => 'grupo_access',
+                'id'    => 811,
+                'title' => 'bonificacion_create',
             ],
             [
-                'id'    => 756,
-                'title' => 'productor_create',
+                'id'    => 812,
+                'title' => 'bonificacion_edit',
             ],
             [
-                'id'    => 757,
-                'title' => 'productor_edit',
+                'id'    => 813,
+                'title' => 'bonificacion_show',
             ],
             [
-                'id'    => 758,
-                'title' => 'productor_show',
+                'id'    => 814,
+                'title' => 'bonificacion_delete',
             ],
             [
-                'id'    => 759,
-                'title' => 'productor_delete',
+                'id'    => 815,
+                'title' => 'bonificacion_access',
             ],
             [
-                'id'    => 760,
-                'title' => 'productor_access',
+                'id'    => 816,
+                'title' => 'otro_cobro_create',
             ],
             [
-                'id'    => 761,
-                'title' => 'conjunto_create',
+                'id'    => 817,
+                'title' => 'otro_cobro_edit',
             ],
             [
-                'id'    => 762,
-                'title' => 'conjunto_edit',
+                'id'    => 818,
+                'title' => 'otro_cobro_show',
             ],
             [
-                'id'    => 763,
-                'title' => 'conjunto_show',
+                'id'    => 819,
+                'title' => 'otro_cobro_delete',
             ],
             [
-                'id'    => 764,
-                'title' => 'conjunto_delete',
+                'id'    => 820,
+                'title' => 'otro_cobro_access',
             ],
             [
-                'id'    => 765,
-                'title' => 'conjunto_access',
-            ],
-            [
-                'id'    => 766,
-                'title' => 'valor_flete_create',
-            ],
-            [
-                'id'    => 767,
-                'title' => 'valor_flete_edit',
-            ],
-            [
-                'id'    => 768,
-                'title' => 'valor_flete_show',
-            ],
-            [
-                'id'    => 769,
-                'title' => 'valor_flete_delete',
-            ],
-            [
-                'id'    => 770,
-                'title' => 'valor_flete_access',
-            ],
-            [
-                'id'    => 771,
-                'title' => 'valor_dolar_create',
-            ],
-            [
-                'id'    => 772,
-                'title' => 'valor_dolar_edit',
-            ],
-            [
-                'id'    => 773,
-                'title' => 'valor_dolar_show',
-            ],
-            [
-                'id'    => 774,
-                'title' => 'valor_dolar_delete',
-            ],
-            [
-                'id'    => 775,
-                'title' => 'valor_dolar_access',
-            ],
-            [
-                'id'    => 776,
-                'title' => 'valor_envase_create',
-            ],
-            [
-                'id'    => 777,
-                'title' => 'valor_envase_edit',
-            ],
-            [
-                'id'    => 778,
-                'title' => 'valor_envase_show',
-            ],
-            [
-                'id'    => 779,
-                'title' => 'valor_envase_delete',
-            ],
-            [
-                'id'    => 780,
-                'title' => 'valor_envase_access',
-            ],
-            [
-                'id'    => 781,
-                'title' => 'anticipo_create',
-            ],
-            [
-                'id'    => 782,
-                'title' => 'anticipo_edit',
-            ],
-            [
-                'id'    => 783,
-                'title' => 'anticipo_show',
-            ],
-            [
-                'id'    => 784,
-                'title' => 'anticipo_delete',
-            ],
-            [
-                'id'    => 785,
-                'title' => 'anticipo_access',
-            ],
-            [
-                'id'    => 786,
-                'title' => 'interes_anticipo_create',
-            ],
-            [
-                'id'    => 787,
-                'title' => 'interes_anticipo_edit',
-            ],
-            [
-                'id'    => 788,
-                'title' => 'interes_anticipo_show',
-            ],
-            [
-                'id'    => 789,
-                'title' => 'interes_anticipo_delete',
-            ],
-            [
-                'id'    => 790,
-                'title' => 'interes_anticipo_access',
-            ],
-            [
-                'id'    => 791,
-                'title' => 'recepcion_create',
-            ],
-            [
-                'id'    => 792,
-                'title' => 'recepcion_edit',
-            ],
-            [
-                'id'    => 793,
-                'title' => 'recepcion_show',
-            ],
-            [
-                'id'    => 794,
-                'title' => 'recepcion_delete',
-            ],
-            [
-                'id'    => 795,
-                'title' => 'recepcion_access',
-            ],
-            [
-                'id'    => 796,
-                'title' => 'proceso_create',
-            ],
-            [
-                'id'    => 797,
-                'title' => 'proceso_edit',
-            ],
-            [
-                'id'    => 798,
-                'title' => 'proceso_show',
-            ],
-            [
-                'id'    => 799,
-                'title' => 'proceso_delete',
-            ],
-            [
-                'id'    => 800,
-                'title' => 'proceso_access',
-            ],
-            [
-                'id'    => 801,
-                'title' => 'analisi_create',
-            ],
-            [
-                'id'    => 802,
-                'title' => 'analisi_edit',
-            ],
-            [
-                'id'    => 803,
-                'title' => 'analisi_show',
-            ],
-            [
-                'id'    => 804,
-                'title' => 'analisi_delete',
-            ],
-            [
-                'id'    => 805,
-                'title' => 'analisi_access',
+                'id'    => 821,
+                'title' => 'profile_password_edit',
             ],
 
 

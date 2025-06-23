@@ -63,5 +63,4 @@ class Productor extends Model
     {
         return $this->belongsTo(Grupo::class, 'grupo_id');
     }
-
 }

@@ -718,7 +718,7 @@
             </li>
         @endcan
         @can('confeccion_liquidacion_access')
-            <li class="c-sidebar-nav-dropdown {{ request()->is("admin/grupos*") ? "c-show" : "" }} {{ request()->is("admin/productors*") ? "c-show" : "" }} {{ request()->is("admin/conjuntos*") ? "c-show" : "" }} {{ request()->is("admin/valor-fletes*") ? "c-show" : "" }} {{ request()->is("admin/valor-dolars*") ? "c-show" : "" }} {{ request()->is("admin/valor-envases*") ? "c-show" : "" }} {{ request()->is("admin/anticipos*") ? "c-show" : "" }} {{ request()->is("admin/interes-anticipos*") ? "c-show" : "" }} {{ request()->is("admin/recepcions*") ? "c-show" : "" }} {{ request()->is("admin/procesos*") ? "c-show" : "" }}">
+            <li class="c-sidebar-nav-dropdown {{ request()->is("admin/grupos*") ? "c-show" : "" }} {{ request()->is("admin/productors*") ? "c-show" : "" }} {{ request()->is("admin/conjuntos*") ? "c-show" : "" }} {{ request()->is("admin/valor-fletes*") ? "c-show" : "" }} {{ request()->is("admin/valor-dolars*") ? "c-show" : "" }} {{ request()->is("admin/valor-envases*") ? "c-show" : "" }} {{ request()->is("admin/anticipos*") ? "c-show" : "" }} {{ request()->is("admin/interes-anticipos*") ? "c-show" : "" }} {{ request()->is("admin/recepcions*") ? "c-show" : "" }} {{ request()->is("admin/procesos*") ? "c-show" : "" }} {{ request()->is("admin/multiresiduos*") ? "c-show" : "" }} {{ request()->is("admin/bonificacions*") ? "c-show" : "" }} {{ request()->is("admin/otro-cobros*") ? "c-show" : "" }}">">
                 <a class="c-sidebar-nav-dropdown-toggle" href="#">
                     <i class="fa-fw fab fa-asymmetrik c-sidebar-nav-icon">
 
@@ -840,6 +840,36 @@
 
                                 </i>
                                 {{ trans('cruds.proceso.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('multiresiduo_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.multiresiduos.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/multiresiduos") || request()->is("admin/multiresiduos/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fas fa-trash-alt c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.multiresiduo.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('bonificacion_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.bonificacions.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/bonificacions") || request()->is("admin/bonificacions/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fas fa-dollar-sign c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.bonificacion.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('otro_cobro_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.otro-cobros.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/otro-cobros") || request()->is("admin/otro-cobros/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fas fa-hand-holding-usd c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.otroCobro.title') }}
                             </a>
                         </li>
                     @endcan
