@@ -80,15 +80,20 @@
 </head>
 <body>
 
-    <!-- Header visible solo en PDF -->
-    <div style="text-align: center; font-weight: bold;">
-        <img src="{{ $logo_path }}" alt="Cabecera" style="max-height: 25mm; width: auto;">
-    </div>
+
 
     <!-- Contenido dinámico de tabs -->
     @foreach ($tabs as $tab)
         <div class="tab-content" style="page-break-before: always;">
+             <!-- Header visible solo en PDF -->
+    <div style="text-align: center; font-weight: bold;">
+        <img src="{{ $logo_path }}" alt="Cabecera" style="max-height: 25mm; width: auto;">
+    </div>
             {!! $tab['html'] !!}
+               <!-- Footer visible solo en PDF -->
+    <div style="position: fixed; bottom: 5mm; left: 10mm; right: 10mm; text-align: center;">
+        <img src="{{ $footer_path }}" alt="Footer" style="max-height: 25mm; width: auto;">
+    </div>
         </div>
     @endforeach
 
@@ -104,10 +109,7 @@
         @endforeach
     @endif
 
-    <!-- Footer visible solo en PDF -->
-    <div style="position: fixed; bottom: 5mm; left: 10mm; right: 10mm; text-align: center;">
-        <img src="{{ $footer_path }}" alt="Footer" style="max-height: 25mm; width: auto;">
-    </div>
+
 
 </body>
 </html>
