@@ -18,7 +18,7 @@
         }
 
         table {
-            width: 100%;
+            width: 90%;
             border-collapse: collapse;
             break-inside: auto;
         }
