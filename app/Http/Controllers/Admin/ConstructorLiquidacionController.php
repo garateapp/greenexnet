@@ -92,7 +92,7 @@ use CsvImportTrait;
                                 'valorflete' => $valorflete,
                                 'productor' => $prod,
                                 'envases' => $envases,
-                                'analisis' => $analisis,
+                                //'analisis' => $analisis,
                                 'bonificacion' => $bonificacion,
                                 'OtroCobro' => $OtroCobro,
                                 'multiresiduo' => $multiresiduo
