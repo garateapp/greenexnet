@@ -79,8 +79,8 @@
     </style>
 </head>
 <body>
- <div class="tab-content" >
-        <img src="{{ $portada }}" alt="Cabecera" style="width: auto; max-height:93%">
+ <div class="tab-content"  style="page-break-before: always;">
+        <img src="{{ $portada }}" alt="Cabecera" style="width: auto; max-height:90%">
  </div>
 
 

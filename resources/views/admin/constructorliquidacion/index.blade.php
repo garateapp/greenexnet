@@ -13,11 +13,11 @@
         }
 
         /* th,
-                                                                td {
-                                                                    border: 1px solid #dddddd;
-                                                                    padding: 8px;
-                                                                    text-align: left;
-                                                                } */
+                                                                    td {
+                                                                        border: 1px solid #dddddd;
+                                                                        padding: 8px;
+                                                                        text-align: left;
+                                                                    } */
 
         .currency {
             text-align: right;
@@ -728,7 +728,7 @@
                                             `Categoría: ${categoria}, Resultado Kilo: ${sumas.resultado_kilo}, Resultado Total: ${sumas.resultado_total}, Total Comercial: ${sumas.total_comercial}, Total Kilos: ${sumas.total_kilos}, Costo Comercial: ${sumas.costo_comercial}`
                                         );
                                     });
-                                     FacturaValorNeto = sumasPorCategoria['COMERCIAL']
+                                    FacturaValorNeto = sumasPorCategoria['COMERCIAL']
                                         .total_comercial;
                                     valorTotal = parseFloat(sumasPorCategoria['CAT1']
                                             .resultado_total) +
@@ -897,7 +897,7 @@
                                             minimumFractionDigits: 0,
                                             maximumFractionDigits: 0
                                         }));
-                                    FVAlorIva = FacturaValorNeto *0.19;
+                                    FVAlorIva = FacturaValorNeto * 0.19;
                                     $("#FVAlorIva").text(FVAlorIva.toLocaleString('es-CL', {
                                         minimumFractionDigits: 0,
                                         maximumFractionDigits: 0
@@ -2597,8 +2597,9 @@
                     const options = {
                         chart: {
                             type: 'line',
-                            height: 400,
+                            height: 600,
                             //toolbar: { show: true, export: { csv: false, svg: false, png: true } }
+                            width:800,
                             toolbar: {
                                 show: false
                             },
