@@ -879,8 +879,8 @@
                                         $("#trBonificacionfletehuerto").hide();
                                     }
                                     let multiresiduos = 0;
-                                    if (response.multiresiduos.length > 0) {
-                                        response.multiresiduos.forEach(element => {
+                                    if (response.multiresiduo.length > 0) {
+                                        response.multiresiduo.forEach(element => {
                                             multiresiduos += parseFloat(element.valor);
                                         });
                                         $("#multiresiduos").text(multiresiduos ? multiresiduos : 0)
