@@ -134,7 +134,7 @@ class TarjadoController extends Controller
     // Agrupación adicional por proceso + calibre (como antes)
     $data = [];
     foreach ($results as $row) {
-        $key = $row->numero_g_produccion . '-' . $row->n_calibre;
+        $key = $row->numero_g_produccion . '-' .$row->folio.'-'. $row->n_calibre;
         if (!isset($data[$key])) {
             $data[$key] = [
                 'especie' => $row->n_especie,
