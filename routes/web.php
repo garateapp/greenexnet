@@ -16,7 +16,7 @@ use App\Models\TratoContratistas;
 Route::post('/iclock/cdata',  'ZktecoController@receiveData')->name('iclock.cdata');
 
 // Ruta para manejar peticiones GET (heartbeats o para enviar comandos al dispositivo)
-Route::get('/iclock/cdata', 'ZktecoController@handleIClockGet')->name('iclock.cdata')
+Route::get('/iclock/cdata', 'ZktecoController@handleIClockGet')->name('iclock.cdata');
 Route::view('/', '/welcome');
 Route::get('userVerification/{token}', 'UserVerificationController@approve')->name('userVerification');
 Auth::routes();
