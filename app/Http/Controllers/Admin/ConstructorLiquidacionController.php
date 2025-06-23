@@ -33,7 +33,7 @@ use App\Models\ValorEnvase;
 use App\Models\InteresAnticipo;
 use App\Models\Bonificacion;
 use App\Models\Multiresiduo;
-use App\Models\OtroCosto;
+use App\Models\OtroCobro;
 use Illuminate\Support\Str;
 use App\Exports\ComparativaExport;
 use Exception;
@@ -78,7 +78,7 @@ use CsvImportTrait;
         // $analisis=Analisis::where('productor_id', $productor)
         // ->where('temporada', $temporada)->get();
         $bonificacion=Bonificacion::where('productor_id', $productor)->get();
-        $otrocosto=OtroCosto::where('productor_id', $productor)->get();
+        $OtroCobro=OtroCobro::where('productor_id', $productor)->get();
         $multiresiduo=Multiresiduo::where('productor_id', $productor)->get();
 
         // Verifica si se encontraron resultados
@@ -92,7 +92,10 @@ use CsvImportTrait;
                                 'valorflete' => $valorflete,
                                 'productor' => $prod,
                                 'envases' => $envases,
-                                //'analisis' => $analisis
+                                'analisis' => $analisis,
+                                'bonificacion' => $bonificacion,
+                                'OtroCobro' => $OtroCobro,
+                                'multiresiduo' => $multiresiduo
                                 ]
                                 , 200);
 
