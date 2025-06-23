@@ -890,8 +890,8 @@
                                             minimumFractionDigits: 0,
                                             maximumFractionDigits: 0
                                         }));
-                                    FacturaValorNeto = sumasPorCategoria['COMERCIAL']
-                                        .totalComercial;
+                                    // FacturaValorNeto = sumasPorCategoria['COMERCIAL']
+                                    //     .totalComercial;
                                     $("#FVAlorNeto").text(FacturaValorNeto.toLocaleString(
                                         'es-CL', {
                                             minimumFractionDigits: 0,
