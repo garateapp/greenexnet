@@ -111,7 +111,7 @@
                     <div style="text-align: center; font-weight: bold;">
                         <img src="{{ $logo_path }}" alt="Cabecera" style="max-height: 25mm; width: auto;">
                     </div>
-                    <div style="text-align: center; font-weight: bold; margin: auto 0;">
+                    <div style="text-align: center; font-weight: bold; margin: 0 auto;">
                         <img src="{{ $chart['image'] }}" alt="Gráfico {{ $chart['id'] }}"
                             style="width: 120%; height: 500px;" />
                     </div>
