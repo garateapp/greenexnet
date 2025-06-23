@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\ReporteriaController;
 
 use App\Http\Controllers\Admin\TarjadoController;
 use App\Models\TratoContratistas;
+//use App\Http\admin\Controllers\ZktecoController;
 //use Google\Service\CloudRun\Route;
 
 //use Illuminate\Routing\Route;
