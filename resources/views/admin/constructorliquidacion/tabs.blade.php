@@ -83,7 +83,7 @@
 
 <body>
     <div class="tab-content" style="page-break-before: always;">
-        <img src="{{ $portada }}" alt="Cabecera" style="width: auto; height:1430px;">
+        <img src="{{ $portada }}" alt="Cabecera" style="width: auto; height:1410px;">
     </div>
 
 
@@ -113,7 +113,7 @@
                     </div>
                     <div style="text-align: center; font-weight: bold; margin: auto 0;">
                         <img src="{{ $chart['image'] }}" alt="Gráfico {{ $chart['id'] }}"
-                            style="width: 100%; height: 500px;" />
+                            style="width: 120%; height: 500px;" />
                     </div>
                 </div>
                 {{-- <div style="position: fixed; bottom: 5mm; left: 10mm; right: 10mm; text-align: center;">
