@@ -858,9 +858,14 @@
                                                     minimumFractionDigits: 2,
                                                     maximumFractionDigits: 2
                                                 });
-                                        $("#trBonificacionfletehuerto").show();
-                                        bonificacion = response.valorflete.condicion * response
-                                            .valorflete.valor * (-1);
+                                    }
+                                    let bonificacion = 0;
+                                    if (response.bonificacion.length > 0) {
+                                        response.bonificacion.forEach(element => {
+                                            bonificacion += parseFloat(element.valor);
+                                        });
+
+
 
                                         $("#bonificacionfletehuerto").text(bonificacion ?
                                             bonificacion : 0).toLocaleString(
