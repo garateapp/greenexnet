@@ -79,7 +79,9 @@
     </style>
 </head>
 <body>
-
+ <div class="tab-content" style="page-break-before: always;">
+        <img src="{{ $portada }}" alt="Cabecera" style="width: auto;">
+ </div>
 
 
     <!-- Contenido dinámico de tabs -->
@@ -91,9 +93,9 @@
     </div>
             {!! $tab['html'] !!}
                <!-- Footer visible solo en PDF -->
-    <div style="position: fixed; bottom: 5mm; left: 10mm; right: 10mm; text-align: center;">
+    {{-- <div style="position: fixed; bottom: 5mm; left: 10mm; right: 10mm; text-align: center;">
         <img src="{{ $footer_path }}" alt="Footer" style="max-height: 25mm; width: auto;">
-    </div>
+    </div> --}}
         </div>
     @endforeach
 
@@ -107,11 +109,11 @@
         <img src="{{ $logo_path }}" alt="Cabecera" style="max-height: 25mm; width: auto;">
     </div>
                     <h3>{{ $chart['id'] }}</h3>
-                    <img src="{{ $chart['image'] }}" alt="Gráfico {{ $chart['id'] }}" style="width: 100%; max-width: 700px; height: auto;" />
+                    <img src="{{ $chart['image'] }}" alt="Gráfico {{ $chart['id'] }}" style="width: 100%; max-width: 700px; height: 500px;" />
                 </div>
-                <div style="position: fixed; bottom: 5mm; left: 10mm; right: 10mm; text-align: center;">
+                {{-- <div style="position: fixed; bottom: 5mm; left: 10mm; right: 10mm; text-align: center;">
         <img src="{{ $footer_path }}" alt="Footer" style="max-height: 25mm; width: auto;">
-    </div>
+    </div> --}}
             @endif
         @endforeach
     @endif
