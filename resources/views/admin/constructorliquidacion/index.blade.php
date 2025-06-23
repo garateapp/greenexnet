@@ -205,7 +205,7 @@
                                                     <td>US$</td>
                                                     <td class="currency negative" id="suma-CATII"></td>
                                                 </tr>
-                                                <tr id="trbonificacion"
+                                                <tr id="trbonificacion">
                                                     <td colspan="5">Bonificación</td>
                                                     <td></td>
                                                     <td></td>
