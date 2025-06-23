@@ -117,7 +117,7 @@ use CsvImportTrait;
     ];
 
     $snappy = new Pdf('/usr/bin/wkhtmltopdf');
-
+    $productor=Productor::where('id',$request->input('productor_id'))->first();
     $html = view('admin.constructorliquidacion.tabs', $data)->render();
 
     return response($snappy->getOutputFromHtml($html, [
@@ -127,7 +127,7 @@ use CsvImportTrait;
         'enable-local-file-access' => true,
         'no-stop-slow-scripts' => true
     ]))->header('Content-Type', 'application/pdf')
-      ->header('Content-Disposition', 'inline; filename="Liquidación-' . now()->format('Y-m-d') . '.pdf"');
+      ->header('Content-Disposition', 'inline; filename="Liquidacion-' .$productor->nombre.'-Carozos2425-'.now()->format('Y-m-d') . '.pdf"');
 }
 
 }

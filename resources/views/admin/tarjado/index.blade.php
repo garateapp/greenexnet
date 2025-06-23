@@ -274,7 +274,7 @@
                             },
                             success: function(response) {
                                 $('#loading-animation').hide();
-
+                                console.log('Respuesta del servidor:', response);
                                 // Destruir tabla si existe
                                 if (table) table.destroy();
 
