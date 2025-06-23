@@ -7,8 +7,8 @@
         @page {
             margin-top: 40mm;
             margin-bottom: 40mm;
-            margin-left: 10mm;
-            margin-right: 10mm;
+            margin-left: 20mm;
+            margin-right: 20mm;
         }
 
         body {
