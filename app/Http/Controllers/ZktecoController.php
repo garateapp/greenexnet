@@ -114,7 +114,7 @@ class ZktecoController extends Controller
             return response("Device will reboot\r\n", 200);
         default:
             // Solicita los logs por defecto
-            return response("GET GET OPLOG\r\n", 200);
+            return response("GET USER\r\nGET ATTLOG\r\n", 200);
     }
 }
 }
