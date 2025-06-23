@@ -205,6 +205,12 @@
                                                     <td>US$</td>
                                                     <td class="currency negative" id="suma-CATII"></td>
                                                 </tr>
+                                                <tr id="trbonificacion"
+                                                    <td colspan="5">Bonificación</td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td class="currency" id="bonificacion"></td>
+                                                </tr>
                                                 <tr>
                                                     <td colspan="8">&nbsp;</td>
                                                 </tr>
@@ -254,7 +260,7 @@
                                                     <td class="currency negative" id="bonificacionfletehuerto">
                                                     </td>
                                                 </tr>
-                                                <tr>
+                                                <tr id="trAnalisisMultiresiduosVirus">
                                                     <td colspan="6">Análisis multiresiduos/virus</td>
                                                     <td>US$</td>
                                                     <td class="currency"></td>
@@ -814,7 +820,27 @@
                                             }));
                                     }
 
-
+                                    let valorbonificacion=0;
+                                    if (response.bonificacion.length > 0) {
+                                        response.bonificacion.forEach(element => {
+                                            valorbonificacion += parseFloat(element.valor);
+                                        });
+                                        $("#bonificacion").text(valorbonificacion ? valorbonificacion : 0)
+                                            .toLocaleString(
+                                                'es-CL', {
+                                                    minimumFractionDigits: 2,
+                                                    maximumFractionDigits: 2
+                                                });
+                                                if(valorbonificacion>0){
+                                                    $("#trbonificacion").show();
+                                                }
+                                                else{
+                                                    $("#trbonificacion").hide();
+                                                }
+                                    }
+                                    else{
+                                        $("#trbonificacion").hide();
+                                    }
                                     // $("#fletehuerto").text((response.valorflete.valor ? response
                                     //     .valorflete.valor : 0).toLocaleString(
                                     //     'es-CL', {
@@ -845,6 +871,21 @@
 
                                     } else {
                                         $("#trBonificacionfletehuerto").hide();
+                                    }
+                                    let multiresiduos = 0;
+                                    if (response.multiresiduos.length > 0) {
+                                        response.multiresiduos.forEach(element => {
+                                            multiresiduos += parseFloat(element.valor);
+                                        });
+                                        $("#multiresiduos").text(multiresiduos ? multiresiduos : 0)
+                                            .toLocaleString(
+                                                'es-CL', {
+                                                    minimumFractionDigits: 2,
+                                                    maximumFractionDigits: 2
+                                                });
+                                    }
+                                    else{
+                                        $("#trAnalisisMultiresiduosVirus").hide();
                                     }
 
 

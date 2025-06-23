@@ -31,6 +31,9 @@ use App\Models\Recepcion;
 use App\Models\ValorFlete;
 use App\Models\ValorEnvase;
 use App\Models\InteresAnticipo;
+use App\Models\Bonificacion;
+use App\Models\Multiresiduo;
+use App\Models\OtroCosto;
 use Illuminate\Support\Str;
 use App\Exports\ComparativaExport;
 use Exception;
@@ -58,6 +61,7 @@ use CsvImportTrait;
         $temporada = $request->input('temporada');
         $especie = $request->input('especie_id');
 
+
         // Realiza la consulta a la base de datos
         $result = Proceso::where('productor_id', $productor)
         ->where('temporada', $temporada)
@@ -73,6 +77,9 @@ use CsvImportTrait;
         ->where('temporada', $temporada)->get();
         // $analisis=Analisis::where('productor_id', $productor)
         // ->where('temporada', $temporada)->get();
+        $bonificacion=Bonificacion::where('productor_id', $productor)->get();
+        $otrocosto=OtroCosto::where('productor_id', $productor)->get();
+        $multiresiduo=Multiresiduo::where('productor_id', $productor)->get();
 
         // Verifica si se encontraron resultados
         if (!$result) {
