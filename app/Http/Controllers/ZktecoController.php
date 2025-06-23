@@ -102,19 +102,18 @@ class ZktecoController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function handleIClockGet(Request $request)
-{
-    $command = $request->query('Cmd'); // Ej: "GetTime", "Reboot", etc.
-    $deviceSN = $request->query('SN');
+    {
+        Log::info('ZKTeco GET Request Received', $request->all());
 
-    switch ($command) {
-        case 'GetTime':
-            return response("CurrentTime=" . now()->format('YmdHis') . "\r\n", 200);
-        case 'RebootDevice':
-            // Aquí podrías programar una acción en cola
-            return response("Device will reboot\r\n", 200);
-        default:
-            // Solicita los logs por defecto
-            return response("GET USER\r\nGET ATTLOG\r\n", 200);
+        $deviceSN = $request->query('SN');
+
+        // Este comando instruye al dispositivo a enviar sus registros de asistencia.
+        $responseContent = "GET USER\r\nGET ATTLOG\r\n";
+
+        Log::info('ZKTeco GET Response Sent', ['response' => $responseContent]);
+
+        return response($responseContent, 200)
+            ->header('Content-Type', 'text/plain');
     }
 }
 }
