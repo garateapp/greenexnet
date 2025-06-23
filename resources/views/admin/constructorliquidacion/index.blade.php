@@ -884,7 +884,7 @@
                                         $("#trBonificacionfletehuerto").hide();
                                     }
                                     let multiresiduos = 0;
-                                    if (response.multiresiduo.length > 0) {
+                                    //if (response.multiresiduo.length > 0) {
                                         response.multiresiduo.forEach(element => {
                                             multiresiduos += parseFloat(element.valor);
                                         });
@@ -894,16 +894,16 @@
                                                     minimumFractionDigits: 2,
                                                     maximumFractionDigits: 2
                                                 });
-                                        if(multiresiduos==0){
-                                            $("#trAnalisisMultiresiduosVirus").hide();
-                                        }
-                                        else{
-                                            $("#trAnalisisMultiresiduosVirus").show();
-                                        }
-                                    }
-                                    else{
-                                        $("#trAnalisisMultiresiduosVirus").hide();
-                                    }
+                                        // if(multiresiduos==0){
+                                        //     $("#trAnalisisMultiresiduosVirus").hide();
+                                        // }
+                                        // else{
+                                        //     $("#trAnalisisMultiresiduosVirus").show();
+                                        // }
+                                    // }
+                                    // else{
+                                    //     $("#trAnalisisMultiresiduosVirus").hide();
+                                    // }
 
 
 
