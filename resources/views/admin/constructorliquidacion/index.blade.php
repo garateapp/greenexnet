@@ -867,6 +867,7 @@
                                         case 0:
                                             $("#trBonificacionfletehuerto").hide();
                                             bonificacion=0;
+
                                             break;
                                         case 0.5:
                                             $("#trBonificacionfletehuerto").show();
@@ -880,7 +881,7 @@
                                             $("#trBonificacionfletehuerto").hide();
                                             break;
                                     }
-
+                                    $("#bonificacionfletehuerto").text(bonificacion ? bonificacion : 0);
 
 
 
