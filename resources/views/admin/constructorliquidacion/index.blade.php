@@ -848,9 +848,11 @@
                                     //         maximumFractionDigits: 2
                                     //     }));
                                     valorflete = 0;
+                                     let bonificacion = 0;
                                     if (response.valorflete.length > 0) {
                                         response.valorflete.forEach(element => {
                                             valorflete += parseFloat(element.valor);
+                                            bonificacion = element.condicion;
                                         });
                                         $("#fletehuerto").text(valorflete ? valorflete : 0)
                                             .toLocaleString(
@@ -858,12 +860,9 @@
                                                     minimumFractionDigits: 2,
                                                     maximumFractionDigits: 2
                                                 });
-                                    }
-                                    let bonificacion = 0;
-                                    if (response.bonificacion.length > 0) {
-                                        response.bonificacion.forEach(element => {
-                                            bonificacion += parseFloat(element.valor);
-                                        });
+
+
+
                                     switch(bonificacion){
                                         case 0:
                                             $("#trBonificacionfletehuerto").hide();
@@ -883,22 +882,12 @@
                                     }
 
 
-                                        $("#bonificacionfletehuerto").text(bonificacion ?
-                                            bonificacion : 0).toLocaleString(
-                                            'es-CL', {
-                                                minimumFractionDigits: 2,
-                                                maximumFractionDigits: 2
-                                            });
-                                            if(bonificacion==0){
-                                                $("#trBonificacionfletehuerto").hide();
-                                            }
-                                            else{
-                                                $("#trBonificacionfletehuerto").show();
-                                            }
+
 
                                     } else {
                                         $("#trBonificacionfletehuerto").hide();
                                     }
+                                }
                                     let multiresiduos = 0;
                                     //if (response.multiresiduo.length > 0) {
                                         response.multiresiduo.forEach(element => {
