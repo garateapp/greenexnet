@@ -884,9 +884,7 @@
 
 
 
-                                    } else {
-                                        $("#trBonificacionfletehuerto").hide();
-                                    }
+
                                 }
                                     let multiresiduos = 0;
                                     //if (response.multiresiduo.length > 0) {
