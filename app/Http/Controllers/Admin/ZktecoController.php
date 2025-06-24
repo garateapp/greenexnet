@@ -111,6 +111,7 @@ class ZktecoController extends Controller
         // Si no tienes comandos que enviar al dispositivo, puedes enviar "OK" o "GET OPTION".
         // O responder con comandos como "CMD:CHECK" para que el dispositivo solicite actualizaciones.
         // Aquí un ejemplo básico:
-        return response("OK", 200);
+        // Le decimos al reloj que nos mande los registros
+        return response("GET ATTLOG\r\n", 200)->header('Content-Type', 'text/plain');
     }
 }
