@@ -263,7 +263,7 @@
                                                 <tr id="trAnalisisMultiresiduosVirus">
                                                     <td colspan="6">Análisis multiresiduos/virus</td>
                                                     <td>US$</td>
-                                                    <td class="currency"></td>
+                                                    <td class="currency" id="multiresiduos"></td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="7">Total Cargos</td>
