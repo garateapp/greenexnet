@@ -864,7 +864,23 @@
                                         response.bonificacion.forEach(element => {
                                             bonificacion += parseFloat(element.valor);
                                         });
-
+                                    switch(bonificacion){
+                                        case 0:
+                                            $("#trBonificacionfletehuerto").hide();
+                                            bonificacion=0;
+                                            break;
+                                        case 0.5:
+                                            $("#trBonificacionfletehuerto").show();
+                                            bonificacion=valorflete/2;
+                                            break;
+                                        case 1:
+                                            $("#trBonificacionfletehuerto").show();
+                                            bonificacion=valorflete;
+                                            break;
+                                        default:
+                                            $("#trBonificacionfletehuerto").hide();
+                                            break;
+                                    }
 
 
                                         $("#bonificacionfletehuerto").text(bonificacion ?
