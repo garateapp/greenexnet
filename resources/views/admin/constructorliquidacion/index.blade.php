@@ -506,6 +506,9 @@
                     }, {
                         name: 'Norma',
                         html: $('#Norma').html()
+                    },{
+                        name: 'Comercial',
+                        html: $('#Comercial').html()
                     }];
 
                     const chartContainers = $('.chart-container');
@@ -871,11 +874,11 @@
                                             break;
                                         case 0.5:
                                             $("#trBonificacionfletehuerto").show();
-                                            bonificacion=valorflete/2;
+                                            bonificacion=(-1)*valorflete/2;
                                             break;
                                         case 1:
                                             $("#trBonificacionfletehuerto").show();
-                                            bonificacion=valorflete;
+                                            bonificacion=(-1)*valorflete;
                                             break;
                                         default:
                                             $("#trBonificacionfletehuerto").hide();
@@ -920,11 +923,10 @@
                                             minimumFractionDigits: 2,
                                             maximumFractionDigits: 2
                                         });
-                                    totalOtrosCargos = parseFloat(response.valorflete.valor ?
-                                            response.valorflete.valor : 0) +
+                                    totalOtrosCargos = parseFloat(valorflete)
                                         parseFloat(response.envases.valor ? response.envases
                                             .valor :
-                                            0);
+                                            0)+parseFloat(valorNoExportable)+parseFloat(multiresiduos)+parseFloat(bonificacion);
                                     $("#totalOtrosCargos").text(totalOtrosCargos.toLocaleString(
                                         'es-CL', {
                                             minimumFractionDigits: 2,
