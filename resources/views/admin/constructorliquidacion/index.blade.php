@@ -916,17 +916,18 @@
 
 
 
-
-                                    $("#ctacteenvases").text(response.envases.valor ? response
-                                        .envases.valor : 0).toLocaleString(
+                                let envases=0;
+                                if (response.envases.length > 0) {
+                                    response.envases.forEach(element => {
+                                        envases += parseFloat(element.valor);
+                                    });
+                                    $("#ctacteenvases").text(envases).toLocaleString(
                                         'es-CL', {
                                             minimumFractionDigits: 2,
                                             maximumFractionDigits: 2
                                         });
                                     totalOtrosCargos = parseFloat(valorflete)
-                                        parseFloat(response.envases.valor ? response.envases
-                                            .valor :
-                                            0)+parseFloat(valorNoExportable)+parseFloat(multiresiduos)+parseFloat(bonificacion);
+                                        parseFloat(envases)+parseFloat(valorNoExportable)+parseFloat(multiresiduos)+parseFloat(bonificacion);
                                     $("#totalOtrosCargos").text(totalOtrosCargos.toLocaleString(
                                         'es-CL', {
                                             minimumFractionDigits: 2,
