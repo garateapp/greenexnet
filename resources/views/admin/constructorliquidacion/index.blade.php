@@ -13,11 +13,11 @@
         }
 
         /* th,
-                                                                    td {
-                                                                        border: 1px solid #dddddd;
-                                                                        padding: 8px;
-                                                                        text-align: left;
-                                                                    } */
+                                                                        td {
+                                                                            border: 1px solid #dddddd;
+                                                                            padding: 8px;
+                                                                            text-align: left;
+                                                                        } */
 
         .currency {
             text-align: right;
@@ -506,7 +506,7 @@
                     }, {
                         name: 'Norma',
                         html: $('#Norma').html()
-                    },{
+                    }, {
                         name: 'Comercial',
                         html: $('#Comercial').html()
                     }];
@@ -823,25 +823,25 @@
                                             }));
                                     }
 
-                                    let valorbonificacion=0;
+                                    let valorbonificacion = 0;
                                     if (response.bonificacion.length > 0) {
                                         response.bonificacion.forEach(element => {
-                                            valorbonificacion += parseFloat(element.valor);
+                                            valorbonificacion += parseFloat(element
+                                                .valor);
                                         });
-                                        $("#bonificacion").text(valorbonificacion ? valorbonificacion : 0)
+                                        $("#bonificacion").text(valorbonificacion ?
+                                                valorbonificacion : 0)
                                             .toLocaleString(
                                                 'es-CL', {
                                                     minimumFractionDigits: 2,
                                                     maximumFractionDigits: 2
                                                 });
-                                                if(valorbonificacion>0){
-                                                    $("#trbonificacion").show();
-                                                }
-                                                else{
-                                                    $("#trbonificacion").hide();
-                                                }
-                                    }
-                                    else{
+                                        if (valorbonificacion > 0) {
+                                            $("#trbonificacion").show();
+                                        } else {
+                                            $("#trbonificacion").hide();
+                                        }
+                                    } else {
                                         $("#trbonificacion").hide();
                                     }
                                     // $("#fletehuerto").text((response.valorflete.valor ? response
@@ -851,7 +851,7 @@
                                     //         maximumFractionDigits: 2
                                     //     }));
                                     valorflete = 0;
-                                     let bonificacion = 0;
+                                    let bonificacion = 0;
                                     if (response.valorflete.length > 0) {
                                         response.valorflete.forEach(element => {
                                             valorflete += parseFloat(element.valor);
@@ -866,47 +866,48 @@
 
 
 
-                                    switch(bonificacion){
-                                        case 0:
-                                            $("#trBonificacionfletehuerto").hide();
-                                            bonificacion=0;
+                                        switch (bonificacion) {
+                                            case 0:
+                                                $("#trBonificacionfletehuerto").hide();
+                                                bonificacion = 0;
 
-                                            break;
-                                        case 0.5:
-                                            $("#trBonificacionfletehuerto").show();
-                                            bonificacion=(-1)*valorflete/2;
-                                            break;
-                                        case 1:
-                                            $("#trBonificacionfletehuerto").show();
-                                            bonificacion=(-1)*valorflete;
-                                            break;
-                                        default:
-                                            $("#trBonificacionfletehuerto").hide();
-                                            break;
+                                                break;
+                                            case 0.5:
+                                                $("#trBonificacionfletehuerto").show();
+                                                bonificacion = (-1) * valorflete / 2;
+                                                break;
+                                            case 1:
+                                                $("#trBonificacionfletehuerto").show();
+                                                bonificacion = (-1) * valorflete;
+                                                break;
+                                            default:
+                                                $("#trBonificacionfletehuerto").hide();
+                                                break;
+                                        }
+                                        $("#bonificacionfletehuerto").text(bonificacion ?
+                                            bonificacion : 0);
+
+
+
+
                                     }
-                                    $("#bonificacionfletehuerto").text(bonificacion ? bonificacion : 0);
-
-
-
-
-                                }
                                     let multiresiduos = 0;
                                     //if (response.multiresiduo.length > 0) {
-                                        response.multiresiduo.forEach(element => {
-                                            multiresiduos += parseFloat(element.valor);
-                                        });
-                                        $("#multiresiduos").text(multiresiduos ? multiresiduos : 0)
-                                            .toLocaleString(
-                                                'es-CL', {
-                                                    minimumFractionDigits: 2,
-                                                    maximumFractionDigits: 2
-                                                });
-                                        // if(multiresiduos==0){
-                                        //     $("#trAnalisisMultiresiduosVirus").hide();
-                                        // }
-                                        // else{
-                                        //     $("#trAnalisisMultiresiduosVirus").show();
-                                        // }
+                                    response.multiresiduo.forEach(element => {
+                                        multiresiduos += parseFloat(element.valor);
+                                    });
+                                    $("#multiresiduos").text(multiresiduos ? multiresiduos : 0)
+                                        .toLocaleString(
+                                            'es-CL', {
+                                                minimumFractionDigits: 2,
+                                                maximumFractionDigits: 2
+                                            });
+                                    // if(multiresiduos==0){
+                                    //     $("#trAnalisisMultiresiduosVirus").hide();
+                                    // }
+                                    // else{
+                                    //     $("#trAnalisisMultiresiduosVirus").show();
+                                    // }
                                     // }
                                     // else{
                                     //     $("#trAnalisisMultiresiduosVirus").hide();
@@ -916,18 +917,21 @@
 
 
 
-                                let envases=0;
-                                if (response.envases.length > 0) {
-                                    response.envases.forEach(element => {
-                                        envases += parseFloat(element.valor);
-                                    });
-                                    $("#ctacteenvases").text(envases).toLocaleString(
-                                        'es-CL', {
-                                            minimumFractionDigits: 2,
-                                            maximumFractionDigits: 2
+                                    let envases = 0;
+                                    if (response.envases.length > 0) {
+                                        response.envases.forEach(element => {
+                                            envases += parseFloat(element.valor);
                                         });
+
+                                        $("#ctacteenvases").text(envases).toLocaleString(
+                                            'es-CL', {
+                                                minimumFractionDigits: 2,
+                                                maximumFractionDigits: 2
+                                            });
+                                    }
                                     totalOtrosCargos = parseFloat(valorflete)
-                                        parseFloat(envases)+parseFloat(valorNoExportable)+parseFloat(multiresiduos)+parseFloat(bonificacion);
+                                    parseFloat(envases) + parseFloat(valorNoExportable) +
+                                        parseFloat(multiresiduos) + parseFloat(bonificacion);
                                     $("#totalOtrosCargos").text(totalOtrosCargos.toLocaleString(
                                         'es-CL', {
                                             minimumFractionDigits: 2,
@@ -2664,7 +2668,7 @@
                             type: 'line',
                             height: 600,
                             //toolbar: { show: true, export: { csv: false, svg: false, png: true } }
-                            width:800,
+                            width: 800,
                             toolbar: {
                                 show: false
                             },
