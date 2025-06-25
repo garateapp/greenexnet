@@ -753,8 +753,10 @@
                                             `Categoría: ${categoria}, Resultado Kilo: ${sumas.resultado_kilo}, Resultado Total: ${sumas.resultado_total}, Total Comercial: ${sumas.total_comercial}, Total Kilos: ${sumas.total_kilos}, Costo Comercial: ${sumas.costo_comercial}`
                                         );
                                     });
-                                    FacturaValorNeto = sumasPorCategoria['COMERCIAL']
-                                        .precio_comercial;
+                                    FacturaValorNeto = sumasPorCategoria['COMERCIAL'].precio_comercial+
+                                        sumasPorCategoria['PRE CALIBRE'].precio_comercial+
+                                        sumasPorCategoria['SOBRE CALIBRE'].precio_comercial;
+                                    
                                     FacturaValorNeto = FacturaValorNeto * $("#TC").val();
                                     valorTotal = parseFloat(sumasPorCategoria['CAT1']
                                             .resultado_total) +
