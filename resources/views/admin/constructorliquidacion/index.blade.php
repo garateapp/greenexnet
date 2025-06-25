@@ -245,10 +245,10 @@
                                                     <td>US$</td>
                                                     <td class="currency" id="valorNoExportable"></td>
                                                 </tr>
-                                                <tr>
-                                                    <td colspan="6" id="trBonifGastoNoExportable">Bonificación Gasto Fruta no Exportable</td>
+                                                <tr  id="trBonifGastoNoExportable">
+                                                    <td colspan="6">Bonificación Gasto Fruta no Exportable</td>
                                                     <td>US$</td>
-                                                    <td class="currency" id="bonificacionGastoNoExportable"></td>
+                                                    <td class="currency negative" id="bonificacionGastoNoExportable"></td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="6">Cuenta corriente envases</td>
