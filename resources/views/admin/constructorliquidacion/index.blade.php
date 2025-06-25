@@ -2162,7 +2162,7 @@
                         });
                     }
                 });
-                let groupedDataChart = {};
+                let groupedDataChart = [];
 
                 function llenarNorma(response) {
                     // Definir orden de calibres
