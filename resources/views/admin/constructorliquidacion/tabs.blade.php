@@ -107,11 +107,11 @@
 
         @foreach ($chartImages as $chart)
             @if (!empty($chart['image']))
-                <div style="page-break-before: always; text-align: center;margin-left:25%;margin-top:3em;">
+                <div style="page-break-before: always; text-align: center;">
                     <div style="text-align: center; font-weight: bold;">
                         <img src="{{ $logo_path }}" alt="Cabecera" style="max-height: 25mm; width: auto;">
                     </div>
-                    <div style="text-align: center; font-weight: bold; margin-top:4cm;">
+                    <div style="text-align: center; font-weight: bold; margin-top:4cm;margin-left:25%;">
                         <img src="{{ $chart['image'] }}" alt="Gráfico {{ $chart['id'] }}"
                             style="width: 150%; height: 500px;" />
                     </div>
