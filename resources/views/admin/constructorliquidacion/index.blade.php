@@ -873,8 +873,7 @@
                                             valorbonificacion += parseFloat(element
                                                 .valor);
                                         });
-                                        $("#bonificacionGastoNoExportable").text(valorbonificacion ?
-                                                valorbonificacion : 0)
+                                        $("#bonificacionGastoNoExportable").text(valorbonificacion)
                                             .toLocaleString(
                                                 'es-CL', {
                                                     minimumFractionDigits: 2,
@@ -1532,7 +1531,7 @@
                                 ${semanaCell_v2}
                                 <td>${calibre_v2}</td>
                                 <td>${datosCalibre_v2.color}</td>
-                                <td class="number">${curvaCalibre_v2}</td>
+                                <td class="number">${curvaCalibre_v2} %</td>
                                 <td class="number">${cajasEquivalentes_v2}</td>
                                 <td class="number">${datosCalibre_v2.total_kilos.toFixed(2)}</td>
                                 <td class="number ${rnpClass_v2}">${datosCalibre_v2.rnp_total.toFixed(2)}</td>
