@@ -738,7 +738,7 @@
                                         );
                                     });
                                     FacturaValorNeto = sumasPorCategoria['COMERCIAL']
-                                        .total_comercial;
+                                        .precio_comercial;
                                     valorTotal = parseFloat(sumasPorCategoria['CAT1']
                                             .resultado_total) +
                                         parseFloat(sumasPorCategoria['CATII'].resultado_total);
