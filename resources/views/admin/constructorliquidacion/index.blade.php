@@ -929,7 +929,7 @@
                                                 maximumFractionDigits: 2
                                             });
                                     }
-                                    totalOtrosCargos = parseFloat(valorflete)
+                                    totalOtrosCargos = parseFloat(valorflete)+
                                     parseFloat(envases) + parseFloat(valorNoExportable) +
                                         parseFloat(multiresiduos) + parseFloat(bonificacion);
                                     $("#totalOtrosCargos").text(totalOtrosCargos.toLocaleString(
