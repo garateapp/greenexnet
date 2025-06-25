@@ -2621,7 +2621,7 @@
 
                     // Total general
                     let precioKiloGeneral = totalGeneral.precio_kilo_kilos ?
-                        (totalGeneral.precio_kilo_sum / totalGeneral.precio_kilo_kilos).toFixed(2) : '0.00';
+                        (totalGeneral.precio_total / totalGeneral.total_kilos).toFixed(2) : '0.00';
 
                     htmlOutput += `
                 <tr class="total-row">
