@@ -2510,20 +2510,20 @@
 
                             // Acumular valores
                             datosAgrupados[especie][variedad][categoria].total_kilos += totalKilos;
-                            datosAgrupados[especie][variedad][categoria].precio_kilo_sum += precioTotal;
-                            datosAgrupados[especie][variedad][categoria].precio_total += precioKilo *
-                                totalKilos;
+                            datosAgrupados[especie][variedad][categoria].precio_kilo_sum += precioKilo;
+                            datosAgrupados[especie][variedad][categoria].precio_total += precioKilo * totalKilos;
                             datosAgrupados[especie][variedad][categoria].precio_kilo_kilos += totalKilos;
 
                             // Totales generales
                             totalGeneral.total_kilos += totalKilos;
-                            totalGeneral.precio_total += precio_total;
-                            totalGeneral.precio_kilo_sum += precioKilo * totalKilos;
+                            totalGeneral.precio_total += precioKilo * totalKilos;
+                            totalGeneral.precio_kilo_sum += precio_total;
                             totalGeneral.precio_kilo_kilos += totalKilos;
                         }
                     });
                     console.log("total general", totalGeneral);
                     console.log("datosAgrupados", datosAgrupados);
+                    
                     // Generar HTML de la tabla
                     let htmlOutput = `
         <table>
@@ -2570,7 +2570,7 @@
 
                             $.each(categorias, function(i_categoria, categoria) {
                                 let datosCategoria = datosPorVariedad[categoria];
-
+                                console.log("datosCategoria", datosCategoria);
                                 let precioKilo = datosCategoria.precio_kilo_kilos ?
                                     (datosCategoria.precio_kilo_sum / datosCategoria
                                         .precio_kilo_kilos).toFixed(2) : '0.00';
