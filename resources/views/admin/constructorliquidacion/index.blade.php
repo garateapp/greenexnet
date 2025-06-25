@@ -2612,10 +2612,12 @@
                     <td>Total ${variedad}</td>
                     <td></td>
                     <td class="number">${formatInteger(totalVariedad.total_kilos.toFixed(0))}</td>
-                    <td class="number">${formatCurrency(totalVariedad.precio_total.toFixed(2))}</td>
-                    <td class="number">${formatCurrency(precioKiloVariedad)}</td>
+                    <td class="number"></td>
+                    <td class="number"></td>
                 </tr>
             `;
+            //${formatCurrency(precioKiloVariedad)}
+            //${formatCurrency(totalVariedad.precio_total.toFixed(2))}
                         });
                     });
 
@@ -2629,13 +2631,14 @@
                     <td></td>
                     <td></td>
                     <td class="number">${formatInteger(totalGeneral.total_kilos.toFixed(0))}</td>
-                    <td class="number">${formatCurrency(totalGeneral.precio_total.toFixed(2))}</td>
-                    <td class="number">${formatCurrency(precioKiloGeneral)}</td>
+                    <td class="number"></td>
+                    <td class="number"></td>
                 </tr>
             </tbody>
         </table>
     `;
-
+//${formatCurrency(totalGeneral.precio_total.toFixed(2))}
+//${formatCurrency(precioKiloGeneral)}
                     $('#comercial').html(htmlOutput);
                 }
 
