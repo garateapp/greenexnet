@@ -261,7 +261,7 @@
                                                     </td>
                                                 </tr>
                                                 <tr id="trAnalisisMultiresiduosVirus">
-                                                    <td colspan="6">Análisis multiresiduos/virus</td>
+                                                    <td colspan="6">Análisis / Prospecciones</td>
                                                     <td>US$</td>
                                                     <td class="currency" id="multiresiduos"></td>
                                                 </tr>
@@ -929,7 +929,7 @@
                                                 maximumFractionDigits: 2
                                             });
                                     }
-                                    totalOtrosCargos = parseFloat(valorflete)
+                                    totalOtrosCargos = valorTotalAnticipos + parseFloat(valorflete)
                                     parseFloat(envases) + parseFloat(valorNoExportable) +
                                         parseFloat(multiresiduos) + parseFloat(bonificacion);
                                     $("#totalOtrosCargos").text(totalOtrosCargos.toLocaleString(
