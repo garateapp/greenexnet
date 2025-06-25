@@ -111,9 +111,9 @@
                     <div style="text-align: center; font-weight: bold;">
                         <img src="{{ $logo_path }}" alt="Cabecera" style="max-height: 25mm; width: auto;">
                     </div>
-                    <div style="text-align: center; font-weight: bold; margin: 0 auto;">
+                    <div style="text-align: center; font-weight: bold; margin-top:4cm;">
                         <img src="{{ $chart['image'] }}" alt="Gráfico {{ $chart['id'] }}"
-                            style="width: 120%; height: 500px;" />
+                            style="width: 150%; height: 500px;" />
                     </div>
                 </div>
                 {{-- <div style="position: fixed; bottom: 5mm; left: 10mm; right: 10mm; text-align: center;">
