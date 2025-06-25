@@ -2375,7 +2375,7 @@
                             ${variedadCell}
                             ${etiquetaCell}
                             <td>${calibre}</td>
-                            <td class="number">${formatCurrency(curvaCalibre)}</td>
+                            <td class="number">${formatCurrency(curvaCalibre)} %</td>
                             <td class="number">${cajasEquivalentes}</td>
                             <td class="number">${formatInteger(datosCalibre.total_kilos.toFixed(0))}</td>
                             <td class="number ${rnpClass}">US$ ${formatCurrency(datosCalibre.rnp_total.toFixed(2))}</td>
