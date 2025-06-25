@@ -754,8 +754,8 @@
                                         );
                                     });
                                     FacturaValorNeto = sumasPorCategoria['COMERCIAL'].precio_comercial+
-                                        sumasPorCategoria['PRE CALIBRE'].precio_comercial+
-                                        sumasPorCategoria['SOBRE CALIBRE'].precio_comercial;
+                                        sumasPorCategoria['PRECALIBRE'].precio_comercial+
+                                        sumasPorCategoria['SOBRECALIBRE'].precio_comercial;
                                     
                                     FacturaValorNeto = FacturaValorNeto * $("#TC").val();
                                     valorTotal = parseFloat(sumasPorCategoria['CAT1']
