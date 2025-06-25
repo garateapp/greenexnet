@@ -2572,8 +2572,8 @@
                                 let datosCategoria = datosPorVariedad[categoria];
                                 console.log("datosCategoria", datosCategoria);
                                 let precioKilo = datosCategoria.precio_kilo_kilos ?
-                                    (datosCategoria.precio_total / datosCategoria
-                                        .precio_kilo_kilos).toFixed(2) : '0.00';
+                                    (datosCategoria.precio_kilo_sum / datosCategoria
+                                        .precio_kilo_sum).toFixed(2) : '0.00';
 
                                 let especieCell = i_categoria === 0 && isFirstVariedadRow ?
                                     `<td rowspan="${rowspanEspecie}">${especie}</td>` : '';
@@ -2587,16 +2587,15 @@
                         ${variedadCell}
                         <td style="text-align:center">${categoria}</td>
                         <td class="number">${formatInteger(datosCategoria.total_kilos.toFixed(0))}</td>
-                        <td class="number">${formatCurrency(datosCategoria.precio_total.toFixed(2))}</td>
+                        <td class="number">${formatCurrency(datosCategoria.precio_kilo_sum.toFixed(2))}</td>
                         <td class="number">${formatCurrency(precioKilo)}</td>
                     </tr>
                 `;
 
                                 // Acumular totales por variedad
                                 totalVariedad.total_kilos += datosCategoria.total_kilos;
-                                totalVariedad.precio_total += datosCategoria.precio_total;
-                                totalVariedad.precio_kilo_sum += datosCategoria
-                                    .precio_kilo_sum;
+                                totalVariedad.precio_total += datosCategoria.precio_kilo_sum;
+                                totalVariedad.precio_kilo_sum += precioKilo;
                                 totalVariedad.precio_kilo_kilos += datosCategoria
                                     .precio_kilo_kilos;
 
