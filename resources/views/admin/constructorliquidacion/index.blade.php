@@ -820,7 +820,7 @@
                                      })
                                      if(bonificacionFNE > 0){
                                          $("#trbonificacion").show();
-                                         $("#bonificacion").text(bonificacionFNE)
+                                         $("#bonificacion").text(bonificacionFNE.toFixed(2))
                                         .toLocaleString(
                                             'es-CL', {
                                                 minimumFractionDigits: 2,
