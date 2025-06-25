@@ -2517,7 +2517,7 @@
 
                             // Totales generales
                             totalGeneral.total_kilos += totalKilos;
-                            totalGeneral.precio_total += precioTotal;
+                            totalGeneral.precio_total += precio_total;
                             totalGeneral.precio_kilo_sum += precioKilo * totalKilos;
                             totalGeneral.precio_kilo_kilos += totalKilos;
                         }
