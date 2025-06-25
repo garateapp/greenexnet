@@ -13,11 +13,11 @@
         }
 
         /* th,
-                                                                        td {
-                                                                            border: 1px solid #dddddd;
-                                                                            padding: 8px;
-                                                                            text-align: left;
-                                                                        } */
+                                                                                td {
+                                                                                    border: 1px solid #dddddd;
+                                                                                    padding: 8px;
+                                                                                    text-align: left;
+                                                                                } */
 
         .currency {
             text-align: right;
@@ -660,7 +660,7 @@
                                             resultado_total: 0,
                                             total_comercial: 0,
                                             total_kilos: 0,
-                                            costo_comercial: 0, 
+                                            costo_comercial: 0,
                                             precio_comercial: 0
                                         },
                                         'DESECHO': {
@@ -721,7 +721,8 @@
                                         let costo_comercial = parseFloat(item
                                             .costo_comercial.replace(',', '.')) || 0;
                                         let precio_comercial = parseFloat(item
-                                            .precio_comercial.replace(',', '.')) || 0;
+                                                .precio_comercial.replace(',', '.')) ||
+                                            0;
 
                                         // Sumar solo si la categoría está en el objeto
                                         if (sumasPorCategoria.hasOwnProperty(
@@ -752,7 +753,7 @@
                                     });
                                     FacturaValorNeto = sumasPorCategoria['COMERCIAL']
                                         .precio_comercial;
-                                    FacturaValorNeto=FacturaValorNeto*$("#TC").val();
+                                    FacturaValorNeto = FacturaValorNeto * $("#TC").val();
                                     valorTotal = parseFloat(sumasPorCategoria['CAT1']
                                             .resultado_total) +
                                         parseFloat(sumasPorCategoria['CATII'].resultado_total);
@@ -944,8 +945,8 @@
                                                 maximumFractionDigits: 2
                                             });
                                     }
-                                    totalOtrosCargos = parseFloat(valorflete)+
-                                    parseFloat(envases) + parseFloat(valorNoExportable) +
+                                    totalOtrosCargos = parseFloat(valorflete) +
+                                        parseFloat(envases) + parseFloat(valorNoExportable) +
                                         parseFloat(multiresiduos) + parseFloat(bonificacion);
                                     $("#totalOtrosCargos").text(totalOtrosCargos.toLocaleString(
                                         'es-CL', {
@@ -2177,7 +2178,7 @@
                         rnp_kilo_sum: 0,
                         rnp_kilo_kilos: 0
                     };
-                    let groupedData=[];
+                    let groupedData = [];
                     // Agrupar datos por especie, variedad y etiqueta
                     $.each(response.result, function(index, item) {
                         if (item.categoria.toUpperCase() === 'CAT 1') {
@@ -2198,7 +2199,7 @@
                                     especie = "Durazno";
                                     break;
                             }
-                            
+
                             let totalKilos = parseFloat(item.total_kilos.replace(',', '.')) || 0;
                             let rnpTotal = parseFloat(item.resultado_total.replace(',', '.')) || 0;
                             let rnpKilo = parseFloat(item.resultado_kilo.replace(',', '.')) || 0;
@@ -2244,7 +2245,7 @@
 
                         }
                     });
-                    
+
                     // Generar HTML de la tabla
                     let htmlOutput = `
         <table>
@@ -2345,19 +2346,21 @@
                             <td class="number ${rnpClass}">US$ ${formatCurrency(datosCalibre.rnp_total.toFixed(2)/datosCalibre.total_kilos.toFixed(0))}</td>
                         </tr>
                     `;
-                    groupedData.push({
-                        especie: especie,
-                        variedad: variedad,
-                        etiqueta: etiqueta,
-                        calibre: calibre,
-                        curva_calibre: curvaCalibre,
-                        cajas_equivalentes: cajasEquivalentes,
-                        total_kilos: datosCalibre.total_kilos,
-                        rnp_total: datosCalibre.rnp_total,
-                        rnp_kilo: (datosCalibre.rnp_total/datosCalibre.total_kilos)
-                    });
+                                    groupedData.push({
+                                        especie: especie,
+                                        variedad: variedad,
+                                        etiqueta: etiqueta,
+                                        calibre: calibre,
+                                        curva_calibre: curvaCalibre,
+                                        cajas_equivalentes: cajasEquivalentes,
+                                        total_kilos: datosCalibre
+                                            .total_kilos,
+                                        rnp_total: datosCalibre.rnp_total,
+                                        rnp_kilo: (datosCalibre.rnp_total /
+                                            datosCalibre.total_kilos)
+                                    });
                                     //generamos un objeto para la grafica
-                                
+
                                     isFirstEtiquetaRow = false;
                                     isFirstVariedadRow = false;
 
@@ -2461,6 +2464,36 @@
                     generateCharts(Object.values(groupedData)); // Llamar a la función de gráficos
                 }
 
+                function processData(rawData) {
+                    const groups = {};
+                    let categories = new Set();
+
+                    // Agrupar por 'variedad + etiqueta'
+                    rawData.forEach(item => {
+                        const key = `${item.variedad} / ${item.etiqueta}`;
+                        if (!groups[key]) groups[key] = {};
+
+                        groups[key][item.calibre] = item.rnp_kilo;
+                        categories.add(item.calibre);
+                    });
+
+                    // Ordenar calibres numéricamente
+                    categories = Array.from(categories).sort((a, b) => a - b);
+
+                    // Convertir grupos en series
+                    const series = Object.keys(groups).map(key => {
+                        return {
+                            name: key,
+                            data: categories.map(calibre => groups[key][calibre] || 0)
+                        };
+                    });
+
+                    return {
+                        categories,
+                        series
+                    };
+                }
+
                 function llenarComercial(response) {
                     const categoriasPermitidas = ['Comercial', 'Pre Calibre', 'Desecho', 'Merma', 'Sobre Calibre'];
 
@@ -2515,7 +2548,8 @@
                             // Acumular valores
                             datosAgrupados[especie][variedad][categoria].total_kilos += totalKilos;
                             datosAgrupados[especie][variedad][categoria].precio_kilo_sum += precioKilo;
-                            datosAgrupados[especie][variedad][categoria].precio_total += precioTotal * totalKilos;
+                            datosAgrupados[especie][variedad][categoria].precio_total += precioTotal *
+                                totalKilos;
                             datosAgrupados[especie][variedad][categoria].precio_kilo_kilos += totalKilos;
 
                             // Totales generales
@@ -2527,7 +2561,7 @@
                     });
                     console.log("total general", totalGeneral);
                     console.log("datosAgrupados", datosAgrupados);
-                    
+
                     // Generar HTML de la tabla
                     let htmlOutput = `
         <table>
@@ -2598,7 +2632,8 @@
 
                                 // Acumular totales por variedad
                                 totalVariedad.total_kilos += datosCategoria.total_kilos;
-                                totalVariedad.precio_total += datosCategoria.precio_kilo_sum;
+                                totalVariedad.precio_total += datosCategoria
+                                    .precio_kilo_sum;
                                 totalVariedad.precio_kilo_sum += precioKilo;
                                 totalVariedad.precio_kilo_kilos += datosCategoria
                                     .precio_kilo_kilos;
@@ -2607,7 +2642,7 @@
                             });
 
                             // Subtotal por variedad
-                            let precioKiloVariedad = totalVariedad.total_kilos>0 ?
+                            let precioKiloVariedad = totalVariedad.total_kilos > 0 ?
                                 (totalVariedad.precio_total / totalVariedad.total_kilos)
                                 .toFixed(2) : '0.00';
                             htmlOutput += `
@@ -2800,10 +2835,53 @@
 
                 // Función principal para generar todos los gráficos
                 function generateCharts(data) {
-                    const groupedData = data;
-                    groupedData.forEach(group => {
-                        createChart(group.especie, group.variedad, data);
-                    });
+                    // const groupedData = data;
+                    // groupedData.forEach(group => {
+                    //     createChart(group.especie, group.variedad, data);
+                    // });
+                    const {
+                        categories,
+                        series
+                    } = processData(data);
+
+                    const options = {
+                        chart: {
+                            type: 'bar',
+                            height: 400
+                        },
+                        plotOptions: {
+                            bar: {
+                                horizontal: false,
+                                columnWidth: '70%',
+                                endingShape: 'rounded'
+                            }
+                        },
+                        dataLabels: {
+                            enabled: false
+                        },
+                        series: series,
+                        xaxis: {
+                            categories: categories,
+                            title: {
+                                text: 'Calibre'
+                            }
+                        },
+                        yaxis: {
+                            title: {
+                                text: 'RNP por Kilo'
+                            }
+                        },
+                        title: {
+                            text: 'RNP por Kilo por Calibre y Variedad/Etiqueta',
+                            align: 'center'
+                        },
+                        legend: {
+                            position: 'bottom'
+                        }
+                    };
+
+                    const chart = new ApexCharts(document.querySelector("#chart"), options);
+                    chart.render();
                 }
             }
         });
