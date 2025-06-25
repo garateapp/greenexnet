@@ -2604,8 +2604,8 @@
                             });
 
                             // Subtotal por variedad
-                            let precioKiloVariedad = totalVariedad.precio_kilo_kilos ?
-                                (totalVariedad.precio_kilo_sum / totalVariedad.precio_kilo_kilos)
+                            let precioKiloVariedad = totalVariedad.total_kilos>0 ?
+                                (totalVariedad.precio_total / totalVariedad.total_kilos)
                                 .toFixed(2) : '0.00';
                             htmlOutput += `
                 <tr class="total-row">
