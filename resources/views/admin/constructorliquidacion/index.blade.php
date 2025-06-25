@@ -2345,17 +2345,25 @@
                         </tr>
                     `;
                                     //generamos un objeto para la grafica
-                                    if (!groupedDataChart[variedad]) {
-                                        groupedDataChart[variedad] = {
-                                            especie: especie,
-                                            variedad: variedad,
-                                            etiqueta: etiqueta,
-                                            calibre: calibre,
-                                            curvaCalibre: curvaCalibre,
-                                            rnp_kilo: rnpKilo,
-                                        };
+                                if(!groupedDataChart[especie]){
+                                    groupedDataChart[especie] = {};
+                                    if (!groupedDataChart[especie][variedad]) {
+                                        groupedDataChart[especie][variedad] = {};
+                                        if(!groupedDataChart[especie][variedad][etiqueta]){
+                                            groupedDataChart[especie][variedad][etiqueta] = {};    
+                                            if(!groupedDataChart[especie][variedad][etiqueta][calibre]){
+                                                groupedDataChart[especie][variedad][etiqueta][calibre] = {
+                                                    especie: especie,
+                                                    variedad: variedad,
+                                                    etiqueta: etiqueta,
+                                                    calibre: calibre,
+                                                    curvaCalibre: curvaCalibre,
+                                                    rnp_kilo: rnpKilo,
+                                                };
+                                            }
+                                        }
                                     }
-
+                                }
 
                                     isFirstEtiquetaRow = false;
                                     isFirstVariedadRow = false;
