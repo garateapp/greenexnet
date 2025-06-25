@@ -2613,7 +2613,7 @@
                     <td></td>
                     <td class="number">${formatInteger(totalVariedad.total_kilos.toFixed(0))}</td>
                     <td class="number"></td>
-                    <td class="number">${formatCurrency(totalVariedad.precio_total.toFixed(2))}/${formatInteger(totalVariedad.total_kilos.toFixed(0))}</td>
+                    <td class="number">${formatCurrency(totalVariedad.precio_total.toFixed(2))/formatInteger(totalVariedad.total_kilos.toFixed(0))}</td>
                 </tr>
             `;
                         });
@@ -2630,7 +2630,7 @@
                     <td></td>
                     <td class="number">${formatInteger(totalGeneral.total_kilos.toFixed(0))}</td>
                     <td class="number">${formatCurrency(totalGeneral.precio_total.toFixed(2))}</td>
-                    <td class="number">${formatCurrency(totalGeneral.precio_total.toFixed(2))}/${formatInteger(totalGeneral.total_kilos.toFixed(0))}</td>
+                    <td class="number">${formatCurrency(totalGeneral.precio_total.toFixed(2))/formatInteger(totalGeneral.total_kilos.toFixed(0))}</td>
                 </tr>
             </tbody>
         </table>
