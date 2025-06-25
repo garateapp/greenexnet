@@ -13,11 +13,11 @@
         }
 
         /* th,
-                                                                                td {
-                                                                                    border: 1px solid #dddddd;
-                                                                                    padding: 8px;
-                                                                                    text-align: left;
-                                                                                } */
+                                                                                                td {
+                                                                                                    border: 1px solid #dddddd;
+                                                                                                    padding: 8px;
+                                                                                                    text-align: left;
+                                                                                                } */
 
         .currency {
             text-align: right;
@@ -2461,38 +2461,15 @@
     `;
                     console.log(Object.values(groupedData));
                     $('#norma').html(htmlOutput); // Insertar en contenedor
-                    generateCharts(Object.values(groupedData)); // Llamar a la función de gráficos
+                    //generateCharts(Object.values(groupedData)); // Llamar a la función de gráficos
+                    const uniqueGroups = getUniqueGroups(groupedData);
+
+                    uniqueGroups.forEach(group => {
+                        generateChart(group.especie, group.variedad, group.etiqueta, groupedData);
+                    });
                 }
 
-                function processData(rawData) {
-                    const groups = {};
-                    let categories = new Set();
 
-                    // Agrupar por 'variedad + etiqueta'
-                    rawData.forEach(item => {
-                        const key = `${item.variedad} / ${item.etiqueta}`;
-                        if (!groups[key]) groups[key] = {};
-
-                        groups[key][item.calibre] = item.rnp_kilo;
-                        categories.add(item.calibre);
-                    });
-
-                    // Ordenar calibres numéricamente
-                    categories = Array.from(categories).sort((a, b) => a - b);
-
-                    // Convertir grupos en series
-                    const series = Object.keys(groups).map(key => {
-                        return {
-                            name: key,
-                            data: categories.map(calibre => groups[key][calibre] || 0)
-                        };
-                    });
-
-                    return {
-                        categories,
-                        series
-                    };
-                }
 
                 function llenarComercial(response) {
                     const categoriasPermitidas = ['Comercial', 'Pre Calibre', 'Desecho', 'Merma', 'Sobre Calibre'];
@@ -2833,55 +2810,202 @@
                     return chartId;
                 }
 
-                // Función principal para generar todos los gráficos
-                function generateCharts(data) {
-                    // const groupedData = data;
-                    // groupedData.forEach(group => {
-                    //     createChart(group.especie, group.variedad, data);
-                    // });
-                    const {
+                function getUniqueGroups(groupedData) {
+                    const seen = new Set();
+                    const uniqueGroups = [];
+
+                    groupedData.forEach(item => {
+                        const key = `${item.especie}-${item.variedad}-${item.etiqueta}`;
+                        if (!seen.has(key)) {
+                            seen.add(key);
+                            uniqueGroups.push({
+                                especie: item.especie,
+                                variedad: item.variedad,
+                                etiqueta: item.etiqueta
+                            });
+                        }
+                    });
+
+                    return uniqueGroups;
+                }
+
+                function processData(rawData) {
+                    const groups = {};
+                    let categories = new Set();
+
+                    // Agrupar por 'variedad + etiqueta'
+                    rawData.forEach(item => {
+                        const key = `${item.variedad} / ${item.etiqueta}`;
+                        if (!groups[key]) groups[key] = {};
+
+                        groups[key][item.calibre] = item.rnp_kilo;
+                        categories.add(item.calibre);
+                    });
+
+                    // Ordenar calibres numéricamente
+                    categories = Array.from(categories).sort((a, b) => a - b);
+
+                    // Convertir grupos en series
+                    const series = Object.keys(groups).map(key => {
+                        return {
+                            name: key,
+                            data: categories.map(calibre => groups[key][calibre] || 0)
+                        };
+                    });
+
+                    return {
                         categories,
                         series
-                    } = processData(data);
+                    };
+                }
+
+                function getDataGroup(rawData, variedad, etiqueta) {
+                    return rawData.filter(item => item.variedad === variedad && item.etiqueta === etiqueta);
+                }
+
+                function extractSeries(dataGroup) {
+                    const calibres = dataGroup.map(item => item.calibre);
+                    const curvaCalibre = dataGroup.map(item => parseFloat(item.curva_calibre));
+                    const rnpKilo = dataGroup.map(item => parseFloat(item.rnp_kilo));
+
+                    // Calculamos el promedio global de rnp_kilo
+                    const avgRnpKilo = rnpKilo.reduce((sum, val) => sum + val, 0) / rnpKilo.length;
+                    const avgRnpKiloArray = new Array(rnpKilo.length).fill(avgRnpKilo);
+
+                    return {
+                        calibres,
+                        curvaCalibre,
+                        rnpKilo,
+                        avgRnpKiloArray
+                    };
+                }
+                // Función principal para generar todos los gráficos
+                function generateChart(especie, variedad, etiqueta, rawData) {
+                    const dataGroup = getDataGroup(rawData, variedad, etiqueta);
+                    if (!dataGroup.length) return null;
+
+                    const {
+                        calibres,
+                        curvaCalibre,
+                        rnpKilo,
+                        avgRnpKiloArray
+                    } = extractSeries(dataGroup);
 
                     const options = {
                         chart: {
-                            type: 'bar',
-                            height: 400
+                            type: 'line',
+                            height: 600,
+                            width: 800,
+                            toolbar: {
+                                show: false
+                            },
                         },
-                        plotOptions: {
-                            bar: {
-                                horizontal: false,
-                                columnWidth: '70%',
-                                endingShape: 'rounded'
+                        series: [{
+                                name: 'Curva Calibre',
+                                type: 'column',
+                                data: curvaCalibre
+                            },
+                            {
+                                name: 'RNP por Kilo',
+                                type: 'line',
+                                data: rnpKilo
+                            },
+                            {
+                                name: 'Promedio RNP por Kilo',
+                                type: 'line',
+                                data: avgRnpKiloArray
                             }
-                        },
-                        dataLabels: {
-                            enabled: false
-                        },
-                        series: series,
+                        ],
                         xaxis: {
-                            categories: categories,
+                            categories: calibres,
                             title: {
                                 text: 'Calibre'
                             }
                         },
-                        yaxis: {
-                            title: {
-                                text: 'RNP por Kilo'
+                        yaxis: [{
+                                title: {
+                                    text: 'Curva Calibre (%)'
+                                },
+                                decimalsInFloat: 2
+                            },
+                            {
+                                opposite: true,
+                                title: {
+                                    text: 'RNP por Kilo'
+                                },
+                                decimalsInFloat: 2
                             }
-                        },
+                        ],
                         title: {
-                            text: 'RNP por Kilo por Calibre y Variedad/Etiqueta',
+                            text: `${especie} - ${variedad} / ${etiqueta}`,
                             align: 'center'
                         },
-                        legend: {
-                            position: 'bottom'
+                        stroke: {
+                            width: [0, 4, 4]
+                        },
+                        colors: ['#1f77b4', '#ff7f0e', '#2ca02c'],
+                        dataLabels: {
+                            enabled: true,
+                            enabledOnSeries: [0, 1],
+                            formatter: function(val, opts) {
+                                const seriesIndex = opts.seriesIndex;
+                                const dataPointIndex = opts.dataPointIndex;
+                                const allSeries = opts.w.config.series;
+                                const values = [
+                                    allSeries[0].data[dataPointIndex] || 0, // Curva Calibre
+                                    allSeries[1].data[dataPointIndex] || 0, // RNP por Kilo
+                                    allSeries[2].data[dataPointIndex] || 0 // Promedio RNP por Kilo
+                                ];
+
+                                // Ocultar label si muy cerca de otra serie
+                                if (seriesIndex === 1 && Math.abs(values[1] - values[0]) < 0.2) return '';
+                                if (seriesIndex === 2 && (Math.abs(values[2] - values[1]) < 0.2 || Math.abs(
+                                        values[2] - values[0]) < 0.2)) return '';
+
+                                return val.toFixed(2);
+                            },
+                            style: {
+                                fontSize: '22px',
+                                colors: ['#1f77b4', '#ff7f0e', '#2ca02c']
+                            },
+                            background: {
+                                enabled: true,
+                                foreColor: '#000000',
+                                padding: 4,
+                                background: '#FFFFFF',
+                                borderRadius: 2,
+                                borderWidth: 1,
+                                borderColor: '#ffffff',
+                                opacity: 0.9
+                            },
+                            offsetY: -25,
+                            dropShadow: {
+                                enabled: true,
+                                top: 1,
+                                left: 1,
+                                blur: 1,
+                                opacity: 0.65
+                            }
+                        },
+                        tooltip: {
+                            y: [{
+                                formatter: val => val.toFixed(2)
+                            }, {
+                                formatter: val => val.toFixed(2)
+                            }, {
+                                formatter: val => val.toFixed(2)
+                            }]
                         }
                     };
 
-                    const chart = new ApexCharts(document.querySelector("#chart"), options);
+                    const chartId = `chart_${especie}_${variedad}_${etiqueta}`.replace(/ /g, '_').replace(
+                        /[^a-zA-Z0-9_]/g, '');
+                    $('#charts').append(`<div class="chart-container" id="${chartId}"></div>`);
+
+                    const chart = new ApexCharts(document.querySelector(`#${chartId}`), options);
                     chart.render();
+
+                    return chartId;
                 }
             }
         });
