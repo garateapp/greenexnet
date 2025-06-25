@@ -2571,9 +2571,9 @@
                             $.each(categorias, function(i_categoria, categoria) {
                                 let datosCategoria = datosPorVariedad[categoria];
                                 console.log("datosCategoria", datosCategoria);
-                                let precioKilo = datosCategoria.precio_kilo_kilos ?
+                                let precioKilo = datosCategoria.total_kilos ?
                                     (datosCategoria.precio_kilo_sum / datosCategoria
-                                        .precio_kilo_kilos).toFixed(2) : '0.00';
+                                        .total_kilos).toFixed(2) : '0.00';
 
                                 let especieCell = i_categoria === 0 && isFirstVariedadRow ?
                                     `<td rowspan="${rowspanEspecie}">${especie}</td>` : '';
