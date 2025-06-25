@@ -198,6 +198,12 @@
                                                     <td>US$</td>
                                                     <td class="currency" id="suma-CAT-1"></td>
                                                 </tr>
+                                                <tr>
+                                                    <td colspan="6" id="trbonificacionRebate">Bonificación
+                                                    </td>
+                                                    <td>US$</td>
+                                                    <td class="currency" id="bonificacionRebate"></td>
+                                                </tr>
                                                 <tr style="display: none;" id="trCATII">
                                                     <td colspan="5">Total venta exportación temporada 2024-2025
                                                     </td>
@@ -243,6 +249,11 @@
                                                     <td id="kilosNoExportable"></td>
                                                     <td>US$</td>
                                                     <td class="currency" id="valorNoExportable"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="6" id="trBonifGastoNoExportable">Bonificación Gasto Fruta no Exportable</td>
+                                                    <td>US$</td>
+                                                    <td class="currency" id="bonificacionGastoNoExportable"></td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="6">Cuenta corriente envases</td>
@@ -747,6 +758,7 @@
                                                 .precio_comercial += precio_comercial;
                                         }
                                     });
+                                   
 
                                     $.each(sumasPorCategoria, function(categoria, sumas) {
                                         console.log(
@@ -810,6 +822,43 @@
                                             maximumFractionDigits: 2
                                         }));
 
+                                    //Bonif Gasto FNE
+                                     let bonificacionFNE = 0;
+                                     $.each(response.OtroCobro, function(index, item) {
+                                         bonificacionFNE += parseFloat(item.valor);
+                                     })
+                                     if(bonificacionFNE > 0){
+                                         $("#trBonifGastoNoExportable").show();
+                                         $("#bonificacionFNE").text(bonificacionFNE
+                                        .toLocaleString(
+                                            'es-CL', {
+                                                minimumFractionDigits: 2,
+                                                maximumFractionDigits: 2
+                                            }));
+                                     }
+                                     else{
+                                         $("#trBonifGastoNoExportable").hide();
+                                        }
+                                    
+                                    //Fin Bonif Gasto FNE
+
+                                    //Boni Rebate
+                                    let bonificacionRebate = 0;
+                                     $.each(response.bonificacion, function(index, item) {
+                                         bonificacionFNE += parseFloat(item.valor);
+                                     })
+                                     if(bonificacionFNE > 0){
+                                         $("#trbonificacionRebate").show();
+                                         $("#bonificacionRebate").text(bonificacionRebate
+                                        .toLocaleString(
+                                            'es-CL', {
+                                                minimumFractionDigits: 2,
+                                                maximumFractionDigits: 2
+                                            }));
+                                     }
+                                     else{
+                                         $("#trbonificacionRebate").hide();
+                                        }
 
 
                                     //facturación anticipos

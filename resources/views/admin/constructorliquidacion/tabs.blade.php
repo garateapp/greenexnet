@@ -92,7 +92,7 @@
         <div class="tab-content" style="page-break-before: always;">
             <!-- Header visible solo en PDF -->
             <div style="text-align: center; font-weight: bold;">
-                <img src="{{ $logo_path }}" alt="Cabecera" style="max-height: 25mm; width: auto;">
+                <img src="{{ $logo_path }}" alt="Cabecera" style="max-height: 25mm; width: 210mm !important;">
             </div>
             {!! $tab['html'] !!}
             <!-- Footer visible solo en PDF -->
