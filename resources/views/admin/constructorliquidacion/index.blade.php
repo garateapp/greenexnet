@@ -2455,7 +2455,7 @@
             </tbody>
         </table>
     `;
-
+                    console.log(Object.values(groupedDataChart));
                     $('#norma').html(htmlOutput); // Insertar en contenedor
                     generateCharts(Object.values(groupedDataChart)); // Llamar a la función de gráficos
                 }
