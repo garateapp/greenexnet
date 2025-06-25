@@ -880,7 +880,7 @@
                                                     minimumFractionDigits: 2,
                                                     maximumFractionDigits: 2
                                                 });
-                                        if (valorbonificacion > 0) {
+                                        if (valorbonificacion != 0) {
                                             $("#trBonifGastoNoExportable").show();
                                         } else {
                                             $("#trBonifGastoNoExportable").hide();
