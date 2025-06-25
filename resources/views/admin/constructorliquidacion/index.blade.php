@@ -2572,7 +2572,7 @@
                                 let datosCategoria = datosPorVariedad[categoria];
                                 console.log("datosCategoria", datosCategoria);
                                 let precioKilo = datosCategoria.precio_kilo_kilos ?
-                                    (datosCategoria.precio_kilo_sum / datosCategoria
+                                    (datosCategoria.precio_total / datosCategoria
                                         .precio_kilo_kilos).toFixed(2) : '0.00';
 
                                 let especieCell = i_categoria === 0 && isFirstVariedadRow ?
