@@ -266,11 +266,13 @@
                                                     <td class="currency" id="multiresiduos"></td>
                                                 </tr>
                                                 <tr>
-                                                    <td colspan="7">Total Cargos</td>
+                                                    <td colspan="6">Total Cargos</td>
+                                                    <td>US$</td>
                                                     <td class="currency" id="totalOtrosCargos"></td>
                                                 </tr>
                                                 <tr>
-                                                    <td colspan="7">Saldo</td>
+                                                    <td colspan="6">Saldo</td>
+                                                    <td>US$</td>
                                                     <td class="currency" id="SaldoTotal"></td>
                                                 </tr>
 
@@ -815,7 +817,8 @@
 
                                         $("#anticipos").append(
                                             `<tr>
-                                                    <td colspan="7" style="text-align: right;">${fecha}</td>
+                                                    <td colspan="6" style="text-align: right;">${fecha}</td>
+                                                    <td>US$</td>
                                                     <td class="currency">${valor.toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                                                 </tr>`
                                         );
@@ -2337,8 +2340,8 @@
                             <td class="number">${formatCurrency(curvaCalibre)}</td>
                             <td class="number">${cajasEquivalentes}</td>
                             <td class="number">${formatInteger(datosCalibre.total_kilos.toFixed(0))}</td>
-                            <td class="number ${rnpClass}">${formatCurrency(datosCalibre.rnp_total.toFixed(2))}</td>
-                            <td class="number ${rnpClass}">${formatCurrency(rnpKilo)}</td>
+                            <td class="number ${rnpClass}">US$ ${formatCurrency(datosCalibre.rnp_total.toFixed(2))}</td>
+                            <td class="number ${rnpClass}">US$ ${formatCurrency(datosCalibre.rnp_total.toFixed(2)/datosCalibre.total_kilos.toFixed(0))}</td>
                         </tr>
                     `;
                                     //generamos un objeto para la grafica
@@ -2393,7 +2396,7 @@
                         <td class="number">${cajasEtiqueta}</td>
                         <td class="number">${formatInteger(datosEtiqueta.total_kilos.toFixed(2))}</td>
                         <td class="number ${rnpClassEtiqueta}">${formatCurrency(datosEtiqueta.rnp_total.toFixed(2))}</td>
-                        <td class="number ${rnpClassEtiqueta}">${formatCurrency(rnpKiloEtiqueta)}</td>
+                        <td class="number ${rnpClassEtiqueta}">${formatCurrency(datosEtiqueta.rnp_total.toFixed(2)/datosEtiqueta.total_kilos.toFixed(0))}</td>
                     </tr>
                 `;
                             });
@@ -2417,7 +2420,7 @@
                     <td class="number">${formatInteger(totalVariedad.cajas_equivalentes.toFixed(0))}</td>
                     <td class="number">${formatInteger(totalVariedad.total_kilos.toFixed(0))}</td>
                     <td class="number ${rnpClassVariedad}">${formatCurrency(totalVariedad.rnp_total.toFixed(2))}</td>
-                    <td class="number ${rnpClassVariedad}">${formatCurrency(rnpKiloVariedad)}</td>
+                    <td class="number ${rnpClassVariedad}">${formatCurrency(totalVariedad.rnp_total.toFixed(2)/totalVariedad.total_kilos.toFixed(0))}</td>
                 </tr>
             `;
 
@@ -2628,8 +2631,8 @@
                     <td></td>
                     <td></td>
                     <td class="number">${formatInteger(totalGeneral.total_kilos.toFixed(0))}</td>
-                    <td class="number">${formatCurrency(totalGeneral.precio_total.toFixed(2))}</td>
-                    <td class="number">${formatCurrency(precioKiloGeneral)}</td>
+                    <td class="number">USD ${formatCurrency(totalGeneral.precio_total.toFixed(2))}</td>
+                    <td class="number">USD ${formatCurrency(precioKiloGeneral)}</td>
                 </tr>
             </tbody>
         </table>
