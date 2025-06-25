@@ -819,8 +819,8 @@
                                          bonificacionFNE += parseFloat(item.valor);
                                      })
                                      if(bonificacionFNE > 0){
-                                         $("#trBonifGastoNoExportable").show();
-                                         $("#bonificacionFNE").text(bonificacionFNE
+                                         $("#trbonificacion").show();
+                                         $("#bonificacion").text(bonificacionFNE
                                         .toLocaleString(
                                             'es-CL', {
                                                 minimumFractionDigits: 2,
@@ -828,7 +828,7 @@
                                             }));
                                      }
                                      else{
-                                         $("#trBonifGastoNoExportable").hide();
+                                         $("#trbonificacion").hide();
                                         }
                                     
                                     //Fin Bonif Gasto FNE
@@ -873,7 +873,7 @@
                                             valorbonificacion += parseFloat(element
                                                 .valor);
                                         });
-                                        $("#bonificacion").text(valorbonificacion ?
+                                        $("#bonificacionGastoNoExportable").text(valorbonificacion ?
                                                 valorbonificacion : 0)
                                             .toLocaleString(
                                                 'es-CL', {
@@ -881,14 +881,14 @@
                                                     maximumFractionDigits: 2
                                                 });
                                         if (valorbonificacion > 0) {
-                                            $("#trbonificacion").show();
+                                            $("#trBonifGastoNoExportable").show();
                                         } else {
-                                            $("#trbonificacion").hide();
+                                            $("#trBonifGastoNoExportable").hide();
                                         }
                                     } else {
-                                        $("#trbonificacion").hide();
+                                        $("#trBonifGastoNoExportable").hide();
                                     }
-                                     $("#valorTotalUsd").text((valorTotal+valorTotalAnticipos).toLocaleString(
+                                     $("#valorTotalUsd").text((valorTotal+bonificacionFNE).toLocaleString(
                                         'es-CL', {
                                             minimumFractionDigits: 2,
                                             maximumFractionDigits: 2
@@ -980,7 +980,7 @@
                                     }
                                     totalOtrosCargos = parseFloat(valorflete) +
                                         parseFloat(envases) + parseFloat(valorNoExportable) +
-                                        parseFloat(multiresiduos) + parseFloat(bonificacion);
+                                        parseFloat(multiresiduos) + parseFloat(bonificacion)+parseFloat(valorbonificacion);
                                     $("#totalOtrosCargos").text(totalOtrosCargos.toLocaleString(
                                         'es-CL', {
                                             minimumFractionDigits: 2,
