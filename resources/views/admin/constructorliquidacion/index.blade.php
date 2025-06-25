@@ -486,7 +486,7 @@
                     text: 'Ingrese un Tipo de Cambio.',
                 });
             } else {
-                $("#TCValor").val($("#TC").val());
+                $("#TCValor").text($("#TC").val());
                 $('#downloadPdf').on('click', function() {
                     generatePdf_pdf();
                 });
