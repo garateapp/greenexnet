@@ -198,12 +198,7 @@
                                                     <td>US$</td>
                                                     <td class="currency" id="suma-CAT-1"></td>
                                                 </tr>
-                                                <tr>
-                                                    <td colspan="6" id="trbonificacionRebate">Bonificación
-                                                    </td>
-                                                    <td>US$</td>
-                                                    <td class="currency" id="bonificacionRebate"></td>
-                                                </tr>
+                                               
                                                 <tr style="display: none;" id="trCATII">
                                                     <td colspan="5">Total venta exportación temporada 2024-2025
                                                     </td>
@@ -773,11 +768,7 @@
                                     valorTotal = parseFloat(sumasPorCategoria['CAT1']
                                             .resultado_total) +
                                         parseFloat(sumasPorCategoria['CATII'].resultado_total);
-                                    $("#valorTotalUsd").text(valorTotal.toLocaleString(
-                                        'es-CL', {
-                                            minimumFractionDigits: 2,
-                                            maximumFractionDigits: 2
-                                        }));
+                                   
                                     valorNoExportable = parseFloat(sumasPorCategoria['MERMA']
                                             .costo_comercial) +
                                         parseFloat(sumasPorCategoria['DESECHO']
@@ -824,7 +815,7 @@
 
                                     //Bonif Gasto FNE
                                      let bonificacionFNE = 0;
-                                     $.each(response.OtroCobro, function(index, item) {
+                                     $.each(response.bonificacion, function(index, item) {
                                          bonificacionFNE += parseFloat(item.valor);
                                      })
                                      if(bonificacionFNE > 0){
@@ -842,23 +833,7 @@
                                     
                                     //Fin Bonif Gasto FNE
 
-                                    //Boni Rebate
-                                    let bonificacionRebate = 0;
-                                     $.each(response.bonificacion, function(index, item) {
-                                         bonificacionFNE += parseFloat(item.valor);
-                                     })
-                                     if(bonificacionFNE > 0){
-                                         $("#trbonificacionRebate").show();
-                                         $("#bonificacionRebate").text(bonificacionRebate
-                                        .toLocaleString(
-                                            'es-CL', {
-                                                minimumFractionDigits: 2,
-                                                maximumFractionDigits: 2
-                                            }));
-                                     }
-                                     else{
-                                         $("#trbonificacionRebate").hide();
-                                        }
+                                   
 
 
                                     //facturación anticipos
@@ -893,8 +868,8 @@
                                     }
 
                                     let valorbonificacion = 0;
-                                    if (response.bonificacion.length > 0) {
-                                        response.bonificacion.forEach(element => {
+                                    if (response.OtroCobro.length > 0) {
+                                        response.OtroCobro.forEach(element => {
                                             valorbonificacion += parseFloat(element
                                                 .valor);
                                         });
@@ -913,6 +888,11 @@
                                     } else {
                                         $("#trbonificacion").hide();
                                     }
+                                     $("#valorTotalUsd").text((valorTotal+valorTotalAnticipos).toLocaleString(
+                                        'es-CL', {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2
+                                        }));
                                     // $("#fletehuerto").text((response.valorflete.valor ? response
                                     //     .valorflete.valor : 0).toLocaleString(
                                     //     'es-CL', {
