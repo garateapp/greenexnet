@@ -92,7 +92,7 @@
         <div class="tab-content" style="page-break-before: always;">
             <!-- Header visible solo en PDF -->
             <div style="text-align: center; font-weight: bold;">
-                <img src="{{ $logo_path }}" alt="Cabecera" style="max-height: 25mm; width: 210mm !important;">
+                <img src="{{ $logo_path }}" alt="Cabecera" style="width: 210mm !important;">
             </div>
             {!! $tab['html'] !!}
             <!-- Footer visible solo en PDF -->
@@ -109,11 +109,11 @@
             @if (!empty($chart['image']))
                 <div style="page-break-before: always; text-align: center;">
                     <div style="text-align: center; font-weight: bold;">
-                        <img src="{{ $logo_path }}" alt="Cabecera" style="max-height: 25mm; width: auto;">
+                        <img src="{{ $logo_path }}" alt="Cabecera" style="width: 210mm;">
                     </div>
                     <div style="text-align: center; font-weight: bold; margin-top:4cm;margin-left:25%;">
                         <img src="{{ $chart['image'] }}" alt="Gráfico {{ $chart['id'] }}"
-                            style="width: 150%; height: 500px;" />
+                            style="width: 150%;" />
                     </div>
                 </div>
                 {{-- <div style="position: fixed; bottom: 5mm; left: 10mm; right: 10mm; text-align: center;">
