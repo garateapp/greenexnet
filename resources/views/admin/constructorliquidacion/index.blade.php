@@ -2177,7 +2177,7 @@
                         rnp_kilo_sum: 0,
                         rnp_kilo_kilos: 0
                     };
-
+                    let groupedData={};
                     // Agrupar datos por especie, variedad y etiqueta
                     $.each(response.result, function(index, item) {
                         if (item.categoria.toUpperCase() === 'CAT 1') {
@@ -2198,7 +2198,7 @@
                                     especie = "Durazno";
                                     break;
                             }
-
+                            
                             let totalKilos = parseFloat(item.total_kilos.replace(',', '.')) || 0;
                             let rnpTotal = parseFloat(item.resultado_total.replace(',', '.')) || 0;
                             let rnpKilo = parseFloat(item.resultado_kilo.replace(',', '.')) || 0;
@@ -2244,7 +2244,7 @@
 
                         }
                     });
-
+                    
                     // Generar HTML de la tabla
                     let htmlOutput = `
         <table>
@@ -2345,6 +2345,17 @@
                             <td class="number ${rnpClass}">US$ ${formatCurrency(datosCalibre.rnp_total.toFixed(2)/datosCalibre.total_kilos.toFixed(0))}</td>
                         </tr>
                     `;
+                    groupedData.push({
+                        especie: especie,
+                        variedad: variedad,
+                        etiqueta: etiqueta,
+                        calibre: calibre,
+                        curva_calibre: curvaCalibre,
+                        cajas_equivalentes: cajasEquivalentes,
+                        total_kilos: datosCalibre.total_kilos,
+                        rnp_total: datosCalibre.rnp_total,
+                        rnp_kilo: (datosCalibre.rnp_total/datosCalibre.total_kilos)
+                    });
                                     //generamos un objeto para la grafica
                                 
                                     isFirstEtiquetaRow = false;
@@ -2445,9 +2456,9 @@
             </tbody>
         </table>
     `;
-                    console.log(Object.values(datosAgrupadosNorma));
+                    console.log(Object.values(groupedData));
                     $('#norma').html(htmlOutput); // Insertar en contenedor
-                    generateCharts(Object.values(datosAgrupadosNorma)); // Llamar a la función de gráficos
+                    generateCharts(Object.values(groupedData)); // Llamar a la función de gráficos
                 }
 
                 function llenarComercial(response) {
