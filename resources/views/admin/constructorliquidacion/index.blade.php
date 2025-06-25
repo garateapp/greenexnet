@@ -932,8 +932,12 @@
                                                 $("#trBonificacionfletehuerto").hide();
                                                 break;
                                         }
-                                        $("#bonificacionfletehuerto").text(bonificacion ?
-                                            bonificacion : 0);
+                                        $("#bonificacionfletehuerto").text((bonificacion ?
+                                            bonificacion : 0).toLocaleString(
+                                               'es-CL', {
+                                                    minimumFractionDigits: 2,
+                                                    maximumFractionDigits: 2
+                                                }));
 
 
 
