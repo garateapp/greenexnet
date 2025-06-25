@@ -2450,7 +2450,7 @@
                     <td class="number">${formatCurrency(totalGeneralNorma.cajas_equivalentes.toFixed(0))}</td>
                     <td class="number">${formatInteger(totalGeneralNorma.total_kilos.toFixed(0))}</td>
                     <td class="number ${rnpClassGeneral}">${formatCurrency(totalGeneralNorma.rnp_total.toFixed(2))}</td>
-                    <td class="number ${rnpClassGeneral}">${formatCurrency(rnpKiloGeneral)}</td>
+                    <td class="number ${rnpClassGeneral}">${formatCurrency((totalGeneralNorma.rnp_total.toFixed(2)/totalGeneralNorma.total_kilos.toFixed(0)).toFixed(4))}</td>
                 </tr>
             </tbody>
         </table>
