@@ -905,12 +905,12 @@
                                             valorflete += parseFloat(element.valor);
                                             bonificacion = element.condicion;
                                         });
-                                        $("#fletehuerto").text(valorflete ? valorflete : 0)
+                                        $("#fletehuerto").text((valorflete)
                                             .toLocaleString(
                                                 'es-CL', {
                                                     minimumFractionDigits: 2,
                                                     maximumFractionDigits: 2
-                                                });
+                                                }));
 
 
 
