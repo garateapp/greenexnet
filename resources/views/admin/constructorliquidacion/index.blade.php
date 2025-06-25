@@ -2177,7 +2177,7 @@
                         rnp_kilo_sum: 0,
                         rnp_kilo_kilos: 0
                     };
-                    let groupedData={};
+                    let groupedData=[];
                     // Agrupar datos por especie, variedad y etiqueta
                     $.each(response.result, function(index, item) {
                         if (item.categoria.toUpperCase() === 'CAT 1') {
