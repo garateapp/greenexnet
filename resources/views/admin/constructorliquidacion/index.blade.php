@@ -2522,7 +2522,8 @@
                             totalGeneral.precio_kilo_kilos += totalKilos;
                         }
                     });
-
+                    console.log("total general", totalGeneral);
+                    console.log("datosAgrupados", datosAgrupados);
                     // Generar HTML de la tabla
                     let htmlOutput = `
         <table>
