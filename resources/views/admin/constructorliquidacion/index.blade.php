@@ -279,7 +279,7 @@
                                                     <td colspan="4">&nbsp;</td>
                                                     <td colspan="2" id="fecha_tipo_cambio">TC 30-06-2025</td>
                                                     <td colspan="1">$</td>
-                                                    <td class="currency" id="TC"></td>
+                                                    <td class="currency" id="TCValor"></td>
                                                 </tr>
                                                 <tr class="section-header">
                                                     <td colspan="8">NOTA DE DÉBITO</td>
@@ -486,7 +486,7 @@
                     text: 'Ingrese un Tipo de Cambio.',
                 });
             } else {
-
+                $("#TCValor").val($("#TC").val());
                 $('#downloadPdf').on('click', function() {
                     generatePdf_pdf();
                 });
@@ -750,6 +750,7 @@
                                     });
                                     FacturaValorNeto = sumasPorCategoria['COMERCIAL']
                                         .precio_comercial;
+                                    FacturaValorNeto=FacturaValorNeto*$("#TC").val();
                                     valorTotal = parseFloat(sumasPorCategoria['CAT1']
                                             .resultado_total) +
                                         parseFloat(sumasPorCategoria['CATII'].resultado_total);
