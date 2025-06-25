@@ -2510,7 +2510,7 @@
 
                             // Acumular valores
                             datosAgrupados[especie][variedad][categoria].total_kilos += totalKilos;
-                            datosAgrupados[especie][variedad][categoria].precio_kilo_sum += precioTotal;
+                            datosAgrupados[especie][variedad][categoria].precio_kilo_sum += precioKilo;
                             datosAgrupados[especie][variedad][categoria].precio_total += precioTotal * totalKilos;
                             datosAgrupados[especie][variedad][categoria].precio_kilo_kilos += totalKilos;
 
