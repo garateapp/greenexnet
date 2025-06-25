@@ -2573,7 +2573,7 @@
                                 console.log("datosCategoria", datosCategoria);
                                 let precioKilo = datosCategoria.precio_kilo_kilos ?
                                     (datosCategoria.precio_kilo_sum / datosCategoria
-                                        .precio_kilo_sum).toFixed(2) : '0.00';
+                                        .precio_kilo_kilos).toFixed(2) : '0.00';
 
                                 let especieCell = i_categoria === 0 && isFirstVariedadRow ?
                                     `<td rowspan="${rowspanEspecie}">${especie}</td>` : '';
