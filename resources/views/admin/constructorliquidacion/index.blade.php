@@ -458,7 +458,9 @@
                                         </div>
                                     </div>
                                     <div class="tab-pane fade" id="Graficos" role="tabpanel">
-                                        <div id="charts"></div>
+                                        <div id="charts" style="
+    margin-left: 25%;
+"></div>
                                     </div>
                                 </div>
                             </div>
