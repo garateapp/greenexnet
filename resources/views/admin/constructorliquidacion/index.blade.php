@@ -642,49 +642,56 @@
                                             resultado_total: 0,
                                             total_comercial: 0,
                                             total_kilos: 0,
-                                            costo_comercial: 0
+                                            costo_comercial: 0,
+                                            precio_comercial: 0,
                                         },
                                         'CATII': {
                                             resultado_kilo: 0,
                                             resultado_total: 0,
                                             total_comercial: 0,
                                             total_kilos: 0,
-                                            costo_comercial: 0
+                                            costo_comercial: 0,
+                                            precio_comercial: 0
                                         },
                                         'COMERCIAL': {
                                             resultado_kilo: 0,
                                             resultado_total: 0,
                                             total_comercial: 0,
                                             total_kilos: 0,
-                                            costo_comercial: 0
+                                            costo_comercial: 0, 
+                                            precio_comercial: 0
                                         },
                                         'DESECHO': {
                                             resultado_kilo: 0,
                                             resultado_total: 0,
                                             total_comercial: 0,
                                             total_kilos: 0,
-                                            costo_comercial: 0
+                                            costo_comercial: 0,
+                                            precio_comercial: 0
                                         },
                                         'PRECALIBRE': {
                                             resultado_kilo: 0,
                                             resultado_total: 0,
                                             total_comercial: 0,
                                             total_kilos: 0,
-                                            costo_comercial: 0
+                                            costo_comercial: 0,
+                                            precio_comercial: 0
                                         },
                                         'MERMA': {
                                             resultado_kilo: 0,
                                             resultado_total: 0,
                                             total_comercial: 0,
                                             total_kilos: 0,
-                                            costo_comercial: 0
+                                            costo_comercial: 0,
+                                            precio_comercial: 0
                                         },
                                         'SOBRECALIBRE': {
                                             resultado_kilo: 0,
                                             resultado_total: 0,
                                             total_comercial: 0,
                                             total_kilos: 0,
-                                            costo_comercial: 0
+                                            costo_comercial: 0,
+                                            precio_comercial: 0
                                         }
                                     };
 
@@ -711,6 +718,8 @@
                                             .replace(',', '.')) || 0;
                                         let costo_comercial = parseFloat(item
                                             .costo_comercial.replace(',', '.')) || 0;
+                                        let precio_comercial = parseFloat(item
+                                            .precio_comercial.replace(',', '.')) || 0;
 
                                         // Sumar solo si la categoría está en el objeto
                                         if (sumasPorCategoria.hasOwnProperty(
@@ -729,6 +738,8 @@
                                             sumasPorCategoria[categoria]
                                                 .costo_comercial +=
                                                 costo_comercial;
+                                            sumasPorCategoria[categoria]
+                                                .precio_comercial += precio_comercial;
                                         }
                                     });
 
