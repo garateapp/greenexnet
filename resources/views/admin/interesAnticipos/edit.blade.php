@@ -11,15 +11,15 @@
             @method('PUT')
             @csrf
             <div class="form-group">
-                <label class="required" for="anticipo_id">{{ trans('cruds.interesAnticipo.fields.anticipo') }}</label>
-                <select class="form-control select2 {{ $errors->has('anticipo') ? 'is-invalid' : '' }}" name="anticipo_id" id="anticipo_id" required>
+                <label class="required" for="productor_id">Productor</label>
+                <select class="form-control select2 {{ $errors->has('productor') ? 'is-invalid' : '' }}" name="anticipo_id" id="productor_id" required>
                     @foreach($anticipos as $id => $entry)
-                        <option value="{{ $id }}" {{ (old('anticipo_id') ? old('anticipo_id') : $interesAnticipo->anticipo->id ?? '') == $id ? 'selected' : '' }}>{{ $entry }}</option>
+                        <option value="{{ $id }}" {{ (old('productor_id') ? old('productor_id') : $interesAnticipo->productor->id ?? '') == $id ? 'selected' : '' }}>{{ $entry }}</option>
                     @endforeach
                 </select>
-                @if($errors->has('anticipo'))
+                @if($errors->has('productor'))
                     <div class="invalid-feedback">
-                        {{ $errors->first('anticipo') }}
+                        {{ $errors->first('productor') }}
                     </div>
                 @endif
                 <span class="help-block">{{ trans('cruds.interesAnticipo.fields.anticipo_helper') }}</span>

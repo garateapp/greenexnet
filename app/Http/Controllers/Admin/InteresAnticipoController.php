@@ -7,7 +7,7 @@ use App\Http\Controllers\Traits\CsvImportTrait;
 use App\Http\Requests\MassDestroyInteresAnticipoRequest;
 use App\Http\Requests\StoreInteresAnticipoRequest;
 use App\Http\Requests\UpdateInteresAnticipoRequest;
-use App\Models\Anticipo;
+use App\Models\Productor;
 use App\Models\InteresAnticipo;
 use Gate;
 use Illuminate\Http\Request;
@@ -23,7 +23,7 @@ class InteresAnticipoController extends Controller
         abort_if(Gate::denies('interes_anticipo_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         if ($request->ajax()) {
-            $query = InteresAnticipo::with(['anticipo'])->select(sprintf('%s.*', (new InteresAnticipo)->table));
+            $query = InteresAnticipo::with(['productor'])->select(sprintf('%s.*', (new InteresAnticipo)->table));
             $table = Datatables::of($query);
 
             $table->addColumn('placeholder', '&nbsp;');
@@ -51,12 +51,10 @@ class InteresAnticipoController extends Controller
                 return $row->anticipo ? $row->anticipo->fecha_documento : '';
             });
 
-            $table->editColumn('anticipo.valor', function ($row) {
+            $table->editColumn('productor.nombre', function ($row) {
                 return $row->anticipo ? (is_string($row->anticipo) ? $row->anticipo : $row->anticipo->valor) : '';
             });
-            $table->editColumn('anticipo.num_docto', function ($row) {
-                return $row->anticipo ? (is_string($row->anticipo) ? $row->anticipo : $row->anticipo->num_docto) : '';
-            });
+            
             $table->editColumn('valor', function ($row) {
                 return $row->valor ? $row->valor : '';
             });
@@ -66,7 +64,7 @@ class InteresAnticipoController extends Controller
             return $table->make(true);
         }
 
-        $anticipos = Anticipo::get();
+        $productors = Productor::get();
 
         return view('admin.interesAnticipos.index', compact('anticipos'));
     }
@@ -93,7 +91,7 @@ class InteresAnticipoController extends Controller
 
         $anticipos = Anticipo::pluck('fecha_documento', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        $interesAnticipo->load('anticipo');
+        $interesAnticipo->load('productor');
 
         return view('admin.interesAnticipos.edit', compact('anticipos', 'interesAnticipo'));
     }

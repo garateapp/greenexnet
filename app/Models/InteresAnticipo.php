@@ -21,7 +21,7 @@ class InteresAnticipo extends Model
     ];
 
     protected $fillable = [
-        'anticipo_id',
+        'productor_id',
         'valor',
         'created_at',
         'updated_at',
@@ -33,8 +33,8 @@ class InteresAnticipo extends Model
         return $date->format('Y-m-d H:i:s');
     }
 
-    public function anticipo()
+    public function productor()
     {
-        return $this->belongsTo(Anticipo::class, 'anticipo_id');
+        return $this->belongsTo(Productor::class, 'productor_id');
     }
 }

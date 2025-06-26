@@ -29,14 +29,12 @@
                         {{ trans('cruds.interesAnticipo.fields.id') }}
                     </th>
                     <th>
-                        {{ trans('cruds.interesAnticipo.fields.anticipo') }}
+                        Productor
                     </th>
                     <th>
                         {{ trans('cruds.anticipo.fields.valor') }}
                     </th>
-                    <th>
-                        {{ trans('cruds.anticipo.fields.num_docto') }}
-                    </th>
+                    
                     <th>
                         {{ trans('cruds.interesAnticipo.fields.valor') }}
                     </th>
@@ -53,15 +51,14 @@
                     <td>
                         <select class="search">
                             <option value>{{ trans('global.all') }}</option>
-                            @foreach($anticipos as $key => $item)
-                                <option value="{{ $item->fecha_documento }}">{{ $item->fecha_documento }}</option>
+                            @foreach($productors as $key => $item)
+                                <option value="{{ $item->nombre }}">{{ $item->nombre }}</option>
                             @endforeach
                         </select>
                     </td>
                     <td>
                     </td>
-                    <td>
-                    </td>
+                  
                     <td>
                         <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                     </td>
@@ -122,8 +119,7 @@
       { data: 'placeholder', name: 'placeholder' },
 { data: 'id', name: 'id' },
 { data: 'anticipo_fecha_documento', name: 'anticipo.fecha_documento' },
-{ data: 'anticipo.valor', name: 'anticipo.valor' },
-{ data: 'anticipo.num_docto', name: 'anticipo.num_docto' },
+{ data: 'productor.nombre', name: 'productor.nombre' },
 { data: 'valor', name: 'valor' },
 { data: 'actions', name: '{{ trans('global.actions') }}' }
     ],
