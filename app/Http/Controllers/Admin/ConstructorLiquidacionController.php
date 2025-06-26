@@ -97,7 +97,7 @@ use CsvImportTrait;
                                 'bonificacion' => $bonificacion,
                                 'OtroCobro' => $OtroCobro,
                                 'multiresiduo' => $multiresiduo,
-                                'InteresAnticipo' => $InteresAnticipo
+                                'interesanticipo' => $InteresAnticipo
                                 ]
                                 , 200);
 
