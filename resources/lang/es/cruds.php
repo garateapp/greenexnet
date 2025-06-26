@@ -2879,5 +2879,23 @@ return [
             'deleted_at_helper' => ' ',
         ],
     ],
+     'otroscargo' => [
+        'title'          => 'Otros Cargos',
+        'title_singular' => 'Otros Cargo',
+        'fields'         => [
+            'id'                => 'ID',
+            'id_helper'         => ' ',
+            'productor'         => 'Productor',
+            'productor_helper'  => ' ',
+            'valor'             => 'Valor',
+            'valor_helper'      => ' ',
+            'created_at'        => 'Created at',
+            'created_at_helper' => ' ',
+            'updated_at'        => 'Updated at',
+            'updated_at_helper' => ' ',
+            'deleted_at'        => 'Deleted at',
+            'deleted_at_helper' => ' ',
+        ],
+    ],
 
 ];

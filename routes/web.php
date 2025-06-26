@@ -664,6 +664,13 @@ Route::post('constructorliquidacion/generatepdf', 'ConstructorLiquidacionControl
     Route::resource('otro-cobros', 'OtroCobroController');
 
 
+    // Otroscargo
+    Route::delete('otroscargos/destroy', 'OtroscargoController@massDestroy')->name('otroscargos.massDestroy');
+    Route::post('otroscargos/parse-csv-import', 'OtroscargoController@parseCsvImport')->name('otroscargos.parseCsvImport');
+    Route::post('otroscargos/process-csv-import', 'OtroscargoController@processCsvImport')->name('otroscargos.processCsvImport');
+    Route::resource('otroscargos', 'OtroscargoController');
+
+
     Route::get('messenger', 'MessengerController@index')->name('messenger.index');
     Route::get('messenger/create', 'MessengerController@createTopic')->name('messenger.createTopic');
     Route::post('messenger', 'MessengerController@storeTopic')->name('messenger.storeTopic');

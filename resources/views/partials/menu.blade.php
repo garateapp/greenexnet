@@ -873,6 +873,16 @@
                             </a>
                         </li>
                     @endcan
+                    @can('otroscargo_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.otroscargos.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/otroscargos") || request()->is("admin/otroscargos/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fas fa-money-bill-alt c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.otroscargo.title') }}
+                            </a>
+                        </li>
+                    @endcan
                 </ul>
             </li>
         @endcan

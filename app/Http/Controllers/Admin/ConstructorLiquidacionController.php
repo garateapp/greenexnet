@@ -34,6 +34,7 @@ use App\Models\InteresAnticipo;
 use App\Models\Bonificacion;
 use App\Models\Multiresiduo;
 use App\Models\OtroCobro;
+use App\Models\Otroscargo;
 use Illuminate\Support\Str;
 use App\Exports\ComparativaExport;
 use Exception;
@@ -82,6 +83,7 @@ use CsvImportTrait;
         $OtroCobro=OtroCobro::where('productor_id', $productor)->get();
         $multiresiduo=Multiresiduo::where('productor_id', $productor)->get();
         $InteresAnticipo=InteresAnticipo::where('productor_id', $productor)->get();
+        $otroscargos=Otroscargo::where('productor_id', $productor)->get();
         // Verifica si se encontraron resultados
         if (!$result) {
             return response()->json(['message' => 'No se encontraron resultados'], 404);
@@ -97,7 +99,8 @@ use CsvImportTrait;
                                 'bonificacion' => $bonificacion,
                                 'OtroCobro' => $OtroCobro,
                                 'multiresiduo' => $multiresiduo,
-                                'interesanticipo' => $InteresAnticipo
+                                'interesanticipo' => $InteresAnticipo,
+                                'otroscargos' => $otroscargos
                                 ]
                                 , 200);
 

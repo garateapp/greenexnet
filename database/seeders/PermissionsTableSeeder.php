@@ -16,68 +16,24 @@ class PermissionsTableSeeder extends Seeder
     {
         $permissions = [
                       [
-                'id'    => 806,
-                'title' => 'multiresiduo_create',
+                'id'    => 822,
+                'title' => 'otroscargo_create',
             ],
             [
-                'id'    => 807,
-                'title' => 'multiresiduo_edit',
+                'id'    => 823,
+                'title' => 'otroscargo_edit',
             ],
             [
-                'id'    => 808,
-                'title' => 'multiresiduo_show',
+                'id'    => 824,
+                'title' => 'otroscargo_show',
             ],
             [
-                'id'    => 809,
-                'title' => 'multiresiduo_delete',
+                'id'    => 825,
+                'title' => 'otroscargo_delete',
             ],
             [
-                'id'    => 810,
-                'title' => 'multiresiduo_access',
-            ],
-            [
-                'id'    => 811,
-                'title' => 'bonificacion_create',
-            ],
-            [
-                'id'    => 812,
-                'title' => 'bonificacion_edit',
-            ],
-            [
-                'id'    => 813,
-                'title' => 'bonificacion_show',
-            ],
-            [
-                'id'    => 814,
-                'title' => 'bonificacion_delete',
-            ],
-            [
-                'id'    => 815,
-                'title' => 'bonificacion_access',
-            ],
-            [
-                'id'    => 816,
-                'title' => 'otro_cobro_create',
-            ],
-            [
-                'id'    => 817,
-                'title' => 'otro_cobro_edit',
-            ],
-            [
-                'id'    => 818,
-                'title' => 'otro_cobro_show',
-            ],
-            [
-                'id'    => 819,
-                'title' => 'otro_cobro_delete',
-            ],
-            [
-                'id'    => 820,
-                'title' => 'otro_cobro_access',
-            ],
-            [
-                'id'    => 821,
-                'title' => 'profile_password_edit',
+                'id'    => 826,
+                'title' => 'otroscargo_access',
             ],
 
 

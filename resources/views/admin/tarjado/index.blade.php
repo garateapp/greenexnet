@@ -388,7 +388,8 @@
                                         const calibre = response.calibres[colIndex -
                                             9]; // ajusta si tienes más/menos columnas fijas
                                         const cantidad = data.calibres[calibre];
-
+                                        proceso=data.proceso;
+                                        folio=data.folio;
                                         if (!cantidad || cantidad <= 0) return;
 
                                         $.ajax({
@@ -407,11 +408,12 @@
 
                                                 // Ejemplo: mostrar en un modal o tooltip
                                                 let tablaHTML = `
-        <h5 class="mb-3">Materiales para el embalaje: ${res.embalaje}</h5>
+        <h5 class="mb-3">Materiales para el embalaje: ${res.embalaje} Folio: ${folio} Proceso: ${proceso}</h5>
         <table class="table table-bordered table-striped">
             <thead class="table-dark">
                 <tr>
                     <th>Material</th>
+                    <th>Unidad de Medida</th>
                     <th>Material Usado</th>
                     <th>Material Faltante</th>
                     <th>Costo Generado (CLP)</th>
@@ -425,8 +427,17 @@
                     return `
                                     <tr>
                                         <td>${m.material.nombre}</td>
-                                        <td>${m.materialusado}</td>
-                                        <td>${Math.abs(m.materialfaltante)}</td>
+                                        <td>${m.material.unidad}</td>
+                                        <td>${(m.materialusado).toLocaleString(
+                                            'es-CL', {
+                                                minimumFractionDigits: 2,
+                                                maximumFractionDigits: 2
+                                            })}</td>
+                                        <td>${Math.abs(m.materialfaltante).toLocaleString(
+                                            'es-CL', {
+                                                minimumFractionDigits: 2,
+                                                maximumFractionDigits: 2
+                                            })}</td>
                                         <td>${Math.abs(m.costoxcajaclp*cantidad).toLocaleString(
                                             'es-CL', {
                                                 minimumFractionDigits: 0,

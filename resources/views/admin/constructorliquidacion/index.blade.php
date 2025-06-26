@@ -273,6 +273,11 @@
                                                     <td>US$</td>
                                                     <td class="currency" id="multiresiduos"></td>
                                                 </tr>
+                                                 <tr id="trOtrosCargos">
+                                                    <td colspan="6">Otros Cargos</td>
+                                                    <td>US$</td>
+                                                    <td class="currency" id="OtrosCargos"></td>
+                                                </tr>
                                                 <tr>
                                                     <td colspan="6">Total Cargos</td>
                                                     <td>US$</td>
@@ -990,7 +995,23 @@
                                     // }
 
 
-
+                                    let OtrosCargos=0;
+                                    if(response.otroscargos.length>0){
+                                        response.otroscargos.forEach(element => {
+                                            OtrosCargos+=parseFloat(element.valor);
+                                        });
+                                        $("#OtrosCargos").text(OtrosCargos).toLocaleString(
+                                            'es-CL', {
+                                                minimumFractionDigits: 2,
+                                                maximumFractionDigits: 2
+                                            });
+                                        if(OtrosCargos==0){
+                                            $("#trOtrosCargos").hide();
+                                        }
+                                        else{
+                                            $("#trOtrosCargos").show();
+                                        }
+                                    }
 
 
                                     let envases = 0;
