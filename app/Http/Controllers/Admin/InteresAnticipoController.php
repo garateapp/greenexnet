@@ -66,7 +66,7 @@ class InteresAnticipoController extends Controller
 
         $productors = Productor::get();
 
-        return view('admin.interesAnticipos.index', compact('anticipos'));
+        return view('admin.interesAnticipos.index', compact('productors'));
     }
 
     public function create()
