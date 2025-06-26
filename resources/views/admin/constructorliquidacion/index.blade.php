@@ -226,14 +226,16 @@
                                                 </tr>
                                                 <tbody id="anticipos">
                                                 </tbody>
-                                                <tr>
-                                                    <td colspan="8">&nbsp;</td>
+                                                <tr id="trinteresanticipo">
+                                                    <td colspan="6">&nbsp;</td>
+                                                    <td>US$</td>
+                                                    <td class="currency" id="interesanticipo"></td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="7">Total facturación (Proformas)</td>
                                                     <td class="currency" id="valorTotalFacturacion"></td>
                                                 </tr>
-
+                                                
                                                 <!-- Otros Cargos -->
                                                 <tr class="section-header">
                                                     <td colspan="8">Otros Cargos</td>
@@ -866,6 +868,26 @@
                                                 maximumFractionDigits: 2
                                             }));
                                     }
+                                    let interesanticipo=0;
+                                    if (response.interesanticipo.length > 0) {
+                                        response.interesanticipo.forEach(element => {
+                                            interesanticipo += parseFloat(element
+                                                .valor);
+                                        });
+                                        $("#interesanticipo").text(interesanticipo.toFixed(2))
+                                            .toLocaleString(
+                                                'es-CL', {
+                                                    minimumFractionDigits: 2,
+                                                    maximumFractionDigits: 2
+                                                });
+                                                $("#trinteresanticipo").show();
+                                    }
+                                    else{
+                                        $("#trinteresanticipo").hide();
+                                    }
+                                    valorTotalAnticipos=valorTotalAnticipos+interesanticipo;
+
+
 
                                     let valorbonificacion = 0;
                                     if (response.OtroCobro.length > 0) {

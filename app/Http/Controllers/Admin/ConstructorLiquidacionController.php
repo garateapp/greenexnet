@@ -41,6 +41,7 @@ use Psy\Readline\Hoa\Console;
 use Symfony\Component\Console\Logger\ConsoleLogger;
 use App\Models\Productor;
 use App\Models\Especy;
+use App\Models\InteresAnticipo;
 //use Barryvdh\DomPDF\Facade\Pdf;
 use Knp\Snappy\Pdf;
 class ConstructorLiquidacionController extends Controller
@@ -80,7 +81,7 @@ use CsvImportTrait;
         $bonificacion=Bonificacion::where('productor_id', $productor)->get();
         $OtroCobro=OtroCobro::where('productor_id', $productor)->get();
         $multiresiduo=Multiresiduo::where('productor_id', $productor)->get();
-
+        $InteresAnticipo=InteresAnticipo::where('productor_id', $productor)->get();
         // Verifica si se encontraron resultados
         if (!$result) {
             return response()->json(['message' => 'No se encontraron resultados'], 404);
@@ -95,7 +96,8 @@ use CsvImportTrait;
                                 //'analisis' => $analisis,
                                 'bonificacion' => $bonificacion,
                                 'OtroCobro' => $OtroCobro,
-                                'multiresiduo' => $multiresiduo
+                                'multiresiduo' => $multiresiduo,
+                                'InteresAnticipo' => $InteresAnticipo
                                 ]
                                 , 200);
 
