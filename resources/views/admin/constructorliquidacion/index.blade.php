@@ -13,11 +13,11 @@
         }
 
         /* th,
-                                                                                                    td {
-                                                                                                        border: 1px solid #dddddd;
-                                                                                                        padding: 8px;
-                                                                                                        text-align: left;
-                                                                                                    } */
+                                                                                                        td {
+                                                                                                            border: 1px solid #dddddd;
+                                                                                                            padding: 8px;
+                                                                                                            text-align: left;
+                                                                                                        } */
 
         .currency {
             text-align: right;
@@ -227,7 +227,7 @@
                                                 <tbody id="anticipos">
                                                 </tbody>
                                                 <tr id="trinteresanticipo">
-                                                    <td colspan="6">Interes</td>
+                                                    <td colspan="6">Interés</td>
                                                     <td>US$</td>
                                                     <td class="currency" id="interesanticipo"></td>
                                                 </tr>
@@ -500,11 +500,7 @@
             } else {
                 $("#TCValor").text($("#TC").val());
                 $('#downloadPdf').on('click', function() {
-                    $("#Graficos-tab").click();
-                    setTimeout(function() {
-                        // Tu código aquí
-                        console.log("Han pasado 3 segundos");
-                    }, 3000);
+
                     generatePdf_pdf();
                 });
 
@@ -2765,6 +2761,9 @@
                             toolbar: {
                                 show: false
                             },
+                            animations: {
+                                enabled: false // Desactiva todas las animaciones
+                            }
                         },
                         series: [{
                                 name: 'Curva Calibre',
