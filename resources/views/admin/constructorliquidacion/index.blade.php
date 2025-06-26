@@ -1000,11 +1000,11 @@
                                         response.otroscargos.forEach(element => {
                                             OtrosCargos+=parseFloat(element.valor);
                                         });
-                                        $("#OtrosCargos").text(OtrosCargos).toLocaleString(
+                                        $("#OtrosCargos").text(OtrosCargos.toLocaleString(
                                             'es-CL', {
                                                 minimumFractionDigits: 2,
                                                 maximumFractionDigits: 2
-                                            });
+                                            }));
                                         if(OtrosCargos==0){
                                             $("#trOtrosCargos").hide();
                                         }
@@ -1029,7 +1029,7 @@
                                     totalOtrosCargos = parseFloat(valorflete) +
                                         parseFloat(envases) + parseFloat(valorNoExportable) +
                                         parseFloat(multiresiduos) + parseFloat(bonificacion) +
-                                        parseFloat(valorbonificacion);
+                                        parseFloat(valorbonificacion)+parseFloat(OtrosCargos);
                                     $("#totalOtrosCargos").text(totalOtrosCargos.toLocaleString(
                                         'es-CL', {
                                             minimumFractionDigits: 2,
