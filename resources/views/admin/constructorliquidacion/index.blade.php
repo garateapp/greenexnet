@@ -13,11 +13,11 @@
         }
 
         /* th,
-                                                                                                td {
-                                                                                                    border: 1px solid #dddddd;
-                                                                                                    padding: 8px;
-                                                                                                    text-align: left;
-                                                                                                } */
+                                                                                                    td {
+                                                                                                        border: 1px solid #dddddd;
+                                                                                                        padding: 8px;
+                                                                                                        text-align: left;
+                                                                                                    } */
 
         .currency {
             text-align: right;
@@ -198,7 +198,7 @@
                                                     <td>US$</td>
                                                     <td class="currency" id="suma-CAT-1"></td>
                                                 </tr>
-                                               
+
                                                 <tr style="display: none;" id="trCATII">
                                                     <td colspan="5">Total venta exportación temporada 2024-2025
                                                     </td>
@@ -227,7 +227,7 @@
                                                 <tbody id="anticipos">
                                                 </tbody>
                                                 <tr id="trinteresanticipo">
-                                                    <td colspan="6">&nbsp;</td>
+                                                    <td colspan="6">Interes</td>
                                                     <td>US$</td>
                                                     <td class="currency" id="interesanticipo"></td>
                                                 </tr>
@@ -235,7 +235,7 @@
                                                     <td colspan="7">Total facturación (Proformas)</td>
                                                     <td class="currency" id="valorTotalFacturacion"></td>
                                                 </tr>
-                                                
+
                                                 <!-- Otros Cargos -->
                                                 <tr class="section-header">
                                                     <td colspan="8">Otros Cargos</td>
@@ -247,7 +247,7 @@
                                                     <td>US$</td>
                                                     <td class="currency" id="valorNoExportable"></td>
                                                 </tr>
-                                                <tr  id="trBonifGastoNoExportable">
+                                                <tr id="trBonifGastoNoExportable">
                                                     <td colspan="6">Bonificación Gasto Fruta no Exportable</td>
                                                     <td>US$</td>
                                                     <td class="currency negative" id="bonificacionGastoNoExportable"></td>
@@ -500,6 +500,11 @@
             } else {
                 $("#TCValor").text($("#TC").val());
                 $('#downloadPdf').on('click', function() {
+                    $("#Graficos-tab").click();
+                    setTimeout(function() {
+                        // Tu código aquí
+                        console.log("Han pasado 3 segundos");
+                    }, 3000);
                     generatePdf_pdf();
                 });
 
@@ -755,22 +760,23 @@
                                                 .precio_comercial += precio_comercial;
                                         }
                                     });
-                                   
+
 
                                     $.each(sumasPorCategoria, function(categoria, sumas) {
                                         console.log(
                                             `Categoría: ${categoria}, Resultado Kilo: ${sumas.resultado_kilo}, Resultado Total: ${sumas.resultado_total}, Total Comercial: ${sumas.total_comercial}, Total Kilos: ${sumas.total_kilos}, Costo Comercial: ${sumas.costo_comercial}`
                                         );
                                     });
-                                    FacturaValorNeto = sumasPorCategoria['COMERCIAL'].precio_comercial+
-                                        sumasPorCategoria['PRECALIBRE'].precio_comercial+
+                                    FacturaValorNeto = sumasPorCategoria['COMERCIAL']
+                                        .precio_comercial +
+                                        sumasPorCategoria['PRECALIBRE'].precio_comercial +
                                         sumasPorCategoria['SOBRECALIBRE'].precio_comercial;
-                                    
+
                                     FacturaValorNeto = FacturaValorNeto * $("#TC").val();
                                     valorTotal = parseFloat(sumasPorCategoria['CAT1']
                                             .resultado_total) +
                                         parseFloat(sumasPorCategoria['CATII'].resultado_total);
-                                   
+
                                     valorNoExportable = parseFloat(sumasPorCategoria['MERMA']
                                             .costo_comercial) +
                                         parseFloat(sumasPorCategoria['DESECHO']
@@ -816,26 +822,25 @@
                                         }));
 
                                     //Bonif Gasto FNE
-                                     let bonificacionFNE = 0;
-                                     $.each(response.bonificacion, function(index, item) {
-                                         bonificacionFNE += parseFloat(item.valor);
-                                     })
-                                     if(bonificacionFNE > 0){
-                                         $("#trbonificacion").show();
-                                         $("#bonificacion").text(bonificacionFNE.toFixed(2))
-                                        .toLocaleString(
-                                            'es-CL', {
-                                                minimumFractionDigits: 2,
-                                                maximumFractionDigits: 2
-                                            });
-                                     }
-                                     else{
-                                         $("#trbonificacion").hide();
-                                        }
-                                    
+                                    let bonificacionFNE = 0;
+                                    $.each(response.bonificacion, function(index, item) {
+                                        bonificacionFNE += parseFloat(item.valor);
+                                    })
+                                    if (bonificacionFNE > 0) {
+                                        $("#trbonificacion").show();
+                                        $("#bonificacion").text(bonificacionFNE.toFixed(2))
+                                            .toLocaleString(
+                                                'es-CL', {
+                                                    minimumFractionDigits: 2,
+                                                    maximumFractionDigits: 2
+                                                });
+                                    } else {
+                                        $("#trbonificacion").hide();
+                                    }
+
                                     //Fin Bonif Gasto FNE
 
-                                   
+
 
 
                                     //facturación anticipos
@@ -868,7 +873,7 @@
                                                 maximumFractionDigits: 2
                                             }));
                                     }
-                                    let interesanticipo=0;
+                                    let interesanticipo = 0;
                                     if (response.interesanticipo.length > 0) {
                                         response.interesanticipo.forEach(element => {
                                             interesanticipo += parseFloat(element
@@ -880,12 +885,11 @@
                                                     minimumFractionDigits: 2,
                                                     maximumFractionDigits: 2
                                                 });
-                                                $("#trinteresanticipo").show();
-                                    }
-                                    else{
+                                        $("#trinteresanticipo").show();
+                                    } else {
                                         $("#trinteresanticipo").hide();
                                     }
-                                    valorTotalAnticipos=valorTotalAnticipos+interesanticipo;
+                                    valorTotalAnticipos = valorTotalAnticipos + interesanticipo;
 
 
 
@@ -895,7 +899,8 @@
                                             valorbonificacion += parseFloat(element
                                                 .valor);
                                         });
-                                        $("#bonificacionGastoNoExportable").text(valorbonificacion.toFixed(2))
+                                        $("#bonificacionGastoNoExportable").text(
+                                                valorbonificacion.toFixed(2))
                                             .toLocaleString(
                                                 'es-CL', {
                                                     minimumFractionDigits: 2,
@@ -909,11 +914,12 @@
                                     } else {
                                         $("#trBonifGastoNoExportable").hide();
                                     }
-                                     $("#valorTotalUsd").text((valorTotal+bonificacionFNE).toLocaleString(
-                                        'es-CL', {
-                                            minimumFractionDigits: 2,
-                                            maximumFractionDigits: 2
-                                        }));
+                                    $("#valorTotalUsd").text((valorTotal + bonificacionFNE)
+                                        .toLocaleString(
+                                            'es-CL', {
+                                                minimumFractionDigits: 2,
+                                                maximumFractionDigits: 2
+                                            }));
                                     // $("#fletehuerto").text((response.valorflete.valor ? response
                                     //     .valorflete.valor : 0).toLocaleString(
                                     //     'es-CL', {
@@ -956,10 +962,10 @@
                                         }
                                         $("#bonificacionfletehuerto").text((bonificacion ?
                                             bonificacion : 0).toLocaleString(
-                                               'es-CL', {
-                                                    minimumFractionDigits: 2,
-                                                    maximumFractionDigits: 2
-                                                }));
+                                            'es-CL', {
+                                                minimumFractionDigits: 2,
+                                                maximumFractionDigits: 2
+                                            }));
 
 
 
@@ -1005,7 +1011,8 @@
                                     }
                                     totalOtrosCargos = parseFloat(valorflete) +
                                         parseFloat(envases) + parseFloat(valorNoExportable) +
-                                        parseFloat(multiresiduos) + parseFloat(bonificacion)+parseFloat(valorbonificacion);
+                                        parseFloat(multiresiduos) + parseFloat(bonificacion) +
+                                        parseFloat(valorbonificacion);
                                     $("#totalOtrosCargos").text(totalOtrosCargos.toLocaleString(
                                         'es-CL', {
                                             minimumFractionDigits: 2,
