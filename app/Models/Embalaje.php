@@ -15,8 +15,14 @@ class Embalaje extends Model
     public $table = 'embalajes';
 
     public static $searchable = [
-        'c_embalaje',
+       'c_embalaje',
         'kgxcaja',
+        'cajaxpallet',
+        'altura_pallet',
+        'tipo_embarque',
+        'caja',
+        'cajasxlinea',
+        'lineasxpallet',
     ];
 
     protected $dates = [

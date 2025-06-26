@@ -38,6 +38,95 @@ class TarjadoController extends Controller
 
 
     }
+    public function getMateriales(){
+        return response()->json("ok", 200);
+    }
+     /**
+     * @api {get} /tarjado/materiales  Get materiales utilizados en un tarjado
+     * @apiName getMaterialesUtilizados
+     * @apiGroup Tarjado
+     * @apiParam {string} folio Folio del tarjado
+     * @apiParam {string} cantidad Cantidad de cajas en el tarjado
+     * @apiParam {string} embalaje Embalaje del tarjado
+     * @apiParam {string} altura Altura del tarjado
+     * @apiParam {string} fecha Fecha del tarjado
+     * @apiSuccess {Object[]} materiales Listado de materiales utilizados en el tarjado, con sus respectivos costos
+     * @apiSuccess {String} folio Folio del tarjado
+     * @apiSuccess {String} embalaje Embalaje del tarjado
+     * @apiSuccess {String} fecha Fecha del tarjado
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *         "materiales": [
+     *             {
+     *                 "id": 1,
+     *                 "material_id": 1,
+     *                 "material": {
+     *                     "id": 1,
+     *                     "nombre": "Madera",
+     *                     "unidad": "kg"
+     *                 },
+     *                 "costo": 10.5
+     *             },
+     *             {
+     *                 "id": 2,
+     *                 "material_id": 2,
+     *                 "material": {
+     *                     "id": 2,
+     *                     "nombre": "Plastico",
+     *                     "unidad": "kg"
+     *                 },
+     *                 "costo": 8.5
+     *             }
+     *         ],
+     *         "folio": "FOLIO-001",
+     *         "embalaje": "Caja 10kg",
+     *         "fecha": "2021-01-01"
+     *     }
+     */
+    public function getMaterialesUtilizados (Request $request)
+    {
+        $folio= $request->input('folio');
+        $cantidad = $request->input('cantidad');
+        $embalaje = $request->input('embalaje_id');
+        $altura = $request->input('altura');
+        $fecha = $request->input('fecha');
+        $embalaje = !empty($embalaje) ? Embalaje::where('c_embalaje',$embalaje)->first() : null;
+        
+        if( !$embalaje) {
+            return response()->json(['error' => 'Embalaje no encontrado'], 404);
+        }
+        $cajaxlinea=$embalaje['cajasxlinea'];
+        $lineasxpallet=$embalaje['lineasxpallet'];
+        $costos=MaterialProducto::select()->with(['material'])
+            ->where('embalaje_id', $embalaje->id)
+            ->get();
+        
+        $cajasFaltantes=$cantidad-($cajaxlinea*$lineasxpallet);
+        $materialesUtilizados=[];
+        foreach($costos as $costo){
+            $costo->cantidadTotal=$cajaxlinea*$lineasxpallet;
+            $costo->cajasFaltantes=$cajasFaltantes;
+            $costo->materialusado=$cantidad*$costo->unidadxcaja;
+            $costo->costousado=$cantidad*$costo->costoxcaja_clp;
+            $costo->materialfaltante=$costo->materialusado-$costo->unidadxpallet;
+            $costo->costofaltante=$costo->costousado-$costo->costoxpallet_clp;
+            $costo->materiales=$costo->material->nombre;
+            array_push($materialesUtilizados,$costo);
+        }
+
+
+    // return response()->json([
+    //     'costos' => $costos,
+    //     'folio' => $folio,
+    //     'embalaje' => $embalaje->c_embalaje,
+    //     'fecha' => $fecha
+    // ]);
+
+
+        return response()->json(['materialesUtilizados'=>$materialesUtilizados,'folio'=>$folio,'embalaje'=>$embalaje->c_embalaje,'fecha'=>$fecha]);
+    }
+    public function show(){}
     public function getTarjado(Request $request)
     {
         $especies = $request->input('especie', []);
@@ -162,33 +251,5 @@ class TarjadoController extends Controller
         'calibres' => $calibres
     ]);
     }
-    public function getMaterialesUtilizados (Request $request)
-    {
-        $folio= $request->input('folio');
-        $cantidad = $request->input('cantidad');
-        $embalaje = $request->input('embalaje');
-        $altura = $request->input('altura');
-        $fecha = $request->input('fecha');
-        $embalaje = !empty($embalaje) ? Embalaje::find($embalaje) : null;
-        if( !$embalaje) {
-            return response()->json(['error' => 'Embalaje no encontrado'], 404);
-        }
-        $cajaxlinea=$embalaje->cajasxlinea;
-        $lineasxpallet=$embalaje->lineasxpallet;
-        $costos=MaterialProducto::select()->with(['material'])
-            ->where('embalaje_id', $embalaje->id)
-            ->get();
-        dd($costos);
-
-
-    return response()->json([
-        'materiales' => $materiales,
-        'folio' => $folio,
-        'embalaje' => $embalaje->c_embalaje,
-        'fecha' => $fecha
-    ]);
-
-
-        return response()->json($materialesUtilizados);
-    }
+   
 }

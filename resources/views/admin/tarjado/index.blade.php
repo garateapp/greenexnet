@@ -384,7 +384,7 @@
 
                                     if (colIndex >= 9 && colIndex <
                                         totalColumnIndex
-                                        ) { // ajusta este rango según tu número real de columnas fijas
+                                    ) { // ajusta este rango según tu número real de columnas fijas
                                         const calibre = response.calibres[colIndex -
                                             9]; // ajusta si tienes más/menos columnas fijas
                                         const cantidad = data.calibres[calibre];
@@ -397,25 +397,60 @@
                                             data: {
                                                 _token: "{{ csrf_token() }}",
                                                 folio: data.folio,
-                                                embalaje_id: data.embalaje_id || null,
+                                                embalaje_id: data.embalaje || null,
                                                 altura: data.altura,
-                                                fecha: $("#filtroFecha").val()
+                                                fecha: $("#filtroFecha").val(),
+                                                cantidad: cantidad
                                             },
                                             success: function(res) {
                                                 console.log("Materiales utilizados:", res);
 
                                                 // Ejemplo: mostrar en un modal o tooltip
-                                                let html = `
-                    <h5>Materiales para ${res.embalaje}</h5>
-                    <ul class="list-group">
-                        ${res.materiales.map(m =>
-                            `<li class="list-group-item">${m.material_nombre} x ${m.cantidad} = $${m.total.toFixed(2)}</li>`
-                        ).join('')}
-                    </ul>
-                `;
+                                                let tablaHTML = `
+        <h5 class="mb-3">Materiales para el embalaje: ${res.embalaje}</h5>
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Material</th>
+                    <th>Material Usado</th>
+                    <th>Material Faltante</th>
+                    <th>Costo Generado (CLP)</th>
+                    <th>Costo Faltante (CLP)</th>
+                    <th>Total (CLP)</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${res.materialesUtilizados.map(m => {
+                    const totalCLP = m.cantidadTotal * m.costoxcajaclp;
+                    return `
+                                    <tr>
+                                        <td>${m.material.nombre}</td>
+                                        <td>${m.materialusado}</td>
+                                        <td>${Math.abs(m.materialfaltante)}</td>
+                                        <td>${Math.abs(m.costoxcajaclp*cantidad).toLocaleString(
+                                            'es-CL', {
+                                                minimumFractionDigits: 0,
+                                                maximumFractionDigits: 0
+                                            })}</td>
+                                        <td>$${Math.abs(m.costoxcajaclp*m.cajasFaltantes) .toLocaleString(
+                                            'es-CL', {
+                                                minimumFractionDigits: 0,
+                                                maximumFractionDigits: 0
+                                            })}</td>
+                                        <td>$${totalCLP.toFixed(0).toLocaleString(
+                                            'es-CL', {
+                                                minimumFractionDigits: 0,
+                                                maximumFractionDigits: 0
+                                            })}</td>
+                                    </tr>
+                                `;
+                }).join('')}
+            </tbody>
+        </table>
+    `;
 
                                                 $('#materialesModal .modal-body').html(
-                                                    html);
+                                                    tablaHTML);
                                                 $('#materialesModal').modal('show');
                                             },
                                             error: function(err) {

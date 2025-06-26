@@ -617,8 +617,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
 
 
     //tarjador
-    Route::post('tarjado/getTarjado','TarjadoController@getTarjado')->name('tarjado.getTarjado');
     Route::post('tarjado/getMaterialesUtilizados','TarjadoController@getMaterialesUtilizados')->name('tarjado.getMaterialesUtilizados');
+    Route::post('tarjado/getMateriales','TarjadoController@getMateriales')->name('tarjado.getMateriales');
+    Route::post('tarjado/getTarjado','TarjadoController@getTarjado')->name('tarjado.getTarjado');
+    
     Route::resource('tarjado', 'TarjadoController');
 
     //Generador de Liquidaciones
@@ -821,22 +823,22 @@ Route::group(['as' => 'frontend.', 'namespace' => 'Frontend', 'middleware' => ['
     Route::resource('tipo-fletes', 'TipoFleteController');
 
       // Multiresiduo
-    Route::delete('multiresiduos/destroy', 'MultiresiduoController@massDestroy')->name('multiresiduos.massDestroy');
-    Route::post('multiresiduos/parse-csv-import', 'MultiresiduoController@parseCsvImport')->name('multiresiduos.parseCsvImport');
-    Route::post('multiresiduos/process-csv-import', 'MultiresiduoController@processCsvImport')->name('multiresiduos.processCsvImport');
-    Route::resource('multiresiduos', 'MultiresiduoController');
+    // Route::delete('multiresiduos/destroy', 'MultiresiduoController@massDestroy')->name('multiresiduos.massDestroy');
+    // Route::post('multiresiduos/parse-csv-import', 'MultiresiduoController@parseCsvImport')->name('multiresiduos.parseCsvImport');
+    // Route::post('multiresiduos/process-csv-import', 'MultiresiduoController@processCsvImport')->name('multiresiduos.processCsvImport');
+    // Route::resource('multiresiduos', 'MultiresiduoController');
 
-    // Bonificacion
-    Route::delete('bonificacions/destroy', 'BonificacionController@massDestroy')->name('bonificacions.massDestroy');
-    Route::post('bonificacions/parse-csv-import', 'BonificacionController@parseCsvImport')->name('bonificacions.parseCsvImport');
-    Route::post('bonificacions/process-csv-import', 'BonificacionController@processCsvImport')->name('bonificacions.processCsvImport');
-    Route::resource('bonificacions', 'BonificacionController');
+    // // Bonificacion
+    // Route::delete('bonificacions/destroy', 'BonificacionController@massDestroy')->name('bonificacions.massDestroy');
+    // Route::post('bonificacions/parse-csv-import', 'BonificacionController@parseCsvImport')->name('bonificacions.parseCsvImport');
+    // Route::post('bonificacions/process-csv-import', 'BonificacionController@processCsvImport')->name('bonificacions.processCsvImport');
+    // Route::resource('bonificacions', 'BonificacionController');
 
-    // Otro Cobro
-    Route::delete('otro-cobros/destroy', 'OtroCobroController@massDestroy')->name('otro-cobros.massDestroy');
-    Route::post('otro-cobros/parse-csv-import', 'OtroCobroController@parseCsvImport')->name('otro-cobros.parseCsvImport');
-    Route::post('otro-cobros/process-csv-import', 'OtroCobroController@processCsvImport')->name('otro-cobros.processCsvImport');
-    Route::resource('otro-cobros', 'OtroCobroController');
+    // // Otro Cobro
+    // Route::delete('otro-cobros/destroy', 'OtroCobroController@massDestroy')->name('otro-cobros.massDestroy');
+    // Route::post('otro-cobros/parse-csv-import', 'OtroCobroController@parseCsvImport')->name('otro-cobros.parseCsvImport');
+    // Route::post('otro-cobros/process-csv-import', 'OtroCobroController@processCsvImport')->name('otro-cobros.processCsvImport');
+    // Route::resource('otro-cobros', 'OtroCobroController');
 
     // Buscar Guias Aclaradas
     // Route::delete('buscar-guias-aclaradas/destroy', 'BuscarGuiasAclaradasController@massDestroy')->name('buscar-guias-aclaradas.massDestroy');
