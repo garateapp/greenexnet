@@ -41,7 +41,7 @@ use Psy\Readline\Hoa\Console;
 use Symfony\Component\Console\Logger\ConsoleLogger;
 use App\Models\Productor;
 use App\Models\Especy;
-use App\Models\InteresAnticipo;
+
 //use Barryvdh\DomPDF\Facade\Pdf;
 use Knp\Snappy\Pdf;
 class ConstructorLiquidacionController extends Controller
