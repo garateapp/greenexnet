@@ -35,9 +35,7 @@
                         {{ trans('cruds.anticipo.fields.valor') }}
                     </th>
                     
-                    <th>
-                        {{ trans('cruds.interesAnticipo.fields.valor') }}
-                    </th>
+                   
                     <th>
                         &nbsp;
                     </th>
@@ -56,8 +54,7 @@
                             @endforeach
                         </select>
                     </td>
-                    <td>
-                    </td>
+                   
                   
                     <td>
                         <input class="search" type="text" placeholder="{{ trans('global.search') }}">
@@ -118,7 +115,7 @@
     columns: [
       { data: 'placeholder', name: 'placeholder' },
 { data: 'id', name: 'id' },
-{ data: 'anticipo_fecha_documento', name: 'anticipo.fecha_documento' },
+
 { data: 'productor.nombre', name: 'productor.nombre' },
 { data: 'valor', name: 'valor' },
 { data: 'actions', name: '{{ trans('global.actions') }}' }

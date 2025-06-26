@@ -47,12 +47,10 @@ class InteresAnticipoController extends Controller
             $table->editColumn('id', function ($row) {
                 return $row->id ? $row->id : '';
             });
-            $table->addColumn('anticipo_fecha_documento', function ($row) {
-                return $row->anticipo ? $row->anticipo->fecha_documento : '';
-            });
+           
 
             $table->editColumn('productor.nombre', function ($row) {
-                return $row->anticipo ? (is_string($row->anticipo) ? $row->anticipo : $row->anticipo->valor) : '';
+                return $row->productor ? (is_string($row->productor) ? $row->productor : $row->productor->nombre) : '';
             });
             
             $table->editColumn('valor', function ($row) {
