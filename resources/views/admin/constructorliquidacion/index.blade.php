@@ -855,6 +855,7 @@
 
                                     //facturación anticipos
                                     let valorTotalAnticipos = 0;
+                                     $("#anticipos").html('');
                                     $.each(response.anticipos, function(index, item) {
                                         let fecha = item.fecha_documento;
                                         let valor = parseFloat(item.valor) ||
