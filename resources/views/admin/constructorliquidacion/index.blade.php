@@ -537,40 +537,40 @@
                     // Asegúrate de que todos los tabs estén visibles
                     $('.tab-pane').addClass('show active');
 
-                    chartContainers.each(function() {
-                        const chartId = $(this).attr('id');
-                        const container = document.getElementById(chartId);
+                    // chartContainers.each(function() {
+                    //     const chartId = $(this).attr('id');
+                    //     const container = document.getElementById(chartId);
 
-                        // Asegúrate de que el contenedor tenga tamaño
-                        if (!container || container.offsetWidth === 0 || container.offsetHeight === 0) {
-                            console.warn(`El gráfico ${chartId} no existe o tiene tamaño 0`);
-                            processed++;
-                            if (processed === chartContainers.length) sendData();
-                            return;
-                        }
+                    //     // Asegúrate de que el contenedor tenga tamaño
+                    //     if (!container || container.offsetWidth === 0 || container.offsetHeight === 0) {
+                    //         console.warn(`El gráfico ${chartId} no existe o tiene tamaño 0`);
+                    //         processed++;
+                    //         if (processed === chartContainers.length) sendData();
+                    //         return;
+                    //     }
 
-                        // Opcional: eliminar tooltips u otros elementos que interfieran
-                        $(".apexcharts-tooltip").remove();
+                    //     // Opcional: eliminar tooltips u otros elementos que interfieran
+                    //     $(".apexcharts-tooltip").remove();
 
-                        // Captura del gráfico
-                        html2canvas(container, {
-                            scale: 2,
-                            useCORS: true, // Si hay imágenes externas
-                            logging: false
-                        }).then(canvas => {
-                            chartImages.push({
-                                id: chartId,
-                                image: canvas.toDataURL('image/png')
-                            });
+                    //     // Captura del gráfico
+                    //     html2canvas(container, {
+                    //         scale: 2,
+                    //         useCORS: true, // Si hay imágenes externas
+                    //         logging: false
+                    //     }).then(canvas => {
+                    //         chartImages.push({
+                    //             id: chartId,
+                    //             image: canvas.toDataURL('image/png')
+                    //         });
 
-                            processed++;
-                            if (processed === chartContainers.length) sendData();
-                        }).catch(err => {
-                            console.error(`Error al capturar ${chartId}:`, err);
-                            processed++;
-                            if (processed === chartContainers.length) sendData();
-                        });
-                    });
+                    //         processed++;
+                    //         if (processed === chartContainers.length) sendData();
+                    //     }).catch(err => {
+                    //         console.error(`Error al capturar ${chartId}:`, err);
+                    //         processed++;
+                    //         if (processed === chartContainers.length) sendData();
+                    //     });
+                    // });
 
                     function sendData() {
                         $.ajax({
@@ -579,7 +579,7 @@
                             data: {
                                 _token: $('meta[name="csrf-token"]').attr('content'),
                                 tabs: tabs,
-                                chartImages: chartImages,
+                              //  chartImages: chartImages,
                                 productor_id: $('#productor_id').val(),
                                 temporada: $('#temporada').val(),
                                 especie_id: $('#especie_id').val()

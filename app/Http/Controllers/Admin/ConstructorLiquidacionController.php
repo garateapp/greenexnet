@@ -117,7 +117,7 @@ use CsvImportTrait;
     // Validar entrada
     $request->validate([
         'tabs' => 'required|array',
-        'chartImages' => 'nullable|array'
+      //  'chartImages' => 'nullable|array'
     ]);
 
     $tabs = $request->input('tabs');
@@ -125,7 +125,7 @@ use CsvImportTrait;
 
     $data = [
         'tabs' => $tabs,
-        'chartImages' => $chartImages,
+        //'chartImages' => $chartImages,
         'logo_path' => public_path('img/cabecera_pdf.jpg'),
         'footer_path' => public_path('img/footer_pdf.jpg'),
         'portada'=>public_path('img/portada-carozos2425.jpeg')
