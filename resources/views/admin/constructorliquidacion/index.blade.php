@@ -536,7 +536,7 @@
 
                     // Asegúrate de que todos los tabs estén visibles
                     $('.tab-pane').addClass('show active');
-
+                    sendData();
                     // chartContainers.each(function() {
                     //     const chartId = $(this).attr('id');
                     //     const container = document.getElementById(chartId);
