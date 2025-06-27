@@ -776,7 +776,8 @@
                                     FacturaValorNeto = FacturaValorNeto * $("#TC").val();
                                     valorTotal = parseFloat(sumasPorCategoria['CAT1']
                                             .resultado_total) +
-                                        parseFloat(sumasPorCategoria['CATII'].resultado_total)+parseFloat("SUPERMERCADO");
+                                        parseFloat(sumasPorCategoria['CATII'].resultado_total)+
+                                        parseFloat(sumasPorCategoria["SUPERMERCADO"].resultadoTotal);
 
                                     valorNoExportable = parseFloat(sumasPorCategoria['MERMA']
                                             .costo_comercial) +
