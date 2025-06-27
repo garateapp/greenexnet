@@ -717,9 +717,9 @@
                                     $.each(response.result, function(index, item) {
                                         let categoria = item.categoria.replace(" ", "")
                                             .toUpperCase();
-                                        if (categoria == "SUPERMERCADO") {
-                                            categoria = 'CAT1';
-                                        }
+                                        //if (categoria == "SUPERMERCADO") {
+                                            //categoria = 'CAT1';
+                                        //}
 
 
                                         // Convertir los valores a números, manejando comas como separador decimal
@@ -776,7 +776,7 @@
                                     FacturaValorNeto = FacturaValorNeto * $("#TC").val();
                                     valorTotal = parseFloat(sumasPorCategoria['CAT1']
                                             .resultado_total) +
-                                        parseFloat(sumasPorCategoria['CATII'].resultado_total);
+                                        parseFloat(sumasPorCategoria['CATII'].resultado_total)+parseFloat("SUPERMERCADO");
 
                                     valorNoExportable = parseFloat(sumasPorCategoria['MERMA']
                                             .costo_comercial) +

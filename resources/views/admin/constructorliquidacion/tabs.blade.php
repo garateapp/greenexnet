@@ -6,15 +6,15 @@
    <style>
         @page {
             margin-top: 40mm;
-            margin-bottom: 40mm;
-            margin-left: 20mm;
+            margin-bottom: 60mm;
+            margin-left: 40mm;
             margin-right: 20mm;
         }
 
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            font-size: 10px;
+            font-size: 12px;
         }
 
        table {
