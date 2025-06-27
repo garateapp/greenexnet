@@ -819,8 +819,7 @@
                                                 minimumFractionDigits: 2,
                                                 maximumFractionDigits: 2
                                             }));
-                                    $("#suma-CAT-1").text(sumasPorCategoria['CAT1']
-                                        .resultado_total
+                                    $("#suma-CAT-1").text(valorTotal
                                         .toLocaleString('es-CL', {
                                             minimumFractionDigits: 2,
                                             maximumFractionDigits: 2

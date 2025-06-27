@@ -94,7 +94,7 @@
         function createChart(productor, variedad, chartData) {
             const sortedData = sortCalibres(chartData);
             const calibres = sortedData.map(item => item.calibre);
-            const curvacalibre = sortedData.map(item => item.);
+            const curvacalibre = sortedData.map(item => item.curvacalibre);
             const rnpKilo = sortedData.map(item => item.rnp_kilo);
             const avgRnpKilo = calculateAverageRnpKilo(sortedData);
             const avgRnpKiloArray = sortedData.map(() => avgRnpKilo);
