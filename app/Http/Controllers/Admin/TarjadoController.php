@@ -145,35 +145,24 @@ class TarjadoController extends Controller
         ->where('a.tipo_g_produccion', 'PRN')
         ->where('a.folio',$folio)
         ->select([
-    'a.n_variedad',
-    'a.c_embalaje',
-    'a.numero_g_produccion',
-    'a.n_calibre',
-    'a.c_altura',
-    'a.folio',
-    'a.fecha_g_produccion',
-    'a.n_especie',
-    'a.n_variedad_rotulacion',
-    'e.estado',
-    'e.notas',
-    'a.n_categoria',
+   
     DB::raw("SUM(a.cantidad) AS cajas"),
     DB::raw("CASE WHEN MAX(f.conteo_procesos) > 1 THEN 'REVISAR' ELSE NULL END AS revisar_folio"),
 ])
-->groupBy([
-    'a.n_variedad',
-    'a.c_embalaje',
-    'a.numero_g_produccion',
-    'a.folio',
-    'a.n_calibre',
-    'a.c_altura',    
-    'a.fecha_g_produccion',
-    'a.n_especie',
-    'a.n_variedad_rotulacion',
-    'e.estado',
-    'a.n_categoria',
-    'e.notas'
-])
+// ->groupBy([
+//     'a.n_variedad',
+//     'a.c_embalaje',
+//     'a.numero_g_produccion',
+//     'a.folio',
+//     'a.n_calibre',
+//     'a.c_altura',    
+//     'a.fecha_g_produccion',
+//     'a.n_especie',
+//     'a.n_variedad_rotulacion',
+//     'e.estado',
+//     'a.n_categoria',
+//     'e.notas'
+// ])
         ->orderByDesc('a.numero_g_produccion')
         ->get();
 
