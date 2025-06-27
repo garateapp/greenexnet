@@ -786,7 +786,7 @@
                                     valorTotal = parseFloat(sumasPorCategoria['CAT1']
                                             .resultado_total) +
                                         parseFloat(sumasPorCategoria['CATII'].resultado_total)+
-                                        parseFloat(sumasPorCategoria["SUPERMERCADO"].resultadoTotal);
+                                        parseFloat(sumasPorCategoria["SUPERMERCADO"].resultado_total);
 
                                     valorNoExportable = parseFloat(sumasPorCategoria['MERMA']
                                             .costo_comercial) +
