@@ -94,7 +94,7 @@
             <div style="text-align: center; font-weight: bold;">
                 <img src="{{ $logo_path }}" alt="Cabecera" style="width: 210mm !important;">
             </div>
-            <div style="margin-left:20px;margin-top:15px;">
+            <div style="margin-left:20px;margin-top:25px;">
             {!! $tab['html'] !!}
             </div>
             <!-- Footer visible solo en PDF -->
