@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <style>
+   <style>
         @page {
             margin-top: 40mm;
             margin-bottom: 40mm;
@@ -20,7 +20,8 @@
         table {
             width: 90%;
             border-collapse: collapse;
-            break-inside: auto;
+            page-break-inside: auto; /* Permite saltar de página dentro de la tabla */
+            margin: 0 auto;
         }
 
         th,
@@ -32,7 +33,7 @@
         }
 
         thead {
-            display: table-header-group;
+            display: table-header-group; /* Repite el encabezado en cada página */
         }
 
         tbody {
@@ -40,6 +41,7 @@
         }
 
         tr {
+            page-break-inside: avoid; /* Evita que una fila se corte entre páginas */
             break-inside: avoid;
         }
 
