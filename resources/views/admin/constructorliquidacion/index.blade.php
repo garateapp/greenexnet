@@ -710,7 +710,16 @@
                                             total_kilos: 0,
                                             costo_comercial: 0,
                                             precio_comercial: 0
+                                        },
+                                        'SUPERMERCADO': {
+                                            resultado_kilo: 0,
+                                            resultado_total: 0,
+                                            total_comercial: 0,
+                                            total_kilos: 0,
+                                            costo_comercial: 0,
+                                            precio_comercial: 0
                                         }
+
                                     };
 
                                     // Iterar sobre los datos obtenidos
