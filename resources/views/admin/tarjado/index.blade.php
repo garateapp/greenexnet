@@ -409,6 +409,7 @@
                                                 // Ejemplo: mostrar en un modal o tooltip
                                                 let tablaHTML = `
         <h5 class="mb-3">Materiales para el embalaje: ${res.embalaje} Folio: ${folio} Proceso: ${proceso}</h5>
+        <p>Cantidad de Cajas: ${res.cajas}
         <table class="table table-bordered table-striped">
             <thead class="table-dark">
                 <tr>

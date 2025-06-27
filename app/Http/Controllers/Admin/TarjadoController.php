@@ -24,6 +24,7 @@ use App\Models\Especy;
 use App\Models\Cliente;
 
 
+
 class TarjadoController extends Controller
 {
     public function index(Request $request)
@@ -92,63 +93,49 @@ class TarjadoController extends Controller
         $altura = $request->input('altura');
         $fecha = $request->input('fecha');
 
-         $estadosUnicos = DB::connection('sqlsrv')
-        ->table('V_PKG_Produccion_Salidas')
-        ->fromSub(function ($query) {
-            $query->from('V_PKG_Produccion_Salidas')
-                ->select([
-                    'id_g_produccion',
-                    'estado',
-                    'notas',
-                    DB::raw("ROW_NUMBER() OVER (PARTITION BY id_g_produccion ORDER BY estado DESC) AS rn")
-                ]);
-        }, 't')
-        ->where('rn', 1);
+    //      $estadosUnicos = DB::connection('sqlsrv')
+    //     ->table('V_PKG_Produccion_Salidas')
+    //     ->fromSub(function ($query) {
+    //         $query->from('V_PKG_Produccion_Salidas')
+    //             ->select([
+    //                 // 'id_g_produccion',
+    //                 // 'estado',
+    //                 // 'notas',
+    //                 DB::raw("ROW_NUMBER() OVER (PARTITION BY id_g_produccion ORDER BY estado DESC) AS rn")
+    //             ]);
+    //     }, 't')
+    //     ->where('rn', 1);
 
-    // Subconsulta Folios Repetidos
-    $foliosRepetidos = DB::connection('sqlsrv')
-        ->table('V_PKG_Produccion_Salidas_XXX')
-        ->select([
-            'folio',
-            DB::raw("COUNT(DISTINCT numero_g_produccion) AS conteo_procesos")
-        ])
-        ->groupBy('folio');
+    // // Subconsulta Folios Repetidos
+    // $foliosRepetidos = DB::connection('sqlsrv')
+    //     ->table('V_PKG_Produccion_Salidas_XXX')
+    //     ->select([
+    //         //'folio',
+    //         DB::raw("COUNT(DISTINCT numero_g_produccion) AS conteo_procesos")
+    //     ]);
+    //     //->grou7pBy('folio');
 
-    // Consulta principal
-    $query = DB::connection('sqlsrv')
+    // // Consulta principal
+    // $query = DB::connection('sqlsrv')
+    //     ->table('V_PKG_Produccion_Salidas_XXX as a')
+    //     ->joinSub($estadosUnicos, 'e', function ($join) {
+    //         $join->on('a.id_g_produccion', '=', 'e.id_g_produccion');
+    //     })
+    //     ->leftJoinSub($foliosRepetidos, 'f', function ($join) {
+    //         $join->on('a.folio', '=', 'f.folio');
+    //     });
+
+    
+    $results = DB::connection('sqlsrv')
         ->table('V_PKG_Produccion_Salidas_XXX as a')
-        ->joinSub($estadosUnicos, 'e', function ($join) {
-            $join->on('a.id_g_produccion', '=', 'e.id_g_produccion');
-        })
-        ->leftJoinSub($foliosRepetidos, 'f', function ($join) {
-            $join->on('a.folio', '=', 'f.folio');
-        });
-
-    if (!empty($especies)) {
-        $query->whereIn('a.id_especie', $especies);
-    }
-
-    if (!empty($embalaje)) {
-        $query->whereIn('a.c_embalaje', $embalaje);
-    }
-
-    if (!empty($altura)) {
-        $query->whereIn('a.c_altura', $altura);
-    }
-
-    if (!empty($fecha)) {
-        $query->whereDate('a.fecha_g_produccion_sh', '>=', $fecha);
-    }
-
-    $results = $query
         ->where('a.t_categoria', 'exportacion')
         ->where('a.tipo_g_produccion', 'PRN')
         ->where('a.folio',$folio)
-        ->select([
-   
-    DB::raw("SUM(a.cantidad) AS cajas"),
-    DB::raw("CASE WHEN MAX(f.conteo_procesos) > 1 THEN 'REVISAR' ELSE NULL END AS revisar_folio"),
-])
+        ->select([   
+                DB::raw("SUM(a.cantidad) AS cajas"),
+                
+                ])
+        ->get();
 // ->groupBy([
 //     'a.n_variedad',
 //     'a.c_embalaje',
@@ -163,8 +150,9 @@ class TarjadoController extends Controller
 //     'a.n_categoria',
 //     'e.notas'
 // ])
-        ->orderByDesc('a.numero_g_produccion')
-        ->get();
+
+$cantidad=$results[0]->cajas;
+        
 
         $embalaje = !empty($embalaje) ? Embalaje::where('c_embalaje',$embalaje)->first() : null;
         
@@ -199,7 +187,8 @@ class TarjadoController extends Controller
     // ]);
 
 
-        return response()->json(['materialesUtilizados'=>$materialesUtilizados,'folio'=>$folio,'embalaje'=>$embalaje->c_embalaje,'fecha'=>$fecha]);
+        return response()->json(['materialesUtilizados'=>$materialesUtilizados,
+        'folio'=>$folio,'embalaje'=>$embalaje->c_embalaje,'fecha'=>$fecha,'cajas'=>$cantidad]);
     }
     public function show(){}
     public function getTarjado(Request $request)
