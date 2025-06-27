@@ -17,33 +17,29 @@
             font-size: 10px;
         }
 
-        table {
-            width: 90%;
-            border-collapse: collapse;
-            page-break-inside: auto; /* Permite saltar de página dentro de la tabla */
-            margin: 0 auto;
-        }
+       table {
+    page-break-inside: auto; /* Permite saltar página dentro de la tabla */
+    border-collapse: collapse;
+    width: 90%;
+    margin: 0 auto;
+}
 
-        th,
-        td {
-            border: 1px solid #000;
-            padding: 6px;
-            text-align: left;
-            vertical-align: middle;
-        }
+thead {
+    display: table-header-group; /* Repite el encabezado en cada nueva página */
+}
 
-        thead {
-            display: table-header-group; /* Repite el encabezado en cada página */
-        }
+tbody {
+    display: table-row-group;
+}
 
-        tbody {
-            display: table-row-group;
-        }
+tr {
+    page-break-inside: avoid; /* Evita que una fila quede partida */
+    break-inside: avoid;      /* Soporte adicional */
+}
 
-        tr {
-            page-break-inside: avoid; /* Evita que una fila se corte entre páginas */
-            break-inside: avoid;
-        }
+tfoot {
+    display: table-footer-group; /* Opcional si usas footers en tabla */
+}
 
         .section-header {
             background-color: #f2f2f2;
@@ -80,6 +76,15 @@
             max-width: 100%;
             height: auto;
         }
+        .pdf-footer {
+        position: fixed;
+        bottom: 15mm;
+        left: 20mm;
+        right: 20mm;
+        text-align: center;
+        font-size: 9px;
+        color: #555;
+    }
     </style>
 </head>
 
@@ -99,6 +104,11 @@
             <div style="margin-left:20px;margin-top:25px;">
             {!! $tab['html'] !!}
             </div>
+             <!-- Footer fijo -->
+        <div class="pdf-footer">
+            <img src="{{ $footer_path }}" alt="Footer" style="max-height: 20mm; width: auto;">
+            <p>© {{ date('Y') }} Greenex.</p>
+        </div>
             <!-- Footer visible solo en PDF -->
             {{-- <div style="position: fixed; bottom: 5mm; left: 10mm; right: 10mm; text-align: center;">
         <img src="{{ $footer_path }}" alt="Footer" style="max-height: 25mm; width: auto;">
