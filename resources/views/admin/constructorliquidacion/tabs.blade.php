@@ -20,7 +20,7 @@
        table {
     page-break-inside: auto; /* Permite saltar página dentro de la tabla */
     border-collapse: collapse;
-    width: 90%;
+    width: 100%;
     margin: 0 auto;
 }
 
@@ -105,10 +105,7 @@ tfoot {
             {!! $tab['html'] !!}
             </div>
              <!-- Footer fijo -->
-        <div class="pdf-footer">
-            <img src="{{ $footer_path }}" alt="Footer" style="max-height: 20mm; width: auto;">
-            <p>© {{ date('Y') }} Greenex.</p>
-        </div>
+        
             <!-- Footer visible solo en PDF -->
             {{-- <div style="position: fixed; bottom: 5mm; left: 10mm; right: 10mm; text-align: center;">
         <img src="{{ $footer_path }}" alt="Footer" style="max-height: 25mm; width: auto;">
