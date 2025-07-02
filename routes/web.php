@@ -509,6 +509,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('instructivo-embarques/getagente_aduana/{id}', 'InstructivoEmbarqueController@getagente_aduana')->name('instructivo-embarques.getagente_aduana');
     Route::get('instructivo-embarques/getpuertocorreobyid/{id}', 'InstructivoEmbarqueController@getpuertocorreobyid')->name('instructivo-embarques.getpuertocorreobyid');
     Route::get('instructivo-embarques/getplantacarga/{id}', 'InstructivoEmbarqueController@getplantacarga')->name('instructivo-embarques.getplantacarga');
+    Route::post('instructivo-embarques/send-email/{instructivoEmbarque}', 'InstructivoEmbarqueController@sendEmailWithExcel')->name('instructivo-embarques.send-email');
 
 
     Route::resource('instructivo-embarques', 'InstructivoEmbarqueController');

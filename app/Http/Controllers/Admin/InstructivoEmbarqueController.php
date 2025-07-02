@@ -33,6 +33,8 @@ use App\Exports\InstructivoMaritimoExport;
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\InstructivoEmbarqueMail;
 
 class InstructivoEmbarqueController extends Controller
 {
@@ -669,6 +671,270 @@ class InstructivoEmbarqueController extends Controller
         $writer->save($tempFile);
 
         // Return the file as a download response
-        return response()->download($tempFile, 'INSTMaritimo-'.$ $instructivoEmbarque->instructivo.'.xlsx')->deleteFileAfterSend(true);
+        return response()->download($tempFile, 'INSTMaritimo-'.$instructivoEmbarque->instructivo.'.xlsx')->deleteFileAfterSend(true);
+    }
+
+    public function sendEmailWithExcel(Request $request, InstructivoEmbarque $instructivoEmbarque)
+    {
+        try {
+            $templatePath = storage_path('app/templates/instmaritimo.xlsx');
+            $spreadsheet = IOFactory::load($templatePath);
+            $sheet = $spreadsheet->getActiveSheet();
+
+            // Re-fetch relations for the email context if needed, or pass them from the show method if available
+            $instructivoEmbarque->load('embarcador', 'agente_aduana', 'consignee', 'naviera', 'puerto_embarque', 'puerto_destino', 'puerto_descarga', 'conductor', 'planta_carga', 'emision_de_bl', 'tipo_de_flete', 'clausula_de_venta', 'moneda', 'forma_de_pago', 'modalidad_de_venta', 'pais_embarque', 'pais_destino');
+
+            $embarcador=Embarcador::where('id',$instructivoEmbarque->embarcador_id)->first();
+            $agente_aduana=AgenteAduana::where('id',$instructivoEmbarque->agente_aduana_id)->first();
+            $consignee=BaseRecibidor::where('id',$instructivoEmbarque->consignee_id)->first();
+            $cliente=ClientesComex::where('id',$consignee->cliente_id)->first();
+            $naviera=Naviera::where('id',$instructivoEmbarque->naviera_id)->first();
+            $baseContacto=BaseContacto::where('codigo','=',$consignee->codigo)->get();
+            $chofer=Chofer::where('id',$instructivoEmbarque->conductor_id)->first();
+            $planta_carga=PlantaCarga::where('id',$instructivoEmbarque->planta_carga_id)->first();
+            $emision_de_bl=EmisionBl::where('id',$instructivoEmbarque->emision_de_bl_id)->first();
+            $tipo_de_flete=Tipoflete::where('id',$instructivoEmbarque->tipo_de_flete_id)->first();
+            $clausula_de_venta=ClausulaVentum::where('id',$instructivoEmbarque->clausula_de_venta_id)->first();
+            $moneda=Moneda::where('id',$instructivoEmbarque->moneda_id)->first();
+            $forma_de_pago=FormaPago::where('id',$instructivoEmbarque->forma_de_pago_id)->first();
+            $modalidad_de_venta=ModVentum::where('id',$instructivoEmbarque->modalidad_de_venta_id)->first();
+            $clausula_venta=ClausulaVentum::where('id',$instructivoEmbarque->clausula_de_venta_id)->first();
+            $puerto_embarque=Puerto::where('id',$instructivoEmbarque->puerto_embarque_id)->first();
+            $puerto_destino=Puerto::where('id',$instructivoEmbarque->puerto_destino_id)->first();
+            $puerto_descarga=Puerto::where('id',$instructivoEmbarque->puerto_descarga_id)->first();
+            $puerto_correo=PuertoCorreo::where('puerto_embarque_id',$instructivoEmbarque->puerto_embarque_id)->first();
+            $country_embarque=Country::where('id',$instructivoEmbarque->pais_embarque_id)->first();
+            $country_destino=Country::where('id',$instructivoEmbarque->pais_destino_id)->first();
+
+            $data = [
+                'exportador' => [
+                    'nombre' => 'Greenex SPA',
+                    'rut' => '76.425.593-3',
+                    'direccion' => 'Avenida Ohiggins 740, Codegua',
+                    'contacto' => 'Andre Courtin Arevalo',
+                    'telefono' => '56 9 3250 5301',
+                    'email' => 'andre.courtin@greenex.cl',
+                ],
+                'embarque' => [
+                    'numero' => $instructivoEmbarque->instructivo,
+                    'fecha' => $instructivoEmbarque->fecha,
+                ],
+                'embarcador' => [
+                    'nombre' => $embarcador->nombre,
+                    'rut' => $embarcador->rut,
+                    'direccion' => '',
+                    'contacto' => $embarcador->attn,
+                    'telefono' => $embarcador->telefono,
+                    'email' => $embarcador->email,
+                ],
+                'agente_aduana' => [
+                    'nombre' => $agente_aduana->consignee,
+                    'rut' => $agente_aduana->rut,
+                    'direccion' => $agente_aduana->direccion,
+                    'codigo' => $agente_aduana->codigo,
+                    'telefono' => $agente_aduana->telefono,
+                    'email' => $agente_aduana->email,
+                ],
+                'consignee' => [
+                    'nombre' => $baseContacto[0]->consignee,
+                    'id' => $baseContacto[0]->rut_recibidor,
+                    'direccion' => $baseContacto[0]->direccion,
+                    'contacto' => $baseContacto[0]->contacto,
+                    'telefono' => $baseContacto[0]->telefono,
+                    'email' => $baseContacto[0]->email,
+                ],
+                'notify' => [
+                    'nombre' => $baseContacto[1]->notify,
+                    'id' => $baseContacto[1]->rut_recibidor,
+                    'direccion' => $baseContacto[1]->direccion,
+                    'contacto' => $baseContacto[1]->contacto,
+                    'telefono' => $baseContacto[1]->telefono,
+                    'email' => $baseContacto[1]->email,
+                ],
+                'detalle_embarque' => [
+                    'naviera' => $naviera->nombre,
+                    'num_contenedor' => $instructivoEmbarque->num_contenedor,
+                    'ventilacion' => $instructivoEmbarque->ventilacion,
+                    'num_booking' => $instructivoEmbarque->num_booking,
+                    'tara_contenedor' => $instructivoEmbarque->tara_contenedor,
+                    'quest' => $instructivoEmbarque->quest,
+                    'nave' => $instructivoEmbarque->nave,
+                    'num_sello' => $instructivoEmbarque->num_sello,
+                    'temperatura' => $instructivoEmbarque->temperatura,
+                    'cut_off' => $instructivoEmbarque->cut_off,
+                    'empresa_transportista' => $instructivoEmbarque->empresa_transportista,
+                    'stacking' => $instructivoEmbarque->stacking_ini."-".$instructivoEmbarque->stacking_end,
+                    'conductor' => $chofer->nombre,
+                    'rut_conductor' => $chofer->rut,
+                    'etd' => $instructivoEmbarque->etd,
+                    'ppu' => $instructivoEmbarque->ppu,
+                    'telefono' => $instructivoEmbarque->telefono,
+                    'eta' => $instructivoEmbarque->eta,
+                    'planta_carga' => $planta_carga->nombre,
+                    'puerto_embarque' => $puerto_embarque->nombre,
+                    'pais_embarque' => $country_embarque->name,
+                    'direccion_carga' => $planta_carga->direccion,
+                    'puerto_destino' => $puerto_destino->nombre,
+                    'pais_destino' => $country_destino->name,
+                    'fecha_carga' => $instructivoEmbarque->fecha_carga,
+                    'hora_carga' => $instructivoEmbarque->hora_carga,
+                    'puerto_descarga' => $puerto_descarga->nombre,
+                    'guia_despacho' => $embarcador->g_dir_a,
+                    'punto_entrada' => $instructivoEmbarque->punto_entrada,
+                    'planilla_sag' => $embarcador->p_sag_dir,
+                ],
+                'comerciales' => [
+                    'num_po' => $instructivoEmbarque->num_po,
+                    'moneda' => $moneda->codigo,
+                    'emision_bl' => $emision_de_bl->nombre,
+                    'forma_pago' => $forma_de_pago->nombre,
+                    'tipo_flete' => $tipo_de_flete->nombre,
+                    'modalidad_venta' => $modalidad_de_venta->nombre,
+                    'clausula_venta' => $clausula_de_venta->nombre,
+                ],
+                'carga' => [
+                    [
+                        'especie' => 'Pears',
+                        'variedad' => '',
+                        'calibres' => '',
+                        'cajas' => 3680,
+                        'etiqueta' => 'Diamond Cherries',
+                        'pallet' => 20,
+                        'categoria' => 'Cat 1',
+                        'envase' => 'Caja Master 5 Kg',
+                        'peso_neto' => 5,
+                        'peso_bruto' => 6,
+                        'total_neto' => 18400,
+                        'total_bruto' => 22080,
+                    ],
+                ],
+                'carga_totals' => [
+                    'total_cajas' => 3680,
+                    'total_neto' => 18400,
+                    'total_peso_pallet' => 400,
+                    'cantidad_pallet' => 20,
+                    'total_bruto' => 22080,
+                    'total_peso_carga' => 22480,
+                ],
+                'observaciones' => [
+                    // Add any general observations if needed
+                ],
+                'instrucciones_aduana' => [
+                    'Por favor no indique “N/M” en el BL, para evitar cualquier modificación del documento reemplaze mencionando el numero de contenedor.',
+                    'Por favor agregar leyenda en B/L: "NON FROZEN FOOD"',
+                    'Por cada contenedor emita un BL, Certificado Fitosanitario, Certificado de Origen y Certificado de Calibración si se está cargando más de un contenedor.',
+                    'Incluir la frase “ENTREGA DIRECTA” en el BL - casilla del consignatario',
+                    'Certificado de Origen: Los item indicados en la factura deben ser iguales a los indicados en Certificado de Origen. Desglozar por pesos netos y nombres correctos de etiquetas en caso de que existan varios.',
+                    'Fitosanitario: En columna 10: Indicar numero de contenedor // Declaración adicional: " This consignment is in compliance with requirements described in the Protocol of Phytosanitary requirements for export of Cherry from Chile to China and is free from the quarantine pests of concern to China " // Por favor, datos deben cargarse en la web antes de llegar la carga a destino.',
+                ],
+                'instrucciones_frigorifico' => [
+                    'Favor enviar despacho vía email a los siguientes correos:',
+
+                    'CC: comex@greenex.cl; carol.padilla@greenex.cl; exportaciones@greenex.cl; docs@greenex.cl; andre.courtin@greenex.cl; hhoffmann@greenex.cl',
+                ],
+            ];
+
+            // Map data to specific cells (adjust based on your template's layout)
+            // Exportador
+            $sheet->setCellValue('B1', $data['exportador']['nombre']);
+            $sheet->setCellValue('B2', $data['exportador']['rut']);
+            $sheet->setCellValue('B3', $data['exportador']['direccion']);
+            $sheet->setCellValue('B4', $data['exportador']['contacto'] . ' // Teléfono: ' . $data['exportador']['telefono']);
+            $sheet->setCellValue('B5', $data['exportador']['email']);
+
+            // Embarque
+            $sheet->setCellValue('M3', $data['embarque']['numero']);
+            $sheet->setCellValue('M4', $data['embarque']['fecha']);
+
+            // Embarcador
+            $sheet->setCellValue('C9', $data['embarcador']['nombre']);
+            $sheet->setCellValue('C10', $data['embarcador']['rut']);
+            $sheet->setCellValue('C11', $data['embarcador']['direccion']);
+            $sheet->setCellValue('C12', $data['embarcador']['contacto']);
+            $sheet->setCellValue('F12', $data['embarcador']['telefono']);
+            $sheet->setCellValue('C13', $data['embarcador']['email']);
+
+            // Agente de Aduanas
+            $sheet->setCellValue('J9', $data['agente_aduana']['nombre']);
+            $sheet->setCellValue('J10', $data['agente_aduana']['rut']);
+            $sheet->setCellValue('J11', $data['agente_aduana']['direccion']);
+            $sheet->setCellValue('J12', $data['agente_aduana']['codigo']);
+            $sheet->setCellValue('M12', $data['agente_aduana']['telefono']);
+            $sheet->setCellValue('J13', $data['agente_aduana']['email']);
+
+            // Consignee
+            $sheet->setCellValue('C17', $data['consignee']['nombre']);
+            $sheet->setCellValue('C18', $data['consignee']['id']);
+            $sheet->setCellValue('C19', $data['consignee']['direccion']);
+            $sheet->setCellValue('C20', $data['consignee']['contacto']);
+            $sheet->setCellValue('C21', $data['consignee']['telefono']);
+            $sheet->setCellValue('C22', $data['consignee']['email']);
+
+            // Notify
+            $sheet->setCellValue('J17', $data['notify']['nombre']);
+            $sheet->setCellValue('J18', $data['notify']['id']);
+            $sheet->setCellValue('J19', $data['notify']['direccion']);
+            $sheet->setCellValue('J20', $data['notify']['contacto']);
+            $sheet->setCellValue('J21', $data['notify']['telefono']);
+            $sheet->setCellValue('J22', $data['notify']['email']);
+
+            // Detalle de Embarque
+            $sheet->setCellValue('C26', $data['detalle_embarque']['naviera']);
+            $sheet->setCellValue('J26', $data['detalle_embarque']['num_contenedor']);
+            $sheet->setCellValue('M26', $data['detalle_embarque']['ventilacion']);
+            $sheet->setCellValue('C27', $data['detalle_embarque']['num_booking']);
+            $sheet->setCellValue('J27', $data['detalle_embarque']['tara_contenedor']);
+            $sheet->setCellValue('M27', $data['detalle_embarque']['quest']);
+            $sheet->setCellValue('C28', $data['detalle_embarque']['nave']);
+            $sheet->setCellValue('J28', $data['detalle_embarque']['num_sello']);
+            $sheet->setCellValue('M28', $data['detalle_embarque']['temperatura']);
+            $sheet->setCellValue('C29', $data['detalle_embarque']['cut_off']);
+            $sheet->setCellValue('J29', $data['detalle_embarque']['empresa_transportista']);
+            $sheet->setCellValue('C30', $data['detalle_embarque']['stacking']);
+            $sheet->setCellValue('J30', $data['detalle_embarque']['conductor']);
+            $sheet->setCellValue('M30', $data['detalle_embarque']['rut_conductor']);
+            $sheet->setCellValue('C31', $data['detalle_embarque']['etd']);
+            $sheet->setCellValue('J31', $data['detalle_embarque']['ppu']);
+            $sheet->setCellValue('M31', $data['detalle_embarque']['telefono']);
+            $sheet->setCellValue('C32', $data['detalle_embarque']['eta']);
+            $sheet->setCellValue('J32', $data['detalle_embarque']['planta_carga']);
+            $sheet->setCellValue('C33', $data['detalle_embarque']['puerto_embarque']);
+            $sheet->setCellValue('F33', $data['detalle_embarque']['pais_embarque']);
+            $sheet->setCellValue('J33', $data['detalle_embarque']['direccion_carga']);
+            $sheet->setCellValue('C34', $data['detalle_embarque']['puerto_destino']);
+            $sheet->setCellValue('F34', $data['detalle_embarque']['pais_destino']);
+            $sheet->setCellValue('J34', $data['detalle_embarque']['fecha_carga']);
+            $sheet->setCellValue('M34', $data['detalle_embarque']['hora_carga']);
+            $sheet->setCellValue('C35', $data['detalle_embarque']['puerto_descarga']);
+            $sheet->setCellValue('J35', $data['detalle_embarque']['guia_despacho']);
+            $sheet->setCellValue('C36', $data['detalle_embarque']['punto_entrada']);
+            $sheet->setCellValue('J36', $data['detalle_embarque']['planilla_sag']);
+
+            // Antecedentes Comerciales
+            $sheet->setCellValue('C40', $data['comerciales']['num_po']);
+            $sheet->setCellValue('F40', $data['comerciales']['moneda']);
+            $sheet->setCellValue('J40', $data['comerciales']['emision_bl']);
+            $sheet->setCellValue('C41', $data['comerciales']['forma_pago']);
+            $sheet->setCellValue('J41', $data['comerciales']['tipo_flete']);
+            $sheet->setCellValue('C42', $data['comerciales']['modalidad_venta']);
+            $sheet->setCellValue('J42', $data['comerciales']['clausula_venta']);
+
+            $sheet->setCellValue('B69',$puerto_correo->emails);
+
+            $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+            $tempFile = tempnam(sys_get_temp_dir(), 'instructivo_email');
+            $writer->save($tempFile);
+
+            // Replace with actual recipient email(s)
+            $recipientEmail = env('EMAIL_INSTRUCTIVO_EMBARQUE'); // TODO: Get actual recipient email
+
+            Mail::to($recipientEmail)->send(new InstructivoEmbarqueMail($instructivoEmbarque, $tempFile));
+
+            unlink($tempFile); // Delete the temporary file
+
+            return response()->json(['message' => 'Correo electrónico enviado con éxito.'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error al enviar el correo electrónico: ' . $e->getMessage()], 500);
+        }
     }
 }
