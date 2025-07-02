@@ -274,9 +274,9 @@ class InstructivoEmbarqueController extends Controller
 
         $navieras = Naviera::pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        $puerto_embarques = PuertoCorreo::pluck('emails', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $puerto_embarques = Puerto::pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        $puerto_destinos = PuertoCorreo::pluck('emails', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $puerto_destinos = Puerto::pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
 
         $puerto_descargas = Puerto::pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
 
@@ -298,7 +298,10 @@ class InstructivoEmbarqueController extends Controller
 
         $instructivoEmbarque->load('embarcador', 'agente_aduana', 'consignee', 'naviera', 'puerto_embarque', 'puerto_destino', 'puerto_descarga', 'conductor', 'planta_carga', 'emision_de_bl', 'tipo_de_flete', 'clausula_de_venta', 'moneda', 'forma_de_pago', 'modalidad_de_venta');
 
-        return view('admin.instructivoEmbarques.edit', compact('agente_aduanas', 'clausula_de_ventas', 'conductors', 'consignees', 'embarcadors', 'emision_de_bls', 'forma_de_pagos', 'instructivoEmbarque', 'modalidad_de_ventas', 'monedas', 'navieras', 'planta_cargas', 'puerto_descargas', 'puerto_destinos', 'puerto_embarques', 'tipo_de_fletes'));
+        $pais_embarque=Country::pluck('name','id')->prepend(trans('global.pleaseSelect'), '');
+        $pais_destino=Country::pluck('name','id')->prepend(trans('global.pleaseSelect'), '');
+
+        return view('admin.instructivoEmbarques.edit', compact('agente_aduanas', 'clausula_de_ventas', 'conductors', 'consignees', 'embarcadors', 'emision_de_bls', 'forma_de_pagos', 'instructivoEmbarque', 'modalidad_de_ventas', 'monedas', 'navieras', 'planta_cargas', 'puerto_descargas', 'puerto_destinos', 'puerto_embarques', 'tipo_de_fletes', 'pais_embarque', 'pais_destino'));
     }
 
     public function update(UpdateInstructivoEmbarqueRequest $request, InstructivoEmbarque $instructivoEmbarque)
@@ -372,7 +375,7 @@ class InstructivoEmbarqueController extends Controller
         $spreadsheet = IOFactory::load($templatePath);
         $sheet = $spreadsheet->getActiveSheet();
         $instructivoEmbarque = InstructivoEmbarque::findOrFail($id)->first();
-       
+
         $embarcador=Embarcador::where('id',$instructivoEmbarque->embarcador_id)->first();
         $agente_aduana=AgenteAduana::where('id',$instructivoEmbarque->agente_aduana_id)->first();
         $consignee=BaseRecibidor::where('id',$instructivoEmbarque->consignee_id)->first();
@@ -388,7 +391,7 @@ class InstructivoEmbarqueController extends Controller
         $forma_de_pago=FormaPago::where('id',$instructivoEmbarque->forma_de_pago_id)->first();
         $modalidad_de_venta=ModVentum::where('id',$instructivoEmbarque->modalidad_de_venta_id)->first();
         $clausula_venta=ClausulaVentum::where('id',$instructivoEmbarque->clausula_de_venta_id)->first();
-        $puerto_embarque=Puerto::where('id',$instructivoEmbarque->puerto_embarque_id)->first();        
+        $puerto_embarque=Puerto::where('id',$instructivoEmbarque->puerto_embarque_id)->first();
         $puerto_destino=Puerto::where('id',$instructivoEmbarque->puerto_destino_id)->first();
         $puerto_descarga=Puerto::where('id',$instructivoEmbarque->puerto_descarga_id)->first();
         $puerto_correo=PuertoCorreo::where('puerto_embarque_id',$instructivoEmbarque->puerto_embarque_id)->first();
@@ -519,12 +522,12 @@ class InstructivoEmbarqueController extends Controller
             ],
             'instrucciones_frigorifico' => [
                 'Favor enviar despacho vía email a los siguientes correos:',
-                
+
                 'CC: comex@greenex.cl; carol.padilla@greenex.cl; exportaciones@greenex.cl; docs@greenex.cl; andre.courtin@greenex.cl; hhoffmann@greenex.cl',
             ],
         ];
 
-       
+
      // Map data to specific cells (adjust based on your template's layout)
         // Exportador
         $sheet->setCellValue('B1', $data['exportador']['nombre']);
@@ -666,6 +669,6 @@ class InstructivoEmbarqueController extends Controller
         $writer->save($tempFile);
 
         // Return the file as a download response
-        return response()->download($tempFile, 'INSTMaritimo.xlsx')->deleteFileAfterSend(true);
+        return response()->download($tempFile, 'INSTMaritimo-'.$ $instructivoEmbarque->instructivo.'.xlsx')->deleteFileAfterSend(true);
     }
 }

@@ -539,13 +539,13 @@
                                         @endforeach
                                     </select>
                                     <div id="conductor_fields">
-                                        
+
 
                                             <input type='text' name='conductor_nombre', id='conductor_nombre'
                                                 class='form-control' />
                                             <button class='btn btn-success' type='button'
                                                 id='save_conductor'>Guardar</button>
-                                        
+
                                     </div>
                                     <button class="btn btn-link" type="button" id="add_conductor">Nuevo</button>
                                     @if ($errors->has('conductor'))
@@ -1042,7 +1042,7 @@
                         $.each(response, function(index, chofer) {
                             console.log(chofer);
                             $("#conductor_id").append(
-                                '<option value="' + chofer.id + '">' +                                    
+                                '<option value="' + chofer.id + '">' +
                                     chofer.nombre + '</option>'// Adjust 'name' to match your response field
                             );
                         });
@@ -1072,7 +1072,7 @@
                     type: "GET",
                     success: function(response) {
                         $("#rut_conductor").val(response.rut);
-                        
+
                     }
 
                 });
@@ -1083,7 +1083,7 @@
                     type: "GET",
                     success: function(response) {
                         $("#direccion").val(response.direccion);
-                        
+
                     }
 
                 });

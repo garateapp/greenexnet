@@ -77,6 +77,7 @@ class InstructivoEmbarque extends Model
         'pais_destino_id',
         'dus',
         'sps',
+        'tipo_embarque',
         'created_at',
         'updated_at',
         'deleted_at',
@@ -159,12 +160,22 @@ class InstructivoEmbarque extends Model
 
     public function puerto_embarque()
     {
-        return $this->belongsTo(PuertoCorreo::class, 'puerto_embarque_id');
+        return $this->belongsTo(Puerto::class, 'puerto_embarque_id');
     }
 
     public function puerto_destino()
     {
-        return $this->belongsTo(PuertoCorreo::class, 'puerto_destino_id');
+        return $this->belongsTo(Puerto::class, 'puerto_destino_id');
+    }
+
+    public function pais_embarque()
+    {
+        return $this->belongsTo(Country::class, 'pais_embarque_id');
+    }
+
+    public function pais_destino()
+    {
+        return $this->belongsTo(Country::class, 'pais_destino_id');
     }
 
     public function puerto_descarga()
