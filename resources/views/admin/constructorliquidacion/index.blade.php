@@ -838,12 +838,12 @@
                                     })
                                     if (bonificacionFNE > 0) {
                                         $("#trbonificacion").show();
-                                        $("#bonificacion").text(bonificacionFNE)
+                                        $("#bonificacion").text(bonificacionFNE
                                             .toLocaleString(
                                                 'es-CL', {
                                                     minimumFractionDigits: 2,
                                                     maximumFractionDigits: 2
-                                                });
+                                                }));
                                     } else {
                                         $("#trbonificacion").hide();
                                     }
