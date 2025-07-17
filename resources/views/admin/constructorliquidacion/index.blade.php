@@ -876,7 +876,7 @@
                                             interesanticipo += parseFloat(element
                                                 .valor);
                                         });
-                                        $("#interesanticipo").text(interesanticipo.toFixed(2)
+                                        $("#interesanticipo").text(interesanticipo.replace('.', ',').toFixed(2)
                                             .toLocaleString(
                                                 'es-CL', {
                                                     minimumFractionDigits: 2,
