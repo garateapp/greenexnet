@@ -870,20 +870,6 @@
                                                 </tr>`
                                         );
                                     });
-                                    if (response.anticipos.length > 0) {
-                                        $("#fechaFacturacion").text(response.anticipos[0]
-                                            .fecha_documento);
-                                        $("#valorFacturacion").text(response.anticipos[0].valor
-                                            .toLocaleString('es-CL', {
-                                                minimumFractionDigits: 2,
-                                                maximumFractionDigits: 2
-                                            }));
-                                        $("#valorTotalFacturacion").text(valorTotalAnticipos
-                                            .toLocaleString('es-CL', {
-                                                minimumFractionDigits: 2,
-                                                maximumFractionDigits: 2
-                                            }));
-                                    }
                                     let interesanticipo = 0;
                                     if (response.interesanticipo.length > 0) {
                                         response.interesanticipo.forEach(element => {
@@ -901,6 +887,21 @@
                                         $("#trinteresanticipo").hide();
                                     }
                                     valorTotalAnticipos = valorTotalAnticipos + interesanticipo;
+                                    if (response.anticipos.length > 0) {
+                                        $("#fechaFacturacion").text(response.anticipos[0]
+                                            .fecha_documento);
+                                        $("#valorFacturacion").text(response.anticipos[0].valor
+                                            .toLocaleString('es-CL', {
+                                                minimumFractionDigits: 2,
+                                                maximumFractionDigits: 2
+                                            }));
+                                        $("#valorTotalFacturacion").text(valorTotalAnticipos
+                                            .toLocaleString('es-CL', {
+                                                minimumFractionDigits: 2,
+                                                maximumFractionDigits: 2
+                                            }));
+                                    }
+
 
 
 
