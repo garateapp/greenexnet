@@ -13,11 +13,11 @@
         }
 
         /* th,
-                                                                                                        td {
-                                                                                                            border: 1px solid #dddddd;
-                                                                                                            padding: 8px;
-                                                                                                            text-align: left;
-                                                                                                        } */
+                                                                                                            td {
+                                                                                                                border: 1px solid #dddddd;
+                                                                                                                padding: 8px;
+                                                                                                                text-align: left;
+                                                                                                            } */
 
         .currency {
             text-align: right;
@@ -273,7 +273,7 @@
                                                     <td>US$</td>
                                                     <td class="currency" id="multiresiduos"></td>
                                                 </tr>
-                                                 <tr id="trOtrosCargos">
+                                                <tr id="trOtrosCargos">
                                                     <td colspan="6">Otros Cargos</td>
                                                     <td>US$</td>
                                                     <td class="currency" id="OtrosCargos"></td>
@@ -579,7 +579,7 @@
                             data: {
                                 _token: $('meta[name="csrf-token"]').attr('content'),
                                 tabs: tabs,
-                              //  chartImages: chartImages,
+                                //  chartImages: chartImages,
                                 productor_id: $('#productor_id').val(),
                                 temporada: $('#temporada').val(),
                                 especie_id: $('#especie_id').val()
@@ -727,7 +727,7 @@
                                         let categoria = item.categoria.replace(" ", "")
                                             .toUpperCase();
                                         //if (categoria == "SUPERMERCADO") {
-                                            //categoria = 'CAT1';
+                                        //categoria = 'CAT1';
                                         //}
 
 
@@ -785,8 +785,9 @@
                                     FacturaValorNeto = FacturaValorNeto * $("#TC").val();
                                     valorTotal = parseFloat(sumasPorCategoria['CAT1']
                                             .resultado_total) +
-                                        parseFloat(sumasPorCategoria['CATII'].resultado_total)+
-                                        parseFloat(sumasPorCategoria["SUPERMERCADO"].resultado_total);
+                                        parseFloat(sumasPorCategoria['CATII'].resultado_total) +
+                                        parseFloat(sumasPorCategoria["SUPERMERCADO"]
+                                            .resultado_total);
 
                                     valorNoExportable = parseFloat(sumasPorCategoria['MERMA']
                                             .costo_comercial) +
@@ -855,7 +856,7 @@
 
                                     //facturación anticipos
                                     let valorTotalAnticipos = 0;
-                                     $("#anticipos").html('');
+                                    $("#anticipos").html('');
                                     $.each(response.anticipos, function(index, item) {
                                         let fecha = item.fecha_documento;
                                         let valor = parseFloat(item.valor) ||
@@ -872,16 +873,21 @@
                                     });
                                     let interesanticipo = 0;
                                     if (response.interesanticipo.length > 0) {
+                                        let interesanticipo = 0;
+
                                         response.interesanticipo.forEach(element => {
                                             interesanticipo += parseFloat(element
-                                                .valor);
+                                            .valor);
                                         });
-                                        $("#interesanticipo").text(interesanticipo.replace('.', ',').toFixed(2)
-                                            .toLocaleString(
-                                                'es-CL', {
-                                                    minimumFractionDigits: 2,
-                                                    maximumFractionDigits: 2
-                                                }));
+
+                                        // Aplicamos formato con coma decimal y punto como separador de miles
+                                        const formatter = new Intl.NumberFormat('es-CL', {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2
+                                        });
+
+                                        $("#interesanticipo").text(formatter.format(
+                                            interesanticipo));
                                         $("#trinteresanticipo").show();
                                     } else {
                                         $("#trinteresanticipo").hide();
@@ -1007,20 +1013,19 @@
                                     // }
 
 
-                                    let OtrosCargos=0;
-                                    if(response.otroscargos.length>0){
+                                    let OtrosCargos = 0;
+                                    if (response.otroscargos.length > 0) {
                                         response.otroscargos.forEach(element => {
-                                            OtrosCargos+=parseFloat(element.valor);
+                                            OtrosCargos += parseFloat(element.valor);
                                         });
                                         $("#OtrosCargos").text(OtrosCargos.toLocaleString(
                                             'es-CL', {
                                                 minimumFractionDigits: 2,
                                                 maximumFractionDigits: 2
                                             }));
-                                        if(OtrosCargos==0){
+                                        if (OtrosCargos == 0) {
                                             $("#trOtrosCargos").hide();
-                                        }
-                                        else{
+                                        } else {
                                             $("#trOtrosCargos").show();
                                         }
                                     }
@@ -1041,14 +1046,15 @@
                                     totalOtrosCargos = parseFloat(valorflete) +
                                         parseFloat(envases) + parseFloat(valorNoExportable) +
                                         parseFloat(multiresiduos) + parseFloat(bonificacion) +
-                                        parseFloat(valorbonificacion)+parseFloat(OtrosCargos);
+                                        parseFloat(valorbonificacion) + parseFloat(OtrosCargos);
                                     $("#totalOtrosCargos").text(totalOtrosCargos.toLocaleString(
                                         'es-CL', {
                                             minimumFractionDigits: 2,
                                             maximumFractionDigits: 2
                                         }));
                                     SaldoTotal = parseFloat(valorTotal) - parseFloat(
-                                        valorTotalAnticipos) - parseFloat(totalOtrosCargos)+parseFloat(bonificacionFNE);
+                                            valorTotalAnticipos) - parseFloat(
+                                        totalOtrosCargos) + parseFloat(bonificacionFNE);
                                     $("#SaldoTotal").text(SaldoTotal.toLocaleString('es-CL', {
                                         minimumFractionDigits: 2,
                                         maximumFractionDigits: 2
