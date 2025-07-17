@@ -886,6 +886,7 @@
                                     } else {
                                         $("#trinteresanticipo").hide();
                                     }
+                                    //sumamos los intereses
                                     valorTotalAnticipos = valorTotalAnticipos + interesanticipo;
                                     if (response.anticipos.length > 0) {
                                         $("#fechaFacturacion").text(response.anticipos[0]
