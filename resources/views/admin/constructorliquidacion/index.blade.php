@@ -876,12 +876,12 @@
                                             interesanticipo += parseFloat(element
                                                 .valor);
                                         });
-                                        $("#interesanticipo").text(interesanticipo.toFixed(2))
+                                        $("#interesanticipo").text(interesanticipo.toFixed(2)
                                             .toLocaleString(
                                                 'es-CL', {
                                                     minimumFractionDigits: 2,
                                                     maximumFractionDigits: 2
-                                                });
+                                                }));
                                         $("#trinteresanticipo").show();
                                     } else {
                                         $("#trinteresanticipo").hide();
