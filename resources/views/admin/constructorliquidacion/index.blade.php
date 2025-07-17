@@ -1046,7 +1046,7 @@
                                             maximumFractionDigits: 2
                                         }));
                                     SaldoTotal = parseFloat(valorTotal) - parseFloat(
-                                        valorTotalAnticipos) - parseFloat(totalOtrosCargos);
+                                        valorTotalAnticipos) - parseFloat(totalOtrosCargos)+parseFLoat(bonificacionFNE);
                                     $("#SaldoTotal").text(SaldoTotal.toLocaleString('es-CL', {
                                         minimumFractionDigits: 2,
                                         maximumFractionDigits: 2
