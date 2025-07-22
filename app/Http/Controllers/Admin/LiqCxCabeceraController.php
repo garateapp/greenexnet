@@ -670,11 +670,12 @@ protected function generatePdfZip(array $imagePaths)
 
                     $items = $liqs->filter(function ($item) use ($despacho) {
                         $folios = array_map('trim', explode(',', $item['folio_fx']));
-
+                        Log::info("folios: " . json_encode($folios));
+                        Log::info("despacho: " . json_encode($despacho));
                         // Verificamos si el folio del despacho está en la lista
                         $folioMatch = in_array($despacho->folio, $folios);
                         if ($item['folio_fx'] === $despacho->folio || $folioMatch) {
-                            if ($item['folio_fx'] == '0000007404' || $item['folio_fx'] == '0000007406' || $item['folio_fx'] == '0000007421' || $item['folio_fx'] == '0000007428') {
+
 
 
                                 Log::info('Comparando:', [
@@ -684,7 +685,7 @@ protected function generatePdfZip(array $imagePaths)
                                     'calibre' => [$item['calibre'], trim($despacho->n_calibre), strcasecmp($item['calibre'], trim($despacho->n_calibre)) === 0],
                                     'etiqueta' => [$item['etiqueta'], trim($despacho->n_etiqueta), strcasecmp($item['etiqueta'], trim($despacho->n_etiqueta)) === 0],
                                 ]);
-                            }
+
                         }
 
                         return $folioMatch &&
