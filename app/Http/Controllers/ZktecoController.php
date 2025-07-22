@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log; // Para registrar lo que llega
 use SimpleXMLElement; // Para parsear XML
+use Illuminate\Support\Facades\File;
+
 
 class ZktecoController extends Controller
 {
