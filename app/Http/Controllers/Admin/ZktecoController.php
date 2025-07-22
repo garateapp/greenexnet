@@ -4,8 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Log;
 
 class ZktecoController extends Controller
 {
@@ -22,10 +20,7 @@ class ZktecoController extends Controller
         $xmlData = $request->getContent();
 
         // Guarda el contenido XML crudo
-        File::append($logPathPost, "--- New Request (POST) ---\n" . $xmlData . "\n\n");
-
-        // El resto del código puede permanecer para la lógica futura,
-        // pero por ahora nos centramos en capturar los datos.
+        \Illuminate\Support\Facades\File::append($logPathPost, "--- New Request (POST) ---\n" . $xmlData . "\n\n");
 
         // ZKTeco espera una respuesta "OK" para confirmar que los datos fueron recibidos.
         return response('OK', 200);
@@ -45,7 +40,7 @@ class ZktecoController extends Controller
         $fullUrl = $request->fullUrl();
 
         // Guarda la URL completa de la petición GET
-        File::append($logPathGet, "--- New Request (GET) ---\n" . $fullUrl . "\n\n");
+        \Illuminate\Support\Facades\File::append($logPathGet, "--- New Request (GET) ---\n" . $fullUrl . "\n\n");
 
         // Respuesta estándar al dispositivo
         return response("OK", 200)->header('Content-Type', 'text/plain');
