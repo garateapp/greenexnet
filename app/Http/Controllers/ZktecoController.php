@@ -149,7 +149,7 @@ class ZktecoController extends Controller
         File::append($logPathGet, "--- New Request (GET) ---\n" . $fullUrl . "\n\n");
 
         // Respuesta estándar al dispositivo
-        return response("OK", 200)->header('Content-Type', 'text/plain');
+        return response("GET ATTLOG\r\n", 200)->header('Content-Type', 'text/plain');
     }
 
 }
