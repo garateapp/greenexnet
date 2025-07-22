@@ -144,12 +144,17 @@ class ZktecoController extends Controller
     {
         $logPathGet = storage_path('logs/zkt_get_log.txt');
         $fullUrl = $request->fullUrl();
+        $ip = $request->ip();
 
-        // Guarda la URL completa de la petición GET
-        File::append($logPathGet, "--- New Request (GET) ---\n" . $fullUrl . "\n\n");
+        // Guarda la URL completa de la petición GET y la IP
+        $logContent = "--- New Request (GET) from IP: {$ip} ---\n{$fullUrl}\n\n";
+        \Illuminate\Support\Facades\File::append($logPathGet, $logContent);
 
         // Respuesta estándar al dispositivo
-        return response("GET ATTLOG\r\n", 200)->header('Content-Type', 'text/plain');
+        $responseContent = "GET USER\r\nGET ATTLOG\r\n";
+
+        return response($responseContent, 200)
+            ->header('Content-Type', 'text/plain');
     }
 
 }
