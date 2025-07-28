@@ -80,7 +80,7 @@ class AnticipoController extends Controller
         }
 
         $productors   = Productor::get();
-        
+
         $especies     = Especy::get();
 
         return view('admin.anticipos.index', compact('productors',  'especies'));
@@ -116,9 +116,9 @@ class AnticipoController extends Controller
 
         $especies = Especy::pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        $anticipo->load('productor', 'tipo_cambio', 'especie');
+        $anticipo->load('productor',  'especie');
 
-        return view('admin.anticipos.edit', compact('anticipo', 'especies', 'productors', 'tipo_cambios'));
+        return view('admin.anticipos.edit', compact('anticipo', 'especies', 'productors'));
     }
 
     public function update(UpdateAnticipoRequest $request, Anticipo $anticipo)

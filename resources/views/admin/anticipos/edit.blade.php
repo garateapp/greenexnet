@@ -56,11 +56,7 @@
             </div>
             <div class="form-group">
                 <label for="tipo_cambio_id">{{ trans('cruds.anticipo.fields.tipo_cambio') }}</label>
-                <select class="form-control select2 {{ $errors->has('tipo_cambio') ? 'is-invalid' : '' }}" name="tipo_cambio_id" id="tipo_cambio_id">
-                    @foreach($tipo_cambios as $id => $entry)
-                        <option value="{{ $id }}" {{ (old('tipo_cambio_id') ? old('tipo_cambio_id') : $anticipo->tipo_cambio->id ?? '') == $id ? 'selected' : '' }}>{{ $entry }}</option>
-                    @endforeach
-                </select>
+                <input class="form-control {{ $errors->has('tipo_cambio_id') ? 'is-invalid' : '' }}" type="hidden" name="tipo_cambio_id" id="tipo_cambio_id" value="{{ old('tipo_cambio_id') }}">
                 @if($errors->has('tipo_cambio'))
                     <div class="invalid-feedback">
                         {{ $errors->first('tipo_cambio') }}
