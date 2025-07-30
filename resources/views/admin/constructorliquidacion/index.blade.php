@@ -207,16 +207,17 @@
                                                     <td class="currency negative" id="suma-CATII"></td>
                                                 </tr>
                                                 <tr id="trbonificacion">
-                                                    <td colspan="5">Bonificación</td>
-                                                    <td></td>
-                                                    <td></td>
+                                                    <td colspan="6">Bonificación</td>
+
+                                                    <td>US$</td>
                                                     <td class="currency" id="bonificacion"></td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="8">&nbsp;</td>
                                                 </tr>
                                                 <tr>
-                                                    <td colspan="7">&nbsp;</td>
+                                                    <td colspan="6">&nbsp;</td>
+                                                    <td>US$</td>
                                                     <td class="currency" id="valorTotalUsd"></td>
                                                 </tr>
 
@@ -232,7 +233,8 @@
                                                     <td class="currency" id="interesanticipo"></td>
                                                 </tr>
                                                 <tr>
-                                                    <td colspan="7">Total facturación (Proformas)</td>
+                                                    <td colspan="6">Total facturación (Proformas)</td>
+                                                    <td>US$</td>
                                                     <td class="currency" id="valorTotalFacturacion"></td>
                                                 </tr>
 
@@ -939,6 +941,9 @@
                                         $("#trinteresanticipo").hide();
                                     }
                                     //sumamos los intereses
+                                    if(isNaN(parseFloat($("#interesanticipo").text());)){
+                                        interesanticipo = 0;
+                                    }
                                     valorTotalAnticipos = valorTotalAnticipos + parseFloat($("#interesanticipo").text());
                                     if(isNaN(valorTotalAnticipos)){
                                         valorTotalAnticipos = 0;
