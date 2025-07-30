@@ -70,7 +70,7 @@ use CsvImportTrait;
         ->whereIn('especie_id', [4,5,6])->with("especie")->get();
 
         $anticipos = Anticipo::where('productor_id', $productor)
-        //->where('temporada', $temporada)->get();
+        ->where('temporada', $temporada)->get();
         //->whereIn('especie_id',  [4,5,6])->get();
         $valorflete=Valorflete::where('productor_id', $productor)
         ->where('temporada', $temporada)->get();
