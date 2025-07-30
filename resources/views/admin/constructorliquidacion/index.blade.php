@@ -2343,7 +2343,7 @@
                     let groupedData = [];
                     // Agrupar datos por especie, variedad y etiqueta
                     $.each(response.result, function(index, item) {
-                        if (item.categoria.toUpperCase() === 'CAT 1' || item.categoria.toUpperCase() === 'Super Mercado') {
+                        if (item.categoria.toUpperCase() === 'CAT 1' || item.categoria.toUpperCase() === 'SUPER MERCADO') {
                             let variedad = item.variedad;
                             let etiqueta = item.etiqueta;
                             let calibre = item.calibre;
