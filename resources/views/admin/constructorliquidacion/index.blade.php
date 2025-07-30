@@ -945,13 +945,8 @@
                                     if(isNaN(parseFloat($("#interesanticipo").text()))){
                                         interesanticipo = 0;
                                     }
-                                    valorTotalAnticipos = valorTotalAnticipos + interesanticipo.toLocaleString('es-CL', {
-                                                minimumFractionDigits: 2,
-                                                maximumFractionDigits: 2
-                                            });
-                                    if(isNaN(valorTotalAnticipos)){
-                                        valorTotalAnticipos = 0;
-                                    }
+                                    valorTotalAnticipos = valorTotalAnticipos + interesanticipo;
+
                                     if (response.anticipos.length > 0) {
                                         $("#fechaFacturacion").text(response.anticipos[0]
                                             .fecha_documento);
