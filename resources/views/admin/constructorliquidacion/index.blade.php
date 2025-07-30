@@ -634,7 +634,7 @@
                     $('#bonificacion').text('');
                     $('#valorTotalUsd').text('');
                     $('#interesanticipo').text('');
-                    $('#valorTotalFacturacion').text('');
+                    $('#valorTotalFacturacion').text('0');
                     $('#kilosNoExportable').text('');
                     $('#valorNoExportable').text('');
                     $('#bonificacionGastoNoExportable').text('');
