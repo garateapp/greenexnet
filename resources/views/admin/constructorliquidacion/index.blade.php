@@ -1082,6 +1082,9 @@
                                             $("#trOtrosCargos").show();
                                         }
                                     }
+                                    else {
+                                        $("#trOtrosCargos").hide();
+                                    }
 
 
                                     let envases = 0;
@@ -1091,6 +1094,13 @@
                                         });
 
                                         $("#ctacteenvases").text(envases).toLocaleString(
+                                            'es-CL', {
+                                                minimumFractionDigits: 2,
+                                                maximumFractionDigits: 2
+                                            });
+                                    }
+                                    else {
+                                        $("#ctacteenvases").text(0).toLocaleString(
                                             'es-CL', {
                                                 minimumFractionDigits: 2,
                                                 maximumFractionDigits: 2
