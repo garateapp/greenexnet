@@ -924,7 +924,7 @@
                                                 .valor);
                                         });
                                         $("#bonificacionGastoNoExportable").text(
-                                                valorbonificacion..toLocaleString(
+                                                valorbonificacion.toLocaleString(
                                                 'es-CL', {
                                                     minimumFractionDigits: 2,
                                                     maximumFractionDigits: 2
