@@ -636,7 +636,7 @@
                     $('#bonificacion').text('');
                     $('#valorTotalUsd').text('');
                     $('#interesanticipo').text('');
-                    $('#valorTotalFacturacion').text('0');
+                    $('#valorTotalFacturacion').text('');
                     $('#kilosNoExportable').text('');
                     $('#valorNoExportable').text('');
                     $('#bonificacionGastoNoExportable').text('');
@@ -939,12 +939,16 @@
                                         $("#trinteresanticipo").show();
                                     } else {
                                         $("#trinteresanticipo").hide();
+                                        interesanticipo = 0;
                                     }
                                     //sumamos los intereses
                                     if(isNaN(parseFloat($("#interesanticipo").text()))){
                                         interesanticipo = 0;
                                     }
-                                    valorTotalAnticipos = valorTotalAnticipos + parseFloat($("#interesanticipo").text());
+                                    valorTotalAnticipos = valorTotalAnticipos + interesanticipo.toLocaleString('es-CL', {
+                                                minimumFractionDigits: 2,
+                                                maximumFractionDigits: 2
+                                            });
                                     if(isNaN(valorTotalAnticipos)){
                                         valorTotalAnticipos = 0;
                                     }
