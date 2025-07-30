@@ -940,7 +940,7 @@
                                     }
                                     //sumamos los intereses
                                     valorTotalAnticipos = valorTotalAnticipos + parseFloat($("#interesanticipo").text());
-                                    if(valorTotalAnticipos =='NaN'){
+                                    if(isNaN(valorTotalAnticipos)){
                                         valorTotalAnticipos = 0;
                                     }
                                     if (response.anticipos.length > 0) {
