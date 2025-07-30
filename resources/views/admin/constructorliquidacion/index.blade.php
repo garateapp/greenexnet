@@ -782,7 +782,7 @@
                                         sumasPorCategoria['PRECALIBRE'].precio_comercial +
                                         sumasPorCategoria['SOBRECALIBRE'].precio_comercial;
 
-                                    FacturaValorNeto = FacturaValorNeto * $("#TC").val();
+                                    FacturaValorNeto = FacturaValorNeto;// * $("#TC").val();
                                     valorTotal = parseFloat(sumasPorCategoria['CAT1']
                                             .resultado_total) +
                                         parseFloat(sumasPorCategoria['CATII'].resultado_total) +
@@ -1059,7 +1059,7 @@
                                         minimumFractionDigits: 2,
                                         maximumFractionDigits: 2
                                     }));
-                                    NDValorNeto = parseFloat(SaldoTotal) * $("#TC").val();
+                                    NDValorNeto = parseFloat(SaldoTotal);// * $("#TC").val();
                                     $("#NDVAlorNeto").text(NDValorNeto.toLocaleString('es-CL', {
                                         minimumFractionDigits: 0,
                                         maximumFractionDigits: 0
@@ -2702,7 +2702,7 @@
                         ${variedadCell}
                         <td style="text-align:center">${categoria}</td>
                         <td class="number">${formatInteger(datosCategoria.total_kilos.toFixed(0))}</td>
-                        <td class="number">${formatCurrency(datosCategoria.precio_kilo_sum.toFixed(2))}</td>
+                        <td class="number">${formatCurrency(datosCategoria.precio_kilo_sum.toFixed(0))}</td>
                         <td class="number">${formatCurrency(precioKilo)}</td>
                     </tr>
                 `;
@@ -2721,14 +2721,14 @@
                             // Subtotal por variedad
                             let precioKiloVariedad = totalVariedad.total_kilos > 0 ?
                                 (totalVariedad.precio_total / totalVariedad.total_kilos)
-                                .toFixed(2) : '0.00';
+                                .toFixed(0) : '0';
                             htmlOutput += `
                 <tr class="total-row">
                     <td>Total ${variedad}</td>
                     <td></td>
                     <td class="number">${formatInteger(totalVariedad.total_kilos.toFixed(0))}</td>
-                    <td class="number">US$ ${formatCurrency(totalVariedad.precio_total.toFixed(2))}</td>
-                    <td class="number">US$ ${formatCurrency(precioKiloVariedad)}</td>
+                    <td class="number">$ ${formatCurrency(totalVariedad.precio_total.toFixed(0))}</td>
+                    <td class="number">$ ${formatCurrency(precioKiloVariedad)}</td>
                 </tr>
             `;
                         });
@@ -2736,7 +2736,7 @@
 
                     // Total general
                     let precioKiloGeneral = totalGeneral.precio_kilo_kilos ?
-                        (totalGeneral.precio_total / totalGeneral.total_kilos).toFixed(2) : '0.00';
+                        (totalGeneral.precio_total / totalGeneral.total_kilos).toFixed(0) : '0';
 
                     htmlOutput += `
                 <tr class="total-row">
@@ -2744,8 +2744,8 @@
                     <td></td>
                     <td></td>
                     <td class="number">${formatInteger(totalGeneral.total_kilos.toFixed(0))}</td>
-                    <td class="number">US$ ${formatCurrency(totalGeneral.precio_total.toFixed(2))}</td>
-                    <td class="number">US$ ${formatCurrency(precioKiloGeneral)}</td>
+                    <td class="number">$ ${formatCurrency(totalGeneral.precio_total.toFixed(0))}</td>
+                    <td class="number">$ ${formatCurrency(precioKiloGeneral)}</td>
                 </tr>
             </tbody>
         </table>
