@@ -898,7 +898,7 @@
                                         $("#trinteresanticipo").hide();
                                     }
                                     //sumamos los intereses
-                                    valorTotalAnticipos = valorTotalAnticipos + $("#interesanticipo").text();
+                                    valorTotalAnticipos = valorTotalAnticipos + parseFloat($("#interesanticipo").text());
                                     if (response.anticipos.length > 0) {
                                         $("#fechaFacturacion").text(response.anticipos[0]
                                             .fecha_documento);
@@ -924,12 +924,11 @@
                                                 .valor);
                                         });
                                         $("#bonificacionGastoNoExportable").text(
-                                                valorbonificacion.toFixed(2))
-                                            .toLocaleString(
+                                                valorbonificacion..toLocaleString(
                                                 'es-CL', {
                                                     minimumFractionDigits: 2,
                                                     maximumFractionDigits: 2
-                                                });
+                                                }));
                                         if (valorbonificacion != 0) {
                                             $("#trBonifGastoNoExportable").show();
                                         } else {
