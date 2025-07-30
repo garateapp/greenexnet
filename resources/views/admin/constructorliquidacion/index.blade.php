@@ -941,7 +941,7 @@
                                         $("#trinteresanticipo").hide();
                                     }
                                     //sumamos los intereses
-                                    if(isNaN(parseFloat($("#interesanticipo").text());)){
+                                    if(isNaN(parseFloat($("#interesanticipo").text()))){
                                         interesanticipo = 0;
                                     }
                                     valorTotalAnticipos = valorTotalAnticipos + parseFloat($("#interesanticipo").text());
