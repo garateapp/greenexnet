@@ -663,7 +663,7 @@
                     // Clear charts
                     $('#charts').html('');
                 }
-                
+
                 $('#btnPreview').on('click', function() {
                     resetAllValues();
                     var productor_id = $('#productor_id').val();
@@ -940,6 +940,9 @@
                                     }
                                     //sumamos los intereses
                                     valorTotalAnticipos = valorTotalAnticipos + parseFloat($("#interesanticipo").text());
+                                    if(valorTotalAnticipos =='NaN'){
+                                        valorTotalAnticipos = 0;
+                                    }
                                     if (response.anticipos.length > 0) {
                                         $("#fechaFacturacion").text(response.anticipos[0]
                                             .fecha_documento);
