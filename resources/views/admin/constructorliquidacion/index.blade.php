@@ -624,7 +624,48 @@
                 $('#temporada').select2();
                 $('#especie_id')
                     .select2();
+
+                function resetAllValues() {
+                    // Clear table cells in "Cuenta Corriente"
+                    $('#productorRut').text('');
+                    $('.productorNombre').text('');
+                    $('#suma-CAT-1').text('');
+                    $('#suma-CATII').text('');
+                    $('#bonificacion').text('');
+                    $('#valorTotalUsd').text('');
+                    $('#interesanticipo').text('');
+                    $('#valorTotalFacturacion').text('');
+                    $('#kilosNoExportable').text('');
+                    $('#valorNoExportable').text('');
+                    $('#bonificacionGastoNoExportable').text('');
+                    $('#ctacteenvases').text('');
+                    $('#fletehuerto').text('');
+                    $('#bonificacionfletehuerto').text('');
+                    $('#multiresiduos').text('');
+                    $('#OtrosCargos').text('');
+                    $('#totalOtrosCargos').text('');
+                    $('#SaldoTotal').text('');
+                    $('#NDVAlorNeto').text('');
+                    $('#NDVAlorIva').text('');
+                    $('#NDVAlorTotal').text('');
+                    $('#FVAlorNeto').text('');
+                    $('#FVAlorIva').text('');
+                    $('#FVAlorTotal').text('');
+
+                    // Clear table bodies
+                    $("#anticipos").html('');
+                    $('#bce-masas').html('');
+                    $('#norma').html('');
+                    $('#norma-semana').html('');
+                    $('#fuera-norma').html('');
+                    $('#comercial').html('');
+
+                    // Clear charts
+                    $('#charts').html('');
+                }
+                
                 $('#btnPreview').on('click', function() {
+                    resetAllValues();
                     var productor_id = $('#productor_id').val();
                     var temporada = $('#temporada').val();
                     var especie_id = $('#especie_id').val();
