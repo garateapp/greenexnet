@@ -88,7 +88,7 @@
                     </div>
                     <div class="form-group">
                         <label for="TC">Valor USD</label>
-                        <input type="text" class="form-control" id="TC" name="TC" value="936.74"
+                        <input type="text" class="form-control" id="TC" name="TC" value="970.09"
                             placeholder="Ingrese el valor del USD" required>
                     </div>
                     <div class="row">
@@ -292,7 +292,7 @@
                                                 <!-- Nota de Débito y Factura -->
                                                 <tr>
                                                     <td colspan="4">&nbsp;</td>
-                                                    <td colspan="2" id="fecha_tipo_cambio">TC 30-06-2025</td>
+                                                    <td colspan="2" id="fecha_tipo_cambio">TC 30-07-2025</td>
                                                     <td colspan="1">$</td>
                                                     <td class="currency" id="TCValor"></td>
                                                 </tr>
