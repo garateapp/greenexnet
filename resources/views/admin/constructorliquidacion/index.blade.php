@@ -284,6 +284,8 @@
                                                     <td class="currency" id="totalOtrosCargos"></td>
                                                 </tr>
                                                 <tr>
+                                                    <td colspan="8"><hr></td>
+                                                <tr>
                                                     <td colspan="6">Saldo</td>
                                                     <td>US$</td>
                                                     <td class="currency" id="SaldoTotal"></td>
@@ -886,8 +888,11 @@
                                             maximumFractionDigits: 2
                                         });
 
-                                        $("#interesanticipo").text(formatter.format(
-                                            interesanticipo));
+                                        $("#interesanticipo").text(
+                                            interesanticipo.toLocaleString('es-CL', {
+                                                minimumFractionDigits: 2,
+                                                maximumFractionDigits: 2
+                                            }));
                                         $("#trinteresanticipo").show();
                                     } else {
                                         $("#trinteresanticipo").hide();
