@@ -44,6 +44,7 @@ class Proceso extends Model
         'norma',
         'temporada',
         'especie_id',
+        'cajas'
     ];
 
     protected function serializeDate(DateTimeInterface $date)
