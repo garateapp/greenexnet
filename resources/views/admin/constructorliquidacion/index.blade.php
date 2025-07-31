@@ -763,7 +763,7 @@
                                             total_kilos: 0,
                                             costo_comercial: 0,
                                             precio_comercial: 0
-                                        }
+                                        },
                                         'COMERCIAL HUERTO': {
                                             resultado_kilo: 0,
                                             resultado_total: 0,
