@@ -2408,6 +2408,8 @@
                                 rnpTotal;
                             datosAgrupadosNorma[especie][variedad][etiqueta].calibres[calibre].rnp_kilo +=
                                 rnpKilo;
+                            datosAgrupadosNorma[especie][variedad][etiqueta].calibres[calibre].cajas +=
+                                cajas;
 
                             datosAgrupadosNorma[especie][variedad][etiqueta].total_kilos += totalKilos;
                             datosAgrupadosNorma[especie][variedad][etiqueta].rnp_total += rnpTotal;
@@ -2460,7 +2462,7 @@
 
                             let isFirstVariedadRow = true;
                             let totalVariedad = {
-                                cajas_equivalentes: 0,
+                                cajas: 0,
                                 total_kilos: 0,
                                 rnp_total: 0,
                                 rnp_kilo_sum: 0,
