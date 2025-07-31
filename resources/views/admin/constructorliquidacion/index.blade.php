@@ -983,6 +983,7 @@
                                             valorbonificacion += parseFloat(element
                                                 .valor);
                                         });
+                                        valorbonificacion = valorbonificacion+parseFloat(sumasPorCategoria['COMERCIALHUERTO'].costo_comercial);
                                         $("#bonificacionGastoNoExportable").text(
                                                 valorbonificacion.toLocaleString(
                                                 'es-CL', {
