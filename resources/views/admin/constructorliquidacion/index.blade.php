@@ -2600,10 +2600,7 @@
                     <td></td>
                     <td></td>
                     <td class="number">1.0000</td>
-                    <td class="number">${formatInteger(totalVariedad.cajastoLocaleString('es-CL', {
-                                        minimumFractionDigits: 0,
-                                        maximumFractionDigits: 0
-                                    }))}</td>
+                    <td class="number">${formatInteger(totalVariedad.cajas)}</td>
                     <td class="number">${formatInteger(totalVariedad.total_kilos.toFixed(0))}</td>
                     <td class="number ${rnpClassVariedad}">US$ ${formatCurrency(totalVariedad.rnp_total.toFixed(2))}</td>
                     <td class="number ${rnpClassVariedad}">US$ ${formatCurrency(totalVariedad.rnp_total.toFixed(2)/totalVariedad.total_kilos.toFixed(0))}</td>
@@ -2633,10 +2630,7 @@
                     <td></td>
                     <td></td>
                     <td class="number">1.0000</td>
-                    <td class="number">${formatCurrency(totalGeneralNorma.cajas.toLocaleString('es-CL', {
-                                        minimumFractionDigits: 0,
-                                        maximumFractionDigits: 0
-                                    }))}</td>
+                    <td class="number">${formatInteger(totalGeneralNorma.cajas)}</td>
                     <td class="number">${formatInteger(totalGeneralNorma.total_kilos.toFixed(0))}</td>
                     <td class="number ${rnpClassGeneral}">US$ ${formatCurrency(totalGeneralNorma.rnp_total.toFixed(2))}</td>
                     <td class="number ${rnpClassGeneral}">US$ ${formatCurrency((totalGeneralNorma.rnp_total.toFixed(2)/totalGeneralNorma.total_kilos.toFixed(0)).toFixed(4))}</td>
