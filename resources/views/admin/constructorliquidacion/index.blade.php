@@ -2558,8 +2558,7 @@
                                     (datosEtiqueta.rnp_kilo_sum / datosEtiqueta
                                         .rnp_kilo_kilos)
                                     .toFixed(4) : '0.0000';
-                                let cajasEtiqueta = (datosEtiqueta.cajas_equivalentes).toFixed(
-                                    0);
+                                let cajasEtiqueta = (datosEtiqueta.cajas);                                    0);
                                 let rnpClassEtiqueta = datosEtiqueta.rnp_total < 0 ||
                                     parseFloat(rnpKiloEtiqueta) < 0 ? 'negative' : '';
 
