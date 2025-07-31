@@ -1293,8 +1293,7 @@
                                                     fila) {
                                                     let cajasEquivalentes =
                                                         (fila
-                                                            .cajas)
-                                                        .toFixed(1);
+                                                            .cajas);
                                                     let variedadCell =
                                                         (
                                                             i ===
@@ -1501,7 +1500,7 @@
                         <th>Serie</th>
                         <th>Color</th>
                         <th>Curva Calibre</th>
-                        <th style="text-align:center;">Cajas Equivalentes</th>
+                        <th style="text-align:center;">Cajas</th>
                         <th>Kilos Totales</th>
                         <th>RNP Total</th>
                         <th>RNP Kilo</th>
@@ -1967,7 +1966,7 @@
                 <th>Semana</th>
                 <th>Serie</th>
                 <th>Color</th>
-                <th style="text-align:center;">Cajas Equivalentes</th>
+                <th style="text-align:center;">Cajas</th>
                 <th style="text-align:center;">Kilos Totales</th>
                 <th style="text-align:center;">RNP Total</th>
                 <th style="text-align:center;">RNP Kilo</th>
