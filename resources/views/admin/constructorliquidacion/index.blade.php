@@ -1292,7 +1292,7 @@
                                                 function(j,
                                                     fila) {
                                                     let cajasEquivalentes =
-                                                        (fila
+                                                        parseFloat(fila
                                                             .cajas);
                                                     let variedadCell =
                                                         (
@@ -2475,9 +2475,8 @@
                                             .total_kilos).toFixed(4) : '0.0000';
                                     curvaCalibre = (curvaCalibre * 100);
                                     curvaCalibre = curvaCalibre + ' %';
-                                    let cajasEquivalentes = (datosCalibre
-                                        .cajas /
-                                        9).toFixed(0);
+                                    let cajasEquivalentes = parseFloat(datosCalibre
+                                        .cajas);
 
                                     let rnpKilo = datosCalibre.rnp_kilo.toFixed(2);
                                     let rnpClass = datosCalibre.rnp_total < 0 ||
