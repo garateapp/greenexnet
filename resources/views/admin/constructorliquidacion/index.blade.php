@@ -1192,6 +1192,8 @@
                                     let totalKilos = parseFloat(item.total_kilos
                                         .replace(
                                             ',', '.')) || 0;
+                                    let cajas = parseFloat(item.cajas.replace(
+                                            ',', '.')) || 0;
                                     if (!datosAgrupados[especie]) {
                                         datosAgrupados[especie] = {};
                                     }
@@ -1202,7 +1204,7 @@
                                         datosAgrupados[especie][variedad][categoria] = {
                                             normas: [],
                                             total_kilos: 0,
-                                            cajas_equivalentes: 0
+                                            cajas: 0
                                         };
                                     }
 
@@ -1215,12 +1217,14 @@
                                         .normas.find(n => n.norma === norma);
                                     if (normaExistente) {
                                         normaExistente.total_kilos += totalKilos;
+                                        normaExistente.cajas += cajas;
                                     } else {
                                         datosAgrupados[especie][variedad][categoria]
                                             .normas
                                             .push({
                                                 norma: norma,
-                                                total_kilos: totalKilos
+                                                total_kilos: totalKilos,
+                                                cajas:cajas
                                             });
                                     }
 
@@ -1228,6 +1232,9 @@
                                     datosAgrupados[especie][variedad][categoria]
                                         .total_kilos +=
                                         totalKilos;
+                                    datosAgrupados[especie][variedad][categoria]
+                                        .cajas += cajas;
+
                                 });
 
                                 // Generar HTML de la tabla
@@ -2364,6 +2371,7 @@
                             let totalKilos = parseFloat(item.total_kilos.replace(',', '.')) || 0;
                             let rnpTotal = parseFloat(item.resultado_total.replace(',', '.')) || 0;
                             let rnpKilo = parseFloat(item.resultado_kilo.replace(',', '.')) || 0;
+                            let cajas=parseFloat(item.cajas) || 0;
 
 
 
