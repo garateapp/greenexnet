@@ -833,7 +833,11 @@
                                     FacturaValorNeto = sumasPorCategoria['COMERCIAL']
                                         .precio_comercial +
                                         sumasPorCategoria['PRECALIBRE'].precio_comercial +
-                                        sumasPorCategoria['SOBRECALIBRE'].precio_comercial;
+                                        sumasPorCategoria['SOBRECALIBRE'].precio_comercial+
+                                        sumasPorCategoria['DESECHO'].precio_comercial+
+                                        sumasPorCategoria['MERMA'].precio_comercial
+                                        + sumasPorCategoria['COMERCIALHUERTO'].precio_comercial;
+
 
                                     FacturaValorNeto = FacturaValorNeto;// * $("#TC").val();
                                     valorTotal = parseFloat(sumasPorCategoria['CAT1']
