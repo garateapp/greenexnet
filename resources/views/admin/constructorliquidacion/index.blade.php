@@ -1056,6 +1056,11 @@
 
 
                                     }
+                                    else {
+                                        $("#trBonificacionfletehuerto").hide();
+                                        $("#fletehuerto").text("0");
+                                        $("#bonificacionfletehuerto").text("0");
+                                    }
                                     let multiresiduos = 0;
                                     //if (response.multiresiduo.length > 0) {
                                     response.multiresiduo.forEach(element => {
