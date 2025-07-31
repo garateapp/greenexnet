@@ -2514,7 +2514,10 @@
                             ${etiquetaCell}
                             <td>${calibre}</td>
                             <td class="number">${formatCurrency(curvaCalibre)} %</td>
-                            <td class="number">${cajasEquivalentes}</td>
+                            <td class="number">${cajasEquivalentes.toLocaleString('es-CL', {
+                                        minimumFractionDigits: 0,
+                                        maximumFractionDigits: 0
+                                    })}</td>
                             <td class="number">${formatInteger(datosCalibre.total_kilos.toFixed(0))}</td>
                             <td class="number ${rnpClass}">US$ ${formatCurrency(datosCalibre.rnp_total.toFixed(2))}</td>
                             <td class="number ${rnpClass}">US$ ${formatCurrency(datosCalibre.rnp_total.toFixed(2)/datosCalibre.total_kilos.toFixed(0))}</td>
@@ -2570,7 +2573,10 @@
                         <td>Total ${etiqueta}</td>
                         <td></td>
                         <td class="number">1.0000</td>
-                        <td class="number">${cajasEtiqueta}</td>
+                        <td class="number">${cajasEtiqueta.toLocaleString('es-CL', {
+                                        minimumFractionDigits: 0,
+                                        maximumFractionDigits: 0
+                                    })}</td>
                         <td class="number">${formatInteger(datosEtiqueta.total_kilos.toFixed(2))}</td>
                         <td class="number ${rnpClassEtiqueta}">US$ ${formatCurrency(datosEtiqueta.rnp_total.toFixed(2))}</td>
                         <td class="number ${rnpClassEtiqueta}">US$ ${formatCurrency(datosEtiqueta.rnp_total.toFixed(2)/datosEtiqueta.total_kilos.toFixed(0))}</td>
@@ -2594,7 +2600,10 @@
                     <td></td>
                     <td></td>
                     <td class="number">1.0000</td>
-                    <td class="number">${formatInteger(totalVariedad.cajas)}</td>
+                    <td class="number">${formatInteger(totalVariedad.cajastoLocaleString('es-CL', {
+                                        minimumFractionDigits: 0,
+                                        maximumFractionDigits: 0
+                                    }))}</td>
                     <td class="number">${formatInteger(totalVariedad.total_kilos.toFixed(0))}</td>
                     <td class="number ${rnpClassVariedad}">US$ ${formatCurrency(totalVariedad.rnp_total.toFixed(2))}</td>
                     <td class="number ${rnpClassVariedad}">US$ ${formatCurrency(totalVariedad.rnp_total.toFixed(2)/totalVariedad.total_kilos.toFixed(0))}</td>
@@ -2602,8 +2611,8 @@
             `;
 
                             // Acumular al total general
-                            totalGeneralNorma.cajas_equivalentes += totalVariedad
-                                .cajas_equivalentes;
+                            totalGeneralNorma.cajas += totalVariedad
+                                .cajas;
                             totalGeneralNorma.total_kilos += totalVariedad.total_kilos;
                             totalGeneralNorma.rnp_total += totalVariedad.rnp_total;
                             totalGeneralNorma.rnp_kilo_sum += totalVariedad.rnp_kilo_sum;
@@ -2624,7 +2633,10 @@
                     <td></td>
                     <td></td>
                     <td class="number">1.0000</td>
-                    <td class="number">${formatCurrency(totalGeneralNorma.cajas_equivalentes.toFixed(0))}</td>
+                    <td class="number">${formatCurrency(totalGeneralNorma.cajas.toLocaleString('es-CL', {
+                                        minimumFractionDigits: 0,
+                                        maximumFractionDigits: 0
+                                    }))}</td>
                     <td class="number">${formatInteger(totalGeneralNorma.total_kilos.toFixed(0))}</td>
                     <td class="number ${rnpClassGeneral}">US$ ${formatCurrency(totalGeneralNorma.rnp_total.toFixed(2))}</td>
                     <td class="number ${rnpClassGeneral}">US$ ${formatCurrency((totalGeneralNorma.rnp_total.toFixed(2)/totalGeneralNorma.total_kilos.toFixed(0)).toFixed(4))}</td>
@@ -2775,8 +2787,8 @@
                         ${variedadCell}
                         <td style="text-align:center">${categoria}</td>
                         <td class="number">${formatInteger(datosCategoria.total_kilos.toFixed(0))}</td>
-                        <td class="number">${formatCurrency(datosCategoria.precio_kilo_sum.toFixed(0))}</td>
-                        <td class="number">${formatCurrency(precioKilo)}</td>
+                        <td class="number">${formatInteger(datosCategoria.precio_kilo_sum.toFixed(0))}</td>
+                        <td class="number">${formatInteger(precioKilo)}</td>
                     </tr>
                 `;
 
@@ -2800,8 +2812,8 @@
                     <td>Total ${variedad}</td>
                     <td></td>
                     <td class="number">${formatInteger(totalVariedad.total_kilos.toFixed(0))}</td>
-                    <td class="number">$ ${formatCurrency(totalVariedad.precio_total.toFixed(0))}</td>
-                    <td class="number">$ ${formatCurrency(precioKiloVariedad)}</td>
+                    <td class="number">$ ${formatInteger(totalVariedad.precio_total.toFixed(0))}</td>
+                    <td class="number">$ ${formatInteger(precioKiloVariedad)}</td>
                 </tr>
             `;
                         });
@@ -2817,8 +2829,8 @@
                     <td></td>
                     <td></td>
                     <td class="number">${formatInteger(totalGeneral.total_kilos.toFixed(0))}</td>
-                    <td class="number">$ ${formatCurrency(totalGeneral.precio_total.toFixed(0))}</td>
-                    <td class="number">$ ${formatCurrency(precioKiloGeneral)}</td>
+                    <td class="number">$ ${formatInteger(totalGeneral.precio_total.toFixed(0))}</td>
+                    <td class="number">$ ${formatInteger(precioKiloGeneral)}</td>
                 </tr>
             </tbody>
         </table>
