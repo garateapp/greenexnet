@@ -2340,7 +2340,7 @@
                     // Objeto para agrupar por especie, variedad y etiqueta
                     let datosAgrupadosNorma = {};
                     let totalGeneralNorma = {
-                        cajas_equivalentes: 0,
+                        cajas: 0,
                         total_kilos: 0,
                         rnp_total: 0,
                         rnp_kilo_sum: 0,
