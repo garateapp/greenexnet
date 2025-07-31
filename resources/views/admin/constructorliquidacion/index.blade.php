@@ -2431,10 +2431,10 @@
                     <th>Etiqueta</th>
                     <th>Calibre</th>
                     <th>Curva Calibre</th>
-                    <th class="text-right">Casjas</th>
-                    <th class="text-center">Kilos Totales</th>
-                    <th class="text-right">RNP Total</th>
-                    <th class="text-right">RNP Kilo</th>
+                    <th>Cajas</th>
+                    <th>Kilos Totales</th>
+                    <th>RNP Total</th>
+                    <th>RNP Kilo</th>
                 </tr>
             </thead>
             <tbody>
