@@ -764,7 +764,7 @@
                                             costo_comercial: 0,
                                             precio_comercial: 0
                                         },
-                                        'COMERCIAL HUERTO': {
+                                        'COMERCIALHUERTO': {
                                             resultado_kilo: 0,
                                             resultado_total: 0,
                                             total_comercial: 0,
@@ -940,7 +940,7 @@
                                             minimumFractionDigits: 2,
                                             maximumFractionDigits: 2
                                         });
-
+                                         valorTotalAnticipos = valorTotalAnticipos + interesanticipo;
                                         $("#interesanticipo").text(
                                             interesanticipo.toLocaleString('es-CL', {
                                                 minimumFractionDigits: 2,
