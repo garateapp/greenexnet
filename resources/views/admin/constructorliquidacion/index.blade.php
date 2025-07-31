@@ -852,8 +852,7 @@
                                             sumasPorCategoria['COMERCIAL'].costo_comercial) +
                                         parseFloat(sumasPorCategoria['SOBRECALIBRE']
                                             .costo_comercial)+
-                                        parseFloat(sumasPorCategoria['COMERCIAL HUERTO']
-                                        .costo_comercial);
+                                        parseFloat(sumasPorCategoria['COMERCIAL HUERTO'].costo_comercial);
                                     $("#valorNoExportable").text(valorNoExportable
                                         .toLocaleString(
                                             'es-CL', {
