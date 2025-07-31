@@ -824,7 +824,7 @@
                                         }
                                     });
 
-
+                                    //Se agrega COMERCIALHUERTO
                                     $.each(sumasPorCategoria, function(categoria, sumas) {
                                         console.log(
                                             `Categoría: ${categoria}, Resultado Kilo: ${sumas.resultado_kilo}, Resultado Total: ${sumas.resultado_total}, Total Comercial: ${sumas.total_comercial}, Total Kilos: ${sumas.total_kilos}, Costo Comercial: ${sumas.costo_comercial}`
@@ -859,6 +859,7 @@
                                                 minimumFractionDigits: 2,
                                                 maximumFractionDigits: 2
                                             }));
+
                                     kilosNoExportable = parseFloat(sumasPorCategoria['MERMA']
                                             .total_kilos) +
                                         parseFloat(sumasPorCategoria['DESECHO'].total_kilos) +
@@ -867,7 +868,9 @@
                                         parseFloat(
                                             sumasPorCategoria['COMERCIAL'].total_kilos) +
                                         parseFloat(sumasPorCategoria['SOBRECALIBRE']
-                                            .total_kilos);
+                                            .total_kilos)+
+                                        parseFloat(sumasPorCategoria['COMERCIALHUERTO'].total_kilos);
+
                                     $("#kilosNoExportable").text(kilosNoExportable
                                         .toLocaleString(
                                             'es-CL', {
