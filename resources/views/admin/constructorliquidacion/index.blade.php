@@ -296,7 +296,7 @@
                                                 <!-- Nota de Débito y Factura -->
                                                 <tr>
                                                     <td colspan="4">&nbsp;</td>
-                                                    <td colspan="2" id="fecha_tipo_cambio">TC 30-07-2025</td>
+                                                    <td colspan="2" id="fecha_tipo_cambio">TC 31-07-2025</td>
                                                     <td colspan="1">$</td>
                                                     <td class="currency" id="TCValor"></td>
                                                 </tr>
@@ -2558,7 +2558,7 @@
                                     (datosEtiqueta.rnp_kilo_sum / datosEtiqueta
                                         .rnp_kilo_kilos)
                                     .toFixed(4) : '0.0000';
-                                let cajasEtiqueta = (datosEtiqueta.total_kilos / 9).toFixed(
+                                let cajasEtiqueta = (datosEtiqueta.cajas_equivalentes).toFixed(
                                     0);
                                 let rnpClassEtiqueta = datosEtiqueta.rnp_total < 0 ||
                                     parseFloat(rnpKiloEtiqueta) < 0 ? 'negative' : '';
