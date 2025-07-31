@@ -2541,7 +2541,7 @@
                                     // Acumular totales por etiqueta
 
                                     // Acumular totales
-                                    totalVariedad.cajas_equivalentes += parseFloat(
+                                    totalVariedad.cajas += parseFloat(
                                         cajasEquivalentes);
                                     totalVariedad.total_kilos += datosCalibre
                                         .total_kilos;
@@ -2594,7 +2594,7 @@
                     <td></td>
                     <td></td>
                     <td class="number">1.0000</td>
-                    <td class="number">${formatInteger(totalVariedad.cajas_equivalentes.toFixed(0))}</td>
+                    <td class="number">${formatInteger(totalVariedad.cajas)}</td>
                     <td class="number">${formatInteger(totalVariedad.total_kilos.toFixed(0))}</td>
                     <td class="number ${rnpClassVariedad}">US$ ${formatCurrency(totalVariedad.rnp_total.toFixed(2))}</td>
                     <td class="number ${rnpClassVariedad}">US$ ${formatCurrency(totalVariedad.rnp_total.toFixed(2)/totalVariedad.total_kilos.toFixed(0))}</td>
