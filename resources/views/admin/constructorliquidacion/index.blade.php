@@ -2367,6 +2367,7 @@
 
 
 
+
                             if (!datosAgrupadosNorma[especie]) {
                                 datosAgrupadosNorma[especie] = {};
                             }
@@ -2379,14 +2380,16 @@
                                     total_kilos: 0,
                                     rnp_total: 0,
                                     rnp_kilo_sum: 0,
-                                    rnp_kilo_kilos: 0
+                                    rnp_kilo_kilos: 0,
+                                    cajas:0
                                 };
                             }
                             if (!datosAgrupadosNorma[especie][variedad][etiqueta].calibres[calibre]) {
                                 datosAgrupadosNorma[especie][variedad][etiqueta].calibres[calibre] = {
                                     total_kilos: 0,
                                     rnp_total: 0,
-                                    rnp_kilo: 0
+                                    rnp_kilo: 0,
+                                    cajas:0
                                 };
                             }
 
@@ -2403,6 +2406,7 @@
                             datosAgrupadosNorma[especie][variedad][etiqueta].rnp_kilo_sum += rnpKilo *
                                 totalKilos;
                             datosAgrupadosNorma[especie][variedad][etiqueta].rnp_kilo_kilos += totalKilos;
+                            datosAgrupadosNorma[especie][variedad][etiqueta].cajas += cajas;
 
                         }
                     });
