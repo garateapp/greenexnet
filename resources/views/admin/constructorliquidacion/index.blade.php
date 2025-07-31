@@ -764,6 +764,14 @@
                                             costo_comercial: 0,
                                             precio_comercial: 0
                                         }
+                                        'COMERCIAL HUERTO': {
+                                            resultado_kilo: 0,
+                                            resultado_total: 0,
+                                            total_comercial: 0,
+                                            total_kilos: 0,
+                                            costo_comercial: 0,
+                                            precio_comercial: 0
+                                        }
 
                                     };
 
@@ -843,7 +851,9 @@
                                         parseFloat(
                                             sumasPorCategoria['COMERCIAL'].costo_comercial) +
                                         parseFloat(sumasPorCategoria['SOBRECALIBRE']
-                                            .costo_comercial);
+                                            .costo_comercial)+
+                                        parseFloat(sumasPorCategoria['COMERCIAL HUERTO']
+                                        .costo_comercial);
                                     $("#valorNoExportable").text(valorNoExportable
                                         .toLocaleString(
                                             'es-CL', {
@@ -942,9 +952,9 @@
                                         interesanticipo = 0;
                                     }
                                     //sumamos los intereses
-                                    if(isNaN(parseFloat($("#interesanticipo").text()))){
-                                        interesanticipo = 0;
-                                    }
+                                    // if(isNaN(parseFloat($("#interesanticipo").text()))){
+                                    //     interesanticipo = 0;
+                                    // }
                                     valorTotalAnticipos = valorTotalAnticipos + interesanticipo;
 
                                     if (response.anticipos.length > 0) {
