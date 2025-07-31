@@ -169,4 +169,13 @@ class ProcesoController extends Controller
 
         return response(null, Response::HTTP_NO_CONTENT);
     }
+
+    public function deleteAll()
+    {
+        abort_if(Gate::denies('proceso_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        Proceso::truncate();
+
+        return back();
+    }
 }

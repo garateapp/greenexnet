@@ -608,6 +608,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::delete('procesos/destroy', 'ProcesoController@massDestroy')->name('procesos.massDestroy');
     Route::post('procesos/parse-csv-import', 'ProcesoController@parseCsvImport')->name('procesos.parseCsvImport');
     Route::post('procesos/process-csv-import', 'ProcesoController@processCsvImport')->name('procesos.processCsvImport');
+    Route::delete('procesos/deleteAll', 'ProcesoController@deleteAll')->name('procesos.deleteAll');
     Route::resource('procesos', 'ProcesoController');
 
      // Analisis

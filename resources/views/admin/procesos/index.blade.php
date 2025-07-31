@@ -9,6 +9,9 @@
             <button class="btn btn-warning" data-toggle="modal" data-target="#csvImportModal">
                 {{ trans('global.app_csvImport') }}
             </button>
+            <button class="btn btn-danger" id="deleteAllButton">
+                Eliminar Todos
+            </button>
             @include('csvImport.modal', ['model' => 'Proceso', 'route' => 'admin.procesos.parseCsvImport'])
         </div>
     </div>
@@ -249,6 +252,19 @@ table.on('column-visibility.dt', function(e, settings, column, state) {
           visibleColumnsIndexes.push(colIdx);
       });
   })
+
+  $('#deleteAllButton').on('click', function() {
+    if (confirm('{{ trans('global.areYouSure') }}')) {
+        $.ajax({
+            headers: {'x-csrf-token': _token},
+            method: 'POST',
+            url: "{{ route('admin.procesos.deleteAll') }}",
+            data: { _method: 'DELETE' }
+        }).done(function () {
+            location.reload();
+        });
+    }
+  });
 });
 
 </script>
