@@ -984,6 +984,7 @@
                                         }
                                     } else {
                                         $("#trBonifGastoNoExportable").hide();
+                                        $("#bonificacionGastoNoExportable").text("0");
                                     }
                                     $("#valorTotalUsd").text((valorTotal + bonificacionFNE)
                                         .toLocaleString(
@@ -1238,7 +1239,7 @@
                         <th>Variedad</th>
                         <th>Categoría</th>
                         <th>Norma</th>
-                        <th>Cajas Equivalentes</th>
+                        <th>Cajas</th>
                         <th>Kilos Totales</th>
                     </tr>
                 </thead>
@@ -1292,8 +1293,7 @@
                                                     fila) {
                                                     let cajasEquivalentes =
                                                         (fila
-                                                            .total_kilos /
-                                                            9)
+                                                            .cajas)
                                                         .toFixed(1);
                                                     let variedadCell =
                                                         (
@@ -2418,7 +2418,7 @@
                     <th>Etiqueta</th>
                     <th>Calibre</th>
                     <th>Curva Calibre</th>
-                    <th>Cajas Equivalentes</th>
+                    <th>Cajas</th>
                     <th>Kilos Totales</th>
                     <th>RNP Total</th>
                     <th>RNP Kilo</th>
@@ -2477,7 +2477,7 @@
                                     curvaCalibre = (curvaCalibre * 100);
                                     curvaCalibre = curvaCalibre + ' %';
                                     let cajasEquivalentes = (datosCalibre
-                                        .total_kilos /
+                                        .cajas /
                                         9).toFixed(0);
 
                                     let rnpKilo = datosCalibre.rnp_kilo.toFixed(2);
