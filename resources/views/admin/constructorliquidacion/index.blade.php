@@ -2651,7 +2651,7 @@
 
 
                 function llenarComercial(response) {
-                    const categoriasPermitidas = ['Comercial', 'Pre Calibre', 'Desecho', 'Merma', 'Sobre Calibre'];
+                    const categoriasPermitidas = ['Comercial', 'Pre Calibre', 'Desecho', 'Merma', 'Sobre Calibre','Comercial Huerto'];
 
                     // Objeto para agrupar por especie, variedad y categoría
                     let datosAgrupados = {};
