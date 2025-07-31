@@ -88,7 +88,7 @@
                     </div>
                     <div class="form-group">
                         <label for="TC">Valor USD</label>
-                        <input type="text" class="form-control" id="TC" name="TC" value="970.09"
+                        <input type="text" class="form-control" id="TC" name="TC" value="978.07"
                             placeholder="Ingrese el valor del USD" required>
                     </div>
                     <div class="row">
