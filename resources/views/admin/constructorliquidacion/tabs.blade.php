@@ -76,6 +76,9 @@ tfoot {
             max-width: 100%;
             height: auto;
         }
+                .currency {
+            text-align: right;
+        }
         .pdf-footer {
         position: fixed;
         bottom: 15mm;
@@ -105,7 +108,7 @@ tfoot {
             {!! $tab['html'] !!}
             </div>
              <!-- Footer fijo -->
-        
+
             <!-- Footer visible solo en PDF -->
             {{-- <div style="position: fixed; bottom: 5mm; left: 10mm; right: 10mm; text-align: center;">
         <img src="{{ $footer_path }}" alt="Footer" style="max-height: 25mm; width: auto;">
