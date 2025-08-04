@@ -158,7 +158,6 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
 
                 // Total por etiqueta
                 $rnpKiloEtiqueta = $totalEtiqueta['rnp_kilo_kilos'] ? ($totalEtiqueta['rnp_kilo_sum'] / $totalEtiqueta['rnp_kilo_kilos']) : 0;
-                $totalEtiqueta['cajas_equivalentes'] = round($totalEtiqueta['total_kilos'] / 9); // Assuming 9 kilos per box for total
                 $formattedData->push([
                     'Especie'=>'',
                     'Variedad' => '',
@@ -188,7 +187,7 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
                 'Calibre' => '',
                 'Color' => '',
                 'Curva Calibre' => '',
-                'Cajas' => round($totalVariedad['cajas_equivalentes']),
+                'Cajas' => $totalVariedad['cajas_equivalentes'],
                 'Kilos Totales' => number_format($totalVariedad['total_kilos'], 2, ',', '.'),
                 'RNP Total' => number_format($totalVariedad['rnp_total'], 2, ',', '.'),
                 'RNP Kilo' => number_format($rnpKiloVariedad, 4, ',', '.'),
@@ -210,7 +209,7 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
             'Calibre' => '',
             'Color' => '',
             'Curva Calibre' => '',
-            'Cajas' => round($totalEspecie['cajas_equivalentes']),
+            'Cajas' => $totalEspecie['cajas_equivalentes'],
             'Kilos Totales' => number_format($totalEspecie['total_kilos'], 2, ',', '.'),
             'RNP Total' => number_format($totalEspecie['rnp_total'], 2, ',', '.'),
             'RNP Kilo' => number_format($rnpKiloEspecie, 4, ',', '.'),
@@ -232,7 +231,7 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
             'Calibre' => '',
             'Color' => '',
             'Curva Calibre' => '',
-            'Cajas' => round($totalGeneral['cajas_equivalentes']),
+            'Cajas' => $totalGeneral['cajas_equivalentes'],
             'Kilos Totales' => number_format($totalGeneral['total_kilos'], 2, ',', '.'),
             'RNP Total' => number_format($totalGeneral['rnp_total'], 2, ',', '.'),
             'RNP Kilo' => number_format($rnpKiloGeneral, 4, ',', '.'),
