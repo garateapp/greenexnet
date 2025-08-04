@@ -161,12 +161,14 @@ public function exportNormaExcel(Request $request)
     $data = Proceso::where('productor_id', $productorId)
         ->where('temporada', $temporada)
         ->whereIn('especie_id', $especieIds)
-        ->where(function($query) {
-            $query->where('norma', 'CAT 1')
-                  ->orWhere('norma', 'CAT 2');
-        })
         ->with('especie')
         ->get();
+
+    // Filtrar los datos para incluir solo 'CAT 1' o 'CAT 2' (ignorando mayúsculas/minúsculas y espacios)
+    $data = $data->filter(function ($item) {
+        $norma = strtoupper(trim($item->norma));
+        return $norma === 'CAT 1' || $norma === 'CAT 2';
+    });
 
     $productor = Productor::where('id', $productorId)->first();
     $fileName = 'Liquidacion-' . $productor->nombre . '-Norma-' . now()->format('Y-m-d') . '.xlsx';
