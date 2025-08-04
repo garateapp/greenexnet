@@ -158,6 +158,11 @@ public function exportNormaExcel(Request $request)
     $temporada = $request->input('temporada');
     $especieIds = $request->input('especie_id');
 
+    // Si especie_id es [null] o está vacío, usar los valores por defecto [4, 5, 6]
+    if (empty($especieIds) || (count($especieIds) === 1 && is_null($especieIds[0]))) {
+        $especieIds = [4, 5, 6];
+    }
+
     Log::info('Input para exportNormaExcel:', [
         'productor_id' => $productorId,
         'temporada' => $temporada,
