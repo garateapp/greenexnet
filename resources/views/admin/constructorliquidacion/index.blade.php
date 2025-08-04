@@ -101,6 +101,9 @@
 
                             <button id="downloadPdf" class="btn btn-success">Descargar PDF</button>
                         </div>
+                        <div class="col-md-1">
+                            <button id="downloadExcelNorma" class="btn btn-success">Descargar Excel (Norma)</button>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-md-12">
@@ -512,6 +515,63 @@
 
                     generatePdf_pdf();
                 });
+
+                $('#downloadExcelNorma').on('click', function() {
+                    generateExcelNorma();
+                });
+
+                function generateExcelNorma() {
+                    var productor_id = $('#productor_id').val();
+                    var temporada = $('#temporada').val();
+                    var especie_id = $('#especie_id').val();
+
+                    if (productor_id && temporada && especie_id && productor_id !== "" && temporada !== "" && especie_id !== "") {
+                        $.ajax({
+                            url: "{{ route('admin.constructorliquidacion.exportNormaExcel') }}",
+                            method: "POST",
+                            data: {
+                                _token: $('meta[name="csrf-token"]').attr('content'),
+                                productor_id: productor_id,
+                                temporada: temporada,
+                                especie_id: especie_id
+                            },
+                            xhrFields: {
+                                responseType: 'blob'
+                            },
+                            success: function(response, status, xhr) {
+                                const disposition = xhr.getResponseHeader('Content-Disposition');
+                                let filename = 'Norma.xlsx';
+
+                                if (disposition && disposition.indexOf('filename=') !== -1) {
+                                    const filenameRegex = new RegExp('filename="?([^"]+)"?', 'i');
+                                    const matches = filenameRegex.exec(disposition);
+                                    if (matches && matches[1]) {
+                                        filename = matches[1];
+                                    }
+                                }
+
+                                const link = document.createElement('a');
+                                const blob = new Blob([response], {
+                                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                                });
+                                link.href = window.URL.createObjectURL(blob);
+                                link.download = filename;
+                                link.click();
+                                window.URL.revokeObjectURL(link.href);
+                            },
+                            error: function(xhr, status, error) {
+                                Swal.fire('Error', 'No se pudo generar el Excel de Norma.', 'error');
+                                console.error(error);
+                            }
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Por favor, seleccione Productor, Temporada y Especie.',
+                        });
+                    }
+                }
 
                 //Generación de PDF
                 // Función principal para generar el PDF

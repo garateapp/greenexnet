@@ -441,6 +441,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::delete('base-contactos/destroy', 'BaseContactoController@massDestroy')->name('base-contactos.massDestroy');
     Route::post('base-contactos/parse-csv-import', 'BaseContactoController@parseCsvImport')->name('base-contactos.parseCsvImport');
     Route::post('base-contactos/process-csv-import', 'BaseContactoController@processCsvImport')->name('base-contactos.processCsvImport');
+    Route::post('base-contactos/update-inline', 'BaseContactoController@updateInline')->name('base-contactos.updateInline');
     Route::resource('base-contactos', 'BaseContactoController');
 
     // Agente Aduana
@@ -630,6 +631,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
 
 Route::post('constructorliquidacion/getProcesos', 'ConstructorLiquidacionController@getProcesos')->name('constructorliquidacion.getProcesos');
 Route::post('constructorliquidacion/generatepdf', 'ConstructorLiquidacionController@generatepdf')->name('constructorliquidacion.generatepdf');
+Route::post('constructorliquidacion/exportNormaExcel', 'ConstructorLiquidacionController@exportNormaExcel')->name('constructorliquidacion.exportNormaExcel');
     //Route::post('constructorliquidacion/getProcesos', 'ConstructorLiquidacionController@getProcesos')->name('constructorliquidacion.getProcesos');
     Route::get('constructorliquidacion/selector', 'ConstructorLiquidacionController@selector')->name('constructorliquidacion.selector');
 
@@ -671,6 +673,10 @@ Route::post('constructorliquidacion/generatepdf', 'ConstructorLiquidacionControl
     Route::post('otroscargos/parse-csv-import', 'OtroscargoController@parseCsvImport')->name('otroscargos.parseCsvImport');
     Route::post('otroscargos/process-csv-import', 'OtroscargoController@processCsvImport')->name('otroscargos.processCsvImport');
     Route::resource('otroscargos', 'OtroscargoController');
+
+    // Also Notify
+    Route::delete('also-notifies/destroy', 'AlsoNotifyController@massDestroy')->name('also-notifies.massDestroy');
+    Route::resource('also-notifies', 'AlsoNotifyController');
 
 
     Route::get('messenger', 'MessengerController@index')->name('messenger.index');

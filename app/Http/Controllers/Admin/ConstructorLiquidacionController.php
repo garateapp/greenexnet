@@ -45,6 +45,7 @@ use App\Models\Especy;
 
 //use Barryvdh\DomPDF\Facade\Pdf;
 use Knp\Snappy\Pdf;
+use App\Exports\NormaExport;
 class ConstructorLiquidacionController extends Controller
 {
 use CsvImportTrait;
@@ -143,6 +144,34 @@ use CsvImportTrait;
         'no-stop-slow-scripts' => true
     ]))->header('Content-Type', 'application/pdf')
       ->header('Content-Disposition', 'inline; filename="Liquidacion-' .$productor->nombre.'-Carozos2425-'.now()->format('Y-m-d') . '.pdf"');
+}
+
+public function exportNormaExcel(Request $request)
+{
+    $request->validate([
+        'productor_id' => 'required',
+        'temporada' => 'required',
+        'especie_id' => 'required|array',
+    ]);
+
+    $productorId = $request->input('productor_id');
+    $temporada = $request->input('temporada');
+    $especieIds = $request->input('especie_id');
+
+    $data = Proceso::where('productor_id', $productorId)
+        ->where('temporada', $temporada)
+        ->whereIn('especie_id', $especieIds)
+        ->where(function($query) {
+            $query->where('norma', 'CAT 1')
+                  ->orWhere('norma', 'CAT 2');
+        })
+        ->with('especie')
+        ->get();
+
+    $productor = Productor::where('id', $productorId)->first();
+    $fileName = 'Liquidacion-' . $productor->nombre . '-Norma-' . now()->format('Y-m-d') . '.xlsx';
+
+    return Excel::download(new NormaExport($data, $productor->nombre), $fileName);
 }
 
 }
