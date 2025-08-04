@@ -158,6 +158,12 @@ public function exportNormaExcel(Request $request)
     $temporada = $request->input('temporada');
     $especieIds = $request->input('especie_id');
 
+    Log::info('Input para exportNormaExcel:', [
+        'productor_id' => $productorId,
+        'temporada' => $temporada,
+        'especie_id' => $especieIds,
+    ]);
+
     $data = Proceso::where('productor_id', $productorId)
         ->where('temporada', $temporada)
         ->whereIn('especie_id', $especieIds)
