@@ -177,7 +177,7 @@ public function exportNormaExcel(Request $request)
 
     // Filtrar los datos para incluir solo 'CAT 1' o 'CAT 2' (ignorando mayúsculas/minúsculas y espacios)
     $data = $data->filter(function ($item) {
-        $norma = strtoupper(trim($item->norma));
+        $norma = strtoupper(trim($item->categoria));
         return $norma === 'CAT 1' || $norma === 'CAT 2';
     });
 
