@@ -44,7 +44,7 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
                 $color = $item->color ?: '';
                 $totalKilos = (float)str_replace(',', '.', $item->total_kilos) ?: 0;
                 $rnpTotal = (float)str_replace(',', '.', $item->resultado_total) ?: 0;
-                $rnpKilo = (float)str_replace(',', '.', $item->resultado_kilo) ?: 0;
+                $rnpKilo = $rnpTotal / $totalKilos; //(float)str_replace(',', '.', $item->resultado_total) ?: 0;
 
                 // Nueva agrupación: especie -> variedad -> etiqueta -> calibre
                 if (!isset($datosAgrupados[$especie])) $datosAgrupados[$especie] = [];
