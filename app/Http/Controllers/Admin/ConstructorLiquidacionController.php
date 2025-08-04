@@ -171,6 +171,8 @@ public function exportNormaExcel(Request $request)
     $productor = Productor::where('id', $productorId)->first();
     $fileName = 'Liquidacion-' . $productor->nombre . '-Norma-' . now()->format('Y-m-d') . '.xlsx';
 
+    Log::info('Datos para NormaExport:', ['data' => $data->toArray()]);
+
     return Excel::download(new NormaExport($data, $productor->nombre), $fileName);
 }
 
