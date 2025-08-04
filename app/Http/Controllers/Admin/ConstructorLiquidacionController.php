@@ -170,7 +170,7 @@ public function exportNormaExcel(Request $request)
     ]);
 
     $data = Proceso::where('productor_id', $productorId)
-        ->where('temporada', $temporada)
+        //->where('temporada', $temporada)
         ->whereIn('especie_id', $especieIds)
         ->with('especie')
         ->get();
