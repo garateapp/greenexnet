@@ -117,14 +117,6 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
                 sort($etiquetas);
 
                 foreach ($etiquetas as $etiqueta) {
-                     $totalEtiqueta = [
-                    'cajas_equivalentes' => 0,
-                    'total_kilos' => 0,
-                    'rnp_total' => 0,
-                    'rnp_kilo_sum' => 0,
-                    'rnp_kilo_kilos' => 0
-                ];
-
                     $datosEtiqueta = $datosAgrupados[$especie][$variedad][$etiqueta];
                     $calibres = array_keys($datosEtiqueta['calibres']);
                     usort($calibres, function($a, $b) use ($ordenCalibres) {
@@ -222,7 +214,7 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
         $totalGeneral['rnp_total'] += $totalEspecie['rnp_total'];
         $totalGeneral['rnp_kilo_sum'] += $totalEspecie['rnp_kilo_sum'];
         $totalGeneral['rnp_kilo_kilos'] += $totalEspecie['rnp_kilo_kilos'];
-
+    }
 
     // Total general
     $rnpKiloGeneral = $totalGeneral['rnp_kilo_kilos'] ? ($totalGeneral['rnp_kilo_sum'] / $totalGeneral['rnp_kilo_kilos']) : 0;
