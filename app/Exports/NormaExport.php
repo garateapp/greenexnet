@@ -214,22 +214,22 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
         $totalGeneral['rnp_total'] += $totalEspecie['rnp_total'];
         $totalGeneral['rnp_kilo_sum'] += $totalEspecie['rnp_kilo_sum'];
         $totalGeneral['rnp_kilo_kilos'] += $totalEspecie['rnp_kilo_kilos'];
-    }
+        }
 
-    // Total general
-    $rnpKiloGeneral = $totalGeneral['rnp_kilo_kilos'] ? ($totalGeneral['rnp_kilo_sum'] / $totalGeneral['rnp_kilo_kilos']) : 0;
-    $formattedData->push([
-        'Especie' => 'Total General',
-        'Variedad' => '',
-        'Etiqueta' => '',
-        'Calibre' => '',
-        'Color' => '',
-        'Curva Calibre' => '',
-        'Cajas' => round($totalGeneral['cajas_equivalentes']),
-        'Kilos Totales' => number_format($totalGeneral['total_kilos'], 2, ',', '.'),
-        'RNP Total' => number_format($totalGeneral['rnp_total'], 2, ',', '.'),
-        'RNP Kilo' => number_format($rnpKiloGeneral, 4, ',', '.'),
-    ]);
+        // Total general
+        $rnpKiloGeneral = $totalGeneral['rnp_kilo_kilos'] ? ($totalGeneral['rnp_kilo_sum'] / $totalGeneral['rnp_kilo_kilos']) : 0;
+        $formattedData->push([
+            'Especie' => 'Total General',
+            'Variedad' => '',
+            'Etiqueta' => '',
+            'Calibre' => '',
+            'Color' => '',
+            'Curva Calibre' => '',
+            'Cajas' => round($totalGeneral['cajas_equivalentes']),
+            'Kilos Totales' => number_format($totalGeneral['total_kilos'], 2, ',', '.'),
+            'RNP Total' => number_format($totalGeneral['rnp_total'], 2, ',', '.'),
+            'RNP Kilo' => number_format($rnpKiloGeneral, 4, ',', '.'),
+        ]);
 
         return $formattedData;
     }
