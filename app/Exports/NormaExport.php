@@ -25,24 +25,32 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
     {
         $formattedData = new Collection();
 
-        // Objeto para agrupar por variedad, etiqueta, semana y calibre
-        $datosAgrupados_v2 = [];
+        // Objeto para agrupar por especie, variedad, etiqueta y calibre
+        $datosAgrupados = [];
 
-        foreach ($this->data as $item_v2) {
-            if (strtoupper($item_v2->categoria) === 'CAT 1' || strtoupper($item_v2->categoria) === 'CAT 2') {
-                $variedad_v2 = $item_v2->variedad;
-                $etiqueta_v2 = $item_v2->etiqueta;
-                $semana_v2 = (string)$item_v2->eta_week;
-                $calibre_v2 = $item_v2->calibre;
-                $color_v2 = $item_v2->color ?: '';
-                $totalKilos_v2 = (float)str_replace(',', '.', $item_v2->total_kilos) ?: 0;
-                $rnpTotal_v2 = (float)str_replace(',', '.', $item_v2->resultado_total) ?: 0;
-                $rnpKilo_v2 = (float)str_replace(',', '.', $item_v2->resultado_kilo) ?: 0;
+        foreach ($this->data as $item) {
+            if (strtoupper($item->categoria) === 'CAT 1' || strtoupper($item->categoria) === 'CAT 2') {
+                // Conversión de nombre de especie
+                $especie = $item->especie->nombre;
+                switch(strtoupper($especie)) {
+                    case 'PLUMS': $especie = 'Ciruela'; break;
+                    case 'NECTARINES': $especie = 'Nectarin'; break;
+                    case 'PEACHES': $especie = 'Durazno'; break;
+                }
 
-                if (!isset($datosAgrupados_v2[$variedad_v2])) $datosAgrupados_v2[$variedad_v2] = [];
-                if (!isset($datosAgrupados_v2[$variedad_v2][$etiqueta_v2])) $datosAgrupados_v2[$variedad_v2][$etiqueta_v2] = [];
-                if (!isset($datosAgrupados_v2[$variedad_v2][$etiqueta_v2][$semana_v2])) {
-                    $datosAgrupados_v2[$variedad_v2][$etiqueta_v2][$semana_v2] = [
+                $variedad = $item->variedad;
+                $etiqueta = $item->etiqueta;
+                $calibre = $item->calibre;
+                $color = $item->color ?: '';
+                $totalKilos = (float)str_replace(',', '.', $item->total_kilos) ?: 0;
+                $rnpTotal = (float)str_replace(',', '.', $item->resultado_total) ?: 0;
+                $rnpKilo = (float)str_replace(',', '.', $item->resultado_kilo) ?: 0;
+
+                // Nueva agrupación: especie -> variedad -> etiqueta -> calibre
+                if (!isset($datosAgrupados[$especie])) $datosAgrupados[$especie] = [];
+                if (!isset($datosAgrupados[$especie][$variedad])) $datosAgrupados[$especie][$variedad] = [];
+                if (!isset($datosAgrupados[$especie][$variedad][$etiqueta])) {
+                    $datosAgrupados[$especie][$variedad][$etiqueta] = [
                         'calibres' => [],
                         'total_kilos' => 0,
                         'rnp_total' => 0,
@@ -50,28 +58,30 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
                         'rnp_kilo_kilos' => 0
                     ];
                 }
-                if (!isset($datosAgrupados_v2[$variedad_v2][$etiqueta_v2][$semana_v2]['calibres'][$calibre_v2])) {
-                    $datosAgrupados_v2[$variedad_v2][$etiqueta_v2][$semana_v2]['calibres'][$calibre_v2] = [
-                        'color' => $color_v2,
+                if (!isset($datosAgrupados[$especie][$variedad][$etiqueta]['calibres'][$calibre])) {
+                    $datosAgrupados[$especie][$variedad][$etiqueta]['calibres'][$calibre] = [
+                        'color' => $color,
                         'total_kilos' => 0,
                         'rnp_total' => 0,
                         'rnp_kilo' => 0
                     ];
                 }
 
-                $datosAgrupados_v2[$variedad_v2][$etiqueta_v2][$semana_v2]['calibres'][$calibre_v2]['total_kilos'] += $totalKilos_v2;
-                $datosAgrupados_v2[$variedad_v2][$etiqueta_v2][$semana_v2]['calibres'][$calibre_v2]['rnp_total'] += $rnpTotal_v2;
-                $datosAgrupados_v2[$variedad_v2][$etiqueta_v2][$semana_v2]['calibres'][$calibre_v2]['rnp_kilo'] += $rnpKilo_v2;
-                $datosAgrupados_v2[$variedad_v2][$etiqueta_v2][$semana_v2]['total_kilos'] += $totalKilos_v2;
-                $datosAgrupados_v2[$variedad_v2][$etiqueta_v2][$semana_v2]['rnp_total'] += $rnpTotal_v2;
-                $datosAgrupados_v2[$variedad_v2][$etiqueta_v2][$semana_v2]['rnp_kilo_sum'] += $rnpKilo_v2 * $totalKilos_v2;
-                $datosAgrupados_v2[$variedad_v2][$etiqueta_v2][$semana_v2]['rnp_kilo_kilos'] += $totalKilos_v2;
+                $datosAgrupados[$especie][$variedad][$etiqueta]['calibres'][$calibre]['total_kilos'] += $totalKilos;
+                $datosAgrupados[$especie][$variedad][$etiqueta]['calibres'][$calibre]['rnp_total'] += $rnpTotal;
+                $datosAgrupados[$especie][$variedad][$etiqueta]['calibres'][$calibre]['rnp_kilo'] += $rnpKilo;
+
+                // Acumular totales para la etiqueta actual
+                $datosAgrupados[$especie][$variedad][$etiqueta]['total_kilos'] += $totalKilos;
+                $datosAgrupados[$especie][$variedad][$etiqueta]['rnp_total'] += $rnpTotal;
+                $datosAgrupados[$especie][$variedad][$etiqueta]['rnp_kilo_sum'] += $rnpKilo * $totalKilos;
+                $datosAgrupados[$especie][$variedad][$etiqueta]['rnp_kilo_kilos'] += $totalKilos;
             }
         }
 
-        $ordenCalibres_v2 = ['7J', '6J', '5J', '4J', '3J', '2J', 'J', 'XL', 'L'];
+        $ordenCalibres = ['7J', '6J', '5J', '4J', '3J', '2J', 'J', 'XL', 'L'];
 
-        $totalGeneral_v2 = [
+        $totalGeneral = [
             'cajas_equivalentes' => 0,
             'total_kilos' => 0,
             'rnp_total' => 0,
@@ -79,122 +89,147 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
             'rnp_kilo_kilos' => 0
         ];
 
-        $variedades_v2 = array_keys($datosAgrupados_v2);
-        sort($variedades_v2);
+        $especies = array_keys($datosAgrupados);
+        sort($especies);
 
-        foreach ($variedades_v2 as $variedad_v2) {
-            $totalVariedad_v2 = [
+        foreach ($especies as $especie) {
+            $totalEspecie = [
                 'cajas_equivalentes' => 0,
                 'total_kilos' => 0,
                 'rnp_total' => 0,
                 'rnp_kilo_sum' => 0,
                 'rnp_kilo_kilos' => 0
             ];
-            $etiquetas_v2 = array_keys($datosAgrupados_v2[$variedad_v2]);
-            sort($etiquetas_v2);
 
-            foreach ($etiquetas_v2 as $etiqueta_v2) {
-                $totalEtiqueta_v2 = [
+            $variedades = array_keys($datosAgrupados[$especie]);
+            sort($variedades);
+
+            foreach ($variedades as $variedad) {
+                $totalVariedad = [
                     'cajas_equivalentes' => 0,
                     'total_kilos' => 0,
                     'rnp_total' => 0,
                     'rnp_kilo_sum' => 0,
                     'rnp_kilo_kilos' => 0
                 ];
-                $semanas_v2 = array_keys($datosAgrupados_v2[$variedad_v2][$etiqueta_v2]);
-                sort($semanas_v2, SORT_NUMERIC);
 
-                foreach ($semanas_v2 as $semana_v2) {
-                    $datosSemana_v2 = $datosAgrupados_v2[$variedad_v2][$etiqueta_v2][$semana_v2];
-                    $calibres_v2 = array_keys($datosSemana_v2['calibres']);
-                    usort($calibres_v2, function($a, $b) use ($ordenCalibres_v2) {
-                        return array_search($a, $ordenCalibres_v2) - array_search($b, $ordenCalibres_v2);
+                $etiquetas = array_keys($datosAgrupados[$especie][$variedad]);
+                sort($etiquetas);
+
+                foreach ($etiquetas as $etiqueta) {
+                    $datosEtiqueta = $datosAgrupados[$especie][$variedad][$etiqueta];
+                    $calibres = array_keys($datosEtiqueta['calibres']);
+                    usort($calibres, function($a, $b) use ($ordenCalibres) {
+                        return array_search($a, $ordenCalibres) - array_search($b, $ordenCalibres);
                     });
 
-                    foreach ($calibres_v2 as $calibre_v2) {
-                        $datosCalibre_v2 = $datosSemana_v2['calibres'][$calibre_v2];
-                        $curvaCalibre_v2 = $datosSemana_v2['total_kilos'] ? ($datosCalibre_v2['total_kilos'] / $datosSemana_v2['total_kilos']) : 0;
-                        $cajasEquivalentes_v2 = round($datosCalibre_v2['total_kilos'] / 5);
+                    foreach ($calibres as $calibre) {
+                        $datosCalibre = $datosEtiqueta['calibres'][$calibre];
+                        $curvaCalibre = $datosEtiqueta['total_kilos'] ? ($datosCalibre['total_kilos'] / $datosEtiqueta['total_kilos']) : 0;
+                        $cajasEquivalentes = round($datosCalibre['total_kilos'] / 5);
 
                         $formattedData->push([
-                            'Variedad' => $variedad_v2,
-                            'Etiqueta' => $etiqueta_v2,
-                            'Calibre' => $calibre_v2,
-                            'Color' => $datosCalibre_v2['color'],
-                            'Curva Calibre' => number_format($curvaCalibre_v2 * 100, 2) . ' %',
-                            'Cajas' => $cajasEquivalentes_v2,
-                            'Kilos Totales' => number_format($datosCalibre_v2['total_kilos'], 2, ',', '.'),
-                            'RNP Total' => number_format($datosCalibre_v2['rnp_total'], 2, ',', '.'),
-                            'RNP Kilo' => number_format($datosCalibre_v2['rnp_kilo'], 4, ',', '.'),
+                            'Especie' => $especie,
+                            'Variedad' => $variedad,
+                            'Etiqueta' => $etiqueta,
+                            'Calibre' => $calibre,
+                            'Color' => $datosCalibre['color'],
+                            'Curva Calibre' => number_format($curvaCalibre * 100, 2) . ' %',
+                            'Cajas' => $cajasEquivalentes,
+                            'Kilos Totales' => number_format($datosCalibre['total_kilos'], 2, ',', '.'),
+                            'RNP Total' => number_format($datosCalibre['rnp_total'], 2, ',', '.'),
+                            'RNP Kilo' => number_format($datosCalibre['rnp_kilo'], 4, ',', '.'),
                         ]);
 
-                        $totalEtiqueta_v2['cajas_equivalentes'] += $cajasEquivalentes_v2;
-                        $totalEtiqueta_v2['total_kilos'] += $datosCalibre_v2['total_kilos'];
-                        $totalEtiqueta_v2['rnp_total'] += $datosCalibre_v2['rnp_total'];
-                        $totalEtiqueta_v2['rnp_kilo_sum'] += $datosCalibre_v2['rnp_kilo'] * $datosCalibre_v2['total_kilos'];
-                        $totalEtiqueta_v2['rnp_kilo_kilos'] += $datosCalibre_v2['total_kilos'];
+                        $totalEtiqueta['cajas_equivalentes'] += $cajasEquivalentes;
+                        $totalEtiqueta['total_kilos'] += $datosCalibre['total_kilos'];
+                        $totalEtiqueta['rnp_total'] += $datosCalibre['rnp_total'];
+                        $totalEtiqueta['rnp_kilo_sum'] += $datosCalibre['rnp_kilo'] * $datosCalibre['total_kilos'];
+                        $totalEtiqueta['rnp_kilo_kilos'] += $datosCalibre['total_kilos'];
                     }
-
                 }
 
                 // Total por etiqueta
-                $rnpKiloEtiqueta_v2 = $totalEtiqueta_v2['rnp_kilo_kilos'] ? ($totalEtiqueta_v2['rnp_kilo_sum'] / $totalEtiqueta_v2['rnp_kilo_kilos']) : 0;
-                $totalEtiqueta_v2['cajas_equivalentes'] = round($totalEtiqueta_v2['total_kilos'] / 9);
+                $rnpKiloEtiqueta = $totalEtiqueta['rnp_kilo_kilos'] ? ($totalEtiqueta['rnp_kilo_sum'] / $totalEtiqueta['rnp_kilo_kilos']) : 0;
+                $totalEtiqueta['cajas_equivalentes'] = round($totalEtiqueta['total_kilos'] / 9);
                 $formattedData->push([
+                    'Especie'=>'',
                     'Variedad' => '',
-                    'Etiqueta' => 'Total ' . $etiqueta_v2,
+                    'Etiqueta' => 'Total ' . $etiqueta,
                     'Calibre' => '',
                     'Color' => '',
                     'Curva Calibre' => '100.00 %',
-                    'Cajas' => $totalEtiqueta_v2['cajas_equivalentes'],
-                    'Kilos Totales' => number_format($totalEtiqueta_v2['total_kilos'], 2, ',', '.'),
-                    'RNP Total' => number_format($totalEtiqueta_v2['rnp_total'], 2, ',', '.'),
-                    'RNP Kilo' => number_format($rnpKiloEtiqueta_v2, 4, ',', '.'),
+                    'Cajas' => $totalEtiqueta['cajas_equivalentes'],
+                    'Kilos Totales' => number_format($totalEtiqueta['total_kilos'], 2, ',', '.'),
+                    'RNP Total' => number_format($totalEtiqueta['rnp_total'], 2, ',', '.'),
+                    'RNP Kilo' => number_format($rnpKiloEtiqueta, 4, ',', '.'),
                 ]);
 
-                $totalVariedad_v2['cajas_equivalentes'] += $totalEtiqueta_v2['cajas_equivalentes'];
-                $totalVariedad_v2['total_kilos'] += $totalEtiqueta_v2['total_kilos'];
-                $totalVariedad_v2['rnp_total'] += $totalEtiqueta_v2['rnp_total'];
-                $totalVariedad_v2['rnp_kilo_sum'] += $totalEtiqueta_v2['rnp_kilo_sum'];
-                $totalVariedad_v2['rnp_kilo_kilos'] += $totalEtiqueta_v2['rnp_kilo_kilos'];
+                $totalVariedad['cajas_equivalentes'] += $totalEtiqueta['cajas_equivalentes'];
+                $totalVariedad['total_kilos'] += $totalEtiqueta['total_kilos'];
+                $totalVariedad['rnp_total'] += $totalEtiqueta['rnp_total'];
+                $totalVariedad['rnp_kilo_sum'] += $totalEtiqueta['rnp_kilo_sum'];
+                $totalVariedad['rnp_kilo_kilos'] += $totalEtiqueta['rnp_kilo_kilos'];
             }
 
             // Total por variedad
-            $rnpKiloVariedad_v2 = $totalVariedad_v2['rnp_kilo_kilos'] ? ($totalVariedad_v2['rnp_kilo_sum'] / $totalVariedad_v2['rnp_kilo_kilos']) : 0;
+            $rnpKiloVariedad = $totalVariedad['rnp_kilo_kilos'] ? ($totalVariedad['rnp_kilo_sum'] / $totalVariedad['rnp_kilo_kilos']) : 0;
             $formattedData->push([
-                'Variedad' => 'Total ' . $variedad_v2,
+                'Especie'=>'',
+                'Variedad' => 'Total ' . $variedad,
                 'Etiqueta' => '',
-                'Semana' => '',
                 'Calibre' => '',
                 'Color' => '',
                 'Curva Calibre' => '',
-                'Cajas' => round($totalVariedad_v2['cajas_equivalentes']),
-                'Kilos Totales' => number_format($totalVariedad_v2['total_kilos'], 2, ',', '.'),
-                'RNP Total' => number_format($totalVariedad_v2['rnp_total'], 2, ',', '.'),
-                'RNP Kilo' => number_format($rnpKiloVariedad_v2, 4, ',', '.'),
+                'Cajas' => round($totalVariedad['cajas_equivalentes']),
+                'Kilos Totales' => number_format($totalVariedad['total_kilos'], 2, ',', '.'),
+                'RNP Total' => number_format($totalVariedad['rnp_total'], 2, ',', '.'),
+                'RNP Kilo' => number_format($rnpKiloVariedad, 4, ',', '.'),
             ]);
 
-            $totalGeneral_v2['cajas_equivalentes'] += $totalVariedad_v2['cajas_equivalentes'];
-            $totalGeneral_v2['total_kilos'] += $totalVariedad_v2['total_kilos'];
-            $totalGeneral_v2['rnp_total'] += $totalVariedad_v2['rnp_total'];
-            $totalGeneral_v2['rnp_kilo_sum'] += $totalVariedad_v2['rnp_kilo_sum'];
-            $totalGeneral_v2['rnp_kilo_kilos'] += $totalVariedad_v2['rnp_kilo_kilos'];
+            $totalEspecie['cajas_equivalentes'] += $totalVariedad['cajas_equivalentes'];
+            $totalEspecie['total_kilos'] += $totalVariedad['total_kilos'];
+            $totalEspecie['rnp_total'] += $totalVariedad['rnp_total'];
+            $totalEspecie['rnp_kilo_sum'] += $totalVariedad['rnp_kilo_sum'];
+            $totalEspecie['rnp_kilo_kilos'] += $totalVariedad['rnp_kilo_kilo'];
         }
 
-        // Total general
-        $rnpKiloGeneral_v2 = $totalGeneral_v2['rnp_kilo_kilos'] ? ($totalGeneral_v2['rnp_kilo_sum'] / $totalGeneral_v2['rnp_kilo_kilos']) : 0;
+        // Total por especie
+        $rnpKiloEspecie = $totalEspecie['rnp_kilo_kilos'] ? ($totalEspecie['rnp_kilo_sum'] / $totalEspecie['rnp_kilo_kilos']) : 0;
         $formattedData->push([
-            'Variedad' => 'Total General',
+            'Especie' => 'Total ' . $especie,
+            'Variedad' => '',
             'Etiqueta' => '',
-            'Semana' => '',
             'Calibre' => '',
             'Color' => '',
             'Curva Calibre' => '',
-            'Cajas' => round($totalGeneral_v2['cajas_equivalentes']),
-            'Kilos Totales' => number_format($totalGeneral_v2['total_kilos'], 2, ',', '.'),
-            'RNP Total' => number_format($totalGeneral_v2['rnp_total'], 2, ',', '.'),
-            'RNP Kilo' => number_format($rnpKiloGeneral_v2, 4, ',', '.'),
+            'Cajas' => round($totalEspecie['cajas_equivalentes']),
+            'Kilos Totales' => number_format($totalEspecie['total_kilos'], 2, ',', '.'),
+            'RNP Total' => number_format($totalEspecie['rnp_total'], 2, ',', '.'),
+            'RNP Kilo' => number_format($rnpKiloEspecie, 4, ',', '.'),
         ]);
+
+        $totalGeneral['cajas_equivalentes'] += $totalEspecie['cajas_equivalentes'];
+        $totalGeneral['total_kilos'] += $totalEspecie['total_kilos'];
+        $totalGeneral['rnp_total'] += $totalEspecie['rnp_total'];
+        $totalGeneral['rnp_kilo_sum'] += $totalEspecie['rnp_kilo_sum'];
+        $totalGeneral['rnp_kilo_kilos'] += $totalEspecie['rnp_kilo_kilos'];
+    }
+
+    // Total general
+    $rnpKiloGeneral = $totalGeneral['rnp_kilo_kilos'] ? ($totalGeneral['rnp_kilo_sum'] / $totalGeneral['rnp_kilo_kilos']) : 0;
+    $formattedData->push([
+        'Especie' => 'Total General',
+        'Variedad' => '',
+        'Etiqueta' => '',
+        'Calibre' => '',
+        'Color' => '',
+        'Curva Calibre' => '',
+        'Cajas' => round($totalGeneral['cajas_equivalentes']),
+        'Kilos Totales' => number_format($totalGeneral['total_kilos'], 2, ',', '.'),
+        'RNP Total' => number_format($totalGeneral['rnp_total'], 2, ',', '.'),
+        'RNP Kilo' => number_format($rnpKiloGeneral, 4, ',', '.'),
+    ]);
 
         return $formattedData;
     }
@@ -202,6 +237,7 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
     public function headings(): array
     {
         return [
+            'Especie',
             'Variedad',
             'Etiqueta',
             'Calibre',
