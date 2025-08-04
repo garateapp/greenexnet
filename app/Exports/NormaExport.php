@@ -7,9 +7,10 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithCustomStartCell;
 use Maatwebsite\Excel\Events\BeforeSheet;
 
-class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAutoSize
+class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAutoSize, WithCustomStartCell
 {
     protected $data;
     protected $productorNombre;
@@ -231,6 +232,11 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
         ];
     }
 
+    public function startCell(): string
+    {
+        return 'A4';
+    }
+
     public function registerEvents(): array
     {
         return [
@@ -244,9 +250,6 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
                 $event->sheet->setCellValue('A2', 'Productor: ' . $this->productorNombre);
                 $event->sheet->getStyle('A2')->getFont()->setBold(true)->setSize(14);
                 $event->sheet->getStyle('A2')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-
-                // Insertar 3 filas vacías al principio para dejar espacio para los encabezados personalizados
-                $event->sheet->insertNewRowBefore(1, 3);
             },
         ];
     }
