@@ -119,7 +119,6 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
                         $formattedData->push([
                             'Variedad' => $variedad_v2,
                             'Etiqueta' => $etiqueta_v2,
-                            'Semana' => $semana_v2,
                             'Serie' => $calibre_v2,
                             'Color' => $datosCalibre_v2['color'],
                             'Curva Calibre' => number_format($curvaCalibre_v2 * 100, 2) . ' %',
@@ -136,21 +135,6 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
                         $totalEtiqueta_v2['rnp_kilo_kilos'] += $datosCalibre_v2['total_kilos'];
                     }
 
-                    // Total por semana
-                    $rnpKiloSemana_v2 = $datosSemana_v2['rnp_kilo_kilos'] ? ($datosSemana_v2['rnp_kilo_sum'] / $datosSemana_v2['rnp_kilo_kilos']) : 0;
-                    $cajasEquivalentesSemana_v2 = round($datosSemana_v2['total_kilos'] / 9);
-                    $formattedData->push([
-                        'Variedad' => '',
-                        'Etiqueta' => '',
-                        'Semana' => 'Total Semana ' . $semana_v2,
-                        'Serie' => '',
-                        'Color' => '',
-                        'Curva Calibre' => '100.00 %',
-                        'Cajas' => $cajasEquivalentesSemana_v2,
-                        'Kilos Totales' => number_format($datosSemana_v2['total_kilos'], 2, ',', '.'),
-                        'RNP Total' => number_format($datosSemana_v2['rnp_total'], 2, ',', '.'),
-                        'RNP Kilo' => number_format($rnpKiloSemana_v2, 4, ',', '.'),
-                    ]);
                 }
 
                 // Total por etiqueta
@@ -159,7 +143,6 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
                 $formattedData->push([
                     'Variedad' => '',
                     'Etiqueta' => 'Total ' . $etiqueta_v2,
-                    'Semana' => '',
                     'Serie' => '',
                     'Color' => '',
                     'Curva Calibre' => '100.00 %',
@@ -221,7 +204,6 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
         return [
             'Variedad',
             'Etiqueta',
-            'Semana',
             'Serie',
             'Color',
             'Curva Calibre',
@@ -241,12 +223,12 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
     {
         return [
             BeforeSheet::class => function(BeforeSheet $event) {
-                $event->sheet->mergeCells('A1:J1');
+                $event->sheet->mergeCells('A1:I1');
                 $event->sheet->setCellValue('A1', 'EXPORTACIÓN DENTRO DE NORMA');
                 $event->sheet->getStyle('A1')->getFont()->setBold(true)->setSize(16);
                 $event->sheet->getStyle('A1')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 
-                $event->sheet->mergeCells('A2:J2');
+                $event->sheet->mergeCells('A2:I2');
                 $event->sheet->setCellValue('A2', 'Productor: ' . $this->productorNombre);
                 $event->sheet->getStyle('A2')->getFont()->setBold(true)->setSize(14);
                 $event->sheet->getStyle('A2')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
