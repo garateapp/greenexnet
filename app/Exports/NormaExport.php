@@ -52,10 +52,10 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
                 if (!isset($datosAgrupados[$especie][$variedad][$etiqueta])) {
                     $datosAgrupados[$especie][$variedad][$etiqueta] = [
                         'calibres' => [],
-                        'total_kilos' => 0,
-                        'rnp_total' => 0,
-                        'rnp_kilo_sum' => 0,
-                        'rnp_kilo_kilos' => 0
+                        'total_kilos' => 0, // Total kilos for this etiqueta
+                        'rnp_total' => 0,   // Total RNP for this etiqueta
+                        'rnp_kilo_sum' => 0, // Sum of (rnp_kilo * total_kilos) for this etiqueta
+                        'rnp_kilo_kilos' => 0 // Sum of total_kilos for this etiqueta
                     ];
                 }
                 if (!isset($datosAgrupados[$especie][$variedad][$etiqueta]['calibres'][$calibre])) {
@@ -151,7 +151,7 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
 
                 // Total por etiqueta
                 $rnpKiloEtiqueta = $totalEtiqueta['rnp_kilo_kilos'] ? ($totalEtiqueta['rnp_kilo_sum'] / $totalEtiqueta['rnp_kilo_kilos']) : 0;
-                $totalEtiqueta['cajas_equivalentes'] = round($totalEtiqueta['total_kilos'] / 9);
+                $totalEtiqueta['cajas_equivalentes'] = round($totalEtiqueta['total_kilos'] / 9); // Assuming 9 kilos per box for total
                 $formattedData->push([
                     'Especie'=>'',
                     'Variedad' => '',
@@ -191,7 +191,7 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
             $totalEspecie['total_kilos'] += $totalVariedad['total_kilos'];
             $totalEspecie['rnp_total'] += $totalVariedad['rnp_total'];
             $totalEspecie['rnp_kilo_sum'] += $totalVariedad['rnp_kilo_sum'];
-            $totalEspecie['rnp_kilo_kilos'] += $totalVariedad['rnp_kilo_kilo'];
+            $totalEspecie['rnp_kilo_kilos'] += $totalVariedad['rnp_kilo_kilos'];
         }
 
         // Total por especie
