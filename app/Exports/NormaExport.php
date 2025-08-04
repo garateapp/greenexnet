@@ -28,7 +28,7 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
         $datosAgrupados_v2 = [];
 
         foreach ($this->data as $item_v2) {
-            if (strtoupper($item_v2->norma) === 'CAT 1' || strtoupper($item_v2->norma) === 'CAT 2') {
+            if (strtoupper($item_v2->categoria) === 'CAT 1' || strtoupper($item_v2->categoria) === 'CAT 2') {
                 $variedad_v2 = $item_v2->variedad;
                 $etiqueta_v2 = $item_v2->etiqueta;
                 $semana_v2 = (string)$item_v2->eta_week;

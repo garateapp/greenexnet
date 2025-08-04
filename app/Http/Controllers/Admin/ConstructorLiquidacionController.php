@@ -175,10 +175,10 @@ public function exportNormaExcel(Request $request)
         ->with('especie')
         ->get();
 
-    // Filtrar los datos para incluir solo 'CAT 1' o 'CAT 2' (ignorando mayúsculas/minúsculas y espacios)
+    // Filtrar los datos para incluir solo 'CAT 1' o 'CAT 2' (ignorando mayúsculas/minúsculas y espacios) en la categoría
     $data = $data->filter(function ($item) {
-        $norma = strtoupper(trim($item->categoria));
-        return $norma === 'CAT 1' || $norma === 'CAT 2';
+        $categoria = strtoupper(trim($item->categoria));
+        return $categoria === 'CAT 1' || $categoria === 'CAT 2';
     });
 
     $productor = Productor::where('id', $productorId)->first();
