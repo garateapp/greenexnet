@@ -214,7 +214,7 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
         $totalGeneral['rnp_total'] += $totalEspecie['rnp_total'];
         $totalGeneral['rnp_kilo_sum'] += $totalEspecie['rnp_kilo_sum'];
         $totalGeneral['rnp_kilo_kilos'] += $totalEspecie['rnp_kilo_kilos'];
-    }
+
 
     // Total general
     $rnpKiloGeneral = $totalGeneral['rnp_kilo_kilos'] ? ($totalGeneral['rnp_kilo_sum'] / $totalGeneral['rnp_kilo_kilos']) : 0;
