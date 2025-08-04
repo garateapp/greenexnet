@@ -58,8 +58,8 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
                         'rnp_kilo_kilos' => 0 // Sum of total_kilos for this etiqueta
                     ];
                 }
-                if (!isset($datosAgrupados[$especie][$variedad][$etiqueta][$calibre])) {
-                    $datosAgrupados[$especie][$variedad][$etiqueta][$calibre] = [
+                if (!isset($datosAgrupados[$especie][$variedad][$etiqueta]['calibres'][$calibre])) {
+                    $datosAgrupados[$especie][$variedad][$etiqueta]['calibres'][$calibre] = [
                         'color' => $color,
                         'total_kilos' => 0,
                         'rnp_total' => 0,
@@ -67,9 +67,9 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
                     ];
                 }
 
-                $datosAgrupados[$especie][$variedad][$etiqueta][$calibre]['total_kilos'] += $totalKilos;
-                $datosAgrupados[$especie][$variedad][$etiqueta][$calibre]['rnp_total'] += $rnpTotal;
-                $datosAgrupados[$especie][$variedad][$etiqueta][$calibre]['rnp_kilo'] += $rnpKilo;
+                $datosAgrupados[$especie][$variedad][$etiqueta]['calibres'][$calibre]['total_kilos'] += $totalKilos;
+                $datosAgrupados[$especie][$variedad][$etiqueta]['calibres'][$calibre]['rnp_total'] += $rnpTotal;
+                $datosAgrupados[$especie][$variedad][$etiqueta]['calibres'][$calibre]['rnp_kilo'] += $rnpKilo;
 
                 // Acumular totales para la etiqueta actual
                 $datosAgrupados[$especie][$variedad][$etiqueta]['total_kilos'] += $totalKilos;
@@ -129,7 +129,7 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
                     sort($calibres);
 
                     foreach ($calibres as $calibre) {
-                        $datosCalibre = $datosEtiqueta[$calibre];
+                        $datosCalibre = $datosEtiqueta['calibres'][$calibre];
                         $curvaCalibre = $datosEtiqueta['total_kilos'] ? ($datosCalibre['total_kilos'] / $datosEtiqueta['total_kilos']) : 0;
                         $cajasEquivalentes = round($datosCalibre['total_kilos'] / 5);
 
@@ -181,7 +181,7 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
                     }
 
                 }
-            }
+
 
             // Total por especie
             $rnpKiloEspecie = $totalEspecie['rnp_kilo_kilos'] ? ($totalEspecie['rnp_kilo_sum'] / $totalEspecie['rnp_kilo_kilos']) : 0;
@@ -203,7 +203,7 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
             $totalGeneral['rnp_total'] += $totalEspecie['rnp_total'];
             $totalGeneral['rnp_kilo_sum'] += $totalEspecie['rnp_kilo_sum'];
             $totalGeneral['rnp_kilo_kilos'] += $totalEspecie['rnp_kilo_kilos'];
-
+        }
 
 
         // Total general de la norma
