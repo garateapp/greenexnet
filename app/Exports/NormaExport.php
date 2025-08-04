@@ -126,9 +126,7 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
                     ];
                     $datosEtiqueta = $datosAgrupados[$especie][$variedad][$etiqueta];
                     $calibres = array_keys($datosEtiqueta['calibres']);
-                    usort($calibres, function($a, $b) use ($ordenCalibres) {
-                        return array_search($a, $ordenCalibres) - array_search($b, $ordenCalibres);
-                    });
+                    sort($calibres);
 
                     foreach ($calibres as $calibre) {
                         $datosCalibre = $datosEtiqueta['calibres'][$calibre];
