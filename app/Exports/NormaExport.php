@@ -214,9 +214,9 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
         $totalGeneral['rnp_total'] += $totalEspecie['rnp_total'];
         $totalGeneral['rnp_kilo_sum'] += $totalEspecie['rnp_kilo_sum'];
         $totalGeneral['rnp_kilo_kilos'] += $totalEspecie['rnp_kilo_kilos'];
-        }
 
-        // Total general
+
+        // Total general de la norma
         $rnpKiloGeneral = $totalGeneral['rnp_kilo_kilos'] ? ($totalGeneral['rnp_kilo_sum'] / $totalGeneral['rnp_kilo_kilos']) : 0;
         $formattedData->push([
             'Especie' => 'Total General',
@@ -232,6 +232,7 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
         ]);
 
         return $formattedData;
+
     }
 
     public function headings(): array
