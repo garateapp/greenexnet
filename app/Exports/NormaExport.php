@@ -260,12 +260,11 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
             'Variedad',
             'Etiqueta',
             'Calibre',
-
             'Curva Calibre',
             'Cajas',
             'Kilos Totales',
             'RNP Total',
-            'RNP Kilo',
+            'RNP Kilo'
         ];
     }
 
@@ -293,14 +292,14 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
 
     public function styles(Worksheet $sheet)
     {
-        $sheet->getStyle('A4:J4')->getFont()->setBold(true);
+        $sheet->getStyle('A4:I4')->getFont()->setBold(true);
 
         $lastRow = $sheet->getHighestRow();
 
         for ($row = 5; $row <= $lastRow; $row++) {
             $cellValue = $sheet->getCell('A' . $row)->getValue();
             if (strpos($cellValue, 'Total') !== false) {
-                $sheet->getStyle('A' . $row . ':J' . $row)->getFont()->setBold(true);
+                $sheet->getStyle('A' . $row . ':I' . $row)->getFont()->setBold(true);
             }
         }
 
@@ -313,6 +312,6 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
             ],
         ];
 
-        $sheet->getStyle('A4:J' . $lastRow)->applyFromArray($styleArray);
+        $sheet->getStyle('A4:I' . $lastRow)->applyFromArray($styleArray);
     }
 }
