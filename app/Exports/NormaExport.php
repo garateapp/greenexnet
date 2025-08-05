@@ -79,7 +79,7 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
                 }
 
                 // Acumular totales para la calibre actual
-                $datosAgrupados[$especie][$variedad][$etiqueta]['calibres'][$calibre]['total_cajas'] += $cajas;
+                $datosAgrupados[$especie][$variedad][$etiqueta]['calibres'][$calibre]['cajas'] += $cajas;
                 $datosAgrupados[$especie][$variedad][$etiqueta]['calibres'][$calibre]['total_kilos'] += $totalKilos;
                 $datosAgrupados[$especie][$variedad][$etiqueta]['calibres'][$calibre]['rnp_total'] += $rnpTotal;
                 $datosAgrupados[$especie][$variedad][$etiqueta]['calibres'][$calibre]['rnp_kilo_sum'] += $rnpKilo * $totalKilos;
