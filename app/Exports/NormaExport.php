@@ -10,8 +10,10 @@ use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithCustomStartCell;
 use Maatwebsite\Excel\Events\BeforeSheet;
 use Maatwebsite\Excel\Concerns\WithTitle;
+use Maatwebsite\Excel\Concerns\WithStyles;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAutoSize, WithCustomStartCell, WithTitle
+class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAutoSize, WithCustomStartCell, WithTitle, WithStyles
 {
     protected $data;
     protected $productorNombre;
@@ -284,5 +286,30 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
                 $event->sheet->getStyle('A2')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
             },
         ];
+    }
+
+    public function styles(Worksheet $sheet)
+    {
+        $sheet->getStyle('A4:J4')->getFont()->setBold(true);
+
+        $lastRow = $sheet->getHighestRow();
+
+        for ($row = 5; $row <= $lastRow; $row++) {
+            $cellValue = $sheet->getCell('A' . $row)->getValue();
+            if (strpos($cellValue, 'Total') !== false) {
+                $sheet->getStyle('A' . $row . ':J' . $row)->getFont()->setBold(true);
+            }
+        }
+
+        $styleArray = [
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    'color' => ['argb' => 'FF000000'],
+                ],
+            ],
+        ];
+
+        $sheet->getStyle('A4:J' . $lastRow)->applyFromArray($styleArray);
     }
 }
