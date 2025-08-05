@@ -40,9 +40,7 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
 
             if (strtoupper($item->categoria) === 'CAT 1' ||  strtoupper($item->categoria) === 'SUPER MERCADO' || strtoupper($item->categoria) === 'SUPERMERCADO') {
 
-                if(strtoupper($item->categoria) === 'SUPER MERCADO') {
-                    Log::info('Super Mercado: ' . $item->especie->nombre . ' ' . $item->variedad . ' ' . $item->etiqueta . ' ' . $item->calibre);
-                }
+
 
                 // Conversión de nombre de especie
                 $especie = $item->especie->nombre;
