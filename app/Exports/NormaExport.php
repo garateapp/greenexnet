@@ -61,6 +61,7 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
                 if (!isset($datosAgrupados[$especie][$variedad][$etiqueta])) {
                     $datosAgrupados[$especie][$variedad][$etiqueta] = [
                         'calibres' => [],
+                        'cajas' => 0,
                         'total_kilos' => 0, // Total kilos for this etiqueta
                         'rnp_total' => 0,   // Total RNP for this etiqueta
                         'rnp_kilo_sum' => 0, // Sum of (rnp_kilo * total_kilos) for this etiqueta
