@@ -176,7 +176,7 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
                         'Etiqueta' => 'Total ' . $etiqueta,
                         'Calibre' => '',
                         'Curva Calibre' => '100.00 %',
-                        'Cajas' => $totalEtiqueta['cajas'],
+                        'Cajas' => $totalEtiqueta['total_cajas'],
                         'Kilos Totales' => number_format($totalEtiqueta['total_kilos'], 2, ',', '.'),
                         'RNP Total' => number_format($totalEtiqueta['rnp_total'], 2, ',', '.'),
                         'RNP Kilo' => number_format($rnpKiloEtiqueta, 4, ',', '.'),
