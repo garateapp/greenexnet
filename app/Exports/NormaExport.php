@@ -182,14 +182,28 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
                     $totalVariedad['rnp_total'] += $totalEtiqueta['rnp_total'];
                     $totalVariedad['rnp_kilo_sum'] += $totalEtiqueta['rnp_kilo_sum'];
                     $totalVariedad['rnp_kilo_kilos'] += $totalEtiqueta['rnp_kilo_kilos'];
-
-
-
-
-
-                    }
-
                 }
+
+                $rnpKiloVariedad = $totalVariedad['rnp_kilo_kilos'] ? ($totalVariedad['rnp_kilo_sum'] / $totalVariedad['rnp_kilo_kilos']) : 0;
+                $formattedData->push([
+                    'Especie' => '',
+                    'Variedad' => 'Total ' . $variedad,
+                    'Etiqueta' => '',
+                    'Calibre' => '',
+                    'Color' => '',
+                    'Curva Calibre' => '',
+                    'Cajas' => $totalVariedad['cajas_equivalentes'],
+                    'Kilos Totales' => number_format($totalVariedad['total_kilos'], 2, ',', '.'),
+                    'RNP Total' => number_format($totalVariedad['rnp_total'], 2, ',', '.'),
+                    'RNP Kilo' => number_format($rnpKiloVariedad, 4, ',', '.'),
+                ]);
+
+                $totalEspecie['cajas_equivalentes'] += $totalVariedad['cajas_equivalentes'];
+                $totalEspecie['total_kilos'] += $totalVariedad['total_kilos'];
+                $totalEspecie['rnp_total'] += $totalVariedad['rnp_total'];
+                $totalEspecie['rnp_kilo_sum'] += $totalVariedad['rnp_kilo_sum'];
+                $totalEspecie['rnp_kilo_kilos'] += $totalVariedad['rnp_kilo_kilos'];
+            }
 
 
             // Total por especie
