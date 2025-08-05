@@ -37,6 +37,7 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
         $datosAgrupados = [];
 
         foreach ($this->data as $item) {
+            dd($item);
             if (strtoupper($item->categoria) === 'CAT 1' || strtoupper($item->categoria) === 'CAT 2') {
                 // Conversión de nombre de especie
                 $especie = $item->especie->nombre;
