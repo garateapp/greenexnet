@@ -144,7 +144,7 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
                     foreach ($calibres as $calibre) {
                         $datosCalibre = $datosEtiqueta['calibres'][$calibre];
                         $curvaCalibre = $datosEtiqueta['total_kilos'] ? ($datosCalibre['total_kilos'] / $datosEtiqueta['total_kilos']) : 0;
-                        $Cajas = $cajas;
+                        $cajas = $datosEtiqueta['cajas'];
                         $rnpKiloCalibre = $datosCalibre['rnp_kilo_kilos'] > 0 ? $datosCalibre['rnp_kilo_sum'] / $datosCalibre['rnp_kilo_kilos'] : 0;
 
                         $formattedData->push([
@@ -153,13 +153,13 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
                             'Etiqueta' => $etiqueta,
                             'Curva Calibre' => number_format($curvaCalibre * 100, 2) . ' %',
                             'Calibre' => $calibre,
-                            'Cajas' => $Cajas,
+                            'Cajas' => $cajas,
                             'Kilos Totales' => number_format($datosCalibre['total_kilos'], 2, ',', '.'),
                             'RNP Total' => number_format($datosCalibre['rnp_total'], 2, ',', '.'),
                             'RNP Kilo' => number_format($rnpKiloCalibre, 2, ',', '.'),
                         ]);
 
-                        $totalEtiqueta['cajas'] += $Cajas;
+                        $totalEtiqueta['cajas'] += $cajas;
                         $totalEtiqueta['total_kilos'] += $datosCalibre['total_kilos'];
                         $totalEtiqueta['rnp_total'] += $datosCalibre['rnp_total'];
                         $totalEtiqueta['rnp_kilo_sum'] += $datosCalibre['rnp_kilo_sum'];
@@ -255,7 +255,7 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
             'Variedad',
             'Etiqueta',
             'Calibre',
-            'Color',
+
             'Curva Calibre',
             'Cajas',
             'Kilos Totales',
