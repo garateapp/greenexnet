@@ -86,7 +86,7 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
                 $datosAgrupados[$especie][$variedad][$etiqueta]['calibres'][$calibre]['rnp_kilo_kilos'] += $totalKilos;
 
                 // Acumular totales para la etiqueta actual
-                $datosAgrupados[$especie][$variedad][$etiqueta]['cajas'] += $cajas;
+                $datosAgrupados[$especie][$variedad][$etiqueta]['total_cajas'] += $cajas;
                 $datosAgrupados[$especie][$variedad][$etiqueta]['total_kilos'] += $totalKilos;
                 $datosAgrupados[$especie][$variedad][$etiqueta]['rnp_total'] += $rnpTotal;
                 $datosAgrupados[$especie][$variedad][$etiqueta]['rnp_kilo_sum'] += $rnpKilo * $totalKilos;
@@ -146,7 +146,7 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
                     foreach ($calibres as $calibre) {
                         $datosCalibre = $datosEtiqueta['calibres'][$calibre];
                         $curvaCalibre = $datosEtiqueta['total_kilos'] ? ($datosCalibre['total_kilos'] / $datosEtiqueta['total_kilos']) : 0;
-                        $cajas = $datosEtiqueta['cajas'];
+                        $cajas = $datosEtiqueta['total_cajas'];
                         $rnpKiloCalibre = $datosCalibre['rnp_kilo_kilos'] > 0 ? $datosCalibre['rnp_kilo_sum'] / $datosCalibre['rnp_kilo_kilos'] : 0;
 
                         $formattedData->push([
