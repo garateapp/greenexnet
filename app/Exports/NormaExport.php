@@ -69,13 +69,15 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
                         'color' => $color,
                         'total_kilos' => 0,
                         'rnp_total' => 0,
-                        'rnp_kilo' => 0
+                        'rnp_kilo_sum' => 0,
+                        'rnp_kilo_kilos' => 0
                     ];
                 }
 
                 $datosAgrupados[$especie][$variedad][$etiqueta]['calibres'][$calibre]['total_kilos'] += $totalKilos;
                 $datosAgrupados[$especie][$variedad][$etiqueta]['calibres'][$calibre]['rnp_total'] += $rnpTotal;
-                $datosAgrupados[$especie][$variedad][$etiqueta]['calibres'][$calibre]['rnp_kilo'] += $rnpKilo;
+                $datosAgrupados[$especie][$variedad][$etiqueta]['calibres'][$calibre]['rnp_kilo_sum'] += $rnpKilo * $totalKilos;
+                $datosAgrupados[$especie][$variedad][$etiqueta]['calibres'][$calibre]['rnp_kilo_kilos'] += $totalKilos;
 
                 // Acumular totales para la etiqueta actual
                 $datosAgrupados[$especie][$variedad][$etiqueta]['total_kilos'] += $totalKilos;
@@ -138,6 +140,7 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
                         $datosCalibre = $datosEtiqueta['calibres'][$calibre];
                         $curvaCalibre = $datosEtiqueta['total_kilos'] ? ($datosCalibre['total_kilos'] / $datosEtiqueta['total_kilos']) : 0;
                         $cajasEquivalentes = round($datosCalibre['total_kilos'] / 5);
+                        $rnpKiloCalibre = $datosCalibre['rnp_kilo_kilos'] > 0 ? $datosCalibre['rnp_kilo_sum'] / $datosCalibre['rnp_kilo_kilos'] : 0;
 
                         $formattedData->push([
                             'Especie' => $especie,
@@ -149,14 +152,14 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
                             'Cajas' => $cajasEquivalentes,
                             'Kilos Totales' => number_format($datosCalibre['total_kilos'], 2, ',', '.'),
                             'RNP Total' => number_format($datosCalibre['rnp_total'], 2, ',', '.'),
-                            'RNP Kilo' => number_format($datosCalibre['rnp_kilo'], 2, ',', '.'),
+                            'RNP Kilo' => number_format($rnpKiloCalibre, 2, ',', '.'),
                         ]);
 
                         $totalEtiqueta['cajas_equivalentes'] += $cajasEquivalentes;
                         $totalEtiqueta['total_kilos'] += $datosCalibre['total_kilos'];
                         $totalEtiqueta['rnp_total'] += $datosCalibre['rnp_total'];
-                        $totalEtiqueta['rnp_kilo_sum'] += $datosCalibre['rnp_kilo'] * $datosCalibre['total_kilos'];
-                        $totalEtiqueta['rnp_kilo_kilos'] += $datosCalibre['total_kilos'];
+                        $totalEtiqueta['rnp_kilo_sum'] += $datosCalibre['rnp_kilo_sum'];
+                        $totalEtiqueta['rnp_kilo_kilos'] += $datosCalibre['rnp_kilo_kilos'];
                     }
 
                     // Total por etiqueta
@@ -179,93 +182,3 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
                     $totalVariedad['rnp_total'] += $totalEtiqueta['rnp_total'];
                     $totalVariedad['rnp_kilo_sum'] += $totalEtiqueta['rnp_kilo_sum'];
                     $totalVariedad['rnp_kilo_kilos'] += $totalEtiqueta['rnp_kilo_kilos'];
-
-
-
-
-
-                    }
-
-                }
-
-
-            // Total por especie
-            $rnpKiloEspecie = $totalEspecie['rnp_kilo_kilos'] ? ($totalEspecie['rnp_kilo_sum'] / $totalEspecie['rnp_kilo_kilos']) : 0;
-            $formattedData->push([
-                'Especie' => 'Total ' . $especie,
-                'Variedad' => '',
-                'Etiqueta' => '',
-                'Calibre' => '',
-                'Color' => '',
-                'Curva Calibre' => '',
-                'Cajas' => $totalEspecie['cajas_equivalentes'],
-                'Kilos Totales' => number_format($totalEspecie['total_kilos'], 2, ',', '.'),
-                'RNP Total' => number_format($totalEspecie['rnp_total'], 2, ',', '.'),
-                'RNP Kilo' => number_format($rnpKiloEspecie, 4, ',', '.'),
-            ]);
-
-            $totalGeneral['cajas_equivalentes'] += $totalEspecie['cajas_equivalentes'];
-            $totalGeneral['total_kilos'] += $totalEspecie['total_kilos'];
-            $totalGeneral['rnp_total'] += $totalEspecie['rnp_total'];
-            $totalGeneral['rnp_kilo_sum'] += $totalEspecie['rnp_kilo_sum'];
-            $totalGeneral['rnp_kilo_kilos'] += $totalEspecie['rnp_kilo_kilos'];
-        }
-
-
-        // Total general de la norma
-        $rnpKiloGeneral = $totalGeneral['rnp_kilo_kilos'] ? ($totalGeneral['rnp_kilo_sum'] / $totalGeneral['rnp_kilo_kilos']) : 0;
-        $formattedData->push([
-            'Especie' => 'Total General',
-            'Variedad' => '',
-            'Etiqueta' => '',
-            'Calibre' => '',
-            'Color' => '',
-            'Curva Calibre' => '',
-            'Cajas' => $totalGeneral['cajas_equivalentes'],
-            'Kilos Totales' => number_format($totalGeneral['total_kilos'], 2, ',', '.'),
-            'RNP Total' => number_format($totalGeneral['rnp_total'], 2, ',', '.'),
-            'RNP Kilo' => number_format($rnpKiloGeneral, 4, ',', '.'),
-        ]);
-
-        return $formattedData;
-
-    }
-
-    public function headings(): array
-    {
-        return [
-            'Especie',
-            'Variedad',
-            'Etiqueta',
-            'Calibre',
-            'Color',
-            'Curva Calibre',
-            'Cajas',
-            'Kilos Totales',
-            'RNP Total',
-            'RNP Kilo',
-        ];
-    }
-
-    public function startCell(): string
-    {
-        return 'A4';
-    }
-
-    public function registerEvents(): array
-    {
-        return [
-            BeforeSheet::class => function(BeforeSheet $event) {
-                $event->sheet->mergeCells('A1:I1');
-                $event->sheet->setCellValue('A1', 'EXPORTACIÓN DENTRO DE NORMA');
-                $event->sheet->getStyle('A1')->getFont()->setBold(true)->setSize(16);
-                $event->sheet->getStyle('A1')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-
-                $event->sheet->mergeCells('A2:I2');
-                $event->sheet->setCellValue('A2', 'Productor: ' . $this->productorNombre);
-                $event->sheet->getStyle('A2')->getFont()->setBold(true)->setSize(14);
-                $event->sheet->getStyle('A2')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-            },
-        ];
-    }
-}
