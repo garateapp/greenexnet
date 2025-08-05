@@ -178,7 +178,7 @@ public function exportNormaExcel(Request $request)
     // Filtrar los datos para incluir solo 'CAT 1' o 'CAT 2' (ignorando mayúsculas/minúsculas y espacios) en la categoría
     $data = $data->filter(function ($item) {
         $categoria = strtoupper(trim($item->categoria));
-        return $categoria === 'CAT 1' || $categoria === 'SUPER MERCADO';
+        return $categoria;
     });
 
     $productor = Productor::where('id', $productorId)->first();
