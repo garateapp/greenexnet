@@ -9,8 +9,9 @@ use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithCustomStartCell;
 use Maatwebsite\Excel\Events\BeforeSheet;
+use Maatwebsite\Excel\Concerns\WithTitle;
 
-class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAutoSize, WithCustomStartCell
+class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAutoSize, WithCustomStartCell, WithTitle
 {
     protected $data;
     protected $productorNombre;
@@ -19,6 +20,11 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
     {
         $this->data = $data;
         $this->productorNombre = $productorNombre;
+    }
+
+    public function title(): string
+    {
+        return 'Norma';
     }
 
     public function collection()
@@ -220,7 +226,7 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
             'RNP Total' => number_format($totalGeneral['rnp_total'], 2, ',', '.'),
             'RNP Kilo' => number_format($rnpKiloGeneral, 4, ',', '.'),
         ]);
-        dd($formattedData);
+
         return $formattedData;
 
     }
