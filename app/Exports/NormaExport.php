@@ -50,7 +50,7 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
                 $variedad = $item->variedad;
                 $etiqueta = $item->etiqueta;
                 $calibre = $item->calibre;
-                $color = $item->color ?: '';
+
                 $cajas=$item->cajas;
                 $totalKilos = (float)str_replace(',', '.', $item->total_kilos) ?: 0;
                 $rnpTotal = (float)str_replace(',', '.', $item->resultado_total) ?: 0;
@@ -150,9 +150,9 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
                             'Especie' => $especie,
                             'Variedad' => $variedad,
                             'Etiqueta' => $etiqueta,
+                            'Curva Calibre' => number_format($curvaCalibre * 100, 2) . ' %',
                             'Calibre' => $calibre,
                             'Cajas' => $cajas,
-                            'Curva Calibre' => number_format($curvaCalibre * 100, 2) . ' %',
                             'Kilos Totales' => number_format($datosCalibre['total_kilos'], 2, ',', '.'),
                             'RNP Total' => number_format($datosCalibre['rnp_total'], 2, ',', '.'),
                             'RNP Kilo' => number_format($rnpKiloCalibre, 2, ',', '.'),
@@ -172,7 +172,6 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
                         'Variedad' => '',
                         'Etiqueta' => 'Total ' . $etiqueta,
                         'Calibre' => '',
-                        'Color' => '',
                         'Curva Calibre' => '100.00 %',
                         'Cajas' => $totalEtiqueta['cajas_equivalentes'],
                         'Kilos Totales' => number_format($totalEtiqueta['total_kilos'], 2, ',', '.'),
@@ -193,7 +192,6 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
                     'Variedad' => 'Total ' . $variedad,
                     'Etiqueta' => '',
                     'Calibre' => '',
-                    'Color' => '',
                     'Curva Calibre' => '',
                     'Cajas' => $totalVariedad['cajas_equivalentes'],
                     'Kilos Totales' => number_format($totalVariedad['total_kilos'], 2, ',', '.'),
@@ -216,7 +214,6 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
                 'Variedad' => '',
                 'Etiqueta' => '',
                 'Calibre' => '',
-                'Color' => '',
                 'Curva Calibre' => '',
                 'Cajas' => $totalEspecie['cajas_equivalentes'],
                 'Kilos Totales' => number_format($totalEspecie['total_kilos'], 2, ',', '.'),
@@ -239,7 +236,6 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
             'Variedad' => '',
             'Etiqueta' => '',
             'Calibre' => '',
-            'Color' => '',
             'Curva Calibre' => '',
             'Cajas' => $totalGeneral['cajas_equivalentes'],
             'Kilos Totales' => number_format($totalGeneral['total_kilos'], 2, ',', '.'),
