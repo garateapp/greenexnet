@@ -37,7 +37,7 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
         $datosAgrupados = [];
 
         foreach ($this->data as $item) {
-            dd($item);
+
             if (strtoupper($item->categoria) === 'CAT 1' || strtoupper($item->categoria) === 'CAT 2') {
                 // Conversión de nombre de especie
                 $especie = $item->especie->nombre;
@@ -51,6 +51,7 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
                 $etiqueta = $item->etiqueta;
                 $calibre = $item->calibre;
                 $color = $item->color ?: '';
+                $cajas=$item->cajas;
                 $totalKilos = (float)str_replace(',', '.', $item->total_kilos) ?: 0;
                 $rnpTotal = (float)str_replace(',', '.', $item->resultado_total) ?: 0;
                 $rnpKilo = (float)str_replace(',', '.', $item->resultado_kilo) ?: 0;
@@ -69,7 +70,7 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
                 }
                 if (!isset($datosAgrupados[$especie][$variedad][$etiqueta]['calibres'][$calibre])) {
                     $datosAgrupados[$especie][$variedad][$etiqueta]['calibres'][$calibre] = [
-                        'color' => $color,
+                        'cajas_equivalentes' => 0,
                         'total_kilos' => 0,
                         'rnp_total' => 0,
                         'rnp_kilo_sum' => 0,
@@ -150,15 +151,14 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
                             'Variedad' => $variedad,
                             'Etiqueta' => $etiqueta,
                             'Calibre' => $calibre,
-                            'Color' => $datosCalibre['color'],
+                            'Cajas' => $cajas,
                             'Curva Calibre' => number_format($curvaCalibre * 100, 2) . ' %',
-                            'Cajas' => $cajasEquivalentes,
                             'Kilos Totales' => number_format($datosCalibre['total_kilos'], 2, ',', '.'),
                             'RNP Total' => number_format($datosCalibre['rnp_total'], 2, ',', '.'),
                             'RNP Kilo' => number_format($rnpKiloCalibre, 2, ',', '.'),
                         ]);
 
-                        $totalEtiqueta['cajas_equivalentes'] += $cajasEquivalentes;
+                        $totalEtiqueta['cajas_equivalentes'] += $cajas;
                         $totalEtiqueta['total_kilos'] += $datosCalibre['total_kilos'];
                         $totalEtiqueta['rnp_total'] += $datosCalibre['rnp_total'];
                         $totalEtiqueta['rnp_kilo_sum'] += $datosCalibre['rnp_kilo_sum'];
