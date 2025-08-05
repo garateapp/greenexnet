@@ -35,10 +35,15 @@ class NormaExport implements FromCollection, WithHeadings, WithEvents, ShouldAut
 
         // Objeto para agrupar por especie, variedad, etiqueta y calibre
         $datosAgrupados = [];
-        dd($this->data);
+
         foreach ($this->data as $item) {
 
             if (strtoupper($item->categoria) === 'CAT 1' || strtoupper($item->categoria) === 'CAT 2' || strtoupper($item->categoria) === 'SUPER MERCADO') {
+
+                if(strtoupper($item->categoria) === 'SUPER MERCADO') {
+                    Log::info('Super Mercado: ' . $item->especie->nombre . ' ' . $item->variedad . ' ' . $item->etiqueta . ' ' . $item->calibre);
+                }
+
                 // Conversión de nombre de especie
                 $especie = $item->especie->nombre;
                 switch(strtoupper($especie)) {
