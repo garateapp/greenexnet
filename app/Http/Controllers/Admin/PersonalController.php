@@ -519,6 +519,33 @@ class PersonalController extends Controller
         return view('admin.personals.cuadratura');
     }
 
+    public function assignLocationForm()
+    {
+        abort_if(Gate::denies('personal_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $supervisors = Personal::where('cargo_id', 2) // Assuming cargo_id 2 is for supervisors
+            ->pluck('nombre', 'id');
+
+        $parentLocations = \App\Models\Locacion::where('locacion_padre_id', 1)
+            ->pluck('nombre', 'id');
+
+        return view('admin.personals.assign_location', compact('supervisors', 'parentLocations'));
+    }
+
+    public function assignLocationStore(Request $request)
+    {
+        $request->validate([
+            'supervisor_id' => 'required|exists:personals,id',
+            'location_id' => 'required|exists:locacions,id',
+        ]);
+
+        $personal = Personal::find($request->input('supervisor_id'));
+        $personal->assigned_location_id = $request->input('location_id');
+        $personal->save();
+
+        return redirect()->route('admin.personals.assignLocationForm')->with('success', 'Ubicación asignada con éxito.');
+    }
+
     /*************  ✨ Codeium Command ⭐  *************/
     /**
      * Executes the cuadratura process for attendance verification.

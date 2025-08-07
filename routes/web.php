@@ -126,6 +126,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('personals/uploadtrato', 'PersonalController@uploadtrato')->name('personals.uploadtrato');
 
     Route::post('personals/consultahandpack', 'PersonalController@consultahandpack')->name('personals.consultahandpack');
+    Route::get('personals/assign-location', 'PersonalController@assignLocationForm')->name('personals.assignLocationForm');
+    Route::post('personals/assign-location', 'PersonalController@assignLocationStore')->name('personals.assignLocationStore');
 
     Route::resource('personals', 'PersonalController');
 
@@ -143,6 +145,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::resource('asistencia', 'AsistenciaController');
     Route::post('asistencia/cargaUbicaciones', 'AsistenciaController@cargaUbicaciones')->name('asistencia.cargaUbicaciones');
     Route::post('asistencia/cargaDatosTurno', 'AsistenciaController@cargaDatosTurno')->name('asistencia.cargaDatosTurno');
+
+    // Attendance Routes
+    Route::get('attendance/confirm', 'AttendanceController@showConfirmation')->name('attendance.confirm');
+    Route::post('attendance/store', 'AttendanceController@storeAttendance')->name('attendance.store');
 
 
     // Recibe Master

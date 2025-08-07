@@ -296,6 +296,15 @@
                                 Trato HandPack
                             </a>
                         </li>
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.personals.assignLocationForm') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/personals/assign-location') ? 'c-active' : '' }}">
+                                <i class="fa-fw fas fa-map-marker-alt c-sidebar-nav-icon">
+
+                                </i>
+                                Asignar Ubicación a Supervisor
+                            </a>
+                        </li>
                     @endcan
                 </ul>
             </li>
@@ -534,6 +543,16 @@
                     {{ trans('cruds.instructivo.title') }}
                 </a>
                 <ul class="c-sidebar-nav-dropdown-items">
+                    @can('instructivo_embarque_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.instructivo-embarques.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/instructivo-embarques") || request()->is("admin/instructivo-embarques/*") ? "c-active" : "" }}">
+                                <i class="fa-fw fas fa-info c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.instructivoEmbarque.title') }}
+                            </a>
+                        </li>
+                    @endcan
                     @can('base_recibidor_access')
                         <li class="c-sidebar-nav-item">
                             <a href="{{ route("admin.base-recibidors.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/base-recibidors") || request()->is("admin/base-recibidors/*") ? "c-active" : "" }}">
@@ -644,16 +663,6 @@
                             </a>
                         </li>
                     @endcan
-                    @can('instructivo_embarque_access')
-                        <li class="c-sidebar-nav-item">
-                            <a href="{{ route("admin.instructivo-embarques.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/instructivo-embarques") || request()->is("admin/instructivo-embarques/*") ? "c-active" : "" }}">
-                                <i class="fa-fw fas fa-info c-sidebar-nav-icon">
-
-                                </i>
-                                {{ trans('cruds.instructivoEmbarque.title') }}
-                            </a>
-                        </li>
-                    @endcan
                     @can('tipoflete_access')
                         <li class="c-sidebar-nav-item">
                             <a href="{{ route("admin.tipofletes.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/tipofletes") || request()->is("admin/tipofletes/*") ? "c-active" : "" }}">
@@ -714,6 +723,14 @@
                             </a>
                         </li>
                     @endcan
+                    <li class="c-sidebar-nav-item">
+                        <a href="{{ route("admin.also-notifies.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/also-notifies") || request()->is("admin/also-notifies/*") ? "c-active" : "" }}">
+                            <i class="fa-fw fas fa-bell c-sidebar-nav-icon">
+
+                            </i>
+                            Also Notify
+                        </a>
+                    </li>
                 </ul>
             </li>
         @endcan

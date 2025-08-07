@@ -8,13 +8,13 @@
         <div class="card-body">
             <form method="POST" action="{{ route('admin.personals.store') }}" enctype="multipart/form-data">
                 @csrf
-                <div class="form-group">
+                <div class="form-group" style="display: none">
                     <button id="start-camera" type="button"
                         style="position: fixed; bottom: 20px;left:20%;  padding: 10px 20px; border-radius: 5px; background-color: #4CAF50; color: white; z-index: 2;">
                         Activar Camara
                     </button>
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="display: none">
                     <!-- Botón para tomar la foto, colocado en una posición fija -->
                     <button id="click-photo" type="button"
                         style="position: fixed; bottom: 20px; left: 70%; transform: translateX(-50%);
@@ -24,12 +24,12 @@
                 </div>
                 <!-- Vista de la cámara -->
                 <video id="video" width="320" height="240" autoplay
-                    style="width: 100%; height: auto; display: block; margin-top: 50px;z-index: 1;"></video>
+                    style="width: 100%; height: auto; display: block; margin-top: 50px;z-index: 1; display: none;"></video>
 
 
                 <!-- Botón para tomar la foto, colocado en una posición fija -->
 
-                <canvas id="canvas" width="240" height="320"></canvas>
+                <canvas id="canvas" width="240" height="320" style="display: none;"></canvas>
                 <input type="hidden" name="foto" id="foto">
                 <div class="form-group">
                     <label class="required" for="nombre">{{ trans('cruds.personal.fields.nombre') }}</label>
