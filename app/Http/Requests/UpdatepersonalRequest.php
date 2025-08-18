@@ -50,6 +50,18 @@ class UpdatePersonalRequest extends FormRequest
                 'string',
                 'nullable'
             ],
+            'assigned_location_id' => [
+                'integer',
+                'nullable',
+            ],
+            'cargo_id' => [
+                'required',
+                'integer',
+            ],
+            'user_id' => [
+                'required',
+                'integer',
+            ],
         ];
     }
 }
