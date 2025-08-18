@@ -36,7 +36,7 @@ use App\Models\Configuracion;
 use DB;
 use App\Models\TratoContratistas;
 use App\Exports\TratoContratistasTemplateExport;
-use Faker\Provider\ar_EG\Person;
+use App\Models\User; // Import the User model
 
 class PersonalController extends Controller
 {
@@ -47,7 +47,7 @@ class PersonalController extends Controller
         abort_if(Gate::denies('personal_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         if ($request->ajax()) {
-            $query = Personal::with(['cargo', 'estado', 'entidad'])->select(sprintf('%s.*', (new Personal)->table));
+            $query = Personal::with(['cargo', 'estado', 'entidad', 'user'])->select(sprintf('%s.*', (new Personal)->table));
             $table = Datatables::of($query);
 
             $table->addColumn('placeholder', '&nbsp;');
@@ -100,8 +100,11 @@ class PersonalController extends Controller
             $table->addColumn('foto', function ($row) {
                 return $row->foto ? $row->foto : '';
             });
+            $table->addColumn('user_name', function ($row) {
+                return $row->user ? $row->user->name : '';
+            });
 
-            $table->rawColumns(['actions', 'placeholder', 'cargo', 'estado', 'entidad']);
+            $table->rawColumns(['actions', 'placeholder', 'cargo', 'estado', 'entidad', 'user']);
 
             return $table->make(true);
         }
@@ -119,7 +122,9 @@ class PersonalController extends Controller
 
         $entidads = Entidad::pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        return view('admin.personals.create', compact('cargos', 'entidads', 'estados'));
+        $users = User::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+
+        return view('admin.personals.create', compact('cargos', 'entidads', 'estados', 'users'));
     }
 
     public function store(StorePersonalRequest $request)
@@ -133,6 +138,7 @@ class PersonalController extends Controller
         $personal->cargo_id = $request->cargo_id;
         $personal->estado_id = $request->estado_id;
         $personal->entidad_id = $request->entidad_id;
+        $personal->user_id = $request->user_id; // Save user_id
         if ($request->foto != null) {
             $base64Image = $request->input('foto');
             $fileData = explode(',', $base64Image);
@@ -150,8 +156,6 @@ class PersonalController extends Controller
 
         $personal->save();
 
-        // $personal = Personal::create($request->all());
-
         return redirect()->route('admin.personals.index');
     }
 
@@ -165,9 +169,11 @@ class PersonalController extends Controller
 
         $entidads = Entidad::pluck('nombre', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        $personal->load('cargo', 'estado', 'entidad');
+        $users = User::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        return view('admin.personals.edit', compact('cargos', 'entidads', 'estados', 'personal'));
+        $personal->load('cargo', 'estado', 'entidad', 'user');
+
+        return view('admin.personals.edit', compact('cargos', 'entidads', 'estados', 'personal', 'users'));
     }
 
     public function update(UpdatePersonalRequest $request, Personal $personal)
@@ -182,7 +188,7 @@ class PersonalController extends Controller
         $nPersonal->cargo_id = $request->cargo_id;
         $nPersonal->estado_id = $request->estado_id;
         $nPersonal->entidad_id = $request->entidad_id;
-        //dd($request->foto);
+        $nPersonal->user_id = $request->user_id; // Update user_id
         if ($request->foto != null) {
             $base64Image = $request->input('foto');
             $fileData = explode(',', $base64Image);
@@ -198,7 +204,6 @@ class PersonalController extends Controller
 
 
         $nPersonal->save();
-        //$personal->update($request->all());
 
         return redirect()->route('admin.personals.index');
     }
@@ -519,7 +524,7 @@ class PersonalController extends Controller
         return view('admin.personals.cuadratura');
     }
 
-    public function assignLocationForm()
+    public function assignLocationForm(Request $request)
     {
         abort_if(Gate::denies('personal_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
@@ -529,7 +534,22 @@ class PersonalController extends Controller
         $parentLocations = \App\Models\Locacion::where('locacion_padre_id', 1)
             ->pluck('nombre', 'id');
 
-        return view('admin.personals.assign_location', compact('supervisors', 'parentLocations'));
+        $assignedSupervisors = Personal::with('assignedLocation')
+            ->whereNotNull('assigned_location_id')
+            ->where('cargo_id', 2)
+            ->get();
+
+        $selectedSupervisor = null;
+        $selectedLocation = null;
+
+        if ($request->has('id')) {
+            $selectedSupervisor = Personal::with('assignedLocation')->find($request->input('id'));
+            if ($selectedSupervisor) {
+                $selectedLocation = $selectedSupervisor->assigned_location_id;
+            }
+        }
+
+        return view('admin.personals.assign_location', compact('supervisors', 'parentLocations', 'assignedSupervisors', 'selectedSupervisor', 'selectedLocation'));
     }
 
     public function assignLocationStore(Request $request)

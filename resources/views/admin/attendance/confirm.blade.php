@@ -21,7 +21,7 @@
 
                 <div class="form-group">
                     <label for="location">Ubicación</label>
-                    <input type="text" class="form-control" name="location" id="location" placeholder="Ingrese la ubicación" required>
+                    <input type="text" class="form-control" name="location" id="location" value="{{ $supervisorLocation ?? '' }}" readonly>
                 </div>
 
                 <div class="form-group">
