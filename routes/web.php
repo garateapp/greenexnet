@@ -149,6 +149,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     // Attendance Routes
     Route::get('attendance/confirm', 'AttendanceController@showConfirmation')->name('attendance.confirm');
     Route::post('attendance/store', 'AttendanceController@storeAttendance')->name('attendance.store');
+    Route::get('attendance/report', 'AttendanceController@reportIndex')->name('attendance.reportIndex');
+    Route::post('attendance/generate-report', 'AttendanceController@generateReport')->name('attendance.generateReport');
 
 
     // Recibe Master

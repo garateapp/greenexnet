@@ -305,6 +305,15 @@
                                 Asignar Ubicación a Supervisor
                             </a>
                         </li>
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.attendance.reportIndex') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/attendance/report') ? 'c-active' : '' }}">
+                                <i class="fa-fw fas fa-chart-line c-sidebar-nav-icon">
+
+                                </i>
+                                Reporte de Asistencia
+                            </a>
+                        </li>
                     @endcan
                 </ul>
             </li>
