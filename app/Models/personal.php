@@ -31,6 +31,7 @@ class Personal extends Model
         'cargo_id',
         'estado_id',
         'entidad_id',
+        'user_id',
         'created_at',
         'updated_at',
         'deleted_at',
@@ -55,5 +56,15 @@ class Personal extends Model
     public function entidad()
     {
         return $this->belongsTo(Entidad::class, 'entidad_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function assignedLocation()
+    {
+        return $this->belongsTo(Locacion::class, 'assigned_location_id');
     }
 }

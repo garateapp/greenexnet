@@ -152,6 +152,11 @@ class User extends Authenticatable implements HasMedia
         return $this->belongsTo(Estado::class, 'estado_id');
     }
 
+    public function personal()
+    {
+        return $this->hasOne(Personal::class, 'user_id');
+    }
+
     public function getFotoAttribute()
     {
         $file = $this->getMedia('foto')->last();
