@@ -303,3 +303,14 @@ table.dataTable thead .sorting_desc {
     #comparativeTableContainer table.dataTable.dtr-inline > tbody > tr.parent {
         display: none !important;
 }
+/* Fix for content hiding behind fixed sidebar */
+.c-wrapper {
+    margin-left: 256px; /* Width of the fixed sidebar */
+}
+
+/* Adjust for smaller screens if sidebar collapses */
+@media (max-width: 991.98px) { /* CoreUI's default breakpoint for sidebar collapse */
+    .c-wrapper {
+        margin-left: 0; /* No margin when sidebar is collapsed or hidden */
+    }
+}

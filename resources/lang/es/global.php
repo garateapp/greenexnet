@@ -323,4 +323,7 @@ return [
     'calendar'                       => 'Calendario',
     'messenger'                      => 'Mensajero',
 
+    'bi_report_access' => 'Acceso a Reportes BI',
+    'manage_bi_reports' => 'Gestionar Reportes BI',
+
 ];

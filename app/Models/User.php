@@ -147,6 +147,16 @@ class User extends Authenticatable implements HasMedia
         return $this->belongsToMany(Role::class);
     }
 
+    /**
+     * The biReports that belong to the User
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function biReports()
+    {
+        return $this->belongsToMany(BiReport::class, 'bi_report_user', 'user_id', 'bi_report_id');
+    }
+
     public function estado()
     {
         return $this->belongsTo(Estado::class, 'estado_id');

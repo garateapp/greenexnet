@@ -62,6 +62,11 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('user-alerts/read', 'UserAlertsController@read');
     Route::resource('user-alerts', 'UserAlertsController', ['except' => ['edit', 'update']]);
 
+    // BI Reports
+    Route::delete('bi-reports/destroy', 'BiReportController@massDestroy')->name('bi-reports.massDestroy');
+    Route::resource('bi-reports', 'BiReportController');
+    Route::get('bi-reports/view-external/{biReport}', 'BiReportController@viewExternal')->name('bi-reports.viewExternal');
+
 
 
     // Datos Caja
@@ -148,6 +153,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
 
     // Attendance Routes
     Route::get('attendance/confirm', 'AttendanceController@showConfirmation')->name('attendance.confirm');
+    Route::post('attendance/find-person', 'AttendanceController@findPerson')->name('attendance.find_person');
     Route::post('attendance/store', 'AttendanceController@storeAttendance')->name('attendance.store');
     Route::get('attendance/report', 'AttendanceController@reportIndex')->name('attendance.reportIndex');
     Route::post('attendance/generate-report', 'AttendanceController@generateReport')->name('attendance.generateReport');
@@ -685,6 +691,14 @@ Route::post('constructorliquidacion/exportNormaExcel', 'ConstructorLiquidacionCo
     // Also Notify
     Route::delete('also-notifies/destroy', 'AlsoNotifyController@massDestroy')->name('also-notifies.massDestroy');
     Route::resource('also-notifies', 'AlsoNotifyController');
+
+    // Certifications
+    Route::resource('certifications', 'CertificationsController');
+
+    // Planificador Personal
+    Route::get('planificador-personal', 'PlanificadorController@index')->name('planificador-personal.index');
+    Route::post('planificador-personal', 'PlanificadorController@store')->name('planificador-personal.store');
+    Route::get('planificador-personal/data', 'PlanificadorController@getPlanificacionData')->name('planificador-personal.data');
 
 
     Route::get('messenger', 'MessengerController@index')->name('messenger.index');

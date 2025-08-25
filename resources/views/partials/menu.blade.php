@@ -270,6 +270,15 @@
                             </a>
                         </li>
                         <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.planificador-personal.index') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/planificador-personal') || request()->is('admin/planificador-personal/*') ? 'c-active' : '' }}">
+                                <i class="fa-fw fas fa-clipboard-list c-sidebar-nav-icon">
+
+                                </i>
+                                Planificador de Personal
+                            </a>
+                        </li>
+                        <li class="c-sidebar-nav-item">
                             <a href="{{ route('admin.personals.cuadratura') }}"
                                 class="c-sidebar-nav-link {{ request()->is('admin/personals') || request()->is('admin/personals/*') ? 'c-active' : '' }}">
                                 <i class="fa-fw fas fa-clock c-sidebar-nav-icon">
@@ -420,6 +429,18 @@
                     @endcan
                 </ul>
             </li>
+        @endcan
+        @can('bi_report_access')
+            <li class="c-sidebar-nav-item">
+                <a href="{{ route('admin.bi-reports.index') }}" class="c-sidebar-nav-link {{ request()->is('admin/bi-reports') || request()->is('admin/bi-reports/*') ? 'c-active' : '' }}">
+                    <i class="fa-fw fas fa-chart-line c-sidebar-nav-icon">
+
+                    </i>
+                    {{ trans('cruds.biReport.title') }}
+                </a>
+            </li>
+
+
         @endcan
         <li class="c-sidebar-nav-dropdown {{ request()->is('admin/embalajes*') ? 'c-show' : '' }}">
             <a class="c-sidebar-nav-dropdown-toggle" href="#">

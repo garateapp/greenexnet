@@ -2113,7 +2113,7 @@ return [
             'fax_helper'             => ' ',
             'email'                  => 'Email',
             'email_helper'           => ' ',
-            'notify'                 => 'Notify',
+            'notify'                 => 'Nombre',
             'notify_helper'          => ' ',
             'created_at'             => 'Created at',
             'created_at_helper'      => ' ',
@@ -2898,4 +2898,24 @@ return [
         ],
     ],
 
+    'biReport' => [
+        'title'          => 'Reportes BI',
+        'title_singular' => 'Reporte BI',
+        'fields'         => [
+            'id'                => 'ID',
+            'id_helper'         => ' ',
+            'name'              => 'Nombre del Reporte',
+            'name_helper'       => ' ',
+            'link'              => 'Link de Power BI',
+            'link_helper'       => ' ',
+            'users'             => 'Usuarios con Acceso',
+            'users_helper'      => ' ',
+            'created_at'        => 'Created at',
+            'created_at_helper' => ' ',
+            'updated_at'        => 'Updated at',
+            'updated_at_helper' => ' ',
+            'deleted_at'        => 'Deleted at',
+            'deleted_at_helper' => ' ',
+        ],
+    ],
 ];
