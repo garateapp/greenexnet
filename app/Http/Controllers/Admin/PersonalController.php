@@ -528,7 +528,7 @@ class PersonalController extends Controller
     {
         abort_if(Gate::denies('personal_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $supervisors = Personal::where('cargo_id', 2) // Assuming cargo_id 2 is for supervisors
+        $supervisors = Personal::where('is_supervisor', 1) // Assuming cargo_id 2 is for supervisors
             ->pluck('nombre', 'id');
 
         $parentLocations = \App\Models\Locacion::where('locacion_padre_id', 1)

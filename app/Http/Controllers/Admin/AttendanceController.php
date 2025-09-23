@@ -18,13 +18,14 @@ class AttendanceController extends Controller
         $personId = $request->query('person_id');
         $person = null;
         $supervisorLocation = null;
+        $error = null;
+        $source = $request->query('source', 'automatico');
 
         if ($personId) {
             $person = personal::where('rut', $personId)->first();
-        }
-
-        if (!$person) {
-            abort(Response::HTTP_NOT_FOUND, 'Personal no encontrado.');
+            if (!$person) {
+                $error = 'No se encontró personal con el RUT proporcionado.';
+            }
         }
 
         // Get the logged-in user's associated personal record
@@ -33,13 +34,21 @@ class AttendanceController extends Controller
             $supervisorLocation = $loggedInUser->personal->assignedLocation->nombre ?? 'Ubicación no asignada';
         }
 
-        return view('admin.attendance.confirm', compact('person', 'supervisorLocation'));
+        return view('admin.attendance.confirm', compact('person', 'supervisorLocation', 'error', 'source'));
+    }
+
+    public function findPerson(Request $request)
+    {
+        $request->validate(['rut' => 'required|string']);
+        $rut = $request->input('rut');
+        return redirect()->route('admin.attendance.confirm', ['person_id' => $rut, 'source' => 'manual']);
     }
 
     public function storeAttendance(Request $request)
     {
         $request->validate([
             'person_id' => 'required|exists:personals,id',
+            'entry_type' => 'required|string|in:manual,automatico',
         ]);
 
         // Get the logged-in user's associated personal record to get the location
@@ -56,6 +65,7 @@ class AttendanceController extends Controller
                 'personal_id' => $request->input('person_id'),
                 'location' => $location,
                 'timestamp' => now(),
+                'entry_type' => $request->input('entry_type'),
             ]);
 
             return response()->json(['success' => true, 'message' => 'Asistencia confirmada con éxito.'], 200);

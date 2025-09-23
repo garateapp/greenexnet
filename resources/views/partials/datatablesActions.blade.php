@@ -15,3 +15,10 @@
         <input type="submit" class="btn btn-xs btn-danger" value="{{ trans('global.delete') }}">
     </form>
 @endcan
+@if($crudRoutePart == 'base-recibidors')
+    @can('instructivo_embarque_create')
+        <a class="btn btn-xs btn-success" href="{{ route('admin.instructivo-embarques.create', ['consignee_id' => $row->id]) }}">
+            Generar Instructivo
+        </a>
+    @endcan
+@endif
