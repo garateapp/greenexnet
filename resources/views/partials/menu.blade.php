@@ -145,10 +145,27 @@
                 <i class="fa-fw fas fa-boxes c-sidebar-nav-icon">
 
                 </i>
-                Packing
+                Packing - Producción
             </a>
             <ul class="c-sidebar-nav-dropdown-items">
+                <li class="c-sidebar-nav-item">
+                    <a href="{{ route('admin.planificador-personal.index') }}"
+                        class="c-sidebar-nav-link {{ request()->is('admin/planificador-personal') || request()->is('admin/planificador-personal/*') ? 'c-active' : '' }}">
+                        <i class="fa-fw fas fa-clipboard-list c-sidebar-nav-icon">
 
+                        </i>
+                        Planificador de Personal
+                    </a>
+                </li>
+                 <li class="c-sidebar-nav-item">
+                    <a href="{{ route('admin.personals.assignLocationForm') }}"
+                        class="c-sidebar-nav-link {{ request()->is('admin/personals/assign-location') ? 'c-active' : '' }}">
+                        <i class="fa-fw fas fa-map-marker-alt c-sidebar-nav-icon">
+
+                        </i>
+                        Configurar Ubicación
+                    </a>
+                </li>
                 <li class="c-sidebar-nav-item">
                     <a href="{{ route('admin.hand-packs.index') }}"
                         class="c-sidebar-nav-link {{ request()->is('admin/hand-packs') || request()->is('admin/hand-packs/*') ? 'c-active' : '' }}">
@@ -269,15 +286,7 @@
                                 {{ trans('cruds.personal.title') }}
                             </a>
                         </li>
-                        <li class="c-sidebar-nav-item">
-                            <a href="{{ route('admin.planificador-personal.index') }}"
-                                class="c-sidebar-nav-link {{ request()->is('admin/planificador-personal') || request()->is('admin/planificador-personal/*') ? 'c-active' : '' }}">
-                                <i class="fa-fw fas fa-clipboard-list c-sidebar-nav-icon">
 
-                                </i>
-                                Planificador de Personal
-                            </a>
-                        </li>
                         <li class="c-sidebar-nav-item">
                             <a href="{{ route('admin.personals.cuadratura') }}"
                                 class="c-sidebar-nav-link {{ request()->is('admin/personals') || request()->is('admin/personals/*') ? 'c-active' : '' }}">
@@ -305,15 +314,7 @@
                                 Trato HandPack
                             </a>
                         </li>
-                        <li class="c-sidebar-nav-item">
-                            <a href="{{ route('admin.personals.assignLocationForm') }}"
-                                class="c-sidebar-nav-link {{ request()->is('admin/personals/assign-location') ? 'c-active' : '' }}">
-                                <i class="fa-fw fas fa-map-marker-alt c-sidebar-nav-icon">
 
-                                </i>
-                                Asignar Ubicación a Supervisor
-                            </a>
-                        </li>
                         <li class="c-sidebar-nav-item">
                             <a href="{{ route('admin.attendance.reportIndex') }}"
                                 class="c-sidebar-nav-link {{ request()->is('admin/attendance/report') ? 'c-active' : '' }}">
