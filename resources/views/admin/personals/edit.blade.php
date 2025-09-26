@@ -9,33 +9,7 @@
             <form method="POST" action="{{ route('admin.personals.update', [$personal->id]) }}" enctype="multipart/form-data">
                 @method('PUT')
                 @csrf
-                <div class="form-group">
-                    <button id="start-camera" type="button"
-                        style="position: fixed; bottom: 20px;left:20%;  padding: 10px 20px; border-radius: 5px; background-color: #4CAF50; color: white; z-index: 2;">
-                        Activar Camara
-                    </button>
-                </div>
-                <div class="form-group">
-                    <!-- Botón para tomar la foto, colocado en una posición fija -->
-                    <button id="click-photo" type="button"
-                        style="position: fixed; bottom: 20px; left: 70%; transform: translateX(-50%);
-                    padding: 10px 20px; border-radius: 5px; background-color: #4CAF50; color: white; z-index: 2;">
-                        Sacar Foto
-                    </button>
-                </div>
-                <!-- Vista de la cámara -->
-                <video id="video" width="320" height="240" autoplay
-                    style="width: 100%; height: auto; display: block; margin-top: 50px;z-index: 1;"></video>
 
-
-
-                <canvas id="canvas" width="240" height="320"></canvas>
-                <input type="hidden" name="foto" id="foto">
-                <div class="form-group">
-                    <img src="/storage/{{ $personal->foto }}" alt="Foto" width="150" height="150" id="preview"
-                        name="foto" />
-
-                </div>
                 <div class="form-group">
                     <label class="required" for="nombre">{{ trans('cruds.personal.fields.nombre') }}</label>
                     <input class="form-control {{ $errors->has('nombre') ? 'is-invalid' : '' }}" type="text"
@@ -167,7 +141,7 @@
     </div>
 @endsection
 @section('scripts')
-    <script>
+    {{-- <script>
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             navigator.mediaDevices.getUserMedia({
                     video: true
@@ -210,5 +184,5 @@
             foto.value = image_data_url;
             console.log(image_data_url);
         });
-    </script>
+    </script> --}}
 @endsection

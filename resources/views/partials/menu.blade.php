@@ -184,6 +184,15 @@
                             Lector HandPack
                         </a>
                     </li>
+                    <li>
+                         <a href="{{ route('admin.attendance.reportIndex') }}"
+                            class="c-sidebar-nav-link {{ request()->is('admin/hand-packs') || request()->is('admin/hand-packs/*') ? 'c-active' : '' }}">
+                            <i class="fa-fw fas fa-file c-box">
+
+                            </i>
+                            Reporte Asistencia
+                        </a>
+                    </li>
 
             </ul>
         </li>
