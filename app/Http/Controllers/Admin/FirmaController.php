@@ -79,15 +79,14 @@ class FirmaController extends Controller
             ->errorCorrection('H')
             ->generate($vcard);
 
-        $filename = sprintf('firma-qr-%s-%s.svg', $user->id ?? 'guest', time());
+        $filename = sprintf('firmas/firma-qr-%s-%s.svg', $user->id ?? 'guest', time());
+        Storage::disk('public')->put($filename, $qrImage);
 
-        $path = 'public/firmas/' . $filename;
-        Storage::put($path, $qrImage);
-
+        $publicUrl = Storage::disk('public')->url($filename);
 
         $signature['qrSvg'] = null;
-        $signature['qrImg'] = Storage::url($path);
-        $signature['qrUrl'] = $signature['qrImg']; // for backward compatibility if needed
+        $signature['qrImg'] = $publicUrl;
+        $signature['qrUrl'] = $publicUrl;
 
         $defaults = [
             'name' => $signature['name'],
