@@ -78,12 +78,12 @@ class FirmaController extends Controller
             ->margin(1)
             ->errorCorrection('H')
             ->generate($vcard);
-        Log::debug("message: " . $qrImage);
+
         $filename = sprintf('firma-qr-%s-%s.svg', $user->id ?? 'guest', time());
 
         $path = 'public/firmas/' . $filename;
         Storage::put($path, $qrImage);
-        Log::debug("QR code saved at: " . Storage::url($path));
+
 
         $signature['qrSvg'] = null;
         $signature['qrImg'] = Storage::url($path);
@@ -101,7 +101,7 @@ class FirmaController extends Controller
             'addressLine1' => "Av. O'Higgins 740, ",
             'addressLine2' => "Codegua, Chile",
         ];
-        dd($signature, $defaults, $vcard);
+
         return view('admin.firma.index', [
             'defaults' => $defaults,
             'signature' => $signature,
