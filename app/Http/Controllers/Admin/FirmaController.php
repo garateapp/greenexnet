@@ -77,8 +77,9 @@ class FirmaController extends Controller
             ->margin(1)
             ->errorCorrection('H')
             ->generate($vcard);
-
+        Log::info($qrImage);
         $filename = sprintf('firma-qr-%s-%s.svg', $user->id ?? 'guest', time());
+        Log::info($filename);
         $path = 'public/firmas/' . $filename;
         Storage::put($path, $qrImage);
 
