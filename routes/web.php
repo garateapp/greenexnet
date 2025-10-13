@@ -55,6 +55,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     // Audit Logs
     Route::resource('audit-logs', 'AuditLogsController', ['except' => ['create', 'store', 'edit', 'update', 'destroy']]);
 
+    Route::get('firma', 'FirmaController@index')->name('firma.index');
+    Route::post('firma', 'FirmaController@generate')->name('firma.generate');
 
 
     // User Alerts
