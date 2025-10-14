@@ -4,8 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
@@ -82,8 +83,17 @@ class FirmaController extends Controller
         $filename = sprintf('firmas/firma-qr-%s-%s.svg', $user->id ?? 'guest', time());
         Storage::disk('public')->put($filename, $qrImage);
 
-        $publicUrl = Storage::disk('public')->url($filename);
+        $publicDirectory = public_path('firmas');
+        if (!File::isDirectory($publicDirectory)) {
+            File::makeDirectory($publicDirectory, 0755, true);
+        }
 
+        $publicPath = $publicDirectory . DIRECTORY_SEPARATOR . basename($filename);
+        File::put($publicPath, $qrImage);
+
+        $publicUrl = asset('firmas/' . basename($filename));
+
+        Log::info('Public URL:', ['url' => $publicUrl]);
         $signature['qrSvg'] = null;
         $signature['qrImg'] = $publicUrl;
         $signature['qrUrl'] = $publicUrl;
