@@ -101,7 +101,7 @@
                 </form>
             </div>
 
-            <div class="col-lg-8">
+            <div class="col-lg-8" id="signature-preview-container">
                 @if($signature)
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="mb-0">Vista previa</h5>
@@ -115,7 +115,7 @@
                     </div>
 
                     <p class="text-muted mt-3 small">
-                        Usa el botón "Copiar HTML" y pega el resultado en la sección de firma de tu cliente de correo.
+                        Selecciona lo que esta al interior de la vista previa y pegalo en la firma de GMAIL, OUTLOOK, etc.
                     </p>
                 @else
                     <div class="text-center text-muted py-5 border rounded">
@@ -131,6 +131,58 @@
 @section('scripts')
 @parent
 <script>
+    async function toDataURL(url) {
+  const res = await fetch(url, { mode: 'cors' }); // requiere CORS permitido en el servidor de la imagen
+  const blob = await res.blob();
+  return await new Promise(r => {
+    const reader = new FileReader();
+    reader.onload = () => r(reader.result);
+    reader.readAsDataURL(blob);
+  });
+}
+
+async function cloneWithEmbeddedImages(root) {
+  const clone = root.cloneNode(true);
+  const imgs = clone.querySelectorAll('img');
+  await Promise.all([...imgs].map(async img => {
+    try {
+      const dataUrl = await toDataURL(img.src);
+      img.setAttribute('src', dataUrl);
+      // opcional: elimina atributos que pueden romper al pegar
+      img.removeAttribute('crossorigin');
+    } catch (e) {
+      // si falla, deja la URL original
+    }
+  }));
+  return clone;
+}
+async function copyDivWithEmbeddedImages(div) {
+  const node = await cloneWithEmbeddedImages(div);
+  const html = node.outerHTML;
+  const text = node.innerText;
+
+  if (navigator.clipboard && window.ClipboardItem) {
+    await navigator.clipboard.write([
+      new ClipboardItem({
+        'text/html': new Blob([html], { type: 'text/html' }),
+        'text/plain': new Blob([text], { type: 'text/plain' })
+      })
+    ]);
+  } else {
+    // Fallback: inserta el clon fuera de pantalla y copia
+    node.style.position = 'fixed';
+    node.style.left = '-99999px';
+    document.body.appendChild(node);
+    const range = document.createRange();
+    range.selectNodeContents(node);
+    const sel = getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    document.execCommand('copy');
+    sel.removeAllRanges();
+    node.remove();
+  }
+}
 document.addEventListener('DOMContentLoaded', function () {
     const copyButton = document.getElementById('copy-signature-html');
 
@@ -144,16 +196,18 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!container) {
             return;
         }
+copyDivWithEmbeddedImages(document.getElementById('signature-preview-container')).then(() => {
+            notifyCopySuccess(copyButton);
+        });
+        // const html = container.innerHTML.trim();
 
-        const html = container.innerHTML.trim();
-
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(html)
-                .then(() => notifyCopySuccess(copyButton))
-                .catch(() => fallbackCopy(html, copyButton));
-        } else {
-            fallbackCopy(html, copyButton);
-        }
+        // if (navigator.clipboard && navigator.clipboard.writeText) {
+        //     navigator.clipboard.writeText(html)
+        //         .then(() => notifyCopySuccess(copyButton))
+        //         .catch(() => fallbackCopy(html, copyButton));
+        // } else {
+        //     fallbackCopy(html, copyButton);
+        // }
     });
 
     function fallbackCopy(text, button) {
