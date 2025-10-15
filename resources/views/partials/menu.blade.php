@@ -30,6 +30,7 @@
             </a>
 
         </li>
+
         <li class="c-sidebar-nav-item">
             <a href="{{ route('admin.liq-cx-cabeceras.comparativoliquidaciones') }}" class="c-sidebar-nav-link">
                 <i class="c-sidebar-nav-icon fas fa-fw fa-chart-bar">
@@ -195,6 +196,17 @@
                     </li>
 
             </ul>
+        </li>
+        @endcan
+        @can("firma_access")
+        <li class="c-sidebar-nav-item">
+            <a href="{{ route('admin.firma.index') }}" class="c-sidebar-nav-link">
+                <i class="c-sidebar-nav-icon fas fa-fw fa-pencil-alt">
+
+                </i>
+               Pie de Firma
+            </a>
+
         </li>
         @endcan
         @can('greenex_net_access')
@@ -452,6 +464,7 @@
 
 
         @endcan
+        @can("comex_access")
         <li class="c-sidebar-nav-dropdown {{ request()->is('admin/embalajes*') ? 'c-show' : '' }}">
             <a class="c-sidebar-nav-dropdown-toggle" href="#">
                 <i class="fa-fw fas fa-coins c-sidebar-nav-icon"></i>
@@ -533,7 +546,7 @@
 
             </ul>
         </li>
-
+        @endcan
         @can('operacione_access')
             <li class="c-sidebar-nav-dropdown {{ request()->is("admin/materials*") ? "c-show" : "" }} {{ request()->is("admin/material-productos*") ? "c-show" : "" }}">
                 <a class="c-sidebar-nav-dropdown-toggle" href="#">

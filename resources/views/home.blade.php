@@ -80,6 +80,7 @@
         <div class="alert alert-danger" id="msgKO" style="display:none;">
 
         </div>
+
         <div class="row">
             <div id="loading-animation"
                 style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 9999; justify-content: center; align-items: center;">
@@ -575,6 +576,7 @@
                 @endcan
             </div>
         </div>
+          @can('control_panel')
         <div class="row">
             <div class="col-lg-12">
                 <div class="card my-4">
@@ -604,8 +606,9 @@
 
             </div>
         </div>
+        @endcan
         <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-
+ @can('control_panel')
         <script>
             let liquidacionesData = []; // Variable global para almacenar los 8500 registros
 
@@ -3011,6 +3014,7 @@
 
             });
         </script>
+        @endcan
     </div>
 @endsection
 @section('scripts')
