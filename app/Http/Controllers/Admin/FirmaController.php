@@ -7,8 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Str;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use chillerlan\QRCode\QRCode;
+use chillerlan\QRCode\QROptions;
 
 class FirmaController extends Controller
 {
@@ -73,14 +73,18 @@ class FirmaController extends Controller
             $signature['website']
         );
 
-        // Generate QR as PNG, save it and get the public URL
-        $qrImage = QrCode::format('svg')
-            ->size(280)
-            ->margin(1)
-            ->errorCorrection('H')
-            ->generate($vcard);
+        // Generate QR as PNG via chillerlan/php-qrcode
+        $qrOptions = new QROptions([
+            'outputType' => QRCode::OUTPUT_IMAGE_PNG,
+            'scale' => 10,
+            'margin' => 1,
+            'eccLevel' => QRCode::ECC_H,
+            'imageBase64' => false,
+        ]);
 
-        $filename = sprintf('firmas/firma-qr-%s-%s.svg', $user->id ?? 'guest', time());
+        $qrImage = (new QRCode($qrOptions))->render($vcard);
+
+        $filename = sprintf('firmas/firma-qr-%s-%s.png', $user->id , str_replace(' ', '-', $signature['name'] ));
         Storage::disk('public')->put($filename, $qrImage);
 
         $publicDirectory = public_path('firmas');
