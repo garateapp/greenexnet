@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use chillerlan\QRCode\QRCode;
 use chillerlan\QRCode\QROptions;
 
@@ -73,16 +74,20 @@ class FirmaController extends Controller
             $signature['website']
         );
 
-        // Generate QR as PNG via chillerlan/php-qrcode
-        $qrOptions = new QROptions([
+        // Generate high-resolution PNG QR (for email signatures Gmail only accepts raster images)
+        $qrPngOptions = new QROptions([
             'outputType' => QRCode::OUTPUT_IMAGE_PNG,
-            'scale' => 10,
-            'margin' => 1,
+            'scale' => 16, // large pixels for crisp rendering after email client compression
+            'margin' => 6,
             'eccLevel' => QRCode::ECC_H,
             'imageBase64' => false,
+            'bgColor' => [255, 255, 255],
+            'fgColor' => [0, 0, 0],
+            'addQuietzone' => true,
+            'imageTransparent' => false,
         ]);
 
-        $qrImage = (new QRCode($qrOptions))->render($vcard);
+        $qrImage = (new QRCode($qrPngOptions))->render($vcard);
 
         $filename = sprintf('firmas/firma-qr-%s-%s.png', $user->id , str_replace(' ', '-', $signature['name'] ));
         Storage::disk('public')->put($filename, $qrImage);
@@ -97,8 +102,8 @@ class FirmaController extends Controller
 
         $publicUrl = asset('firmas/' . basename($filename));
 
-        Log::info('Public URL:', ['url' => $publicUrl]);
         $signature['qrSvg'] = null;
+        Log::info('Public URL:', ['url' => $publicUrl]);
         $signature['qrImg'] = $publicUrl;
         $signature['qrUrl'] = $publicUrl;
 
@@ -140,10 +145,19 @@ class FirmaController extends Controller
             'VERSION:3.0',
             'N:' . $this->escapeVcardValue($lastName) . ';' . $this->escapeVcardValue($firstName) . ';;;',
             'FN:' . $this->escapeVcardValue($name),
-            'EMAIL;TYPE=INTERNET:' . $this->escapeVcardValue($email),
-            'TEL;TYPE=CELL:+' . $this->escapeVcardValue($phone),
-            'TITLE:' . $this->escapeVcardValue($role),
         ];
+
+        if ($email !== '') {
+            $vcardLines[] = 'EMAIL;TYPE=INTERNET:' . $this->escapeVcardValue($email);
+        }
+
+        if ($role !== '') {
+            $vcardLines[] = 'TITLE:' . $this->escapeVcardValue($role);
+        }
+
+        if ($formattedPhone = $this->formatPhone($phone)) {
+            $vcardLines[] = 'TEL;TYPE=CELL,VOICE:' . $this->escapeVcardValue($formattedPhone);
+        }
 
         if ($fullAddress !== '') {
             $vcardLines[] = 'ADR;TYPE=WORK:;;' . $this->escapeVcardValue($fullAddress) . ';;;;';
@@ -155,7 +169,7 @@ class FirmaController extends Controller
 
         $vcardLines[] = 'END:VCARD';
 
-        return implode("\n", $vcardLines);
+        return implode("\r\n", $vcardLines) . "\r\n";
     }
 
     private function splitName(string $name): array
@@ -179,6 +193,28 @@ class FirmaController extends Controller
             ["\\\\", '\\;', '\\,', '\\n', ''],
             $value
         );
+    }
+
+    private function formatPhone(string $phone): ?string
+    {
+        $trimmed = trim($phone);
+
+        if ($trimmed === '') {
+            return null;
+        }
+
+        $hasPlus = Str::startsWith($trimmed, '+');
+        $digits = preg_replace('/\D+/', '', $trimmed);
+
+        if ($digits === '') {
+            return null;
+        }
+
+        if ($hasPlus) {
+            return '+' . $digits;
+        }
+
+        return '+' . ltrim($digits, '0');
     }
 
     private function valueOrDefault(array $data, string $key, string $default): string

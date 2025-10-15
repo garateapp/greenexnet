@@ -36,7 +36,7 @@
 @endphp
 
 <table cellpadding="0" cellspacing="0" role="presentation"
-    style="width:544px;height:182px;border-collapse:collapse;background-color:#ffffff;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,0.08);font-family:'Cabin', Arial, Helvetica, sans-serif;color:#333333;">
+    style="width:546px;height:182px;border-collapse:collapse;background-color:#ffffff;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,0.08);font-family:'Cabin', Arial, Helvetica, sans-serif;color:#333333;">
     <tr>
         <td style="padding:24px 28px 0 28px;">
             <table cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:collapse;">
@@ -63,7 +63,7 @@
                                                         style="border-collapse:collapse;" style="width:30%;">
                                                         <tr>
                                                             <td
-                                                                style="padding-right:10px;width:18px;vertical-align:top;margin-left:5px;">
+                                                                style="padding-right:5px;width:18px;vertical-align:top;margin-left:5px;">
                                                                 <img src="{{ $iconMail }}" alt="Correo"
                                                                     style="width:22px;height:16px;display:block;">
                                                             </td>
@@ -131,7 +131,7 @@
                                 {!! $qrSvg !!}
                             </div>
                         @elseif($qrImg)
-                            <div style="width:150px;height:150px;margin:0 auto;padding:15px;">
+                            <div style="width:180px;height:180px;margin:0 auto;padding:15px;">
                                 <img src="{{ $qrImg }}" alt="QR de contacto"
                                     style="width:100%;height:100%;display:block;">
                             </div>
@@ -141,8 +141,8 @@
                                 QR no disponible
                             </div>
                         @endif
-                        <div style="font-size:10px;color:#999999;text-align:center;padding-left:30px;margin-top:7px">
-                            <table style="float:right;width: 70%;margin-right:22px;">
+                        <div style="font-size:10px;color:#999999;text-align:center;padding-left:30px;margin-top:-10px">
+                            <table style="float:right;width: 70%;margin-right:10px;">
                                 <tr>
                                     @if ($linkedin)
                                         <td style="padding:0 6px;">
