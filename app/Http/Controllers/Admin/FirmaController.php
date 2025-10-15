@@ -25,7 +25,7 @@ class FirmaController extends Controller
             'website' => old('website', config('app.url')),
             'linkedin' => old('linkedin', ''),
             'instagram' => old('instagram', ''),
-            'address_line_1' => old('address_line_1', "Av. O'Higgins 740,"),
+            'address_line_1' => old('address_line_1', "Av O'Higgins 740,"),
             'address_line_2' => old('address_line_2', 'Codegua, Chile'),
         ];
 

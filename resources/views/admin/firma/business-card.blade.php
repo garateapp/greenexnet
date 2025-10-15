@@ -9,7 +9,7 @@
     $message = $message ?? '';
     $addressLine1 = $addressLine1 ?? null;
     $addressLine2 = $addressLine2 ?? null;
-    $logo = $logo ?? secure_asset('img/logo.jpg');
+    $logo = $logo ?? secure_asset('img/logo_gnx111.png');
     $qrSvg = $qrSvg ?? null;
     $qrImg = $qrImg ?? null;
     $qrUrl = $qrUrl ?? null;
@@ -29,9 +29,9 @@
     $iconMail = secure_asset('img/mail.jpg');
     $iconPhone = secure_asset('img/phone.jpg');
     $iconLocation = secure_asset('img/location.jpg');
-    $iconLinkedin = secure_asset('img/linkedin1.0.png');
-    $iconInstagram = secure_asset('img/in1.0.png');
-    $iconWeb = secure_asset('img/web1.0.png');
+    $iconLinkedin = secure_asset('img/link_icono1.png');
+    $iconInstagram = secure_asset('img/insta_icono1.png');
+    $iconWeb = secure_asset('img/web_icono1.png');
     $wave = secure_asset('img/ondaverde1.0.png');
 @endphp
 
@@ -42,12 +42,12 @@
             <table cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:collapse;">
                 <tr>
                     <td style="text-align:left;width:371px;height:182px;">
-                        <img src="{{ $logo }}" alt="Greenex" style="max-width:180px;height:auto;">
-                        <div style="font-size:20px;font-weight:700;color:#389542;text-transform:uppercase;">
+                        <img src="{{ $logo }}" alt="Greenex" style="max-width:150px;height:auto;">
+                        <div style="font-size:20px;font-weight:900;color:#393c3a;text-transform:uppercase;padding-top:10px;">
                             {{ $name }}
                         </div>
                         <div
-                            style="font-size:12px;font-weight:500;color:#555555;text-transform:uppercase;margin-top:2px;">
+                            style="font-size:14px;font-weight:100;color:#555555;text-transform:capitalize;margin-top:-5px;">
                             {{ $role }}
                         </div>
                         <div>
@@ -65,7 +65,7 @@
                                                             <td
                                                                 style="padding-right:10px;width:18px;vertical-align:top;margin-left:5px;">
                                                                 <img src="{{ $iconMail }}" alt="Correo"
-                                                                    style="width:22px;height:18px;display:block;">
+                                                                    style="width:22px;height:16px;display:block;">
                                                             </td>
                                                             <td style="font-size:12px;">
                                                                 <a href="mailto:{{ $email }}"
@@ -79,13 +79,13 @@
                                                     <td style="">
                                                         <table role="presentation" cellpadding="0" cellspacing="0"
                                                             style="border-collapse:collapse;">
-                                                            <tr>
+                                                            <tr style="padding-top:5px;">
                                                                 <td
-                                                                    style="padding-left:10px;padding-right:10px;width:18px;vertical-align:middle;">
+                                                                    style="padding-left:8px;padding-right:6px;width:18px;vertical-align:top;padding-top:15px;">
                                                                     <img src="{{ $iconLocation }}" alt="Ubicación"
-                                                                        style="width:18px;height:18px;display:block;">
+                                                                        style="width:16px;height:22px;display:block;">
                                                                 </td>
-                                                                <td style="font-size:12px;color:#555555;">
+                                                                <td style="font-size:12px;color:#555555;padding-top:15px;">
                                                                     {!! $addressHtml !!}
                                                                 </td>
                                                             </tr>
@@ -99,14 +99,14 @@
 
                                             @if ($phone)
                                                 <tr>
-                                                    <td style="padding:0px 0;">
+                                                    <td style="padding-top:-10px;">
                                                         <table role="presentation" cellpadding="0" cellspacing="0"
                                                             style="border-collapse:collapse;">
                                                             <tr>
                                                                 <td
                                                                     style="padding-right:10px;width:18px;vertical-align:top;">
                                                                     <img src="{{ $iconPhone }}" alt="Teléfono"
-                                                                        style="width:18px;height:22px;display:block;">
+                                                                        style="width:16px;height:22px;display:block;">
                                                                 </td>
                                                                 <td style="font-size:12px;">
                                                                     <a href="{{ $whatsUrl ?: 'tel:' . $whatsPhone }}"
@@ -127,11 +127,11 @@
                     </td>
                     <td style="width:173px;height:182px;">
                         @if ($qrSvg)
-                            <div style="width:150px;height:150px;margin:0 auto;padding:10px;">
+                            <div style="width:150px;height:150px;margin:0 auto;padding:15px;">
                                 {!! $qrSvg !!}
                             </div>
                         @elseif($qrImg)
-                            <div style="width:150px;height:150px;margin:0 auto;padding:10px;">
+                            <div style="width:150px;height:150px;margin:0 auto;padding:15px;">
                                 <img src="{{ $qrImg }}" alt="QR de contacto"
                                     style="width:100%;height:100%;display:block;">
                             </div>
@@ -142,7 +142,7 @@
                             </div>
                         @endif
                         <div style="font-size:10px;color:#999999;text-align:center;padding-left:30px;margin-top:7px">
-                            <table style="float:right;width: 70%;margin-right:22px;background-color:#389542;">
+                            <table style="float:right;width: 70%;margin-right:22px;">
                                 <tr>
                                     @if ($linkedin)
                                         <td style="padding:0 6px;">

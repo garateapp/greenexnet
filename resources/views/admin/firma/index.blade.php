@@ -20,7 +20,7 @@
                         @if(Auth::user()->email == 'admin@admin.com')
                         <input type="text" name="name" class="form-control" value="">
                         @else
-                        <input type="text" name="name" class="form-control" value="{{ $defaults['name'] }}" readonly>
+                        <input type="text" name="name" class="form-control" value="{{ Auth::user()->name }}" readonly>
                         @endif
                     </div>
 
@@ -29,7 +29,7 @@
                         @if(Auth::user()->email == 'admin@admin.com')
                         <input type="email" name="email" class="form-control" value="">
                         @else
-                        <input type="email" name="name" class="form-control" value="{{ $defaults['email'] }}" readonly>
+                        <input type="email" name="email" class="form-control" value="{{Auth::user()->email}}" readonly>
                         @endif
                     </div>
 
@@ -43,7 +43,7 @@
 
                     <div class="form-group">
                         <label class="required" for="phone">Teléfono</label>
-                        <input type="text" class="form-control @error('phone') is-invalid @enderror" id="phone" name="phone" value="{{ $defaults['phone'] }}" required maxlength="50" placeholder="56999999999">
+                        <input type="text" class="form-control @error('phone') is-invalid @enderror" id="phone" name="phone" value="{{ $defaults['phone'] }}" required maxlength="50" placeholder="+56999999999">
                         @error('phone')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -105,9 +105,7 @@
                 @if($signature)
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="mb-0">Vista previa</h5>
-                        <button type="button" class="btn btn-outline-primary btn-sm" id="copy-signature-html">
-                            Copiar HTML
-                        </button>
+
                     </div>
 
                     <div id="signature-preview">
