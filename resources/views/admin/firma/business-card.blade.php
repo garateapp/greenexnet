@@ -131,7 +131,7 @@
                                 {!! $qrSvg !!}
                             </div>
                         @elseif($qrImg)
-                            <div style="width:180px;height:180px;margin:15px auto;padding:15px;margin-top:-35px">
+                            <div style="width:180px;height:150px;margin:15px auto;padding:15px;margin-top:-35px">
                                 <img src="{{ $qrImg }}" alt="QR de contacto"
                                     style="width:100%;height:100%;display:block;">
                             </div>
@@ -142,7 +142,7 @@
                             </div>
                         @endif
                         <div style="margin-top:-40px;">
-                            <table style="border-collapse:collapse;float:right;width: 96px;margin-right:44px;">
+                            <table style="border-collapse:collapse;float:right;width: 96px;margin-right:20px;">
                                 <tr>
                                     @if ($linkedin)
                                         <td style="padding:0 6px;">
