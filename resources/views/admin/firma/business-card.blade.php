@@ -131,7 +131,7 @@
                                 {!! $qrSvg !!}
                             </div>
                         @elseif($qrImg)
-                            <div style="width:180px;height:150px;margin:15px auto;padding:15px;margin-top:-35px">
+                            <div style="width:150px;height:150px;margin:15px auto;padding:15px;margin-top:-35px">
                                 <img src="{{ $qrImg }}" alt="QR de contacto"
                                     style="width:100%;height:100%;display:block;">
                             </div>
