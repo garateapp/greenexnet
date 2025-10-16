@@ -35,7 +35,7 @@
 
                     <div class="form-group">
                         <label class="required" for="role">Cargo</label>
-                        <input type="text" class="form-control @error('role') is-invalid @enderror" id="role" name="role" value="{{ $defaults['role'] }}" required maxlength="120">
+                        <input type="text" class="form-control @error('role') is-invalid @enderror" id="role" name="role" value="{{ Auth::user()->cargo }}" required maxlength="120" readonly>
                         @error('role')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
