@@ -30,6 +30,16 @@
                 <span class="help-block">{{ trans('cruds.user.fields.email_helper') }}</span>
             </div>
             <div class="form-group">
+                <label class="required" for="email">Cargo</label>
+                <input class="form-control {{ $errors->has('cargo') ? 'is-invalid' : '' }}" type="text" name="cargo" id="cargo" value="{{ old('cargo') }}" required>
+                @if($errors->has('cargo'))
+                    <div class="invalid-feedback">
+                        {{ $errors->first('cargo') }}
+                    </div>
+                @endif
+                <span class="help-block"></span>
+            </div>
+            <div class="form-group">
                 <div class="form-check {{ $errors->has('approved') ? 'is-invalid' : '' }}">
                     <input type="hidden" name="approved" value="0">
                     <input class="form-check-input" type="checkbox" name="approved" id="approved" value="1" {{ old('approved', 0) == 1 ? 'checked' : '' }}>

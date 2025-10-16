@@ -32,6 +32,9 @@
                             {{ trans('cruds.user.fields.email') }}
                         </th>
                         <th>
+                            Cargo
+                        </th>
+                        <th>
                             {{ trans('cruds.user.fields.email_verified_at') }}
                         </th>
                         <th>
@@ -55,6 +58,9 @@
                     </tr>
                     <tr>
                         <td>
+                        </td>
+                        <td>
+                            <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                         </td>
                         <td>
                             <input class="search" type="text" placeholder="{{ trans('global.search') }}">
@@ -108,6 +114,9 @@
                             </td>
                             <td>
                                 {{ $user->email ?? '' }}
+                            </td>
+                            <td>
+                                {{ $user->cargo ?? '' }}
                             </td>
                             <td>
                                 {{ $user->email_verified_at ?? '' }}
@@ -214,7 +223,7 @@
       $($.fn.dataTable.tables(true)).DataTable()
           .columns.adjust();
   });
-  
+
 let visibleColumnsIndexes = null;
 $('.datatable thead').on('input', '.search', function () {
       let strict = $(this).attr('strict') || false

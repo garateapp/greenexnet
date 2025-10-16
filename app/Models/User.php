@@ -55,6 +55,7 @@ class User extends Authenticatable implements HasMedia
         'estado_id',
         'updated_at',
         'deleted_at',
+        'cargo',
     ];
 
     protected function serializeDate(DateTimeInterface $date)
