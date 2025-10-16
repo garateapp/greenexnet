@@ -142,7 +142,7 @@
                             </div>
                         @endif
                         <div>
-                            <table style="border-collapse:collapse;float:right;width: 96px;margin-right:17px;">
+                            <table style="border-collapse:collapse;float:right;width: 96px;margin-right:25px;">
                                 <tr>
                                     @if ($linkedin)
                                         <td style="padding:0 6px;">
