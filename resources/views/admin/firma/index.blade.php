@@ -43,7 +43,7 @@
 
                     <div class="form-group">
                         <label class="required" for="phone">Teléfono</label>
-                        <input type="text" class="form-control @error('phone') is-invalid @enderror" id="phone" name="phone" value="{{ $defaults['phone'] }}" required maxlength="50" placeholder="+56999999999">
+                        <input type="text" class="form-control @error('phone') is-invalid @enderror" id="phone" name="phone" value="{{ $defaults['phone'] }}" required maxlength="50" placeholder="56999999999">
                         @error('phone')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
