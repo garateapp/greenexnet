@@ -51,7 +51,7 @@
 
                     <div class="form-group">
                         <label class="required" for="texto">Mensaje para WhatsApp</label>
-                        <input type="text" class="form-control @error('texto') is-invalid @enderror" id="texto" name="texto" value="{{ $defaults['texto'] }}" required maxlength="150" placeholder="Hola, gracias por contactarme.">
+                        <input type="text" class="form-control @error('texto') is-invalid @enderror" id="texto" name="texto" value="Hola, le contacto para" required maxlength="150" placeholder="Hola, te contacto para">
                         @error('texto')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
