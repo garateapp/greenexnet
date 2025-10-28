@@ -652,7 +652,7 @@
                         38 || cell.index().column === 39 || cell.index().column === 40 || cell
                         .index().column === 35) {
                         $(this).html(
-                            '<div class="form-group"><input type="text" class="form-control date" value="' +
+                            '<div class="form-group"><input type="date" class="form-control date" value="' +
                             originalValue + '"></div>');
 
                     }

@@ -266,7 +266,7 @@ class EmbarquesController extends Controller
                 'numero_referencia',
                 'nave'
             )
-            ->where(DB::raw('DATEPART(WEEK, etd)'), '>', 43)
+            ->where(DB::raw('DATEPART(WEEK, fecha_embarque)'), '>=', 43)
             //->where('n_embarque', '>', $cargados->num_embarque)
             ->where('id_exportadora', '=', '22')
             ->whereNotNull('id_destinatario')
@@ -377,7 +377,7 @@ class EmbarquesController extends Controller
                 'etd_estimado' => Carbon::parse($embarqueAgrupado[0]->etd_estimado)->format('d-m-Y H:i:s'), //$embarqueAgrupado[0]->etd_estimado,
                 'eta_estimado' => Carbon::parse($embarqueAgrupado[0]->eta_estimado)->format('d-m-Y H:i:s'), //$embarqueAgrupado[0]->eta_estimado,
                 'numero_reserva_agente_naviero' => $embarqueAgrupado[0]->numero_reserva_agente_naviero,
-                'cant_pallets' => $embarqueAgrupado->sum('cant_pallets'),
+                'cant_pallets' => $embarqueAgrupado[0]->cant_pallets,
                 'temporada' => $embarqueAgrupado[0]->temporada,
                 'transporte' => $embarqueAgrupado[0]->transporte,
             ];
@@ -410,7 +410,6 @@ class EmbarquesController extends Controller
             $objEmbarque->numero_reserva_agente_naviero = $embarque["numero_reserva_agente_naviero"];
             $objEmbarque->cant_pallets = $embarque["cant_pallets"];
             $objEmbarque->transporte = $embarque["transporte"];
-
             $objEmbarque->save();
         }
 
@@ -503,9 +502,12 @@ class EmbarquesController extends Controller
     {
         $embarques = Embarque::whereNull('fecha_arribo_real')->where("transporte", "=", "AEREO")->orderBy('num_embarque', 'desc')->get();
         $mensaje = new Mensaje();
-        $mensaje->mensaje = 'CARGA DIARIA/TMP 2024-2025';
-        Mail::to(['iromero@greenex.cl', 'rodrigo.garate@greenex.cl', 'eduardo.garate@greenex.cl', 'mario.yanez@greenex.cl', 'cobranzas@greenex.cl', 'pcarreno@greenex.cl'])
-            ->cc(['comex@greenex.cl', 'hhoffmann@greenex.cl', 'docs@greenex.cl', 'exportaciones@greenex.cl', 'carol.padilla@greenex.cl'])
+        $mensaje->mensaje = 'CARGA DIARIA/TMP 2025-2026';
+        // Mail::to(['iromero@greenex.cl', 'rodrigo.garate@greenex.cl', 'eduardo.garate@greenex.cl', 'mario.yanez@greenex.cl', 'cobranzas@greenex.cl', 'pcarreno@greenex.cl'])
+        //     ->cc(['comex@greenex.cl', 'hhoffmann@greenex.cl', 'docs@greenex.cl', 'exportaciones@greenex.cl', 'carol.padilla@greenex.cl'])
+        //     ->send(new MensajeGenericoMailable($mensaje, ''));
+        Mail::to(['carlos.alvarez@greenex.cl'])
+            //->cc(['carol.padilla@greenex.cl'])
             ->send(new MensajeGenericoMailable($mensaje, ''));
         return view('mail.seguimiento-embarques', compact('embarques'));
     }
