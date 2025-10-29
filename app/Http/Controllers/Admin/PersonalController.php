@@ -541,7 +541,6 @@ class PersonalController extends Controller
 
                 while ($current) {
                     if (isset($visited[$current->id])) {
-                        $segments[] = '[ciclo]';
                         break;
                     }
 
