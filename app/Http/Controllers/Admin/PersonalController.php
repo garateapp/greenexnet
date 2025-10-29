@@ -531,15 +531,25 @@ class PersonalController extends Controller
         $supervisors = Personal::where('is_supervisor', 1) // Assuming cargo_id 2 is for supervisors
             ->pluck('nombre', 'id');
 
-        $parentLocations = \App\Models\Locacion::with('locacion_padre')
-            // ->where('locacion_padre_id', 1)
-            ->get()
-            ->mapWithKeys(function ($locacion) {
-                $parentName = optional($locacion->locacion_padre)->nombre;
-                $displayName = $parentName ? $parentName . ' - ' . $locacion->nombre : $locacion->nombre;
+        $allLocations = \App\Models\Locacion::with('locacion_padre')->get();
 
-                return [$locacion->id => $displayName];
+        $buildPath = function ($locacion) use (&$buildPath, $allLocations) {
+            if (!$locacion) {
+                return '';
+            }
+
+            $parent = $allLocations->firstWhere('id', $locacion->locacion_padre_id);
+
+            return $parent ? $buildPath($parent) . ' - ' . $locacion->nombre : $locacion->nombre;
+        };
+
+        $parentLocations = $allLocations
+            ->mapWithKeys(function ($locacion) use ($buildPath) {
+                $path = $buildPath($locacion);
+
+                return [$locacion->id => ltrim($path, ' -')];
             })
+            ->sort()
             ->toArray();
 
         $assignedSupervisors = Personal::with('assignedLocation')
