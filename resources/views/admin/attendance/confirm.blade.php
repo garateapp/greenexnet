@@ -89,6 +89,9 @@
                         if (response.success) {
                             $('#responseMessage').html('<div class="alert alert-success">' + response.message + '</div>');
                             $('#attendanceForm').hide();
+                            setTimeout(function() {
+                                window.close();
+                            }, 3000);
                         } else {
                             $('#responseMessage').html('<div class="alert alert-danger">' + response.message + '</div>');
                         }
