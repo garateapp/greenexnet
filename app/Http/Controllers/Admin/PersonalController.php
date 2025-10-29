@@ -531,8 +531,16 @@ class PersonalController extends Controller
         $supervisors = Personal::where('is_supervisor', 1) // Assuming cargo_id 2 is for supervisors
             ->pluck('nombre', 'id');
 
-        $parentLocations = \App\Models\Locacion::where('locacion_padre_id', 1)
-            ->pluck('nombre', 'id');
+        $parentLocations = \App\Models\Locacion::with('locacion_padre')
+            ->where('locacion_padre_id', 1)
+            ->get()
+            ->mapWithKeys(function ($locacion) {
+                $parentName = optional($locacion->locacion_padre)->nombre;
+                $displayName = $parentName ? $parentName . ' - ' . $locacion->nombre : $locacion->nombre;
+
+                return [$locacion->id => $displayName];
+            })
+            ->toArray();
 
         $assignedSupervisors = Personal::with('assignedLocation')
             ->whereNotNull('assigned_location_id')
