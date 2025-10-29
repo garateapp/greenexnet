@@ -560,7 +560,7 @@ class PersonalController extends Controller
             ->whereNotNull('assigned_location_id')
             ->where('cargo_id', 2)
             ->get();
-
+            dd($assignedSupervisors);
         $selectedSupervisor = null;
         $selectedLocation = null;
 
