@@ -532,7 +532,7 @@ class PersonalController extends Controller
             ->pluck('nombre', 'id');
 
         $parentLocations = \App\Models\Locacion::with('locacion_padre')
-            ->where('locacion_padre_id', 1)
+            // ->where('locacion_padre_id', 1)
             ->get()
             ->mapWithKeys(function ($locacion) {
                 $parentName = optional($locacion->locacion_padre)->nombre;
