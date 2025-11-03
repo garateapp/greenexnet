@@ -322,9 +322,9 @@ class EmbarquesController extends Controller
     {
         foreach ($request->ids as $id) {
             $embarque = Embarque::find($id)->first();
-            //  $actualizacion=DB::connection("sqlsrv")->table('dbo.PKG_Embarques')->where("id_embarque", "=", $request->id_embarque)
-            //  ->update([
-            //      "eta" => $embarque->fecha_arribo_real]);
+              $actualizacion=DB::connection("sqlsrv")->table('dbo.PKG_Embarques')->where("id_embarque", "=", $embarque->origen_embarque_id)
+              ->update([
+                  "eta" => $embarque->fecha_arribo_real]);
 
 
         }
@@ -422,7 +422,9 @@ SQL;
         Excel::store(new SeguimientoEmbarquesExport($embarques), $fileName, $disk);
 
         try {
-            Mail::to(['carlos.alvarez@greenex.cl','carol.padilla@greenex.cl'])
+            $mailList=explode(',',env('MAIL_LIST_EMBARQUE', 'carlos.alvarez@greenex.cl,carol.padilla@greenex.cl'));
+
+            Mail::to($mailList)
                 ->send(new MensajeGenericoMailable(
                     $mensaje,
                     $fileName,
@@ -454,38 +456,103 @@ SQL;
 
         $baseOptionsQuery = Embarque::query()->whereNull('deleted_at');
 
+        $normalizeOption = static function ($value) {
+            if (is_string($value)) {
+                return trim($value);
+            }
+
+            if (is_numeric($value)) {
+                return (string) $value;
+            }
+
+            return $value;
+        };
+
         $filterOptions = [
             'destinatarios' => (clone $baseOptionsQuery)
                 ->whereNotNull('n_cliente')
                 ->orderBy('n_cliente')
                 ->distinct()
-                ->pluck('n_cliente'),
+                ->pluck('n_cliente')
+                ->map($normalizeOption)
+                ->unique()
+                ->values(),
             'embalajes' => (clone $baseOptionsQuery)
                 ->whereNotNull('t_embalaje')
                 ->orderBy('t_embalaje')
                 ->distinct()
-                ->pluck('t_embalaje'),
+                ->pluck('t_embalaje')
+                ->map($normalizeOption)
+                ->unique()
+                ->values(),
             'paises' => (clone $baseOptionsQuery)
                 ->whereNotNull('pais_destino')
                 ->orderBy('pais_destino')
                 ->distinct()
-                ->pluck('pais_destino'),
+                ->pluck('pais_destino')
+                ->map($normalizeOption)
+                ->unique()
+                ->values(),
             'naves' => (clone $baseOptionsQuery)
                 ->whereNotNull('nave')
                 ->orderBy('nave')
                 ->distinct()
-                ->pluck('nave'),
+                ->pluck('nave')
+                ->map($normalizeOption)
+                ->unique()
+                ->values(),
             'contenedores' => (clone $baseOptionsQuery)
                 ->whereNotNull('num_contenedor')
                 ->orderBy('num_contenedor')
                 ->distinct()
-                ->pluck('num_contenedor'),
+                ->pluck('num_contenedor')
+                ->map($normalizeOption)
+                ->unique()
+                ->values(),
+            'numeros_embarque' => (clone $baseOptionsQuery)
+                ->whereNotNull('num_embarque')
+                ->orderBy('num_embarque')
+                ->distinct()
+                ->pluck('num_embarque')
+                ->map($normalizeOption)
+                ->unique()
+                ->values(),
         ];
+
+        $filterDependencies = Embarque::query()
+            ->whereNull('deleted_at')
+            ->select([
+                'n_cliente as destinatario',
+                't_embalaje as embalaje',
+                'pais_destino',
+                'nave',
+                'num_contenedor as contenedor',
+                'num_embarque',
+            ])
+            ->get()
+            ->map(function ($row) use ($normalizeOption) {
+                $normalized = [
+                    'destinatario' => $row->destinatario,
+                    'embalaje' => $row->embalaje,
+                    'pais_destino' => $row->pais_destino,
+                    'nave' => $row->nave,
+                    'contenedor' => $row->contenedor,
+                    'num_embarque' => $row->num_embarque,
+                ];
+                return array_map($normalizeOption, $normalized);
+            })
+            ->unique(function (array $row) {
+                return implode('|', array_map(static function ($value) {
+                    return $value ?? '';
+                }, $row));
+            })
+            ->values();
 
         return view('admin.embarques.packing-list', [
             'embarques' => $embarques,
             'filters' => $filters,
             'filterOptions' => $filterOptions,
+            'filterDependencies' => $filterDependencies,
         ]);
     }
 
@@ -867,6 +934,7 @@ SQL;
             'pais_destino' => $request->filled('pais_destino') ? trim($request->input('pais_destino')) : null,
             'nave' => $request->filled('nave') ? trim($request->input('nave')) : null,
             'contenedor' => $request->filled('contenedor') ? trim($request->input('contenedor')) : null,
+            'num_embarque' => $request->filled('num_embarque') ? trim($request->input('num_embarque')) : null,
         ];
     }
 
@@ -917,6 +985,10 @@ SQL;
 
         if (!empty($filters['contenedor'])) {
             $query->where('num_contenedor', $filters['contenedor']);
+        }
+
+        if (!empty($filters['num_embarque'])) {
+            $query->where('num_embarque', $filters['num_embarque']);
         }
 
         return $query->orderByDesc('fecha_despacho')->orderByDesc('created_at');
