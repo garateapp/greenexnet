@@ -482,6 +482,15 @@
                         </a>
                     </li>
                     <li class="c-sidebar-nav-item">
+                        <a href="{{ route('admin.embarques.packingList') }}"
+                            class="c-sidebar-nav-link {{ request()->is('admin/embarques/packing-list') || request()->is('admin/embarques/packing-list/*') ? 'c-active' : '' }}">
+                            <i class="fa-fw fas fa-box-open c-sidebar-nav-icon">
+
+                            </i>
+                            Packing List
+                        </a>
+                    </li>
+                    <li class="c-sidebar-nav-item">
                         <a href="{{ route('admin.embarques.ingresagrecepcion') }}"
                             class="c-sidebar-nav-link {{ request()->is('admin/detalle-embarques') || request()->is('admin/detalle-embarques/*') ? 'c-active' : '' }}">
                             <i class="fa-fw fas fa-cogs c-sidebar-nav-icon">

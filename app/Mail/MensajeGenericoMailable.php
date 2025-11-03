@@ -2,15 +2,11 @@
 
 namespace App\Mail;
 
-use App\Models\Embarque;
 use App\Models\Mensaje;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Address;
-use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
 
@@ -21,18 +17,21 @@ class MensajeGenericoMailable extends Mailable
 
     public $mensaje;
     public $archivoAdjunto;
-    public $embarque;
+    public $storageDisk;
+    public $totalsByTransportAndClient;
+    public $totalsByTransport;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct(Mensaje $mensaje,string $archivoAdjunto)
+    public function __construct(Mensaje $mensaje, ?string $archivoAdjunto = null, ?string $storageDisk = null, $totalsByTransportAndClient = null, $totalsByTransport = null)
     {
         $this->mensaje = $mensaje;
         $this->archivoAdjunto = $archivoAdjunto;
-
-        $this->attachments();
+        $this->storageDisk = $storageDisk ?? config('filesystems.default');
+        $this->totalsByTransportAndClient = collect($totalsByTransportAndClient ?? []);
+        $this->totalsByTransport = collect($totalsByTransport ?? []);
     }
 
     /**
@@ -42,24 +41,26 @@ class MensajeGenericoMailable extends Mailable
      */
     public function build()
     {
-        $embarques=Embarque::whereNull('fecha_arribo_real')->where("transporte","=","AEREO")->orderBy('num_embarque','desc')->get();
-        return $this->from('contacto@greenex.cl','COMEX Greenex')
-                    ->subject('Seguimiento de Embarques')
-                    ->view('mail.seguimiento-embarques', compact('embarques'))
-                    ->with('data', $this->mensaje);
-    }
+        $mail = $this->from('contacto@greenex.cl', 'COMEX Greenex')
+            ->subject('Seguimiento de Embarques')
+            ->view('mail.seguimiento-embarques', [
+                'totalsByTransportAndClient' => $this->totalsByTransportAndClient,
+                'totalsByTransport' => $this->totalsByTransport,
+            ])
+            ->with('data', $this->mensaje);
 
+        if (
+            $this->archivoAdjunto
+            && Storage::disk($this->storageDisk)->exists($this->archivoAdjunto)
+        ) {
+            $mail->attachFromStorageDisk(
+                $this->storageDisk,
+                $this->archivoAdjunto,
+                basename($this->archivoAdjunto),
+                ['mime' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']
+            );
+        }
 
-    /**
-     * Get the attachments for the message.
-     *
-     * @return array
-     */
-    public function attachments()
-    {    $archivoAdjunto = Storage::path($this->archivoAdjunto);
-
-        return [
-            $archivoAdjunto,
-        ];
+        return $mail;
     }
 }

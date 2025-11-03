@@ -3,7 +3,7 @@
 
 <head>
     <style>
-        /* Agrega estilos CSS personalizados aquí */
+        /* Agrega estilos CSS personalizados aqui */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -37,6 +37,8 @@
 .table thead th {
     vertical-align: bottom;
     border-bottom: 2px solid #dee2e6;
+    background-color: #048713;
+    color: #fff;
 }
 .table tbody + tbody {
     border-top: 2px solid #dee2e6;
@@ -88,7 +90,7 @@
             #contenido {
                 margin: 2px 30px;
                 max-width: 600px;
-                /* Ancho máximo del contenido */
+                /* Ancho maximo del contenido */
             }
         }
     </style>
@@ -96,98 +98,156 @@
 
 <body>
     <div id="header">
-        <img src="https://appgreenex.cl/image/logogreenex.png" alt="Logo de Greenex">
+        <img src="https://net.greenexweb.cl/img/logo_gnx111.png" alt="Logo de Greenex">
     </div>
     <div id="contenido">
+        @php
+            $totalsByTransportAndClient = $totalsByTransportAndClient ?? collect();
+            $totalsByTransport = $totalsByTransport ?? collect();
+            $verticalTotals = $totalsByTransport->reduce(function ($carry, $row) {
+                $carry['total_pallets'] = ($carry['total_pallets'] ?? 0) + (float) ($row->total_pallets ?? 0);
+                $carry['total_cajas'] = ($carry['total_cajas'] ?? 0) + (float) ($row->total_cajas ?? 0);
+                $carry['cargas'] = ($carry['cargas'] ?? 0) + (int) ($row->cargas ?? 0);
+                return $carry;
+            }, ['total_pallets' => 0, 'total_cajas' => 0, 'cargas' => 0]);
+        @endphp
         <p>Estimados,</p>
-        <p>les envíamos el seguimiento de los embarques a la fecha {{ date('d-m-Y') }}</p>
-
-        <table class=" table table-bordered table-striped table-hover ajaxTable datatable datatable-Embarque"
-        id="datatable-Embarque">
-        <thead>
-            <tr>
-                <th colspan="10"></th>
-                <th colspan="2">Conexiones</th>
-                <th colspan="4"></th>
-            <tr>
-
-
-                <th>
-                N° Embarque
-                </th>
-
-                <th>
-                Cliente
-                </th>
-                <th>
-                    AWB
-                </th>
-                <th>
-                    Variedad
-                </th>
-                <th>
-                    Cajas
-                </th>
-                <th>
-                    N° Pallets
-                </th>
-
-                <th>
-                    Aerop. Destino
-                </th>
-                <th>
-                    ETD Estimado
-                </th>
-                <th>
-                    ETA Estimado
-                </th>
-                <th>
-                    ETD Real
-                </th>
-                <th>
-                    País Conexión
-                </th>
-                <th>
-                    Fecha Hora
-                </th>
-                <th>
-                    ETA Real
-                </th>
-                <th>
-                    Status Aéreo
-                </th>
-
-                <th>
-                   Observaciones
-                </th>
-
-
-            </tr>
-            </thead>
-            <tbody>
-                @foreach ($embarques as $embarque)
+        <p>les enviamos el seguimiento de los embarques a la fecha {{ date('d-m-Y') }}</p>
+         @if ($totalsByTransport->isNotEmpty())
+            <h4>Resumen por transporte</h4>
+            <table class="table table-bordered table-striped table-hover">
+                <thead>
                     <tr>
-                        <td>{{ $embarque->num_embarque }}</td>
-                        <td>{{ $embarque->n_cliente }}</td>
-                        <td>{{ $embarque->numero_reserva_agente_naviero }}</td>
-                        <td>{{ $embarque->variedad }}</td>
-                        <td>{{ $embarque->cajas }}</td>
-                        <td>{{ $embarque->cant_pallets }}</td>
-                        <td>{{ $embarque->puerto_destino }}</td>
-                        <td>{{ $embarque->etd_estimado }}</td>
-                        <td>{{ $embarque->eta_estimado }}</td>
-                        <td>{{ $embarque->fecha_zarpe_real }}</td>
-                        <td>{{ $embarque->pais_conexion }}</td>
-                        <td>{{ $embarque->conexion }}</td>
-                        <td>{{ $embarque->fecha_arribo_real }}</td>
-                        <td>{{ $embarque->status_aereo }}</td>
-                        <td>{{ $embarque->notas }}</td>
+                        <th>Transporte</th>
+                        <th>Total Pallets</th>
+                        <th>Total Cajas</th>
+                        <th>Cargas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($totalsByTransport as $row)
+                        <tr>
+                            <td>{{ $row->transporte }}</td>
+                            <td>{{ number_format($row->total_pallets ?? 0, 0, ',', '.') }}</td>
+                            <td>{{ number_format($row->total_cajas ?? 0, 0, ',', '.') }}</td>
+                            <td>{{ $row->cargas }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th>Total</th>
+                        <th>{{ number_format($verticalTotals['total_pallets'], 0, ',', '.') }}</th>
+                        <th>{{ number_format($verticalTotals['total_cajas'], 0, ',', '.') }}</th>
+                        <th>{{ number_format($verticalTotals['cargas'], 0, ',', '.') }}</th>
+                    </tr>
+                </tfoot>
+            </table>
+        @endif
+        @if ($totalsByTransportAndClient->isNotEmpty())
+            <h4>Resumen por transporte y cliente</h4>
+            @php
+                $transports = $totalsByTransportAndClient->pluck('transporte')->filter()->unique()->sort()->values();
+                $clients = $totalsByTransportAndClient
+                    ->map(function ($row) {
+                        return $row->n_cliente ?? 'Sin nombre';
+                    })
+                    ->unique()
+                    ->sort()
+                    ->values();
+                $dataMatrix = $totalsByTransportAndClient->reduce(function ($carry, $row) {
+                    $client = $row->n_cliente ?? 'Sin nombre';
+                    $transport = $row->transporte;
+                    $key = $client . '||' . $transport;
+                    $carry[$key] = [
+                        'total_pallets' => (float) ($row->total_pallets ?? 0),
+                        'total_cajas' => (float) ($row->total_cajas ?? 0),
+                        'cargas' => (int) ($row->cargas ?? 0),
+                    ];
+                    return $carry;
+                }, []);
+                $rowTotals = [];
+                $columnTotals = [];
+                foreach ($clients as $clientName) {
+                    $rowTotals[$clientName] = ['total_pallets' => 0, 'total_cajas' => 0, 'cargas' => 0];
+                }
+                foreach ($transports as $transportName) {
+                    $columnTotals[$transportName] = ['total_pallets' => 0, 'total_cajas' => 0, 'cargas' => 0];
+                }
+            @endphp
+            <table class="table table-bordered table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th rowspan="2">Cliente</th>
+                        @foreach ($transports as $transport)
+                            <th colspan="3">{{ $transport }}</th>
+                        @endforeach
+                        <th colspan="3">Total Cliente</th>
+                    </tr>
+                    <tr>
+                        @foreach ($transports as $transport)
+                            <th>Total Pallets</th>
+                            <th>Total Cajas</th>
+                            <th>Cargas</th>
+                        @endforeach
+                        <th>Total Pallets</th>
+                        <th>Total Cajas</th>
+                        <th>Cargas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($clients as $client)
+                        <tr>
+                            <td>{{ $client }}</td>
+                            @foreach ($transports as $transport)
+                                @php
+                                    $key = $client . '||' . $transport;
+                                    $cell = $dataMatrix[$key] ?? ['total_pallets' => 0, 'total_cajas' => 0, 'cargas' => 0];
+                                    $rowTotals[$client]['total_pallets'] += $cell['total_pallets'];
+                                    $rowTotals[$client]['total_cajas'] += $cell['total_cajas'];
+                                    $rowTotals[$client]['cargas'] += $cell['cargas'];
+                                    $columnTotals[$transport]['total_pallets'] += $cell['total_pallets'];
+                                    $columnTotals[$transport]['total_cajas'] += $cell['total_cajas'];
+                                    $columnTotals[$transport]['cargas'] += $cell['cargas'];
+                                @endphp
+                                <td>{{ number_format($cell['total_pallets'], 0, ',', '.') }}</td>
+                                <td>{{ number_format($cell['total_cajas'], 0, ',', '.') }}</td>
+                                <td>{{ number_format($cell['cargas'], 0, ',', '.') }}</td>
+                        @endforeach
+                        <td>{{ number_format($rowTotals[$client]['total_pallets'], 0, ',', '.') }}</td>
+                        <td>{{ number_format($rowTotals[$client]['total_cajas'], 0, ',', '.') }}</td>
+                        <td>{{ number_format($rowTotals[$client]['cargas'], 0, ',', '.') }}</td>
                     </tr>
                 @endforeach
-            </tbody>
-        </table>
-        <p>Para mayor información ingresar a nuestra intranet <a
-                href="http://net.greenex.cl">net.greenex.cl</a> menú COMEX opción embarques</p>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th>Total Transporte</th>
+                        @php
+                            $grandTotals = ['total_pallets' => 0, 'total_cajas' => 0, 'cargas' => 0];
+                        @endphp
+                        @foreach ($transports as $transport)
+                            @php
+                                $grandTotals['total_pallets'] += $columnTotals[$transport]['total_pallets'];
+                                $grandTotals['total_cajas'] += $columnTotals[$transport]['total_cajas'];
+                                $grandTotals['cargas'] += $columnTotals[$transport]['cargas'];
+                            @endphp
+                            <td>{{ number_format($columnTotals[$transport]['total_pallets'], 0, ',', '.') }}</td>
+                            <td>{{ number_format($columnTotals[$transport]['total_cajas'], 0, ',', '.') }}</td>
+                            <td>{{ number_format($columnTotals[$transport]['cargas'], 0, ',', '.') }}</td>
+                        @endforeach
+                        <td>{{ number_format($grandTotals['total_pallets'], 0, ',', '.') }}</td>
+                        <td>{{ number_format($grandTotals['total_cajas'], 0, ',', '.') }}</td>
+                        <td>{{ number_format($grandTotals['cargas'], 0, ',', '.') }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        @endif
+
+
+        <p>Adjuntamos el detalle completo de embarques en el archivo Excel incluido en este correo.</p>
+        <p>Para mayor informacion ingresar a nuestra intranet <a
+                href="http://net.greenex.cl">net.greenex.cl</a> menu COMEX opcion embarques</p>
         <p>Saludos,</p>
         <p>Equipo Greenex</p>
     </div>

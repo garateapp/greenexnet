@@ -9,6 +9,8 @@ use App\Http\Requests\StoreEmbarqueRequest;
 use App\Http\Requests\UpdateEmbarqueRequest;
 use App\Models\Embarque;
 use App\Imports\ExcelImport;
+use App\Exports\SeguimientoEmbarquesExport;
+use App\Exports\PackingListExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -21,9 +23,10 @@ use DB;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
+use App\Services\EmbarqueImporter;
 use App\Models\Mensaje;
-use App\Mail\MiMailable;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use App\Mail\MensajeGenericoMailable;
 
 class EmbarquesController extends Controller
@@ -231,191 +234,20 @@ class EmbarquesController extends Controller
 
         return response(null, Response::HTTP_NO_CONTENT);
     }
-    public function ImportarEmbarques()
+    public function ImportarEmbarques(EmbarqueImporter $importer)
     {
+        $summary = $importer->import();
 
-        $cargados = Embarque::orderBy('num_embarque', 'desc')->first();
-
-        $embarques = DB::connection("sqlsrv")->table('dbo.V_PKG_Embarques')
-            ->select(
-                'n_embarque',
-                'id_destinatario',
-                'n_destinatario',
-                'fecha_embarque',
-                DB::RAW('DATEPART(WEEK, etd) as Semana'),
-                'n_packing_origen',
-                'n_naviera',
-                'n_nave',
-                'contenedor',
-                'N_Especie',
-                'N_Variedad',
-                'n_embalaje',
-                't_embalaje',
-                'n_etiqueta',
-                DB::RAW('SUM(Cantidad) as Cajas'),
-                DB::RAW('SUM(peso_neto) as Peso_neto'),
-                'n_puerto_origen',
-                'n_pais_destino',
-                'n_puerto_destino',
-                'transporte',
-                'n_packing_origen',
-                'etd',
-                'eta',
-                'numero_reserva_agente_naviero',
-                'total_pallets',
-                'numero_referencia',
-                'nave'
+        $message = $summary['processed'] > 0
+            ? sprintf(
+                'Importación completada: %d nuevos, %d actualizados. (%d registros omitidos)',
+                $summary['created'],
+                $summary['updated'],
+                $summary['skipped']
             )
-            ->where(DB::raw('DATEPART(WEEK, fecha_embarque)'), '>=', 43)
-            //->where('n_embarque', '>', $cargados->num_embarque)
-            ->where('id_exportadora', '=', '22')
-            ->whereNotNull('id_destinatario')
-            ->whereNotNull('n_destinatario')
-            ->groupBy(
-                'n_embarque',
+            : 'No se encontraron nuevos embarques para importar.';
 
-                'n_destinatario',
-                'id_destinatario',
-                'fecha_embarque',
-                'n_packing_origen',
-                'n_naviera',
-                'n_nave',
-                'contenedor',
-                'N_Especie',
-                'N_Variedad',
-                'n_embalaje',
-                't_embalaje',
-                'n_etiqueta',
-                'n_puerto_origen',
-                'n_pais_destino',
-                'n_puerto_destino',
-                'transporte',
-                'n_packing_origen',
-                'total_pallets',
-                'etd',
-                'eta',
-                'numero_reserva_agente_naviero',
-                'numero_referencia',
-                'nave'
-            )->get();
-        $lstEmbarque = collect();
-
-        foreach ($embarques as $embarque) {
-            $objEmbarque = new Embarque();
-            $annioEmb = Carbon::parse($embarque->fecha_embarque)->year;
-            $agno = date('Y');
-
-            if (date('Y') == Carbon::parse($embarque->fecha_embarque)->year) {
-                $temporada = $annioEmb . '-' . ($annioEmb + 1);
-            } else {
-                $temporada = ($annioEmb - 1) . '-' . ($annioEmb);
-            }
-
-            $objEmbarque->temporada = $temporada;
-            $objEmbarque->num_embarque = $embarque->n_embarque;
-            $objEmbarque->id_cliente = $embarque->id_destinatario;
-            $objEmbarque->n_cliente = $embarque->n_destinatario;
-            $objEmbarque->semana = $embarque->Semana;
-            $objEmbarque->planta_carga = $embarque->n_packing_origen;
-            $objEmbarque->n_naviera = $embarque->n_naviera;
-            $objEmbarque->nave = $embarque->n_nave;
-            $objEmbarque->num_contenedor = $embarque->contenedor;
-            $objEmbarque->especie = $embarque->N_Especie;
-            $objEmbarque->variedad = $embarque->N_Variedad;
-            $objEmbarque->embalajes = $embarque->n_embalaje;
-            $objEmbarque->etiqueta = $embarque->n_etiqueta;
-            $objEmbarque->cajas = $embarque->Cajas;
-            $objEmbarque->peso_neto = $embarque->Peso_neto;
-            $objEmbarque->puerto_embarque = $embarque->n_puerto_origen;
-            $objEmbarque->pais_destino = $embarque->n_pais_destino;
-            $objEmbarque->puerto_destino = $embarque->n_puerto_destino;
-            $objEmbarque->mercado = $embarque->transporte;
-            $objEmbarque->etd_estimado = Carbon::parse($embarque->etd)->format('d-m-Y H:i:s'); //$embarque->etd;
-            $objEmbarque->eta_estimado = Carbon::parse($embarque->eta)->format('d-m-Y H:i:s'); //$embarque->eta;
-            $objEmbarque->numero_reserva_agente_naviero = $embarque->numero_reserva_agente_naviero;
-            $objEmbarque->cant_pallets = $embarque->total_pallets;
-            $objEmbarque->transporte = $embarque->transporte;
-
-
-            $lstEmbarque->push($objEmbarque);
-        }
-        $lstEmbarqueAgrupado = $lstEmbarque->groupBy('num_embarque');
-        $lstEmbarque = new Collection();
-        $lstEmbarque = $lstEmbarqueAgrupado->map(function ($embarqueAgrupado, $num_embarque) {
-
-            return [
-                'num_embarque' => $num_embarque,
-                'id_cliente' => $embarqueAgrupado[0]->id_cliente,
-                'n_cliente' => $embarqueAgrupado[0]->n_cliente,
-                'semana' => $embarqueAgrupado[0]->semana,
-                'planta_carga' => $embarqueAgrupado[0]->planta_carga,
-                'n_naviera' => $embarqueAgrupado[0]->n_naviera,
-                'nave' => $embarqueAgrupado[0]->nave,
-                'num_contenedor' => $embarqueAgrupado[0]->num_contenedor,
-                'especie' => $embarqueAgrupado[0]->especie,
-                'variedad' => collect($embarqueAgrupado->pluck('variedad')->toArray())
-                    ->filter() // Eliminar valores nulos o vacíos
-                    ->unique() // Asegurar valores únicos
-                    ->implode(', '),
-                'embalajes' => collect($embarqueAgrupado->pluck('embalajes')->toArray())
-                    ->filter() // Eliminar valores nulos o vacíos
-                    ->map(function ($embalaje) {
-                        // Extraer únicamente los valores de Kg con una expresión regular
-                        preg_match('/(\d+(?:[.,]\d+)?)\s*kg/i', $embalaje, $matches);
-                        return isset($matches[1]) ? $matches[1] . ' Kg' : null;
-                    })
-                    ->filter() // Eliminar valores nulos generados por embalajes sin Kg
-                    ->unique() // Asegurar valores únicos
-                    ->implode(', '),
-                'etiqueta' => $embarqueAgrupado[0]->etiqueta,
-                'cajas' => $embarqueAgrupado->sum('cajas'),
-                'peso_neto' => $embarqueAgrupado->sum('peso_neto'),
-                'puerto_embarque' => $embarqueAgrupado[0]->puerto_embarque,
-                'pais_destino' => $embarqueAgrupado[0]->pais_destino,
-                'puerto_destino' => $embarqueAgrupado[0]->puerto_destino,
-                'mercado' => $embarqueAgrupado[0]->mercado,
-                'etd_estimado' => Carbon::parse($embarqueAgrupado[0]->etd_estimado)->format('d-m-Y H:i:s'), //$embarqueAgrupado[0]->etd_estimado,
-                'eta_estimado' => Carbon::parse($embarqueAgrupado[0]->eta_estimado)->format('d-m-Y H:i:s'), //$embarqueAgrupado[0]->eta_estimado,
-                'numero_reserva_agente_naviero' => $embarqueAgrupado[0]->numero_reserva_agente_naviero,
-                'cant_pallets' => $embarqueAgrupado[0]->cant_pallets,
-                'temporada' => $embarqueAgrupado[0]->temporada,
-                'transporte' => $embarqueAgrupado[0]->transporte,
-            ];
-        });
-        foreach ($lstEmbarque as $embarque) {
-
-            $objEmbarque = new Embarque();
-
-            $objEmbarque->temporada = $embarque["temporada"];
-            $objEmbarque->num_embarque = $embarque["num_embarque"];
-            $objEmbarque->id_cliente = $embarque["id_cliente"];
-            $objEmbarque->n_cliente = $embarque["n_cliente"];
-            $objEmbarque->semana = $embarque["semana"];
-            $objEmbarque->planta_carga = $embarque["planta_carga"];
-            $objEmbarque->n_naviera = isset($embarque["n_naviera"]) ? $embarque["n_naviera"] : 'sin información';
-            $objEmbarque->nave = (isset($embarque["nave"])) ? $embarque["nave"] : "sin información";
-            $objEmbarque->num_contenedor = $embarque["num_contenedor"];
-            $objEmbarque->especie = $embarque["especie"];
-            $objEmbarque->variedad = $embarque["variedad"];
-            $objEmbarque->embalajes = $embarque["embalajes"];
-            $objEmbarque->etiqueta = $embarque["etiqueta"];
-            $objEmbarque->cajas = $embarque["cajas"];
-            $objEmbarque->peso_neto = $embarque["peso_neto"];
-            $objEmbarque->puerto_embarque = $embarque["puerto_embarque"];
-            $objEmbarque->pais_destino = $embarque["pais_destino"];
-            $objEmbarque->puerto_destino = $embarque["puerto_destino"];
-            $objEmbarque->mercado = $embarque["mercado"];
-            $objEmbarque->etd_estimado = Carbon::parse($embarque["etd_estimado"])->format('d-m-Y H:i:s'); //$embarque["etd_estimado"];
-            $objEmbarque->eta_estimado = Carbon::parse($embarque["eta_estimado"])->format('d-m-Y H:i:s'); //$embarque["eta_estimado"];
-            $objEmbarque->numero_reserva_agente_naviero = $embarque["numero_reserva_agente_naviero"];
-            $objEmbarque->cant_pallets = $embarque["cant_pallets"];
-            $objEmbarque->transporte = $embarque["transporte"];
-            $objEmbarque->save();
-        }
-
-
-
-        return redirect()->route('admin.embarques.index');
+        return redirect()->route('admin.embarques.index')->with('status', $message);
     }
     public function GuardarEmbarques(Request $request)
     {
@@ -500,16 +332,179 @@ class EmbarquesController extends Controller
     }
     public function enviarMail()
     {
-        $embarques = Embarque::whereNull('fecha_arribo_real')->where("transporte", "=", "AEREO")->orderBy('num_embarque', 'desc')->get();
+        $select = <<<SQL
+temporada,
+semana,
+transporte,
+num_embarque,
+n_cliente,
+planta_carga,
+n_naviera,
+nave,
+num_contenedor,
+especie,
+variedad,
+embalajes,
+etiqueta,
+SUM(cajas) as cajas,
+SUM(cant_pallets) as cant_pallets,
+SUM(peso_neto) as peso_neto,
+puerto_embarque ,
+pais_destino ,
+puerto_destino ,
+etd_estimado,
+eta_estimado,
+fecha_zarpe_real,
+fecha_arribo_real,
+estado ,
+descargado,
+retirado_full,
+devuelto_vacio,
+notas,
+num_orden,
+tipo_especie
+SQL;
+
+        $groupColumns = [
+            'temporada',
+            'semana',
+            'transporte',
+            'num_embarque',
+            'n_cliente',
+            'planta_carga',
+            'n_naviera',
+            'nave',
+            'num_contenedor',
+            'especie',
+            'variedad',
+            'embalajes',
+            'etiqueta',
+            'puerto_embarque',
+            'pais_destino',
+            'puerto_destino',
+            'etd_estimado',
+            'eta_estimado',
+            'fecha_zarpe_real',
+            'fecha_arribo_real',
+            'estado',
+            'descargado',
+            'retirado_full',
+            'devuelto_vacio',
+            'notas',
+            'num_orden',
+            'tipo_especie',
+        ];
+
+        $embarques = Embarque::selectRaw($select)
+            ->whereNull('deleted_at')
+            ->whereNull('fecha_arribo_real')
+            ->groupBy($groupColumns)
+            ->orderByDesc('num_embarque')
+            ->get();
+
+        if ($embarques->isEmpty()) {
+            return redirect()
+                ->route('admin.embarques.index')
+                ->with('status', 'No hay embarques pendientes para enviar.');
+        }
+
         $mensaje = new Mensaje();
-        $mensaje->mensaje = 'CARGA DIARIA/TMP 2025-2026';
-        // Mail::to(['iromero@greenex.cl', 'rodrigo.garate@greenex.cl', 'eduardo.garate@greenex.cl', 'mario.yanez@greenex.cl', 'cobranzas@greenex.cl', 'pcarreno@greenex.cl'])
-        //     ->cc(['comex@greenex.cl', 'hhoffmann@greenex.cl', 'docs@greenex.cl', 'exportaciones@greenex.cl', 'carol.padilla@greenex.cl'])
-        //     ->send(new MensajeGenericoMailable($mensaje, ''));
-        Mail::to(['carlos.alvarez@greenex.cl'])
-            //->cc(['carol.padilla@greenex.cl'])
-            ->send(new MensajeGenericoMailable($mensaje, ''));
-        return view('mail.seguimiento-embarques', compact('embarques'));
+        $mensaje->mensaje = 'CARGA DIARIA/TMP ' . now()->format('Y');
+
+        $totalsByTransport = $this->buildTotalsByTransport($embarques);
+        $totalsByTransportAndClient = $this->buildTotalsByTransportAndClient($embarques);
+
+        $disk = 'local';
+        $directory = 'temp';
+        $fileName = sprintf('%s/embarques_%s.xlsx', $directory, now()->format('Ymd_His'));
+
+        Storage::disk($disk)->makeDirectory($directory);
+        Excel::store(new SeguimientoEmbarquesExport($embarques), $fileName, $disk);
+
+        try {
+            Mail::to(['carlos.alvarez@greenex.cl','carol.padilla@greenex.cl'])
+                ->send(new MensajeGenericoMailable(
+                    $mensaje,
+                    $fileName,
+                    $disk,
+                    $totalsByTransportAndClient,
+                    $totalsByTransport
+                ));
+        } catch (\Throwable $th) {
+            Storage::disk($disk)->delete($fileName);
+            Log::error('Error al enviar correo de seguimiento de embarques', ['exception' => $th]);
+
+            return redirect()
+                ->route('admin.embarques.index')
+                ->with('status', 'Ocurrió un problema al enviar el correo: ' . $th->getMessage());
+        }
+
+        Storage::disk($disk)->delete($fileName);
+
+        return redirect()
+            ->route('admin.embarques.index')
+            ->with('status', 'Correo de seguimiento enviado correctamente.');
+    }
+    public function packingList(Request $request)
+    {
+        abort_if(Gate::denies('embarque_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $filters = $this->extractPackingListFilters($request);
+        $embarques = $this->buildPackingListQuery($filters)->get();
+
+        $baseOptionsQuery = Embarque::query()->whereNull('deleted_at');
+
+        $filterOptions = [
+            'destinatarios' => (clone $baseOptionsQuery)
+                ->whereNotNull('n_cliente')
+                ->orderBy('n_cliente')
+                ->distinct()
+                ->pluck('n_cliente'),
+            'embalajes' => (clone $baseOptionsQuery)
+                ->whereNotNull('t_embalaje')
+                ->orderBy('t_embalaje')
+                ->distinct()
+                ->pluck('t_embalaje'),
+            'paises' => (clone $baseOptionsQuery)
+                ->whereNotNull('pais_destino')
+                ->orderBy('pais_destino')
+                ->distinct()
+                ->pluck('pais_destino'),
+            'naves' => (clone $baseOptionsQuery)
+                ->whereNotNull('nave')
+                ->orderBy('nave')
+                ->distinct()
+                ->pluck('nave'),
+            'contenedores' => (clone $baseOptionsQuery)
+                ->whereNotNull('num_contenedor')
+                ->orderBy('num_contenedor')
+                ->distinct()
+                ->pluck('num_contenedor'),
+        ];
+
+        return view('admin.embarques.packing-list', [
+            'embarques' => $embarques,
+            'filters' => $filters,
+            'filterOptions' => $filterOptions,
+        ]);
+    }
+
+    public function packingListExport(Request $request)
+    {
+        abort_if(Gate::denies('embarque_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $filters = $this->extractPackingListFilters($request);
+        $records = $this->buildPackingListQuery($filters)->get();
+
+        if ($records->isEmpty()) {
+            return redirect()
+                ->route('admin.embarques.packingList', array_filter($filters))
+                ->with('status', 'No hay datos para exportar con los filtros seleccionados.');
+        }
+
+        $fileName = 'packing_list_' . now()->format('Ymd_His') . '.xlsx';
+
+        return Excel::download(new PackingListExport($records), $fileName);
     }
     public function ingresaPackingList(Request $request)
     {
@@ -847,6 +842,107 @@ class EmbarquesController extends Controller
         $fecha = $fechaBase->addDays($valorFechaExcel - 2);
 
         return $fecha->format('Y-m-d H:i:s');
+    }
+
+    protected function buildTotalsByTransport(Collection $embarques): Collection
+    {
+        return $embarques
+            ->groupBy(fn ($row) => $row->transporte ? trim($row->transporte) : 'Sin transporte')
+            ->map(function ($group, $transport) {
+                return (object) [
+                    'transporte' => $transport,
+                    'total_pallets' => (float) $group->sum(fn ($item) => $item->cant_pallets ?? 0),
+                    'total_cajas' => (float) $group->sum(fn ($item) => $item->cajas ?? 0),
+                    'cargas' => $group->count(),
+                ];
+            })
+            ->values();
+    }
+
+    protected function extractPackingListFilters(Request $request): array
+    {
+        return [
+            'destinatario' => $request->filled('destinatario') ? trim($request->input('destinatario')) : null,
+            'embalaje' => $request->filled('embalaje') ? trim($request->input('embalaje')) : null,
+            'pais_destino' => $request->filled('pais_destino') ? trim($request->input('pais_destino')) : null,
+            'nave' => $request->filled('nave') ? trim($request->input('nave')) : null,
+            'contenedor' => $request->filled('contenedor') ? trim($request->input('contenedor')) : null,
+        ];
+    }
+
+    protected function buildPackingListQuery(array $filters)
+    {
+        $query = Embarque::query()
+            ->select([
+                'transporte',
+                'fecha_despacho',
+                'num_embarque',
+                'c_destinatario',
+                'n_cliente',
+                'c_packing_origen',
+                'folio',
+                'etiqueta',
+                't_embalaje',
+                'peso_std_embalaje',
+                'especie',
+                'variedad',
+                'n_categoria',
+                'fecha_produccion',
+                'n_productor_rotulacion',
+                'csg_productor',
+                'comuna_productor_rotulacion',
+                'n_calibre',
+                'cantidad',
+                'num_contenedor',
+                'pais_destino',
+                'nave',
+            ])
+            ->whereNull('deleted_at');
+
+        if (!empty($filters['destinatario'])) {
+            $query->where('n_cliente', $filters['destinatario']);
+        }
+
+        if (!empty($filters['embalaje'])) {
+            $query->where('t_embalaje', $filters['embalaje']);
+        }
+
+        if (!empty($filters['pais_destino'])) {
+            $query->where('pais_destino', $filters['pais_destino']);
+        }
+
+        if (!empty($filters['nave'])) {
+            $query->where('nave', $filters['nave']);
+        }
+
+        if (!empty($filters['contenedor'])) {
+            $query->where('num_contenedor', $filters['contenedor']);
+        }
+
+        return $query->orderByDesc('fecha_despacho')->orderByDesc('created_at');
+    }
+
+    protected function buildTotalsByTransportAndClient(Collection $embarques): Collection
+    {
+        return $embarques
+            ->groupBy(function ($row) {
+                $client = $row->n_cliente ?: 'Sin nombre';
+                $transport = $row->transporte ? trim($row->transporte) : 'Sin transporte';
+
+                return $client . '||' . $transport;
+            })
+            ->map(function ($group, $key) {
+                [$client, $transport] = explode('||', $key, 2);
+
+                return (object) [
+                    'n_cliente' => $client,
+                    'transporte' => $transport,
+                    'total_pallets' => (float) $group->sum(fn ($item) => $item->cant_pallets ?? 0),
+                    'total_cajas' => (float) $group->sum(fn ($item) => $item->cajas ?? 0),
+                    'cargas' => $group->count(),
+                ];
+            })
+            ->values();
     }
 
 }

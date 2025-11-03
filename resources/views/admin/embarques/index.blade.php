@@ -124,7 +124,7 @@
                         <th>
                             {{ trans('cruds.embarque.fields.notas') }}
                         </th>
-                        <th>
+                        {{-- <th>
                             {{ trans('cruds.embarque.fields.calificacion') }}
                         </th>
                         <th>
@@ -138,13 +138,13 @@
                         </th>
                         <th>
                             {{ trans('cruds.embarque.fields.status_aereo') }}
-                        </th>
+                        </th> --}}
                         <th>
                             {{ trans('cruds.embarque.fields.num_pallets') }}
                         </th>
-                        <th>
+                        {{-- <th>
                             {{ trans('cruds.embarque.fields.embalaje_std') }}
-                        </th>
+                        </th> --}}
                         <th>
                             {{ trans('cruds.embarque.fields.num_orden') }}
                         </th>
@@ -267,7 +267,7 @@
                         <td>
                             <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                         </td>
-                        <td>
+                        {{-- <td>
                             <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                         </td>
                         <td>
@@ -286,13 +286,13 @@
                                     <option value="{{ $key }}">{{ $item }}</option>
                                 @endforeach
                             </select>
-                        </td>
+                        </td> --}}
                         <td>
                             <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                         </td>
-                        <td>
+                        {{-- <td>
                             <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                        </td>
+                        </td> --}}
                         <td>
                             <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                         </td>
@@ -544,35 +544,35 @@
                             data: 'notas',
                             name: 'notas'
                         },
-                        {
-                            data: 'calificacion',
-                            name: 'calificacion'
-                        },
-                        {
-                            data: 'pais_conexion',
-                            name: 'pais_conexion'
-                        },
-                        {
-                            data: 'conexiones',
-                            name: 'conexiones',
-                            type: 'datetime'
-                        },
-                        {
-                            data: 'con_fecha_hora',
-                            name: 'con_fecha_hora'
-                        },
-                        {
-                            data: 'status_aereo',
-                            name: 'status_aereo'
-                        },
+                        // {
+                        //     data: 'calificacion',
+                        //     name: 'calificacion'
+                        // },
+                        // {
+                        //     data: 'pais_conexion',
+                        //     name: 'pais_conexion'
+                        // },
+                        // {
+                        //     data: 'conexiones',
+                        //     name: 'conexiones',
+                        //     type: 'datetime'
+                        // },
+                        // {
+                        //     data: 'con_fecha_hora',
+                        //     name: 'con_fecha_hora'
+                        // },
+                        // {
+                        //     data: 'status_aereo',
+                        //     name: 'status_aereo'
+                        // },
                         {
                             data: 'cant_pallets',
                             name: 'cant_pallets'
                         },
-                        {
-                            data: 'embalaje_std',
-                            name: 'embalaje_std'
-                        },
+                        // {
+                        //     data: 'embalaje_std',
+                        //     name: 'embalaje_std'
+                        // },
                         {
                             data: 'num_orden',
                             name: 'num_orden'
@@ -647,16 +647,14 @@
                     console.log("Original Value:", cell.index());
                     // Crear un input para edición
 
-                    if (cell.index().column === 24 || cell.index().column === 25 || cell.index()
-                        .column === 34 || cell.index().column === 37 || cell.index().column ===
-                        38 || cell.index().column === 39 || cell.index().column === 40 || cell
-                        .index().column === 35) {
+                    if (cell.index().column === 24 || cell.index().column === 25 || cell.index().column ===28
+                        || cell.index().column === 29 || cell.index().column === 30 ) {
                         $(this).html(
                             '<div class="form-group"><input type="date" class="form-control date" value="' +
                             originalValue + '"></div>');
 
                     }
-                    if (cell.index().column === 26 || cell.index().column === 32) {
+                    if (cell.index().column === 26 ) {
                         $(this).html(
                             '<div class="form-group"><input type="number" class="form-control" value="' +
                             originalValue + '"></div>');
@@ -669,32 +667,22 @@
                                                         @endforeach
                                                     </select>`);
                     }
-                    if (cell.index().column === 28 || cell.index().column === 29 || cell.index()
-                        .column === 30) {
-                        $(this).html(`<select class="form-control"  name="${cell.index().column}" id="${cell.index().column}" >
-                                                <option value></option>
-
-                                                    <option value="SI">SI</option>
-                                                    <option value="NO">NO</option>
-
-                                            </select>`);
-                    }
+                    //
                     if (cell.index().column === 31) {
                         $(this).html(
                             '<div class="form-group"><textarea class="form-control" value="' +
                             originalValue + '"></textarea></div>');
                     }
-                    if (cell.index().column === 36) {
-                        $(this).html(`<select class="form-control {{ $errors->has('temporada') ? 'is-invalid' : '' }}" name="${cell.index().column}" id="${cell.index().column}">
-                                                <option value></option>
-                                                @foreach (App\Models\Embarque::STATUS_AEREO_SELECT as $key => $label)
-                                                    <option value="{{ $key }}" {{ old('estado', '') === (string) $key ? 'selected' : '' }}>{{ $label }}</option>
-                                                @endforeach
-                                            </select>`);
-                    }
-                    if (cell.index().column === 37 || cell.index().column ===
-                        38 || cell.index().column === 39 || cell.index().column === 40 || cell
-                        .index().column === 33) {
+                    // if (cell.index().column === 36) {
+                    //     $(this).html(`<select class="form-control {{ $errors->has('temporada') ? 'is-invalid' : '' }}" name="${cell.index().column}" id="${cell.index().column}">
+                    //                             <option value></option>
+                    //                             @foreach (App\Models\Embarque::STATUS_AEREO_SELECT as $key => $label)
+                    //                                 <option value="{{ $key }}" {{ old('estado', '') === (string) $key ? 'selected' : '' }}>{{ $label }}</option>
+                    //                             @endforeach
+                    //                         </select>`);
+                    // }
+                    if (cell.index().column === 33 || cell.index().column ===
+                        38 || cell.index().column === 34) {
                         $(this).html(
                             '<div class="form-group"><input type="text" class="form-control date" value="' +
                             originalValue + '"></div>');

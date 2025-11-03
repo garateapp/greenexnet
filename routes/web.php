@@ -262,6 +262,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('embarques/enviarMail', 'EmbarquesController@enviarMail')->name('embarques.enviarMail');
     Route::post('embarques/ingresaPackingList', 'EmbarquesController@ingresaPackingList')->name('embarques.ingresaPackingList');
     Route::get('embarques/ingresagrecepcion', 'EmbarquesController@ingresagrecepcion')->name('embarques.ingresagrecepcion');
+    Route::get('embarques/packing-list', 'EmbarquesController@packingList')->name('embarques.packingList');
+    Route::get('embarques/packing-list/export', 'EmbarquesController@packingListExport')->name('embarques.packingListExport');
     Route::resource('embarques', 'EmbarquesController');
 
     // Countries
