@@ -70,6 +70,7 @@ class EmbarqueImporter
                 'numero_reserva_agente_naviero',
                 'total_pallets',
             ])
+
             ->where('id_exportadora', '=', '22')
             ->whereNotNull('id_destinatario')
             ->whereNotNull('n_destinatario')
@@ -159,6 +160,15 @@ class EmbarqueImporter
                 $skipped++;
                 continue;
             }
+            $peso_embalaje='';
+            if (preg_match('/[-+]?[0-9]*[.,]?[0-9]+/', $record->t_embalaje, $coincidencias)) {
+    // Normalizamos la coma como punto
+                    $peso_embalaje = (float) str_replace(',', '.', $coincidencias[0]);
+                } else {
+                    $peso_embalaje = null; // No hay número
+                }
+
+
 
             $data = [
                 'temporada' => '2025-2026',
@@ -176,7 +186,7 @@ class EmbarqueImporter
                 'num_contenedor' => $record->contenedor,
                 'especie' => $record->especie,
                 'variedad' => $record->variedad_detalle,
-                'embalajes' => $record->peso_std_embalaje,
+                'embalajes' => $peso_embalaje,
                 't_embalaje' => $record->t_embalaje,
                 'peso_std_embalaje' => $record->peso_std_embalaje,
                 'etiqueta' => $record->n_etiqueta,
