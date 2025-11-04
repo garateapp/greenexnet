@@ -32,9 +32,9 @@
                         <th width="10">
 
                         </th>
-                        <th>
+                        {{-- <th>
                             {{ trans('cruds.embarque.fields.id') }}
-                        </th>
+                        </th> --}}
                         <th>Transporte</th>
                         <th>
                             {{ trans('cruds.embarque.fields.temporada') }}
@@ -161,9 +161,9 @@
                     <tr>
                         <td>
                         </td>
-                        <td>
+                        {{-- <td>
                             <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                        </td>
+                        </td> --}}
                         <td>
 
                             <select class="search" strict="true" id="cboTransporte">
@@ -318,45 +318,45 @@
 
             $(function() {
                 let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
-                @can('embarque_delete')
-                    let deleteButtonTrans = '{{ trans('global.datatables.delete') }}';
-                    let deleteButton = {
-                        text: deleteButtonTrans,
-                        url: "{{ route('admin.embarques.massDestroy') }}",
-                        className: 'btn-danger',
-                        action: function(e, dt, node, config) {
-                            var ids = $.map(dt.rows({
-                                selected: true
-                            }).data(), function(entry) {
-                                return entry.id
-                            });
+                // @can('embarque_delete')
+                //     let deleteButtonTrans = '{{ trans('global.datatables.delete') }}';
+                //     let deleteButton = {
+                //         text: deleteButtonTrans,
+                //         url: "{{ route('admin.embarques.massDestroy') }}",
+                //         className: 'btn-danger',
+                //         action: function(e, dt, node, config) {
+                //             var ids = $.map(dt.rows({
+                //                 selected: true
+                //             }).data(), function(entry) {
+                //                 return entry.id
+                //             });
 
-                            if (ids.length === 0) {
-                                alert('{{ trans('global.datatables.zero_selected') }}')
+                //             if (ids.length === 0) {
+                //                 alert('{{ trans('global.datatables.zero_selected') }}')
 
-                                return
-                            }
+                //                 return
+                //             }
 
-                            if (confirm('{{ trans('global.areYouSure') }}')) {
-                                $.ajax({
-                                        headers: {
-                                            'x-csrf-token': _token
-                                        },
-                                        method: 'POST',
-                                        url: config.url,
-                                        data: {
-                                            ids: ids,
-                                            _method: 'DELETE'
-                                        }
-                                    })
-                                    .done(function() {
-                                        location.reload()
-                                    })
-                            }
-                        }
-                    }
-                    dtButtons.push(deleteButton)
-                @endcan
+                //             if (confirm('{{ trans('global.areYouSure') }}')) {
+                //                 $.ajax({
+                //                         headers: {
+                //                             'x-csrf-token': _token
+                //                         },
+                //                         method: 'POST',
+                //                         url: config.url,
+                //                         data: {
+                //                             ids: ids,
+                //                             _method: 'DELETE'
+                //                         }
+                //                     })
+                //                     .done(function() {
+                //                         location.reload()
+                //                     })
+                //             }
+                //         }
+                //     }
+                //     dtButtons.push(deleteButton)
+                // @endcan
                 let dtButtonsGtime = $.extend(true, [], $.fn.dataTable.defaults.buttons)
 
                 let ActualizarButtonTrans = 'Actualizar FX';
@@ -413,10 +413,7 @@
                             data: 'placeholder',
                             name: 'placeholder'
                         },
-                        {
-                            data: 'id',
-                            name: 'id'
-                        },
+
                         {
                             data: 'transporte',
                             name: 'transporte'
@@ -753,7 +750,8 @@
                 function guardarEdicion(cell, control) {
                     var newValue = control.val();
                     var columnName = table.column(cell.index().column).header().textContent.trim();
-                    var rowId = table.row(cell.index().row).data().id;
+                    var rowData = table.row(cell.index().row).data();
+                    var rowNumEmbarque = rowData.num_embarque;
 
 
                     // Mostrar el resultado con el nombre de la columna y su valor
@@ -762,7 +760,7 @@
                         url: '{{ route('admin.embarques.GuardarEmbarques') }}', // Cambia esto por la ruta de tu API
                         type: 'POST',
                         data: {
-                            id: rowId,
+                            num_embarque: rowNumEmbarque,
                             column: columnName,
                             value: newValue,
                             _token: $('meta[name="csrf-token"]').attr('content')

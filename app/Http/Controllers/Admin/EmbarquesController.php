@@ -38,30 +38,97 @@ class EmbarquesController extends Controller
         abort_if(Gate::denies('embarque_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         if ($request->ajax()) {
-            $query = Embarque::query()->select(sprintf('%s.*', (new Embarque)->table));
+            $select = <<<SQL
+temporada,
+semana,
+transporte,
+num_embarque,
+n_cliente,
+planta_carga,
+n_naviera,
+nave,
+num_contenedor,
+especie,
+variedad,
+embalajes,
+etiqueta,
+SUM(cajas) as cajas,
+cant_pallets,
+SUM(peso_neto) as peso_neto,
+puerto_embarque ,
+pais_destino ,
+puerto_destino ,
+etd_estimado,
+eta_estimado,
+fecha_zarpe_real,
+fecha_arribo_real,
+estado ,
+descargado,
+retirado_full,
+devuelto_vacio,
+notas,
+num_orden,
+tipo_especie
+SQL;
+
+            $groupColumns = [
+                'temporada',
+                'semana',
+                'transporte',
+                'num_embarque',
+                'n_cliente',
+                'planta_carga',
+                'n_naviera',
+                'nave',
+                'num_contenedor',
+                'especie',
+                'variedad',
+                'embalajes',
+                'etiqueta',
+                'puerto_embarque',
+                'pais_destino',
+                'puerto_destino',
+                'etd_estimado',
+                'eta_estimado',
+                'fecha_zarpe_real',
+                'fecha_arribo_real',
+                'estado',
+                'descargado',
+                'retirado_full',
+                'devuelto_vacio',
+                'notas',
+                'num_orden',
+                'tipo_especie',
+                'cant_pallets',
+            ];
+
+            $aggregatedSelect = str_replace(
+                ['variedad,', 'embalajes','etiqueta'],
+                [
+                    'GROUP_CONCAT(DISTINCT variedad ORDER BY variedad SEPARATOR ", ") as variedad,',
+                    'GROUP_CONCAT(DISTINCT embalajes ORDER BY embalajes SEPARATOR ", ") as embalajes',
+                    'GROUP_CONCAT(DISTINCT etiqueta ORDER BY etiqueta SEPARATOR ", ") as etiqueta',
+                ],
+                $select
+            );
+
+            $groupColumnsForQuery = array_values(array_diff($groupColumns, ['variedad', 'embalajes','etiqueta']));
+
+            $query = Embarque::query()
+
+                ->selectRaw($aggregatedSelect)
+                ->whereNull('deleted_at')
+                ->groupBy($groupColumnsForQuery);
             $table = Datatables::of($query);
 
             $table->addColumn('placeholder', '&nbsp;');
-            $table->addColumn('actions', '&nbsp;');
-
-            $table->editColumn('actions', function ($row) {
-                $viewGate      = 'embarque_show';
-                $editGate      = 'embarque_edit';
-                $deleteGate    = 'embarque_delete';
-                $crudRoutePart = 'embarques';
-
-                return view('partials.datatablesActions', compact(
-                    'viewGate',
-                    'editGate',
-                    'deleteGate',
-                    'crudRoutePart',
-                    'row'
-                ));
+            $table->addColumn('actions', function () {
+                return '';
             });
 
-            $table->editColumn('id', function ($row) {
-                return $row->id ? $row->id : '';
-            });
+            // $table->editColumn('id', function ($row) {
+            //     return $row->id ? $row->id : '';
+            // });
             $table->editColumn('temporada', function ($row) {
                 return $row->temporada ? Embarque::TEMPORADA_SELECT[$row->temporada] : '';
             });
@@ -311,9 +378,15 @@ class EmbarquesController extends Controller
                 break;
         }
 
-        $embarque = Embarque::find($request->id);
-        $embarque->{$campo} = $request->value;
-        $embarque->save();
+        $numEmbarque = $request->input('num_embarque');
+
+        if (!$numEmbarque) {
+            return response()->json(['message' => 'Número de embarque requerido'], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        Embarque::where('num_embarque', $numEmbarque)->update([
+            $campo => $request->value,
+        ]);
 
         return response()->json([], Response::HTTP_CREATED);
     }
