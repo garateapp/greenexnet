@@ -46,9 +46,7 @@
                         <th>
                             {{ trans('cruds.embarque.fields.num_embarque') }}
                         </th>
-                        <th>
-                            {{ trans('cruds.embarque.fields.id_cliente') }}
-                        </th>
+
                         <th>
                             {{ trans('cruds.embarque.fields.n_cliente') }}
                         </th>
@@ -78,6 +76,9 @@
                         </th>
                         <th>
                             {{ trans('cruds.embarque.fields.cajas') }}
+                        </th>
+                         <th>
+                            {{ trans('cruds.embarque.fields.num_pallets') }}
                         </th>
                         <th>
                             {{ trans('cruds.embarque.fields.peso_neto') }}
@@ -139,9 +140,7 @@
                         <th>
                             {{ trans('cruds.embarque.fields.status_aereo') }}
                         </th> --}}
-                        <th>
-                            {{ trans('cruds.embarque.fields.num_pallets') }}
-                        </th>
+
                         {{-- <th>
                             {{ trans('cruds.embarque.fields.embalaje_std') }}
                         </th> --}}
@@ -285,9 +284,9 @@
                                 @endforeach
                             </select>
                         </td> --}}
-                        <td>
+                        {{-- <td>
                             <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                        </td>
+                        </td> --}}
                         {{-- <td>
                             <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                         </td> --}}
@@ -430,11 +429,11 @@
                             name: 'num_embarque'
                         },
 
-                        {
-                            data: 'id_cliente',
-                            name: 'id_cliente',
+                        // {
+                        //     data: 'id_cliente',
+                        //     name: 'id_cliente',
 
-                        },
+                        // },
                         {
                             data: 'n_cliente',
                             name: 'n_cliente'
@@ -475,6 +474,10 @@
                         {
                             data: 'cajas',
                             name: 'cajas'
+                        },
+                         {
+                            data: 'cant_pallets',
+                            name: 'cant_pallets'
                         },
                         {
                             data: 'peso_neto',
@@ -560,10 +563,7 @@
                         //     data: 'status_aereo',
                         //     name: 'status_aereo'
                         // },
-                        {
-                            data: 'cant_pallets',
-                            name: 'cant_pallets'
-                        },
+
                         // {
                         //     data: 'embalaje_std',
                         //     name: 'embalaje_std'
@@ -649,7 +649,7 @@
                             originalValue + '"></div>');
 
                     }
-                    if (cell.index().column === 24|| cell.index().column === 30) {
+                    if (cell.index().column === 24|| cell.index().column === 15) {
                         $(this).html(
                             '<div class="form-group"><input type="number" class="form-control" value="' +
                             originalValue + '"></div>');
