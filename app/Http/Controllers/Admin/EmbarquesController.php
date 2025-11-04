@@ -347,7 +347,7 @@ variedad,
 embalajes,
 etiqueta,
 SUM(cajas) as cajas,
-SUM(cant_pallets) as cant_pallets,
+cant_pallets,
 SUM(peso_neto) as peso_neto,
 puerto_embarque ,
 pais_destino ,
@@ -393,6 +393,7 @@ SQL;
             'notas',
             'num_orden',
             'tipo_especie',
+            'cant_pallets',
         ];
 
         $embarques = Embarque::selectRaw($select)

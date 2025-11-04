@@ -40,7 +40,7 @@ class Embarque extends Model
     public const ESTADO_SELECT = [
         'ESPERA DE ZARPE' => 'ESPERA DE ZARPE',
         'EN TRANSITO'     => 'EN TRANSITO',
-        'ARRIBO DESTINO'  => 'ARRIBO DESTINO',
+        'ARRIBO DESTINO'  => 'ARRIBO EN DESTINO',
         'RETRASO'         => 'RETRASO',
     ];
 
