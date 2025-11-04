@@ -92,7 +92,7 @@
                             {{ trans('cruds.embarque.fields.puerto_destino') }}
                         </th>
                         <th>
-                            {{ trans('cruds.embarque.fields.mercado') }}
+                            Transporte
                         </th>
                         <th>
                             {{ trans('cruds.embarque.fields.etd_estimado') }}
@@ -644,19 +644,19 @@
                     console.log("Original Value:", cell.index());
                     // Crear un input para edición
 
-                    if (cell.index().column === 24 || cell.index().column === 25 || cell.index().column ===28
-                        || cell.index().column === 29 || cell.index().column === 30 ) {
+                    if (cell.index().column === 23 || cell.index().column === 24 || cell.index().column ===27
+                        || cell.index().column === 28 || cell.index().column === 29 ) {
                         $(this).html(
                             '<div class="form-group"><input type="date" class="form-control date" value="' +
                             originalValue + '"></div>');
 
                     }
-                    if (cell.index().column === 26 ) {
+                    if (cell.index().column === 25 || cell.index().column === 31) {
                         $(this).html(
                             '<div class="form-group"><input type="number" class="form-control" value="' +
                             originalValue + '"></div>');
                     }
-                    if (cell.index().column === 27) {
+                    if (cell.index().column === 26) {
                         $(this).html(`<select class="form-control {{ $errors->has('temporada') ? 'is-invalid' : '' }}" name="temporada" id="temporada">
                                                         <option value></option>
                                                         @foreach (App\Models\Embarque::ESTADO_SELECT as $key => $label)
@@ -665,7 +665,7 @@
                                                     </select>`);
                     }
                     //
-                    if (cell.index().column === 31) {
+                    if (cell.index().column === 30) {
                         $(this).html(
                             '<div class="form-group"><textarea class="form-control" value="' +
                             originalValue + '"></textarea></div>');
@@ -678,8 +678,8 @@
                     //                             @endforeach
                     //                         </select>`);
                     // }
-                    if (cell.index().column === 33 || cell.index().column ===
-                        38 || cell.index().column === 34) {
+                    if (cell.index().column === 32 || cell.index().column ===
+                        37 || cell.index().column === 33) {
                         $(this).html(
                             '<div class="form-group"><input type="text" class="form-control date" value="' +
                             originalValue + '"></div>');

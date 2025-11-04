@@ -405,76 +405,56 @@ SQL;
     }
     public function enviarMail()
     {
-        $select = <<<SQL
-temporada,
-semana,
-transporte,
-num_embarque,
-n_cliente,
-planta_carga,
-n_naviera,
-nave,
-num_contenedor,
-especie,
-variedad,
-embalajes,
-etiqueta,
-SUM(cajas) as cajas,
-cant_pallets,
-SUM(peso_neto) as peso_neto,
-puerto_embarque ,
-pais_destino ,
-puerto_destino ,
-etd_estimado,
-eta_estimado,
-fecha_zarpe_real,
-fecha_arribo_real,
-estado ,
-descargado,
-retirado_full,
-devuelto_vacio,
-notas,
-num_orden,
-tipo_especie
-SQL;
+       $embarques=Embarque::query()
+    ->selectRaw("
+        temporada,
+        semana,
+        transporte,
+        num_embarque,
+        n_cliente,
+        planta_carga,
+        n_naviera,
+        nave,
+        num_contenedor,
+        especie,
+        GROUP_CONCAT(DISTINCT variedad  ORDER BY variedad  SEPARATOR ', ') AS variedades,
+        GROUP_CONCAT(DISTINCT embalajes ORDER BY embalajes SEPARATOR ', ') AS embalajes,
+        GROUP_CONCAT(DISTINCT etiqueta  ORDER BY etiqueta  SEPARATOR ', ') AS etiquetas,
+        SUM(cajas)     AS cajas,
+        cant_pallets,
+        SUM(peso_neto) AS peso_neto,
+        puerto_embarque,
+        pais_destino,
+        puerto_destino,
+        etd_estimado,
+        eta_estimado,
+        fecha_zarpe_real,
+        estado,
+        descargado,
+        retirado_full,
+        devuelto_vacio,
+        notas,
+        num_orden,
+        tipo_especie
+    ")
+    ->whereNull('deleted_at')
+    ->whereNull('fecha_arribo_real')
+    ->groupBy([
+        'temporada', 'semana', 'transporte', 'num_embarque', 'n_cliente', 'planta_carga',
+        'n_naviera', 'nave', 'num_contenedor', 'especie', 'puerto_embarque', 'pais_destino',
+        'puerto_destino', 'etd_estimado', 'eta_estimado', 'fecha_zarpe_real', 'estado',
+        'descargado', 'retirado_full', 'devuelto_vacio', 'notas', 'num_orden', 'tipo_especie',
+        'cant_pallets',
+    ])
+    ->orderByDesc('num_embarque')
+    ->get();
 
-        $groupColumns = [
-            'temporada',
-            'semana',
-            'transporte',
-            'num_embarque',
-            'n_cliente',
-            'planta_carga',
-            'n_naviera',
-            'nave',
-            'num_contenedor',
-            'especie',
-            'variedad',
-            'embalajes',
-            'etiqueta',
-            'puerto_embarque',
-            'pais_destino',
-            'puerto_destino',
-            'etd_estimado',
-            'eta_estimado',
-            'fecha_zarpe_real',
-            'fecha_arribo_real',
-            'estado',
-            'descargado',
-            'retirado_full',
-            'devuelto_vacio',
-            'notas',
-            'num_orden',
-            'tipo_especie',
-            'cant_pallets',
-        ];
-
-        $embarques = Embarque::selectRaw($select)
-            ->whereNull('deleted_at')
-            ->whereNull('fecha_arribo_real')
-            ->groupBy($groupColumns)
-            ->orderByDesc('num_embarque')
-            ->get();
+        // $embarques = Embarque::selectRaw($select)
+        //     ->whereNull('deleted_at')
+        //     ->whereNull('fecha_arribo_real')
+        //     ->groupBy($groupColumns)
+        //     ->orderByDesc('num_embarque')
+        //     ->get();
 
         if ($embarques->isEmpty()) {
             return redirect()

@@ -128,8 +128,8 @@
                     @foreach ($totalsByTransport as $row)
                         <tr>
                             <td>{{ $row->transporte }}</td>
-                            <td>{{ number_format($row->total_pallets ?? 0, 0, ',', '.') }}</td>
-                            <td>{{ number_format($row->total_cajas ?? 0, 0, ',', '.') }}</td>
+                            <td>{{ number_format($row->total_pallets ?? 0, 0, ',', '.')== 0 ? '' : number_format($row->total_pallets ?? 0, 0, ',', '.') }}</td>
+                            <td>{{ number_format($row->total_cajas ?? 0, 0, ',', '.') ==0 ? '' : number_format($row->total_cajas ?? 0, 0, ',', '.') }}</td>
                             <td>{{ $row->cargas }}</td>
                         </tr>
                     @endforeach
@@ -137,9 +137,9 @@
                 <tfoot>
                     <tr>
                         <th>Total</th>
-                        <th>{{ number_format($verticalTotals['total_pallets'], 0, ',', '.') }}</th>
-                        <th>{{ number_format($verticalTotals['total_cajas'], 0, ',', '.') }}</th>
-                        <th>{{ number_format($verticalTotals['cargas'], 0, ',', '.') }}</th>
+                        <th>{{ number_format($verticalTotals['total_pallets'], 0, ',', '.') ==0 ? '' : number_format($verticalTotals['total_pallets'], 0, ',', '.') }}</th>
+                        <th>{{ number_format($verticalTotals['total_cajas'], 0, ',', '.') ==0 ? '' : number_format($verticalTotals['total_cajas'], 0, ',', '.') }}</th>
+                        <th>{{ number_format($verticalTotals['cargas'], 0, ',', '.')==0 ? '' : number_format($verticalTotals['cargas'], 0, ',', '.') }}</th>
                     </tr>
                 </tfoot>
             </table>
@@ -210,13 +210,13 @@
                                     $columnTotals[$transport]['total_cajas'] += $cell['total_cajas'];
                                     $columnTotals[$transport]['cargas'] += $cell['cargas'];
                                 @endphp
-                                <td>{{ number_format($cell['total_pallets'], 0, ',', '.') }}</td>
-                                <td>{{ number_format($cell['total_cajas'], 0, ',', '.') }}</td>
-                                <td>{{ number_format($cell['cargas'], 0, ',', '.') }}</td>
+                                <td>{{ number_format($cell['total_pallets'], 0, ',', '.') == 0 ? '' : number_format($cell['total_pallets'], 0, ',', '.') }}</td>
+                                <td>{{ number_format($cell['total_cajas'], 0, ',', '.') == 0 ? '' : number_format($cell['total_cajas'], 0, ',', '.') }}</td>
+                                <td>{{ number_format($cell['cargas'], 0, ',', '.') == 0 ? '' : number_format($cell['cargas'], 0, ',', '.') }}</td>
                         @endforeach
-                        <td>{{ number_format($rowTotals[$client]['total_pallets'], 0, ',', '.') }}</td>
-                        <td>{{ number_format($rowTotals[$client]['total_cajas'], 0, ',', '.') }}</td>
-                        <td>{{ number_format($rowTotals[$client]['cargas'], 0, ',', '.') }}</td>
+                        <td>{{ number_format($rowTotals[$client]['total_pallets'], 0, ',', '.') == 0 ? '' : number_format($rowTotals[$client]['total_pallets'], 0, ',', '.') }}</td>
+                        <td>{{ number_format($rowTotals[$client]['total_cajas'], 0, ',', '.') ==0 ? '' : number_format($rowTotals[$client]['total_cajas'], 0, ',', '.') }}</td>
+                        <td>{{ number_format($rowTotals[$client]['cargas'], 0, ',', '.') ==0 ? '' : number_format($rowTotals[$client]['cargas'], 0, ',', '.') }}</td>
                     </tr>
                 @endforeach
                 </tbody>
@@ -232,13 +232,13 @@
                                 $grandTotals['total_cajas'] += $columnTotals[$transport]['total_cajas'];
                                 $grandTotals['cargas'] += $columnTotals[$transport]['cargas'];
                             @endphp
-                            <td>{{ number_format($columnTotals[$transport]['total_pallets'], 0, ',', '.') }}</td>
-                            <td>{{ number_format($columnTotals[$transport]['total_cajas'], 0, ',', '.') }}</td>
-                            <td>{{ number_format($columnTotals[$transport]['cargas'], 0, ',', '.') }}</td>
+                            <td>{{ number_format($columnTotals[$transport]['total_pallets'], 0, ',', '.')== 0 ? '' : number_format($columnTotals[$transport]['total_pallets'], 0, ',', '.') }}</td>
+                            <td>{{ number_format($columnTotals[$transport]['total_cajas'], 0, ',', '.') ==0 ? '' : number_format($columnTotals[$transport]['total_cajas'], 0, ',', '.') }}</td>
+                            <td>{{ number_format($columnTotals[$transport]['cargas'], 0, ',', '.') ==0 ? '' : number_format($columnTotals[$transport]['cargas'], 0, ',', '.') }}</td>
                         @endforeach
-                        <td>{{ number_format($grandTotals['total_pallets'], 0, ',', '.') }}</td>
-                        <td>{{ number_format($grandTotals['total_cajas'], 0, ',', '.') }}</td>
-                        <td>{{ number_format($grandTotals['cargas'], 0, ',', '.') }}</td>
+                        <td>{{ number_format($grandTotals['total_pallets'], 0, ',', '.') ==0 ? '' : number_format($grandTotals['total_pallets'], 0, ',', '.') }}</td>
+                        <td>{{ number_format($grandTotals['total_cajas'], 0, ',', '.') ==0 ? '' : number_format($grandTotals['total_cajas'], 0, ',', '.') }}</td>
+                        <td>{{ number_format($grandTotals['cargas'], 0, ',', '.') ==0 ? '' : number_format($grandTotals['cargas'], 0, ',', '.') }}</td>
                     </tr>
                 </tfoot>
             </table>
