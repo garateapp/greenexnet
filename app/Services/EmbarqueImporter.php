@@ -176,7 +176,7 @@ class EmbarqueImporter
                 'num_contenedor' => $record->contenedor,
                 'especie' => $record->especie,
                 'variedad' => $record->variedad_detalle,
-                'embalajes' => $record->n_embalaje,
+                'embalajes' => $record->peso_std_embalaje,
                 't_embalaje' => $record->t_embalaje,
                 'peso_std_embalaje' => $record->peso_std_embalaje,
                 'etiqueta' => $record->n_etiqueta,

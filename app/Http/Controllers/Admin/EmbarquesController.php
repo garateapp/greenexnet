@@ -118,7 +118,8 @@ SQL;
 
                 ->selectRaw($aggregatedSelect)
                 ->whereNull('deleted_at')
-                ->groupBy($groupColumnsForQuery);
+                ->groupBy($groupColumnsForQuery)
+                ->orderBy('num_embarque', 'desc');
             $table = Datatables::of($query);
 
             $table->addColumn('placeholder', '&nbsp;');

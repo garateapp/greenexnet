@@ -39,7 +39,7 @@
                         <th>
                             {{ trans('cruds.embarque.fields.temporada') }}
                         </th>
-                        </th>
+
                         <th>
                             Semana
                         </th>
@@ -62,7 +62,7 @@
                             {{ trans('cruds.embarque.fields.nave') }}
                         </th>
                         <th>
-                            {{ trans('cruds.embarque.fields.num_contenedor') }}
+                            {{ trans('cruds.embarque.fields.num_contenedor') }} / AWB
                         </th>
                         <th>
                             {{ trans('cruds.embarque.fields.especie') }}
@@ -91,9 +91,9 @@
                         <th>
                             {{ trans('cruds.embarque.fields.puerto_destino') }}
                         </th>
-                        <th>
+                        {{-- <th>
                             Transporte
-                        </th>
+                        </th> --}}
                         <th>
                             {{ trans('cruds.embarque.fields.etd_estimado') }}
                         </th>
@@ -151,9 +151,7 @@
                         <th>
                             {{ trans('cruds.embarque.fields.tipo_especie') }}
                         </th>
-                        <th>
-                            AWB
-                        </th>
+
                         <th>
                             &nbsp;
                         </th>
@@ -232,9 +230,9 @@
                         <td>
                             <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                         </td>
-                        <td>
+                        {{-- <td>
                             <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                        </td>
+                        </td> --}}
                         <td>
                         </td>
                         <td>
@@ -299,9 +297,9 @@
                         <td>
                             <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                         </td>
-                        <td>
+                        {{-- <td>
                             <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                        </td>
+                        </td> --}}
                         <td>
                         </td>
                     </tr>
@@ -494,11 +492,11 @@
                             data: 'puerto_destino',
                             name: 'puerto_destino'
                         },
-                        {
-                            data: 'mercado',
-                            name: 'mercado',
+                        // {
+                        //     data: 'mercado',
+                        //     name: 'mercado',
 
-                        },
+                        // },
                         {
                             data: 'etd_estimado',
                             name: 'etd_estimado'
@@ -578,10 +576,10 @@
                             data: 'tipo_especie',
                             name: 'tipo_especie'
                         },
-                        {
-                            data: 'numero_reserva_agente_naviero',
-                            name: 'numero_reserva_agente_naviero'
-                        },
+                        // {
+                        //     data: 'numero_reserva_agente_naviero',
+                        //     name: 'numero_reserva_agente_naviero'
+                        // },
                         {
                             data: 'actions',
                             name: '{{ trans('global.actions') }}'
@@ -644,19 +642,19 @@
                     console.log("Original Value:", cell.index());
                     // Crear un input para edición
 
-                    if (cell.index().column === 23 || cell.index().column === 24 || cell.index().column ===27
-                        || cell.index().column === 28 || cell.index().column === 29 ) {
+                    if (cell.index().column === 22 || cell.index().column === 23 || cell.index().column ===26
+                        || cell.index().column === 27 || cell.index().column === 28 ) {
                         $(this).html(
                             '<div class="form-group"><input type="date" class="form-control date" value="' +
                             originalValue + '"></div>');
 
                     }
-                    if (cell.index().column === 25 || cell.index().column === 31) {
+                    if (cell.index().column === 24|| cell.index().column === 30) {
                         $(this).html(
                             '<div class="form-group"><input type="number" class="form-control" value="' +
                             originalValue + '"></div>');
                     }
-                    if (cell.index().column === 26) {
+                    if (cell.index().column === 25) {
                         $(this).html(`<select class="form-control {{ $errors->has('temporada') ? 'is-invalid' : '' }}" name="temporada" id="temporada">
                                                         <option value></option>
                                                         @foreach (App\Models\Embarque::ESTADO_SELECT as $key => $label)
@@ -665,7 +663,7 @@
                                                     </select>`);
                     }
                     //
-                    if (cell.index().column === 30) {
+                    if (cell.index().column === 29) {
                         $(this).html(
                             '<div class="form-group"><textarea class="form-control" value="' +
                             originalValue + '"></textarea></div>');
@@ -678,8 +676,8 @@
                     //                             @endforeach
                     //                         </select>`);
                     // }
-                    if (cell.index().column === 32 || cell.index().column ===
-                        37 || cell.index().column === 33) {
+                    if (cell.index().column === 31 || cell.index().column ===
+                        35 || cell.index().column === 32) {
                         $(this).html(
                             '<div class="form-group"><input type="text" class="form-control date" value="' +
                             originalValue + '"></div>');
