@@ -58,7 +58,7 @@ class StorePersonalRequest extends FormRequest
                 'integer',
             ],
             'user_id' => [
-                'required',
+
                 'integer',
             ],
         ];

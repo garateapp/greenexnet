@@ -59,7 +59,7 @@ class UpdatePersonalRequest extends FormRequest
                 'integer',
             ],
             'user_id' => [
-                'required',
+
                 'integer',
             ],
         ];
