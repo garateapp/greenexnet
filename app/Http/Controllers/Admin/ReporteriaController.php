@@ -898,7 +898,7 @@ class ReporteriaController extends Controller
             ->get();
 
         foreach ($dataMetas as $chart) {
-            if ($chart->c_destinatario != null) {
+            if ($chart->c_destinatario != null && $embarque->c_destinatario != 'NAC-01') {
 
                 try {
 
@@ -948,7 +948,7 @@ class ReporteriaController extends Controller
             ->get();
 
         foreach ($dataMetas as $chart) {
-            if ($chart->c_destinatario != null) {
+            if ($chart->c_destinatario != null && $embarque->c_destinatario != 'NAC-01') {
 
                 try {
 
@@ -998,7 +998,7 @@ class ReporteriaController extends Controller
             ->get();
 
         foreach ($dataMetas as $chart) {
-            if ($chart->c_destinatario != null) {
+            if ($chart->c_destinatario != null && $embarque->c_destinatario != 'NAC-01') {
 
                 try {
 
@@ -1048,7 +1048,7 @@ class ReporteriaController extends Controller
             ->where('id_exportadora', '=', '22')
             ->whereNotNull('id_destinatario')
             ->whereNotNull('n_destinatario')
-            ->whereIn('transporte', ['MARITIMO', 'AEREO'])
+            ->whereIn('transporte', ['MARITIMO', 'AEREO', 'CAMION FRIGORIFICO'])
             ->get();
 
         return response()->json(['cantEmbarques' => $cantEmbarques], 200);
@@ -1098,8 +1098,8 @@ class ReporteriaController extends Controller
                 'codigo_sag_productor',
                 'n_calibre',
             )
-            ->where(DB::raw('DATEPART(YEAR, eta)'), '=', 2025)
-            ->where(DB::raw('DATEPART(MONTH, eta)'), '>=', 1)
+            //->where(DB::raw('DATEPART(YEAR, eta)'), '=', 2025)
+            //->where(DB::raw('DATEPART(MONTH, eta)'), '>=', 1)
             //->where('n_embarque', '>', $cargados->num_embarque)
             ->where('id_exportadora', '=', '22')
             ->whereNotNull('id_destinatario')
@@ -1107,11 +1107,13 @@ class ReporteriaController extends Controller
             ->get();
         $lstEmbarque = collect();
         foreach ($embarques as $embarque) {
-            if (ClientesComex::where('codigo_cliente', explode("-", $embarque->c_destinatario)[0])->exists()) {
+            if($embarque->c_destinatario!="NAC-01"){
+                if (ClientesComex::where('codigo_cliente', explode("-", $embarque->c_destinatario)[0])->exists()) {
 
-                $CxComex = ClientesComex::where('codigo_cliente', explode("-", $embarque->c_destinatario)[0])->first();
-                $embarque->n_destinatario = $CxComex->nombre_fantasia;
-            } else {
+                    $CxComex = ClientesComex::where('codigo_cliente', explode("-", $embarque->c_destinatario)[0])->first();
+                    $embarque->n_destinatario = $CxComex->nombre_fantasia;
+                } else {
+                }
             }
         }
 
