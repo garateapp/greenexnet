@@ -511,16 +511,37 @@
                         {
                             data: 'fecha_zarpe_real',
                             name: 'fecha_zarpe_real',
-                            type: 'datetime'
+                            render: function(data) {
+                                if (!data) {
+                                    return '';
+                                }
+                                const date = moment(data);
+                                return date.isValid() ? date.format('DD-MM-YYYY HH:mm') : data;
+                            }
                         },
                         {
                             data: 'fecha_arribo_real',
                             name: 'fecha_arribo_real',
-                            type: 'datetime'
+                            render: function(data) {
+                                if (!data) {
+                                    return '';
+                                }
+                                const date = moment(data);
+                                return date.isValid() ? date.format('DD-MM-YYYY HH:mm') : data;
+                            }
                         },
                         {
                             data: 'dias_transito_real',
-                            name: 'dias_transito_real'
+                            name: 'dias_transito_real',
+                            render: function(data, type, row) {
+                                const zarpe = row.fecha_zarpe_real ? moment(row.fecha_zarpe_real) : null;
+                                const arribo = row.fecha_arribo_real ? moment(row.fecha_arribo_real) : null;
+                                if (zarpe && arribo && zarpe.isValid() && arribo.isValid()) {
+                                    const diff = arribo.diff(zarpe, 'days');
+                                    return diff >= 0 ? diff : 0;
+                                }
+                                return 0;
+                            }
                         },
                         {
                             data: 'estado',
