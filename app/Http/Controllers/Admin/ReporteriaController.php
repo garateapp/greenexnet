@@ -898,7 +898,7 @@ class ReporteriaController extends Controller
             ->get();
 
         foreach ($dataMetas as $chart) {
-            if ($chart->c_destinatario != null && $embarque->c_destinatario != 'NAC-01') {
+            if ($chart->c_destinatario != null && $chart->c_destinatario != 'NAC-01') {
 
                 try {
 
@@ -948,7 +948,7 @@ class ReporteriaController extends Controller
             ->get();
 
         foreach ($dataMetas as $chart) {
-            if ($chart->c_destinatario != null && $embarque->c_destinatario != 'NAC-01') {
+            if ($chart->c_destinatario != null && $chart->c_destinatario != 'NAC-01') {
 
                 try {
 
@@ -998,7 +998,7 @@ class ReporteriaController extends Controller
             ->get();
 
         foreach ($dataMetas as $chart) {
-            if ($chart->c_destinatario != null && $embarque->c_destinatario != 'NAC-01') {
+            if ($chart->c_destinatario != null && $chart->c_destinatario != 'NAC-01') {
 
                 try {
 
