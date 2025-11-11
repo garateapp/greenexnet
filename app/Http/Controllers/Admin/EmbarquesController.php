@@ -439,7 +439,7 @@ SQL;
         tipo_especie
     ")
     ->whereNull('deleted_at')
-    ->whereNull('fecha_arribo_real')
+    //->whereNull('fecha_arribo_real')
     ->groupBy([
         'temporada', 'semana', 'transporte', 'num_embarque', 'n_cliente', 'planta_carga',
         'n_naviera', 'nave', 'num_contenedor', 'especie', 'puerto_embarque', 'pais_destino',
