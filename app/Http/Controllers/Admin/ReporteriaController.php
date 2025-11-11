@@ -229,6 +229,7 @@ class ReporteriaController extends Controller
             )
             ->where('destruccion_tipo', '=', '')
             ->where('id_empresa', '=', '1')
+            ->groupBy('id_especie','nota_calidad')
             //->where('id_especie', '=', '7')->groupBy('nota_calidad', 'id_especie')
             ->get();
 
@@ -810,7 +811,7 @@ class ReporteriaController extends Controller
                 'n_nave'
             )
             ->where('id_especie', '=', '7')
-            ->where(DB::RAW('DATEPART(WEEK, etd)'), '>', '48')
+            //->where(DB::RAW('DATEPART(WEEK, etd)'), '>', '48')
             ->groupBy(
                 'n_embarque',
                 DB::RAW('DATEPART(WEEK, etd)'),
@@ -842,7 +843,7 @@ class ReporteriaController extends Controller
         $cant_contenedores = 0;
 
         foreach ($embarques as $embarque) {
-            if ($embarque->c_destinatario != null) {
+            if ($embarque->c_destinatario != null && $embarque->c_destinatario != 'NAC-01') {
                 try {
                     if (ClientesComex::where('codigo_cliente', explode("-", $embarque->c_destinatario)[0])->exists()) {
                         $CxComex = ClientesComex::where('codigo_cliente', explode("-", $embarque->c_destinatario)[0])->first();
