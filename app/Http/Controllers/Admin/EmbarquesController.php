@@ -973,7 +973,7 @@ SQL;
             ->map(function ($group, $transport) {
                 return (object) [
                     'transporte' => $transport,
-                    'total_pallets' => (float) $group->sum(fn ($item) => $item->cant_pallets ?? 0),
+                    'total_pallets' => $this->sumUniquePallets($group),
                     'total_cajas' => (float) $group->sum(fn ($item) => $item->cajas ?? 0),
                     'cargas' => $group->count(),
                 ];
@@ -1064,12 +1064,19 @@ SQL;
                 return (object) [
                     'n_cliente' => $client,
                     'transporte' => $transport,
-                    'total_pallets' => (float) $group->sum(fn ($item) => $item->cant_pallets ?? 0),
+                    'total_pallets' => $this->sumUniquePallets($group),
                     'total_cajas' => (float) $group->sum(fn ($item) => $item->cajas ?? 0),
                     'cargas' => $group->count(),
                 ];
             })
             ->values();
+    }
+
+    protected function sumUniquePallets(Collection $embarques): float
+    {
+        return (float) $embarques
+            ->unique('num_embarque')
+            ->sum(fn ($item) => $item->cant_pallets ?? 0);
     }
 
 }
