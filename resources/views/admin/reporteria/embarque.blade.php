@@ -560,9 +560,9 @@
                                                             <td>${formatNumber2(data.cajasAereo)}</td>
                                                             <td>${formatNumber2(data.palletsTerrestre)} </td>
                                                             <td>${formatNumber2(data.cajasTerrestre)}</td>
-                                                            <td>${formatNumber2(data.meta)}</td>
+                                                            <td>${formatNumber2(data.meta ?? 0)}</td>
                                                             <td>${formatNumber2((data.cajas+data.cajasAereo+data.cajasTerrestre))}</td>
-                                                            <td>${formatNumber2(data.metacont)}</td>
+                                                            <td>${formatNumber2(data.metacont ?? 0)}</td>
                                                              <td>~${isNaN(data.contenedores+data.contenedoresAereo+data.contenedoresTerrestre)?0:parseFloat(data.contenedores+data.contenedoresAereo+data.contenedoresTerrestre).toFixed(1)}</td>
                                                             <td>${(data.meta==0) ? 0 : parseFloat(((data.cajas+data.cajasAereo+data.cajasTerrestre) / data.meta) * 100).toFixed(0)}%</td>
                                                         </tr>

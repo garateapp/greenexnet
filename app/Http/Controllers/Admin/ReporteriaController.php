@@ -843,7 +843,7 @@ class ReporteriaController extends Controller
         $cant_contenedores = 0;
 
         foreach ($embarques as $embarque) {
-            if ($embarque->c_destinatario != null && $embarque->c_destinatario != 'NAC-01') {
+            if ($embarque->c_destinatario != null) {
                 try {
                     if (ClientesComex::where('codigo_cliente', explode("-", $embarque->c_destinatario)[0])->exists()) {
                         $CxComex = ClientesComex::where('codigo_cliente', explode("-", $embarque->c_destinatario)[0])->first();
@@ -891,14 +891,15 @@ class ReporteriaController extends Controller
                 ->where('n_exportadora', 'Greenex Spa')
                 ->groupByRaw('DATEPART(WEEK, etd), c_destinatario, CP2_Embalaje');
         }, 's')
-            ->select('semana', 'c_destinatario', DB::raw('SUM(Contenedores) as contenedores'), DB::raw('SUM(cantidad) as Cajas'), 'CP2_Embalaje')
+            ->select('semana', 'c_destinatario', DB::raw('SUM(Contenedores) as contenedores'),
+            DB::raw('SUM(cantidad) as Cajas'), 'CP2_Embalaje')
             ->groupBy('semana', 'c_destinatario', 'CP2_Embalaje')
             ->orderBy('c_destinatario', 'asc')
             ->orderBy('semana', 'desc')
             ->get();
 
         foreach ($dataMetas as $chart) {
-            if ($chart->c_destinatario != null && $chart->c_destinatario != 'NAC-01') {
+            if ($chart->c_destinatario != null ) {
 
                 try {
 
@@ -942,13 +943,14 @@ class ReporteriaController extends Controller
                 ->where('n_exportadora', 'Greenex Spa')
                 ->groupByRaw('DATEPART(WEEK, etd), c_destinatario, CP2_Embalaje');
         }, 's')
-            ->select('semana', 'c_destinatario', DB::raw('SUM(Pallets) as Pallets,SUM(Cajas) as Cajas '), DB::raw('SUM(Contenedores) as contenedores'))
+            ->select('semana', 'c_destinatario', DB::raw('SUM(Pallets) as Pallets,SUM(Cajas) as Cajas '),
+            DB::raw('SUM(Contenedores) as contenedores'))
             ->groupBy('semana', 'c_destinatario')
             ->orderBy('semana', 'desc')
             ->get();
 
         foreach ($dataMetas as $chart) {
-            if ($chart->c_destinatario != null && $chart->c_destinatario != 'NAC-01') {
+            if ($chart->c_destinatario != null) {
 
                 try {
 
@@ -998,7 +1000,7 @@ class ReporteriaController extends Controller
             ->get();
 
         foreach ($dataMetas as $chart) {
-            if ($chart->c_destinatario != null && $chart->c_destinatario != 'NAC-01') {
+            if ($chart->c_destinatario != null) {
 
                 try {
 
