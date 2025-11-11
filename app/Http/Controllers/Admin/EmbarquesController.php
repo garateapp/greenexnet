@@ -477,16 +477,22 @@ SQL;
         Excel::store(new SeguimientoEmbarquesExport($embarques), $fileName, $disk);
 
         try {
-            $mailList=explode(',',env('MAIL_LIST_EMBARQUE', 'carlos.alvarez@greenex.cl,carol.padilla@greenex.cl'));
+            $mailList = collect(explode(',', env('MAIL_LIST_EMBARQUE', 'carlos.alvarez@greenex.cl,carol.padilla@greenex.cl')))
+                ->map(fn ($email) => trim($email))
+                ->filter()
+                ->unique()
+                ->values();
 
-            Mail::to($mailList)
-                ->send(new MensajeGenericoMailable(
-                    $mensaje,
-                    $fileName,
-                    $disk,
-                    $totalsByTransportAndClient,
-                    $totalsByTransport
-                ));
+            foreach ($mailList as $email) {
+                Mail::to($email)
+                    ->send(new MensajeGenericoMailable(
+                        $mensaje,
+                        $fileName,
+                        $disk,
+                        $totalsByTransportAndClient,
+                        $totalsByTransport
+                    ));
+            }
         } catch (\Throwable $th) {
             Storage::disk($disk)->delete($fileName);
             Log::error('Error al enviar correo de seguimiento de embarques', ['exception' => $th]);
