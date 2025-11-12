@@ -189,6 +189,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('reporteria/ObjetivosEnvios', "ReporteriaController@ObjetivosEnvios")->name("reporteria.ObjetivosEnvios");
     Route::get('reporteria/ObjetivosEnviosAereos', "ReporteriaController@ObjetivosEnviosAereos")->name("reporteria.ObjetivosEnviosAereos");
     Route::get('reporteria/ObjetivosEnviosTerrestre', "ReporteriaController@ObjetivosEnviosTerrestre")->name("reporteria.ObjetivosEnviosTerrestre");
+    Route::get('reporteria/ObjetivosEnviosResumenClientes', "ReporteriaController@ObjetivosEnviosResumenClientes")->name("reporteria.ObjetivosEnviosResumenClientes");
     Route::get('reporteria/ObtieneEmbarquesyPackingList', "ReporteriaController@ObtieneEmbarquesyPackingList")->name("reporteria.ObtieneEmbarquesyPackingList");
     Route::get('reporteria/detalleembarque', "ReporteriaController@detalleembarque")->name("reporteria.detalleembarque");
     Route::get('reporteria/getPAckingList', "ReporteriaController@getPackingList")->name("reporteria.getPackingList");
