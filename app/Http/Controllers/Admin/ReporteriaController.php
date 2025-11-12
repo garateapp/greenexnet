@@ -38,6 +38,208 @@ use Illuminate\Support\Facades\Log as FacadesLog;
 
 class ReporteriaController extends Controller
 {
+    protected $clientesComexByCodigo = [];
+    protected $clientesComexByFantasia = [];
+    protected $metasClienteCache = [];
+
+    private function resolveClienteComexFromDestinatario(?string $destinatario)
+    {
+        if (!$destinatario) {
+            return null;
+        }
+
+        $raw = trim($destinatario);
+
+        if ($raw === '') {
+            return null;
+        }
+
+        $firstSegment = Str::contains($raw, '-') ? Str::before($raw, '-') : $raw;
+
+        $codigoCandidates = array_filter(array_unique([
+            trim($firstSegment),
+            trim(Str::replace(' ', '', $firstSegment)),
+            trim(ltrim($firstSegment, '0')),
+            trim($raw),
+        ]));
+
+        foreach ($codigoCandidates as $candidate) {
+            if ($candidate === '') {
+                continue;
+            }
+            $key = Str::upper($candidate);
+            if (!array_key_exists($key, $this->clientesComexByCodigo)) {
+                $this->clientesComexByCodigo[$key] = ClientesComex::whereRaw('UPPER(codigo_cliente) = ?', [$key])->first();
+            }
+            if ($this->clientesComexByCodigo[$key]) {
+                return $this->clientesComexByCodigo[$key];
+            }
+        }
+
+        $nameCandidates = array_filter(array_unique([
+            $raw,
+            Str::contains($raw, '-') ? trim(Str::after($raw, '-')) : null,
+        ]));
+
+        foreach ($nameCandidates as $name) {
+            if ($name === '') {
+                continue;
+            }
+            $key = Str::upper($name);
+            if (!array_key_exists($key, $this->clientesComexByFantasia)) {
+                $this->clientesComexByFantasia[$key] = ClientesComex::whereRaw('UPPER(nombre_fantasia) = ?', [$key])->first();
+            }
+            if ($this->clientesComexByFantasia[$key]) {
+                return $this->clientesComexByFantasia[$key];
+            }
+        }
+
+        return null;
+    }
+
+    private function getMetaCliente(?int $clienteId)
+    {
+        if (!$clienteId) {
+            return null;
+        }
+
+        if (!array_key_exists($clienteId, $this->metasClienteCache)) {
+            $this->metasClienteCache[$clienteId] = MetasClienteComex::where('clientecomex_id', $clienteId)
+                ->orderByDesc('anno')
+                ->orderByDesc('semana')
+                ->orderByDesc('id')
+                ->first();
+        }
+
+        return $this->metasClienteCache[$clienteId];
+    }
+
+    protected function getObjetivosDataByTransporte(string $transporte): Collection
+    {
+        switch ($transporte) {
+            case 'MARITIMO':
+                $dataMetas = DB::connection("sqlsrv")->table(function ($query) {
+                    $query->from('dbo.V_PKG_Embarques')
+                        ->selectRaw("
+        DATEPART(WEEK, etd) as semana,
+        c_destinatario,
+        SUM(cantidad) / CP2_Embalaje / 20 as Contenedores, SUM(cantidad) as cantidad,CP2_Embalaje")
+                        ->where('id_especie', 7)
+                        ->where('transporte', 'MARITIMO')
+                        ->where('n_exportadora', 'Greenex Spa')
+                        ->groupByRaw('DATEPART(WEEK, etd), c_destinatario, CP2_Embalaje');
+                }, 's')
+                    ->select('semana', 'c_destinatario', DB::raw('SUM(Contenedores) as contenedores'),
+                        DB::raw('SUM(cantidad) as Cajas'), 'CP2_Embalaje')
+                    ->groupBy('semana', 'c_destinatario', 'CP2_Embalaje')
+                    ->orderBy('c_destinatario', 'asc')
+                    ->orderBy('semana', 'desc')
+                    ->get();
+                break;
+            case 'AEREO':
+                $dataMetas = DB::connection("sqlsrv")->table(function ($query) {
+                    $query->from('dbo.V_PKG_Embarques')
+                        ->selectRaw("
+        DATEPART(WEEK, etd) as semana,
+        c_destinatario,
+        SUM(cantidad)/CP2_Embalaje/20 as Contenedores,
+        ROUND(SUM(cantidad) / CP2_Embalaje,2) as Pallets, SUM(cantidad) as Cajas")
+                        ->where('id_especie', 7)
+                        ->where('transporte', 'AEREO')
+                        ->where('n_exportadora', 'Greenex Spa')
+                        ->groupByRaw('DATEPART(WEEK, etd), c_destinatario, CP2_Embalaje');
+                }, 's')
+                    ->select('semana', 'c_destinatario', DB::raw('SUM(Pallets) as Pallets,SUM(Cajas) as Cajas '),
+                        DB::raw('SUM(Contenedores) as contenedores'))
+                    ->groupBy('semana', 'c_destinatario')
+                    ->orderBy('semana', 'desc')
+                    ->get();
+                break;
+            case 'CAMION FRIGORIFICO':
+                $dataMetas = DB::connection("sqlsrv")->table(function ($query) {
+                    $query->from('dbo.V_PKG_Embarques')
+                        ->selectRaw("
+        DATEPART(WEEK, etd) as semana,
+        c_destinatario,
+         SUM(cantidad) / CP2_Embalaje / 20 as Contenedores,
+        ROUND(SUM(cantidad) / CP2_Embalaje,2) as Pallets, SUM(cantidad) as Cajas")
+                        ->where('id_especie', 7)
+                        ->where('transporte', 'CAMION FRIGORIFICO')
+                        ->where('n_exportadora', 'Greenex Spa')
+                        ->groupByRaw('DATEPART(WEEK, etd), c_destinatario, CP2_Embalaje');
+                }, 's')
+                    ->select('semana', 'c_destinatario', DB::raw('SUM(Pallets) as Pallets,SUM(Cajas) as Cajas '))
+                    ->groupBy('semana', 'c_destinatario')
+                    ->orderBy('semana', 'desc')
+                    ->get();
+                break;
+            default:
+                $dataMetas = collect();
+                break;
+        }
+
+        return $dataMetas->map(function ($chart) use ($transporte) {
+            return $this->mapClienteMetaData($chart, $transporte);
+        });
+    }
+
+    protected function mapClienteMetaData($chart, string $transporte)
+    {
+        $chart->cliente_id = null;
+        $chart->cliente_codigo = null;
+        $chart->meta_contenedores = 0;
+        $chart->meta_cajas = 0;
+
+        if ($chart->c_destinatario != null) {
+            try {
+                $cliente = $this->resolveClienteComexFromDestinatario($chart->c_destinatario);
+                if ($cliente) {
+                    $chart->cliente_id = $cliente->id;
+                    $chart->cliente_codigo = $cliente->codigo_cliente;
+                    $chart->c_destinatario = $cliente->nombre_fantasia;
+
+                    $meta = $this->getMetaCliente($cliente->id);
+                    if ($meta) {
+                        $chart->alsu = $meta->observaciones ?? '';
+                        $chart->meta_contenedores = (float) $meta->cantidad;
+                        $chart->meta_cajas = $this->estimateMetaCajas($chart->meta_contenedores, $chart);
+                    } else {
+                        $chart->alsu = $chart->alsu ?? '';
+                    }
+                } else {
+                    $chart->alsu = $chart->alsu ?? '';
+                }
+            } catch (\Throwable $th) {
+            }
+        }
+
+        $chart->meta = $chart->meta_cajas ?? 0;
+        $chart->metacont = $chart->meta_contenedores ?? 0;
+        $chart->transporte = $transporte;
+
+        return $chart;
+    }
+
+    protected function estimateMetaCajas(float $metaContenedores, $chart): float
+    {
+        if ($metaContenedores <= 0) {
+            return 0;
+        }
+
+        if (property_exists($chart, 'CP2_Embalaje') && $chart->CP2_Embalaje > 0) {
+            return $metaContenedores * (float) $chart->CP2_Embalaje * 20;
+        }
+
+        $contenedores = isset($chart->contenedores) ? (float) $chart->contenedores : 0;
+        $cajas = isset($chart->Cajas) ? (float) $chart->Cajas : 0;
+
+        if ($contenedores > 0 && $cajas > 0) {
+            $ratio = $cajas / $contenedores;
+            return $metaContenedores * $ratio;
+        }
+
+        return 0;
+    }
 
 
     public function getSabana()
@@ -879,153 +1081,148 @@ class ReporteriaController extends Controller
     }
     public function ObjetivosEnvios()
     {
-        $dataMetas = DB::connection("sqlsrv")->table(function ($query) {
-            $query->from('dbo.V_PKG_Embarques')
-                ->selectRaw("
-        DATEPART(WEEK, etd) as semana,
-        c_destinatario,
-        SUM(cantidad) / CP2_Embalaje / 20 as Contenedores, SUM(cantidad) as cantidad,CP2_Embalaje")
-
-                ->where('id_especie', 7)
-                ->where('transporte', 'MARITIMO')
-                ->where('n_exportadora', 'Greenex Spa')
-                ->groupByRaw('DATEPART(WEEK, etd), c_destinatario, CP2_Embalaje');
-        }, 's')
-            ->select('semana', 'c_destinatario', DB::raw('SUM(Contenedores) as contenedores'),
-            DB::raw('SUM(cantidad) as Cajas'), 'CP2_Embalaje')
-            ->groupBy('semana', 'c_destinatario', 'CP2_Embalaje')
-            ->orderBy('c_destinatario', 'asc')
-            ->orderBy('semana', 'desc')
-            ->get();
-
-        foreach ($dataMetas as $chart) {
-            if ($chart->c_destinatario != null ) {
-
-                try {
-
-                    if (ClientesComex::where('codigo_cliente', explode("-", $chart->c_destinatario)[0])->exists()) {
-
-                        $CxComex = ClientesComex::where('codigo_cliente', explode("-", $chart->c_destinatario)[0])->first();
-                        $chart->c_destinatario = $CxComex->nombre_fantasia;
-
-                        $MetaCx = MetasClienteComex::where('clientecomex_id', '=', $CxComex->id)->first();
-                        if ($MetaCx != null) {
-                            $chart->alsu = $MetaCx->observaciones;
-                            $chart->meta = ($MetaCx->cantidad * $chart->CP2_Embalaje) * 20;
-                            $chart->metacont = $MetaCx->cantidad;
-                        } else {
-                            $chart->alsu = '';
-                            $chart->meta = 0;
-                            $chart->metacont = 0;
-                        }
-                    } else {
-                        $chart->alsu = '';
-                        $chart->meta = 0;
-                    }
-                } catch (\Throwable $th) {
-                }
-            }
-        }
+        $dataMetas = $this->getObjetivosDataByTransporte('MARITIMO');
         return response()->json(['data' => $dataMetas], 200);
     }
     public function ObjetivosEnviosAereos()
     {
         ini_set('memory_limit', '512M');
-        $dataMetas = DB::connection("sqlsrv")->table(function ($query) {
-            $query->from('dbo.V_PKG_Embarques')
-                ->selectRaw("
-        DATEPART(WEEK, etd) as semana,
-        c_destinatario,
-        SUM(cantidad)/CP2_Embalaje/20 as Contenedores,
-        ROUND(SUM(cantidad) / CP2_Embalaje,2) as Pallets, SUM(cantidad) as Cajas")
-                ->where('id_especie', 7)
-                ->where('transporte', 'AEREO')
-                ->where('n_exportadora', 'Greenex Spa')
-                ->groupByRaw('DATEPART(WEEK, etd), c_destinatario, CP2_Embalaje');
-        }, 's')
-            ->select('semana', 'c_destinatario', DB::raw('SUM(Pallets) as Pallets,SUM(Cajas) as Cajas '),
-            DB::raw('SUM(Contenedores) as contenedores'))
-            ->groupBy('semana', 'c_destinatario')
-            ->orderBy('semana', 'desc')
-            ->get();
-
-        foreach ($dataMetas as $chart) {
-            if ($chart->c_destinatario != null) {
-
-                try {
-
-                    if (ClientesComex::where('codigo_cliente', explode("-", $chart->c_destinatario)[0])->exists()) {
-
-                        $CxComex = ClientesComex::where('codigo_cliente', explode("-", $chart->c_destinatario)[0])->first();
-                        $chart->c_destinatario = $CxComex->nombre_fantasia;
-
-                        $MetaCx = MetasClienteComex::where('clientecomex_id', '=', $CxComex->id)->first();
-                        if ($MetaCx != null) {
-                            $chart->alsu = $MetaCx->observaciones;
-                            $chart->meta = $MetaCx->cantidad;
-                            $chart->metacont = 0;
-                            //  $chart->metacont = $MetaCx->contenedores;
-                        } else {
-                            $chart->alsu = '';
-                            $chart->meta = 0;
-                            $chart->metacont = 0;
-                        }
-                    } else {
-                        $chart->alsu = '';
-                        $chart->meta = 0;
-                    }
-                } catch (\Throwable $th) {
-                }
-            }
-        }
+        $dataMetas = $this->getObjetivosDataByTransporte('AEREO');
         return response()->json(['data' => $dataMetas], 200);
     }
     public function ObjetivosEnviosTerrestre()
     {
-        $dataMetas = DB::connection("sqlsrv")->table(function ($query) {
-            $query->from('dbo.V_PKG_Embarques')
-                ->selectRaw("
-        DATEPART(WEEK, etd) as semana,
-        c_destinatario,
-         SUM(cantidad) / CP2_Embalaje / 20 as Contenedores,
-        ROUND(SUM(cantidad) / CP2_Embalaje,2) as Pallets, SUM(cantidad) as Cajas")
-                ->where('id_especie', 7)
-                ->where('transporte', 'CAMION FRIGORIFICO')
-                ->where('n_exportadora', 'Greenex Spa')
-                ->groupByRaw('DATEPART(WEEK, etd), c_destinatario, CP2_Embalaje');
-        }, 's')
-            ->select('semana', 'c_destinatario', DB::raw('SUM(Pallets) as Pallets,SUM(Cajas) as Cajas '))
-            ->groupBy('semana', 'c_destinatario')
-            ->orderBy('semana', 'desc')
-            ->get();
+        $dataMetas = $this->getObjetivosDataByTransporte('CAMION FRIGORIFICO');
+        return response()->json(['data' => $dataMetas], 200);
+    }
 
-        foreach ($dataMetas as $chart) {
-            if ($chart->c_destinatario != null) {
+    public function ObjetivosEnviosResumenClientes()
+    {
+        $maritimos = $this->getObjetivosDataByTransporte('MARITIMO');
+        $aereos = $this->getObjetivosDataByTransporte('AEREO');
+        $terrestres = $this->getObjetivosDataByTransporte('CAMION FRIGORIFICO');
 
-                try {
+        $summary = [];
 
-                    if (ClientesComex::where('codigo_cliente', explode("-", $chart->c_destinatario)[0])->exists()) {
+        $ensureClient = function ($row) use (&$summary) {
+            $key = Str::upper($row->cliente_codigo ?? $row->c_destinatario ?? 'SIN NOMBRE');
+            if (!isset($summary[$key])) {
+                $summary[$key] = [
+                    'cliente' => $row->c_destinatario ?? 'Sin nombre',
+                    'cliente_codigo' => $row->cliente_codigo ?? null,
+                    'cliente_id' => $row->cliente_id ?? null,
+                    'maritimo' => ['contenedores' => 0, 'cajas' => 0, 'pallets' => 0],
+                    'aereo' => ['contenedores' => 0, 'cajas' => 0, 'pallets' => 0],
+                    'terrestre' => ['contenedores' => 0, 'cajas' => 0, 'pallets' => 0],
+                    'meta_contenedores' => 0,
+                    'meta_cajas' => 0,
+                    'observaciones' => null,
+                ];
+            }
 
-                        $CxComex = ClientesComex::where('codigo_cliente', explode("-", $chart->c_destinatario)[0])->first();
-                        $chart->c_destinatario = $CxComex->nombre_fantasia;
+            return $key;
+        };
 
-                        $MetaCx = MetasClienteComex::where('clientecomex_id', '=', $CxComex->id)->first();
-                        if ($MetaCx != null) {
-                            $chart->alsu = $MetaCx->observaciones;
-                            $chart->meta = $MetaCx->cantidad;
-                        } else {
-                            $chart->alsu = '';
-                            $chart->meta = 0;
-                        }
-                    } else {
-                        $chart->alsu = '';
-                        $chart->meta = 0;
-                    }
-                } catch (\Throwable $th) {
+        $processDataset = function ($dataset, string $transport) use (&$summary, $ensureClient) {
+            foreach ($dataset as $row) {
+                $key = $ensureClient($row);
+
+                $contenedores = (float) ($row->contenedores ?? 0);
+                $cajas = (float) ($row->Cajas ?? 0);
+                $pallets = (float) ($row->Pallets ?? 0);
+
+                switch ($transport) {
+                    case 'MARITIMO':
+                        $summary[$key]['maritimo']['contenedores'] += $contenedores;
+                        $summary[$key]['maritimo']['cajas'] += $cajas;
+                        break;
+                    case 'AEREO':
+                        $summary[$key]['aereo']['contenedores'] += $contenedores;
+                        $summary[$key]['aereo']['cajas'] += $cajas;
+                        $summary[$key]['aereo']['pallets'] += $pallets;
+                        break;
+                    case 'CAMION FRIGORIFICO':
+                        $summary[$key]['terrestre']['contenedores'] += $contenedores;
+                        $summary[$key]['terrestre']['cajas'] += $cajas;
+                        $summary[$key]['terrestre']['pallets'] += $pallets;
+                        break;
+                }
+
+                $summary[$key]['meta_contenedores'] = max(
+                    $summary[$key]['meta_contenedores'],
+                    (float) ($row->meta_contenedores ?? $row->metacont ?? 0)
+                );
+                $summary[$key]['meta_cajas'] = max(
+                    $summary[$key]['meta_cajas'],
+                    (float) ($row->meta_cajas ?? $row->meta ?? 0)
+                );
+
+                if (!$summary[$key]['observaciones'] && !empty($row->alsu)) {
+                    $summary[$key]['observaciones'] = $row->alsu;
                 }
             }
+        };
+
+        $processDataset($maritimos, 'MARITIMO');
+        $processDataset($aereos, 'AEREO');
+        $processDataset($terrestres, 'CAMION FRIGORIFICO');
+
+        $metas = MetasClienteComex::with('clientecomex')->get();
+        foreach ($metas as $meta) {
+            if (!$meta->clientecomex) {
+                continue;
+            }
+            $cliente = $meta->clientecomex;
+            $key = Str::upper($cliente->codigo_cliente ?? $cliente->nombre_fantasia ?? 'SIN NOMBRE');
+            if (!isset($summary[$key])) {
+                $summary[$key] = [
+                    'cliente' => $cliente->nombre_fantasia ?? 'Sin nombre',
+                    'cliente_codigo' => $cliente->codigo_cliente ?? null,
+                    'cliente_id' => $cliente->id,
+                    'maritimo' => ['contenedores' => 0, 'cajas' => 0, 'pallets' => 0],
+                    'aereo' => ['contenedores' => 0, 'cajas' => 0, 'pallets' => 0],
+                    'terrestre' => ['contenedores' => 0, 'cajas' => 0, 'pallets' => 0],
+                    'meta_contenedores' => 0,
+                    'meta_cajas' => 0,
+                    'observaciones' => null,
+                ];
+            }
+
+            $summary[$key]['meta_contenedores'] = max($summary[$key]['meta_contenedores'], (float) $meta->cantidad);
+            if (!$summary[$key]['observaciones'] && !empty($meta->observaciones)) {
+                $summary[$key]['observaciones'] = $meta->observaciones;
+            }
         }
-        return response()->json(['data' => $dataMetas], 200);
+
+        $summary = collect($summary)
+            ->map(function ($row) {
+                $row['total_contenedores'] = $row['maritimo']['contenedores']
+                    + $row['aereo']['contenedores']
+                    + $row['terrestre']['contenedores'];
+                $row['total_cajas'] = $row['maritimo']['cajas']
+                    + $row['aereo']['cajas']
+                    + $row['terrestre']['cajas'];
+
+                if (($row['meta_cajas'] ?? 0) <= 0 && $row['meta_contenedores'] > 0 && $row['total_contenedores'] > 0) {
+                    $ratio = $row['total_cajas'] / $row['total_contenedores'];
+                    if ($ratio > 0) {
+                        $row['meta_cajas'] = $row['meta_contenedores'] * $ratio;
+                    }
+                }
+
+                $row['cumplimiento_cajas'] = ($row['meta_cajas'] ?? 0) > 0
+                    ? round(($row['total_cajas'] / $row['meta_cajas']) * 100, 1)
+                    : null;
+                $row['cumplimiento_contenedores'] = $row['meta_contenedores'] > 0
+                    ? round(($row['total_contenedores'] / $row['meta_contenedores']) * 100, 1)
+                    : null;
+
+                return $row;
+            })
+            ->sortBy('cliente')
+            ->values();
+
+        return response()->json(['data' => $summary], 200);
     }
     /*************  ✨ Codeium Command ⭐  *************/
     /**

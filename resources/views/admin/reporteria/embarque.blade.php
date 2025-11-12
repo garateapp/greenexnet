@@ -411,14 +411,20 @@
                             contenedores: 0,
                             Pallets: 0,
                             Cajas: 0,
-                            meta: 0,
-                            metacont:0,
+                            meta: parseFloat(current.meta) || 0,
+                            metacont: parseFloat(current.metacont) || 0,
                         };
                     }
                     acc[destinatario].contenedores += parseFloat(current.contenedores);
 
                     acc[destinatario].Pallets += parseFloat(current.Pallets);
                     acc[destinatario].Cajas += parseFloat(current.Cajas);
+                    if (!acc[destinatario].meta && current.meta) {
+                        acc[destinatario].meta = parseFloat(current.meta) || 0;
+                    }
+                    if (!acc[destinatario].metacont && current.metacont) {
+                        acc[destinatario].metacont = parseFloat(current.metacont) || 0;
+                    }
                     return acc;
                 }, {});
                 const groupedDataTerrestre = dataTerrestre.reduce((acc, current) => {
@@ -430,14 +436,20 @@
                             contenedores: 0,
                             Pallets: 0,
                             Cajas: 0,
-                            meta: 0,
-                            metacont:0,
+                            meta: parseFloat(current.meta) || 0,
+                            metacont: parseFloat(current.metacont) || 0,
                         };
                     }
                     acc[destinatario].contenedores += parseFloat(current.contenedores);
 
                     acc[destinatario].Pallets += parseFloat(current.Pallets);
                     acc[destinatario].Cajas += parseFloat(current.Cajas);
+                    if (!acc[destinatario].meta && current.meta) {
+                        acc[destinatario].meta = parseFloat(current.meta) || 0;
+                    }
+                    if (!acc[destinatario].metacont && current.metacont) {
+                        acc[destinatario].metacont = parseFloat(current.metacont) || 0;
+                    }
                     return acc;
                 }, {});
 
@@ -464,21 +476,28 @@
                     const aereos = groupedDataAereo[cliente] || {
                         contenedores: 0,
                         Pallets: 0,
-                        Cajas: 0
+                        Cajas: 0,
+                        meta: 0,
+                        metacont:0,
                     };
                     const terrestres = groupedDataTerrestre[cliente] || {
                         contenedores: 0,
                         Pallets: 0,
-                        Cajas: 0
+                        Cajas: 0,
+                        meta: 0,
+                        metacont:0,
                     };
+
+                    const metaCajas = Number(maritimos.meta) || Number(aereos.meta) || Number(terrestres.meta) || 0;
+                    const metaContenedores = Number(maritimos.metacont) || Number(aereos.metacont) || Number(terrestres.metacont) || 0;
 
                     return {
                         c_destinatario: cliente,
                         contenedores: Math.round(maritimos.contenedores),
                         contenedoresAereo:aereos.contenedores || 0,
                         contenedoresTerrestre:terrestres.contenedores || 0,
-                        meta: maritimos.meta,
-                        metacont:maritimos.metacont,
+                        meta: metaCajas,
+                        metacont:metaContenedores,
                         cajas: parseFloat(maritimos.cajas) || 0,
                         palletsAereo: Math.round(parseFloat(aereos.Pallets)) || 0,
                         cajasAereo: parseFloat(aereos.Cajas) || 0,
@@ -509,110 +528,163 @@
                 $("#totalKilosEnviados").html(formatNumber2(TotalPalletsEnviados));
                 $("#totalCajasEnviadas").html(formatNumber2(TotalCajasEnviadas));
                 $("#totalContenedores").html("~"+formatNumber2(TotalContenedoresEnviados));
+                hideLoading();
+            }
+            let metasChartInstance = null;
+
+            function loadResumenMetas() {
+                $.ajax({
+                    url: "{{ route('admin.reporteria.ObjetivosEnviosResumenClientes') }}",
+                    type: "GET",
+                    dataType: "json",
+                    success(response) {
+                        renderResumenMetas(response.data || []);
+                    },
+                    error(error) {
+                        console.error(error);
+                        document.getElementById('tabla-container-metas').innerHTML =
+                            '<div class="alert alert-warning mb-0">No fue posible cargar el resumen de metas.</div>';
+                    }
+                });
+            }
+
+            function renderResumenMetas(data) {
                 const tablaContainer = document.getElementById('tabla-container-metas');
+                if (!data.length) {
+                    tablaContainer.innerHTML =
+                        '<div class="alert alert-info mb-0">No hay información de metas disponible.</div>';
+                    renderMetasChart([]);
+                    return;
+                }
+                const subtotales = data.reduce((acc, row) => {
+                    acc.maritimoCont += parseFloat((row.maritimo && row.maritimo.contenedores) || 0);
+                    acc.maritimoCajas += parseFloat((row.maritimo && row.maritimo.cajas) || 0);
+                    acc.aereoPallets += parseFloat((row.aereo && row.aereo.pallets) || 0);
+                    acc.aereoCajas += parseFloat((row.aereo && row.aereo.cajas) || 0);
+                    acc.terrestrePallets += parseFloat((row.terrestre && row.terrestre.pallets) || 0);
+                    acc.terrestreCajas += parseFloat((row.terrestre && row.terrestre.cajas) || 0);
+                    acc.totalCajas += parseFloat(row.total_cajas || 0);
+                    acc.totalContenedores += parseFloat(row.total_contenedores || 0);
+                    acc.metaCajas += parseFloat(row.meta_cajas || 0);
+                    acc.metaCont += parseFloat(row.meta_contenedores || 0);
+                    return acc;
+                }, {
+                    maritimoCont: 0,
+                    maritimoCajas: 0,
+                    aereoPallets: 0,
+                    aereoCajas: 0,
+                    terrestrePallets: 0,
+                    terrestreCajas: 0,
+                    totalCajas: 0,
+                    totalContenedores: 0,
+                    metaCajas: 0,
+                    metaCont: 0
+                });
+
                 const tablaHTML = `<div class="col-md-12">
                     <div class="card">
                         <div class="card-header">
                             Cumplimiento de Objetivos
-                            </div>
-                            <div class="card-body">
+                        </div>
+                        <div class="card-body">
                             <table>
-                <thead>
-                    <tr>
-                    <th></th>
-                    <th colspan="6">TIPO DE TRANSPORTE</th>
-                    <th colspan="5">CUMPLIMIENTO</th>
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th colspan="6">TIPO DE TRANSPORTE</th>
+                                        <th colspan="5">CUMPLIMIENTO</th>
+                                    </tr>
+                                    <tr>
+                                        <th></th>
+                                        <th colspan="2">MARITIMO</th>
+                                        <th colspan="2">AEREO</th>
+                                        <th colspan="2">TERRESTRE</th>
+                                        <th colspan="2">Cajas</th>
+                                        <th colspan="2">Contenedores</th>
+                                        <th>%</th>
+                                    </tr>
+                                    <tr>
+                                        <th>Cliente</th>
+                                        <th>Contenedores</th>
+                                        <th>Cajas</th>
+                                        <th>Pallets</th>
+                                        <th>Cajas</th>
+                                        <th>Pallets</th>
+                                        <th>Cajas</th>
+                                        <th>Objetivo</th>
+                                        <th>Total</th>
+                                        <th>Objetivo</th>
+                                        <th>Total</th>
+                                        <th>% Cumplimiento</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${data.map(row => `
+                                        <tr>
+                                            <td>${row.cliente}</td>
+                                            <td>${formatNumber2((row.maritimo && row.maritimo.contenedores) || 0)}</td>
+                                            <td>${formatNumber2((row.maritimo && row.maritimo.cajas) || 0)}</td>
+                                            <td>${formatNumber2((row.aereo && row.aereo.pallets) || 0)}</td>
+                                            <td>${formatNumber2((row.aereo && row.aereo.cajas) || 0)}</td>
+                                            <td>${formatNumber2((row.terrestre && row.terrestre.pallets) || 0)}</td>
+                                            <td>${formatNumber2((row.terrestre && row.terrestre.cajas) || 0)}</td>
+                                            <td>${formatNumber2(row.meta_cajas || 0)}</td>
+                                            <td>${formatNumber2(row.total_cajas || 0)}</td>
+                                            <td>${formatNumber2(row.meta_contenedores || 0)}</td>
+                                            <td>~${formatNumber2(row.total_contenedores || 0)}</td>
+                                            <td>${row.cumplimiento_cajas ? parseFloat(row.cumplimiento_cajas).toFixed(0) : 0}%</td>
+                                        </tr>
+                                    `).join('')}
+                                    <tr>
+                                        <td><strong>TOTAL</strong></td>
+                                        <td><strong>${formatNumber2(subtotales.maritimoCont)}</strong></td>
+                                        <td><strong>${formatNumber2(subtotales.maritimoCajas)}</strong></td>
+                                        <td><strong>${formatNumber2(subtotales.aereoPallets)}</strong></td>
+                                        <td><strong>${formatNumber2(subtotales.aereoCajas)}</strong></td>
+                                        <td><strong>${formatNumber2(subtotales.terrestrePallets)}</strong></td>
+                                        <td><strong>${formatNumber2(subtotales.terrestreCajas)}</strong></td>
+                                        <td><strong>${formatNumber2(subtotales.metaCajas)}</strong></td>
+                                        <td><strong>${formatNumber2(subtotales.totalCajas)}</strong></td>
+                                        <td><strong>${formatNumber2(subtotales.metaCont)}</strong></td>
+                                        <td><strong>~${formatNumber2(subtotales.totalContenedores)}</strong></td>
+                                        <td><strong>${subtotales.metaCajas > 0 ? Math.round((subtotales.totalCajas / subtotales.metaCajas) * 100) : 0}%</strong></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <small>* El porcentaje de cumplimiento se calcula con base en la cantidad de cajas.</small>
+                        </div>
+                    </div>
+                </div>`;
 
-                    </tr>
-                    <tr>
-                        <th></th>
-                        <th colspan="2">MARITIMO</th>
-                    <th colspan="2">AEREO</th>
-                    <th colspan="2">TERRESTRE</th>
-
-                        <th colspan="2">Cajas</th>
-                        <th colspan="2">Contenedores</th>
-                        <th>%</th>
-                        </tr>
-                    <tr>
-                    <th>Cliente</th>
-                    <th>Contenedores</th>
-                    <th>Cajas</th>
-                    <th>Pallets</th>
-                    <th>Cajas</th>
-                    <th>Pallets</th>
-                    <th>Cajas</th>
-                    <th>Objetivo</th>
-                    <th>Total</th>
-                    <th>Objetivo</th>
-                    <th>Total</th>
-                    <th>% Cumplimiento</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${result.map(data => `
-                                                        <tr>
-
-                                                            <td>${data.c_destinatario}</td>
-                                                            <td>${formatNumber2(data.contenedores)}</td>
-                                                            <td>${formatNumber2(data.cajas)}</td>
-                                                            <td>${formatNumber2(data.palletsAereo)}</td>
-                                                            <td>${formatNumber2(data.cajasAereo)}</td>
-                                                            <td>${formatNumber2(data.palletsTerrestre)} </td>
-                                                            <td>${formatNumber2(data.cajasTerrestre)}</td>
-                                                            <td>${formatNumber2(data.meta ?? 0)}</td>
-                                                            <td>${formatNumber2((data.cajas+data.cajasAereo+data.cajasTerrestre))}</td>
-                                                            <td>${formatNumber2(data.metacont ?? 0)}</td>
-                                                             <td>~${isNaN(data.contenedores+data.contenedoresAereo+data.contenedoresTerrestre)?0:parseFloat(data.contenedores+data.contenedoresAereo+data.contenedoresTerrestre).toFixed(1)}</td>
-                                                            <td>${(data.meta==0) ? 0 : parseFloat(((data.cajas+data.cajasAereo+data.cajasTerrestre) / data.meta) * 100).toFixed(0)}%</td>
-                                                        </tr>
-                                                        `).join('')}
-                    <!-- Subtotales -->
-                    <tr>
-                    <td><strong>TOTAL</strong></td>
-                    <td><strong>${formatNumber2(subtotales.cantidadMaritimos)}</strong></td>
-                    <td><strong>${formatNumber2(subtotales.cantidadCajasMAritimos)}</strong></td>
-
-                    <td><strong>${formatNumber2(subtotales.cantidadPallets)}</strong></td>
-                    <td><strong>${formatNumber2(subtotales.cantidadCajas)}</strong></td>
-                    <td><strong>${formatNumber2(subtotales.cantidadPalletsTerrestre)}</strong></td>
-                    <td><strong>${formatNumber2(subtotales.cantidadCajasTerrestre)}</strong></td>
-                    <td><strong>${formatNumber2(subtotales.objetivoMaritimos)}</strong></td>
-                    <td><strong>${formatNumber2((subtotales.cantidadCajasMAritimos+subtotales.cantidadCajasTerrestre+subtotales.cantidadCajas ))}</strong></td>
-                    <td><strong>${formatNumber2(subtotales.objetivoCont)}</strong></td>
-                    <td><strong>~${formatNumber2(TotalContenedoresEnviados)}</strong></td>
-                    <td><strong>~${parseFloat(((subtotales.cantidadCajasMAritimos+subtotales.cantidadCajasTerrestre+subtotales.cantidadCajas )/ subtotales.objetivoMaritimos) * 100).toFixed(0)}%</strong></td>
-                    </tr>
-                </tbody>
-                </table>
-                *El porcentaje de cumplimiento es en base a la cantidad de cajas
-                            </div>
-                            </div>
-                            </div>
-                        `;
                 tablaContainer.innerHTML = tablaHTML;
-                const labels3 = result.map(data => data.c_destinatario);
-                const cantidades3 = result.map(data => parseFloat(data.cajasAereo + data.cajas + data
-                    .cajasTerrestre));
-                console.log(result);
-                const metas = result.map(data => data.meta ||
-                    0); // Asegurar que las metas nulas sean 0
-                const ctx3 = document.getElementById('MetasxClienteChart').getContext('2d');
-                new Chart(ctx3, {
+                renderMetasChart(data);
+            }
+
+            function renderMetasChart(data) {
+                const ctx = document.getElementById('MetasxClienteChart').getContext('2d');
+                const labels = data.map(row => row.cliente);
+                const cantidades = data.map(row => parseFloat(row.total_cajas || 0));
+                const metas = data.map(row => parseFloat(row.meta_cajas || 0));
+
+                if (metasChartInstance) {
+                    metasChartInstance.destroy();
+                }
+
+                metasChartInstance = new Chart(ctx, {
                     type: 'bar',
                     data: {
-                        labels: labels3,
+                        labels: labels,
                         datasets: [{
                                 label: 'Cantidad',
-                                data: cantidades3,
-                                backgroundColor: 'rgba(54, 162, 235, 0.5)', // Azul translúcido
+                                data: cantidades,
+                                backgroundColor: 'rgba(54, 162, 235, 0.5)',
                                 borderColor: 'rgba(54, 162, 235, 1)',
                                 borderWidth: 1
                             },
                             {
                                 label: 'Meta',
                                 data: metas,
-                                backgroundColor: 'rgba(255, 99, 132, 0.5)', // Rojo translúcido
+                                backgroundColor: 'rgba(255, 99, 132, 0.5)',
                                 borderColor: 'rgba(255, 99, 132, 1)',
                                 borderWidth: 1
                             }
@@ -625,7 +697,7 @@
                                 beginAtZero: true,
                                 title: {
                                     display: true,
-                                    text: 'Contenedores'
+                                    text: 'Cajas'
                                 }
                             },
                             x: {
@@ -642,9 +714,9 @@
                         }
                     }
                 });
-                hideLoading();
             }
             showLoading();
+            loadResumenMetas();
             var datosMaritimo = [];
             var datosAereo = [];
             $.ajax({
