@@ -247,7 +247,7 @@
 
         <p>Adjuntamos el detalle completo de embarques en el archivo Excel incluido en este correo.</p>
         <p>Para mayor informacion ingresar a nuestra intranet <a
-                href="http://net.greenexweb.cl">net.greenex.cl</a> men&uacute; COMEX opcion embarques</p>
+                href="https://net.greenexweb.cl">net.greenex.cl</a> men&uacute; COMEX opcion embarques</p>
         <p>Saludos,</p>
         <p>Equipo Greenex</p>
     </div>
