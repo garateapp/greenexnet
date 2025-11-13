@@ -33,6 +33,8 @@ class EmbarquesController extends Controller
 {
     use CsvImportTrait;
 
+    protected int $embarquesIndexLimit = 12000;
+
     public function index(Request $request)
     {
         abort_if(Gate::denies('embarque_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
@@ -53,7 +55,7 @@ variedad,
 embalajes,
 etiqueta,
 SUM(cajas) as cajas,
-cant_pallets,
+MAX(cant_pallets) as cant_pallets,
 SUM(peso_neto) as peso_neto,
 puerto_embarque ,
 pais_destino ,
@@ -99,7 +101,7 @@ SQL;
                 'notas',
                 'num_orden',
                 'tipo_especie',
-                'cant_pallets',
+
             ];
 
             $aggregatedSelect = str_replace(
@@ -115,10 +117,19 @@ SQL;
 
             $groupColumnsForQuery = array_values(array_diff($groupColumns, ['variedad', 'embalajes','etiqueta']));
 
-            $query = Embarque::query()
+            $baseColumns = array_values(array_unique(array_merge($groupColumns, ['cajas', 'cant_pallets', 'peso_neto'])));
+            $baseQuery = Embarque::query()
+                ->select($baseColumns)
+                ->whereNull('deleted_at');
 
+            $maxRows = (int) config('reporteria.embarques_index_max_rows', $this->embarquesIndexLimit);
+            if (!$request->boolean('mostrar_todos', false)) {
+                $baseQuery->orderByDesc('num_embarque')->limit($maxRows);
+            }
+
+            $query = DB::query()
+                ->fromSub($baseQuery, 'emb')
                 ->selectRaw($optimizedSelect)
-                ->whereNull('deleted_at')
                 ->groupBy($groupColumnsForQuery)
                 ->orderBy('num_embarque', 'desc');
             $table = Datatables::of($query);
@@ -137,9 +148,9 @@ SQL;
             $table->editColumn('num_embarque', function ($row) {
                 return $row->num_embarque ? $row->num_embarque : '';
             });
-            $table->editColumn('id_cliente', function ($row) {
-                return $row->id_cliente ? $row->id_cliente : '';
-            });
+            // $table->editColumn('id_cliente', function ($row) {
+            //     return $row->id_cliente ? $row->id_cliente : '';
+            // });
             $table->editColumn('n_cliente', function ($row) {
                 return $row->n_cliente ? $row->n_cliente : '';
             });
@@ -182,9 +193,9 @@ SQL;
             $table->editColumn('puerto_destino', function ($row) {
                 return $row->puerto_destino ? $row->puerto_destino : '';
             });
-            $table->editColumn('mercado', function ($row) {
-                return $row->mercado ? $row->mercado : '';
-            });
+            // $table->editColumn('mercado', function ($row) {
+            //     return $row->mercado ? $row->mercado : '';
+            // });
             $table->editColumn('etd_estimado', function ($row) {
                 return $row->etd_estimado ? Carbon::parse($row->etd_estimado)->format('d-m-Y H:i')  :  '';
             });
@@ -193,7 +204,7 @@ SQL;
             });
 
             $table->editColumn('dias_transito_real', function ($row) {
-                return $row->dias_transito_real ? $row->dias_transito_real : '';
+                return  '';//$row->dias_transito_real ? $row->dias_transito_real :
             });
             $table->editColumn('estado', function ($row) {
                 return $row->estado ? Embarque::ESTADO_SELECT[$row->estado] : '';
@@ -210,37 +221,37 @@ SQL;
             $table->editColumn('notas', function ($row) {
                 return $row->notas ? $row->notas : '';
             });
-            $table->editColumn('calificacion', function ($row) {
-                return $row->calificacion ? $row->calificacion : '';
-            });
-            $table->editColumn('pais_conexion', function ($row) {
-                return $row->pais_conexion ? $row->pais_conexion : '';
-            });
-            $table->editColumn('conexiones', function ($row) {
-                return $row->conexiones ? $row->conexiones : '';
-            });
+            // $table->editColumn('calificacion', function ($row) {
+            //     return $row->calificacion ? $row->calificacion : '';
+            // });
+            // $table->editColumn('pais_conexion', function ($row) {
+            //     return $row->pais_conexion ? $row->pais_conexion : '';
+            // });
+            // $table->editColumn('conexiones', function ($row) {
+            //     return $row->conexiones ? $row->conexiones : '';
+            // });
 
-            $table->editColumn('status_aereo', function ($row) {
-                return $row->status_aereo ? Embarque::STATUS_AEREO_SELECT[$row->status_aereo] : '';
+            // $table->editColumn('status_aereo', function ($row) {
+            //     return $row->status_aereo ? Embarque::STATUS_AEREO_SELECT[$row->status_aereo] : '';
+            // });
+            $table->editColumn('cant_pallets', function ($row) {
+                return $row->cant_pallets ? $row->cant_pallets : '';
             });
-            $table->editColumn('num_pallets', function ($row) {
-                return $row->num_pallets ? $row->num_pallets : '';
-            });
-            $table->editColumn('embalaje_std', function ($row) {
-                return $row->embalaje_std ? $row->embalaje_std : '';
-            });
+            // $table->editColumn('embalaje_std', function ($row) {
+            //     return $row->embalaje_std ? $row->embalaje_std : '';
+            // });
             $table->editColumn('num_orden', function ($row) {
                 return $row->num_orden ? $row->num_orden : '';
             });
             $table->editColumn('tipo_especie', function ($row) {
                 return $row->tipo_especie ? $row->tipo_especie : '';
             });
-            $table->editColumn('peso_total', function ($row) {
-                return $row->peso_total ? $row->peso_total : '';
-            });
-            $table->editColumn('numero_reserva_agente_naviero', function ($row) {
-                return $row->numero_reserva_agente_naviero ? $row->numero_reserva_agente_naviero : '';
-            });
+            // $table->editColumn('peso_total', function ($row) {
+            //     return $row->peso_total ? $row->peso_total : '';
+            // });
+            // $table->editColumn('numero_reserva_agente_naviero', function ($row) {
+            //     return $row->numero_reserva_agente_naviero ? $row->numero_reserva_agente_naviero : '';
+            // });
             $table->rawColumns(['actions', 'placeholder']);
 
             return $table->make(true);
