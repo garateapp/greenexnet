@@ -105,18 +105,19 @@ SQL;
             $aggregatedSelect = str_replace(
                 ['variedad,', 'embalajes','etiqueta'],
                 [
-                    'GROUP_CONCAT(DISTINCT variedad ORDER BY variedad SEPARATOR ", ") as variedad,',
-                    'GROUP_CONCAT(DISTINCT embalajes ORDER BY embalajes SEPARATOR ", ") as embalajes',
-                    'GROUP_CONCAT(DISTINCT etiqueta ORDER BY etiqueta SEPARATOR ", ") as etiqueta',
+                    'GROUP_CONCAT(DISTINCT variedad SEPARATOR ", ") as variedad,',
+                    'GROUP_CONCAT(DISTINCT embalajes SEPARATOR ", ") as embalajes',
+                    'GROUP_CONCAT(DISTINCT etiqueta SEPARATOR ", ") as etiqueta',
                 ],
                 $select
             );
+            $optimizedSelect = 'SQL_BIG_RESULT ' . $aggregatedSelect;
 
             $groupColumnsForQuery = array_values(array_diff($groupColumns, ['variedad', 'embalajes','etiqueta']));
 
             $query = Embarque::query()
 
-                ->selectRaw($aggregatedSelect)
+                ->selectRaw($optimizedSelect)
                 ->whereNull('deleted_at')
                 ->groupBy($groupColumnsForQuery)
                 ->orderBy('num_embarque', 'desc');
