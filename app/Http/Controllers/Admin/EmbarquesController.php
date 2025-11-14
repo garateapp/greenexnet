@@ -132,6 +132,7 @@ SQL;
                 ->selectRaw($optimizedSelect)
                 ->groupBy($groupColumnsForQuery)
                 ->orderBy('num_embarque', 'desc');
+                Log::info($query->toSql());
             $table = Datatables::of($query);
 
             $table->addColumn('placeholder', '&nbsp;');
