@@ -40,7 +40,7 @@ class EmbarquesController extends Controller
         abort_if(Gate::denies('embarque_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         if ($request->ajax()) {
-            $select = <<<SQL
+        $select = <<<SQL
 temporada,
 semana,
 transporte,
@@ -57,82 +57,91 @@ etiqueta,
 SUM(cajas) as cajas,
 MAX(cant_pallets) as cant_pallets,
 SUM(peso_neto) as peso_neto,
-puerto_embarque ,
-pais_destino ,
-puerto_destino ,
+puerto_embarque,
+pais_destino,
+puerto_destino,
 etd_estimado,
 eta_estimado,
 fecha_zarpe_real,
 fecha_arribo_real,
-estado ,
+estado,
 descargado,
 retirado_full,
 devuelto_vacio,
-Min(notas) as notas,
+MIN(notas) as notas,
 num_orden,
 tipo_especie
 SQL;
 
-            $groupColumns = [
-                'temporada',
-                'semana',
-                'transporte',
-                'num_embarque',
-                'n_cliente',
-                'planta_carga',
-                'n_naviera',
-                'nave',
-                'num_contenedor',
-                'especie',
-                'variedad',
-                'embalajes',
-                'etiqueta',
-                'puerto_embarque',
-                'pais_destino',
-                'puerto_destino',
-                'etd_estimado',
-                'eta_estimado',
-                'fecha_zarpe_real',
-                'fecha_arribo_real',
-                'estado',
-                'descargado',
-                'retirado_full',
-                'devuelto_vacio',
+$groupColumns = [
+    'temporada',
+    'semana',
+    'transporte',
+    'num_embarque',
+    'n_cliente',
+    'planta_carga',
+    'n_naviera',
+    'nave',
+    'num_contenedor',
+    'especie',
+    'variedad',
+    'embalajes',
+    'etiqueta',
+    'puerto_embarque',
+    'pais_destino',
+    'puerto_destino',
+    'etd_estimado',
+    'eta_estimado',
+    'fecha_zarpe_real',
+    'fecha_arribo_real',
+    'estado',
+    'descargado',
+    'retirado_full',
+    'devuelto_vacio',
+    'num_orden',
+    'tipo_especie',
+];
 
-                'num_orden',
-                'tipo_especie',
+// reemplazamos las columnas “planas” por sus GROUP_CONCAT
+$aggregatedSelect = str_replace(
+    ['variedad,', 'embalajes', 'etiqueta'],
+    [
+        'GROUP_CONCAT(DISTINCT variedad SEPARATOR ", ") as variedad,',
+        'GROUP_CONCAT(DISTINCT embalajes SEPARATOR ", ") as embalajes',
+        'GROUP_CONCAT(DISTINCT etiqueta SEPARATOR ", ") as etiqueta',
+    ],
+    $select
+);
 
-            ];
+// hint de MySQL
+$optimizedSelect = 'SQL_BIG_RESULT ' . $aggregatedSelect;
 
-            $aggregatedSelect = str_replace(
-                ['variedad,', 'embalajes','etiqueta'],
-                [
-                    'GROUP_CONCAT(DISTINCT variedad SEPARATOR ", ") as variedad,',
-                    'GROUP_CONCAT(DISTINCT embalajes SEPARATOR ", ") as embalajes',
-                    'GROUP_CONCAT(DISTINCT etiqueta SEPARATOR ", ") as etiqueta',
-                ],
-                $select
-            );
-            $optimizedSelect = 'SQL_BIG_RESULT ' . $aggregatedSelect;
+// en el GROUP BY no van las columnas agregadas
+$groupColumnsForQuery = array_values(
+    array_diff($groupColumns, ['variedad', 'embalajes', 'etiqueta'])
+);
 
-            $groupColumnsForQuery = array_values(array_diff($groupColumns, ['variedad', 'embalajes','etiqueta']));
+// columnas base que necesita la subquery interna
+$baseColumns = array_values(array_unique(array_merge(
+    $groupColumns,
+    ['cajas', 'cant_pallets', 'peso_neto', 'notas'] // <-- aquí agregamos notas
+)));
 
-            $baseColumns = array_values(array_unique(array_merge($groupColumns, ['cajas', 'cant_pallets', 'peso_neto'])));
-            $baseQuery = Embarque::query()
-                ->select($baseColumns)
-                ->whereNull('deleted_at');
+$baseQuery = Embarque::query()
+    ->select($baseColumns)
+    ->whereNull('deleted_at');
 
-            $maxRows = (int) config('reporteria.embarques_index_max_rows', $this->embarquesIndexLimit);
-            if (!$request->boolean('mostrar_todos', false)) {
-                $baseQuery->orderByDesc('num_embarque')->limit($maxRows);
-            }
+$maxRows = (int) config('reporteria.embarques_index_max_rows', $this->embarquesIndexLimit);
 
-            $query = DB::query()
-                ->fromSub($baseQuery, 'emb')
-                ->selectRaw($optimizedSelect)
-                ->groupBy($groupColumnsForQuery)
-                ->orderBy('num_embarque', 'desc');
-                Log::info($query->toSql());
+if (! $request->boolean('mostrar_todos', false)) {
+    $baseQuery->orderByDesc('num_embarque')->limit($maxRows);
+}
+
+$query = DB::query()
+    ->fromSub($baseQuery, 'emb')
+    ->selectRaw($optimizedSelect)
+    ->groupBy($groupColumnsForQuery)
+    ->orderBy('num_embarque', 'desc');
             $table = Datatables::of($query);
 
             $table->addColumn('placeholder', '&nbsp;');
