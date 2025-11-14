@@ -495,7 +495,7 @@ $query = DB::query()
 
         try {
             //$mailList = collect(explode(',', env('MAIL_LIST_EMBARQUE', 'carlos.alvarez@greenex.cl,carol.padilla@greenex.cl')))
-            $mailList = collect(explode(',', 'iromero@greenex.cl,rodrigo.garate@greenex.cl,eduardo.garate@greenex.cl,nadia.lell@greenex.cl,viviana.valdebenito@greenex.cl,marcela.naredo@greenex.cl,roberto.arenas@greenex.cl,exportaciones@greenex.cl,hhoffmann@greenex.cl,esteban.acevedo@greenex.cl,maria.mella@greenex.cl,carol.padilla@greenex.cl'));
+            $mailList = collect(explode(',', 'iromero@greenex.cl,rodrigo.garate@greenex.cl,eduardo.garate@greenex.cl,nadia.lell@greenex.cl,viviana.valdebenito@greenex.cl,marcela.naredo@greenex.cl,roberto.arenas@greenex.cl,exportaciones@greenex.cl,hhoffmann@greenex.cl,esteban.acevedo@greenex.cl,maria.mella@greenex.cl,carol.padilla@greenex.cl'))
                 ->map(fn ($email) => trim($email))
                 ->filter()
                 ->unique()
