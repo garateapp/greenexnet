@@ -494,7 +494,7 @@ SQL;
                 ->filter()
                 ->unique()
                 ->values();
-
+             Log::info("Enviando correo de seguimiento de embarques a ", $mailList);
             foreach ($mailList as $email) {
                 Log::info("Enviando correo de seguimiento de embarques a {$email}");
                 Mail::to($email)
