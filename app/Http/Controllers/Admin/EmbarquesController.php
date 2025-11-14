@@ -462,12 +462,7 @@ SQL;
     ->orderByDesc('num_embarque')
     ->get();
 
-        // $embarques = Embarque::selectRaw($select)
-        //     ->whereNull('deleted_at')
-        //     ->whereNull('fecha_arribo_real')
-        //     ->groupBy($groupColumns)
-        //     ->orderByDesc('num_embarque')
-        //     ->get();
+
 
         if ($embarques->isEmpty()) {
             return redirect()
