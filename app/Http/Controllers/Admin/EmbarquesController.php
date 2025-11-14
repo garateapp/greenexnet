@@ -68,7 +68,7 @@ estado ,
 descargado,
 retirado_full,
 devuelto_vacio,
-Min(notas) as notas
+Min(notas) as notas,
 num_orden,
 tipo_especie
 SQL;
