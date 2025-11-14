@@ -55,7 +55,7 @@ class AttendanceController extends Controller
         $loggedInUser = Auth::user();
         $location = null;
         if ($loggedInUser && $loggedInUser->personal && $loggedInUser->personal->assignedLocation) {
-            $location = $loggedInUser->personal->assignedLocation->nombre;
+            $location = $loggedInUser->personal->assignedLocation->id;
         } else {
             return response()->json(['success' => false, 'message' => 'Ubicación del supervisor no encontrada.'], 400);
         }
