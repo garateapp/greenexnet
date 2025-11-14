@@ -68,7 +68,7 @@ estado ,
 descargado,
 retirado_full,
 devuelto_vacio,
-notas,
+Min(notas) as notas
 num_orden,
 tipo_especie
 SQL;
@@ -98,7 +98,7 @@ SQL;
                 'descargado',
                 'retirado_full',
                 'devuelto_vacio',
-                'notas',
+
                 'num_orden',
                 'tipo_especie',
 
@@ -496,6 +496,7 @@ SQL;
                 ->values();
 
             foreach ($mailList as $email) {
+                Log::info("Enviando correo de seguimiento de embarques a {$email}");
                 Mail::to($email)
                     ->send(new MensajeGenericoMailable(
                         $mensaje,
