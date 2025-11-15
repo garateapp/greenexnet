@@ -356,6 +356,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('hand-packs/lector','HandPackController@lector')->name('hand-packs.lector');
     Route::post('hand-packs/lectorQr','HandPackController@lectorQr')->name('hand-packs.lectorQr');
     Route::resource('hand-packs', 'HandPackController');
+    Route::get('packing/detenciones-lineas', 'PackingDetentionReportController@index')
+        ->name('packing.detenciones')
+        ->middleware('can:packing');
 
     // // Conversor Xls
     // Route::delete('conversor-xls/destroy', 'ConversorXlsController@massDestroy')->name('conversor-xls.massDestroy');

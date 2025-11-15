@@ -194,6 +194,15 @@
                             Reporte Asistencia
                         </a>
                     </li>
+                    <li class="c-sidebar-nav-item">
+                        <a href="{{ route('admin.packing.detenciones') }}"
+                           class="c-sidebar-nav-link {{ request()->is('admin/packing/detenciones-lineas') ? 'c-active' : '' }}">
+                            <i class="fa-fw fas fa-chart-area c-box">
+
+                            </i>
+                            Reporte Detenciones
+                        </a>
+                    </li>
 
             </ul>
         </li>

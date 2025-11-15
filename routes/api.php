@@ -2,6 +2,7 @@
 
 Route::post('register', 'Api\\AuthController@register');
 Route::post('login', 'Api\\AuthController@login');
+Route::post('packing-line-detentions', 'Api\\PackingLineDetentionIngestController@store');
 Route::group(['prefix' => 'v1', 'as' => 'api.', 'namespace' => 'Api\V1\Admin', 'middleware' => ['auth:sanctum']], function () {
     // Permissions
     Route::apiResource('permissions', 'PermissionsApiController');
