@@ -75,6 +75,14 @@ class PackingDetentionReportController extends Controller
             ->orderByDesc('total_events')
             ->get();
 
+        $lineDailyComparison = (clone $baseQuery)
+            ->selectRaw('CAST(event_date as date) as event_date')
+            ->selectRaw('line')
+            ->selectRaw('SUM(duration_minutes) as total_duration')
+            ->groupBy(DB::raw('CAST(event_date as date)'), 'line')
+            ->orderBy('event_date')
+            ->get();
+
         $trendCategories = [];
         $trendEvents = [];
         $trendDuration = [];
@@ -96,6 +104,37 @@ class PackingDetentionReportController extends Controller
         $motivoLabels = $motivoBreakdown->map(fn ($row) => $row->motivo ?? 'Sin motivo');
         $motivoSeries = $motivoBreakdown->pluck('total_events');
 
+        $dailyCategories = [];
+        $dailySeriesMap = [];
+        foreach ($lineDailyComparison as $row) {
+            $dateLabel = $row->event_date
+                ? Carbon::parse($row->event_date)->format('Y-m-d')
+                : 'Sin fecha';
+            if (!in_array($dateLabel, $dailyCategories, true)) {
+                $dailyCategories[] = $dateLabel;
+            }
+            $lineName = $row->line ?? 'Sin línea';
+            if (!array_key_exists($lineName, $dailySeriesMap)) {
+                $dailySeriesMap[$lineName] = array_fill(0, count($dailyCategories), 0);
+            }
+            $dateIndex = array_search($dateLabel, $dailyCategories, true);
+            $dailySeriesMap[$lineName][$dateIndex] = $this->minutesToHours($row->total_duration);
+        }
+        // Ensure later line additions align with categories length
+        foreach ($dailySeriesMap as $lineName => &$values) {
+            if (count($values) < count($dailyCategories)) {
+                $values = array_pad($values, count($dailyCategories), 0);
+            }
+        }
+        unset($values);
+
+        $lineDailySeries = collect($dailySeriesMap)->map(function ($values, $lineName) {
+            return [
+                'name' => $lineName,
+                'data' => array_values($values),
+            ];
+        })->values();
+
         $chartPayload = [
             'trend' => [
                 'categories' => $trendCategories,
@@ -114,6 +153,10 @@ class PackingDetentionReportController extends Controller
             'motivos' => [
                 'labels' => $motivoLabels,
                 'series' => $motivoSeries,
+            ],
+            'lineDaily' => [
+                'categories' => $dailyCategories,
+                'series' => $lineDailySeries,
             ],
         ];
 

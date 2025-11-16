@@ -107,6 +107,18 @@
             </div>
 
             <div class="row">
+                <div class="col-12 mb-4">
+                    <div class="border rounded shadow-sm p-3 h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">Comparativo diario por línea</h5>
+                            <small class="text-muted">Horas detenidas por línea cada día</small>
+                        </div>
+                        <div id="lineDailyChart" style="min-height: 360px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
                 <div class="col-lg-6 mb-4">
                     <div class="border rounded shadow-sm p-3 h-100">
                         <h5>Top 10 detenciones por causa</h5>
@@ -287,6 +299,22 @@
                     series: payload.motivos.series,
                     legend: { position: 'bottom' },
                     dataLabels: { enabled: true, formatter: (val) => `${val.toFixed(1)}%` }
+                }).render();
+            }
+
+            if (renderOrMessage('#lineDailyChart', (payload.lineDaily.categories.length > 0 && payload.lineDaily.series.length > 0), 'Sin historial diario para mostrar.')) {
+                new ApexCharts(document.querySelector('#lineDailyChart'), {
+                    chart: { type: 'line', height: 360, toolbar: { show: false } },
+                    stroke: { curve: 'smooth', width: 3 },
+                    dataLabels: { enabled: false },
+                    series: payload.lineDaily.series,
+                    xaxis: { categories: payload.lineDaily.categories },
+                    yaxis: { title: { text: 'Horas detenidas' } },
+                    tooltip: {
+                        y: { formatter: (val) => `${val.toFixed(2)} h` }
+                    },
+                    legend: { position: 'top' },
+                    colors: ['#1E90FF', '#FF4560', '#00E396', '#775DD0', '#FEB019', '#546E7A']
                 }).render();
             }
         });
