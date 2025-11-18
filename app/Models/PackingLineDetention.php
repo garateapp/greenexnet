@@ -19,6 +19,7 @@ class PackingLineDetention extends Model
         'causa',
         'notas',
         'estado',
+        'turno',
     ];
 
     protected $casts = [

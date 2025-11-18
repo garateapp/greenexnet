@@ -20,17 +20,22 @@ class PackingLineDetentionIngestController extends Controller
         $saved = [];
 
         foreach ($payload['detentions'] as $detention) {
+            $eventDate = $this->parseDatetime($detention['fecha_evento'] ?? null);
+            $activationDate = $this->parseDatetime($detention['fecha_activacion'] ?? null);
+            $referenceDate = $eventDate ?? $activationDate;
+
             $saved[] = PackingLineDetention::updateOrCreate(
                 ['event_id' => $detention['id']],
                 [
                     'line' => $detention['linea'] ?? null,
-                    'event_date' => $this->parseDatetime($detention['fecha_evento'] ?? null),
-                    'activation_date' => $this->parseDatetime($detention['fecha_activacion'] ?? null),
+                    'event_date' => $eventDate,
+                    'activation_date' => $activationDate,
                     'duration_minutes' => (int) ($detention['duracion'] ?? 0),
                     'motivo' => $detention['motivo'] ?? null,
                     'causa' => $detention['causa'] ?? null,
                     'notas' => $detention['notas'] ?? null,
                     'estado' => $this->formatEstado($detention['estado'] ?? null),
+                    'turno' => $this->determineShift($referenceDate),
                 ]
             )->event_id;
         }
@@ -86,5 +91,22 @@ class PackingLineDetentionIngestController extends Controller
         }
 
         return (string) $estado;
+    }
+
+    private function determineShift(?Carbon $dateTime): ?string
+    {
+        if (!$dateTime) {
+            return null;
+        }
+
+        $seconds = $dateTime->copy()->secondsSinceMidnight();
+        $morningStart = 8 * 3600;
+        $morningEnd = (16 * 3600) + (30 * 60); // 16:30:00
+
+        if ($seconds >= $morningStart && $seconds <= $morningEnd) {
+            return 'Turno mañana';
+        }
+
+        return 'Turno tarde';
     }
 }

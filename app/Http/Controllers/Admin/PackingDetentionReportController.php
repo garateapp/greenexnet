@@ -36,12 +36,18 @@ class PackingDetentionReportController extends Controller
             ->limit(250)
             ->get();
 
-        $kpis = (clone $baseQuery)
+        $kpiRow = (clone $baseQuery)
             ->selectRaw('COUNT(*) as total_events')
             ->selectRaw('SUM(duration_minutes) as total_duration')
             ->selectRaw('AVG(CAST(duration_minutes as FLOAT)) as avg_duration')
             ->selectRaw("SUM(CASE WHEN estado = 'Activo' THEN 1 ELSE 0 END) as active_events")
             ->first();
+
+        $turnDurations = (clone $baseQuery)
+            ->selectRaw('turno')
+            ->selectRaw('SUM(duration_minutes) as total_duration')
+            ->groupBy('turno')
+            ->get();
 
         $topCauses = (clone $baseQuery)
             ->selectRaw('causa as cause')
@@ -50,6 +56,28 @@ class PackingDetentionReportController extends Controller
             ->groupBy('causa')
             ->orderByDesc('total_events')
             ->limit(10)
+            ->get();
+
+        $hasNullCause = $topCauses->contains(function ($row) {
+            return is_null($row->cause);
+        });
+        $topCauseNames = $topCauses->pluck('cause')->filter()->values();
+
+        $topCausesByTurn = (clone $baseQuery)
+            ->selectRaw('causa as cause')
+            ->selectRaw('turno')
+            ->selectRaw('COUNT(*) as total_events')
+            ->groupBy('causa', 'turno')
+            ->when($topCauseNames->count() || $hasNullCause, function ($query) use ($topCauseNames, $hasNullCause) {
+                $query->where(function ($inner) use ($topCauseNames, $hasNullCause) {
+                    if ($topCauseNames->count()) {
+                        $inner->whereIn('causa', $topCauseNames);
+                    }
+                    if ($hasNullCause) {
+                        $inner->orWhereNull('causa');
+                    }
+                });
+            })
             ->get();
 
         $lineComparison = (clone $baseQuery)
@@ -101,8 +129,56 @@ class PackingDetentionReportController extends Controller
         $topCauseCategories = $topCauses->map(fn ($row) => $row->cause ?? 'Sin causa');
         $topCauseCounts = $topCauses->pluck('total_events');
 
+        $causeIndex = [];
+        $causeLabels = [];
+        foreach ($topCauses as $index => $row) {
+            $key = $row->cause ?? '__NULL_CAUSE__';
+            $causeIndex[$key] = $index;
+            $causeLabels[$index] = $row->cause ?? 'Sin causa';
+        }
+
+        $turnLabels = array_values($this->getTurnOptions());
+        $turnLabels[] = 'Sin turno';
+        $turnSeriesMap = [];
+        $causeCount = max(count($causeLabels), 1);
+        foreach ($turnLabels as $label) {
+            $turnSeriesMap[$label] = array_fill(0, $causeCount, 0);
+        }
+
+        foreach ($topCausesByTurn as $row) {
+            $causeKey = $row->cause ?? '__NULL_CAUSE__';
+            if (!array_key_exists($causeKey, $causeIndex)) {
+                continue;
+            }
+
+            $turnLabel = in_array($row->turno, $turnLabels, true) ? $row->turno : 'Sin turno';
+
+            if (!array_key_exists($turnLabel, $turnSeriesMap)) {
+                $turnSeriesMap[$turnLabel] = array_fill(0, $causeCount, 0);
+            }
+
+            $turnSeriesMap[$turnLabel][$causeIndex[$causeKey]] = (int) $row->total_events;
+        }
+
+        $topCausesTurnSeries = collect($turnSeriesMap)
+            ->map(function ($data, $label) use ($causeLabels) {
+                return [
+                    'name' => $label,
+                    'data' => array_slice($data, 0, count($causeLabels)),
+                ];
+            })
+            ->values();
+
         $motivoLabels = $motivoBreakdown->map(fn ($row) => $row->motivo ?? 'Sin motivo');
         $motivoSeries = $motivoBreakdown->pluck('total_events');
+
+        $turnComparisonCategories = [];
+        $turnComparisonSeries = [];
+        foreach ($turnDurations as $row) {
+            $label = $row->turno ?? 'Sin turno';
+            $turnComparisonCategories[] = $label;
+            $turnComparisonSeries[] = $this->minutesToHours($row->total_duration);
+        }
 
         $dailyCategories = [];
         $dailySeriesMap = [];
@@ -150,9 +226,17 @@ class PackingDetentionReportController extends Controller
                 'categories' => $topCauseCategories,
                 'counts' => $topCauseCounts,
             ],
+            'topCausesTurn' => [
+                'categories' => $causeLabels,
+                'series' => $topCausesTurnSeries,
+            ],
             'motivos' => [
                 'labels' => $motivoLabels,
                 'series' => $motivoSeries,
+            ],
+            'turnComparison' => [
+                'categories' => $turnComparisonCategories,
+                'series' => $turnComparisonSeries,
             ],
             'lineDaily' => [
                 'categories' => $dailyCategories,
@@ -163,8 +247,9 @@ class PackingDetentionReportController extends Controller
         return view('admin.packing.detenciones', [
             'filters' => $filters,
             'lines' => $this->getLines(),
+            'turnOptions' => $this->getTurnOptions(),
             'events' => $events,
-            'kpis' => $this->formatKpis($kpis),
+            'kpis' => $this->formatKpis($kpiRow, $turnDurations),
             'topCauses' => $topCauses,
             'lineComparison' => $lineComparison,
             'chartPayload' => $chartPayload,
@@ -177,6 +262,7 @@ class PackingDetentionReportController extends Controller
             'start_date' => ['nullable', 'date_format:Y-m-d'],
             'end_date' => ['nullable', 'date_format:Y-m-d', 'after_or_equal:start_date'],
             'line_name' => ['nullable', 'string', 'max:255'],
+            'turno' => ['nullable', 'string', 'max:50'],
         ]);
 
         $start = !empty($validated['start_date'])
@@ -191,6 +277,7 @@ class PackingDetentionReportController extends Controller
             'start' => $start,
             'end' => $end,
             'line_name' => $validated['line_name'] ?? null,
+            'turno' => $validated['turno'] ?? null,
             'start_for_input' => $start->format('Y-m-d'),
             'end_for_input' => $end->format('Y-m-d'),
         ];
@@ -207,6 +294,9 @@ class PackingDetentionReportController extends Controller
             })
             ->when($filters['line_name'], function ($query, $line) {
                 $query->where('line', $line);
+            })
+            ->when($filters['turno'], function ($query, $turno) {
+                $query->where('turno', $turno);
             });
     }
 
@@ -219,6 +309,14 @@ class PackingDetentionReportController extends Controller
             ->get();
     }
 
+    private function getTurnOptions(): array
+    {
+        return [
+            'Turno mañana' => 'Turno mañana',
+            'Turno tarde' => 'Turno tarde',
+        ];
+    }
+
     private function minutesToHours($minutes): float
     {
         if (!$minutes) {
@@ -228,7 +326,7 @@ class PackingDetentionReportController extends Controller
         return round($minutes / 60, 2);
     }
 
-    private function formatKpis($raw): array
+    private function formatKpis($raw, Collection $turnDurations = null): array
     {
         if (!$raw) {
             return [
@@ -237,6 +335,7 @@ class PackingDetentionReportController extends Controller
                 'avg_duration_minutes' => 0,
                 'active_ratio' => 0,
                 'active_events' => 0,
+                'turn_hours' => $this->buildTurnHours(),
             ];
         }
 
@@ -249,6 +348,26 @@ class PackingDetentionReportController extends Controller
             'avg_duration_minutes' => $raw->avg_duration ? round($raw->avg_duration, 1) : 0,
             'active_ratio' => $totalEvents > 0 ? round(($active / $totalEvents) * 100, 1) : 0,
             'active_events' => $active,
+            'turn_hours' => $this->buildTurnHours($turnDurations),
         ];
+    }
+
+    private function buildTurnHours(Collection $turnDurations = null): array
+    {
+        $turnTotals = [
+            'Turno mañana' => 0,
+            'Turno tarde' => 0,
+        ];
+
+        if (!$turnDurations) {
+            return $turnTotals;
+        }
+
+        foreach ($turnDurations as $row) {
+            $turn = $row->turno ?: 'Sin turno';
+            $turnTotals[$turn] = $this->minutesToHours($row->total_duration);
+        }
+
+        return $turnTotals;
     }
 }

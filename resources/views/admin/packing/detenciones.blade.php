@@ -17,7 +17,7 @@
                         <label class="small text-muted">Hasta</label>
                         <input type="date" name="end_date" value="{{ $filters['end_for_input'] ?? now()->format('Y-m-d') }}" class="form-control">
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label class="small text-muted">Línea</label>
                         <select name="line_name" class="form-control">
                             <option value="">Todas</option>
@@ -28,8 +28,19 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-2 d-flex align-items-end">
-                        <button type="submit" class="btn btn-primary btn-block">
+                    <div class="col-md-2">
+                        <label class="small text-muted">Turno</label>
+                        <select name="turno" class="form-control">
+                            <option value="">Todos</option>
+                            @foreach ($turnOptions as $turnLabel)
+                                <option value="{{ $turnLabel }}" {{ ($filters['turno'] ?? '') === $turnLabel ? 'selected' : '' }}>
+                                    {{ $turnLabel }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-1 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary btn-block w-100">
                             Aplicar filtros
                         </button>
                     </div>
@@ -63,6 +74,19 @@
                     </div>
                 </div>
             </div>
+
+            @if(!empty($kpis['turn_hours']))
+                <div class="row text-center mb-4">
+                    @foreach($kpis['turn_hours'] as $turnLabel => $hours)
+                        <div class="col-md-3 mb-3">
+                            <div class="border rounded shadow-sm p-3 h-100">
+                                <p class="text-muted mb-1 small">Horas detenidas - {{ $turnLabel }}</p>
+                                <h3 class="mb-0">{{ number_format($hours, 1) }}</h3>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
 
             <div class="row">
                 <div class="col-lg-8 mb-4">
@@ -102,6 +126,27 @@
                             <small class="text-muted">Cantidad de detenciones</small>
                         </div>
                         <div id="topCausesChart" style="min-height: 320px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="border rounded shadow-sm p-3 h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">Comparativo por turno</h5>
+                            <small class="text-muted">Horas detenidas por turno</small>
+                        </div>
+                        <div id="turnComparisonChart" style="min-height: 320px;"></div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="border rounded shadow-sm p-3 h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">Top 10 causas por turno</h5>
+                            <small class="text-muted">Comparativo de eventos por turno</small>
+                        </div>
+                        <div id="topCausesTurnChart" style="min-height: 320px;"></div>
                     </div>
                 </div>
             </div>
@@ -299,6 +344,34 @@
                     series: payload.motivos.series,
                     legend: { position: 'bottom' },
                     dataLabels: { enabled: true, formatter: (val) => `${val.toFixed(1)}%` }
+                }).render();
+            }
+
+            if (renderOrMessage('#turnComparisonChart', payload.turnComparison.categories.length, 'Sin datos por turno.')) {
+                new ApexCharts(document.querySelector('#turnComparisonChart'), {
+                    chart: { type: 'bar', height: 320, toolbar: { show: false } },
+                    plotOptions: { bar: { horizontal: false, columnWidth: '45%' } },
+                    dataLabels: { enabled: true, formatter: (val) => `${val.toFixed(1)} h` },
+                    series: [{
+                        name: 'Horas detenidas',
+                        data: payload.turnComparison.series
+                    }],
+                    xaxis: { categories: payload.turnComparison.categories },
+                    yaxis: { title: { text: 'Horas' } },
+                    colors: ['#FF9F43']
+                }).render();
+            }
+
+            if (renderOrMessage('#topCausesTurnChart', payload.topCausesTurn.categories.length, 'Sin datos de causas por turno.')) {
+                new ApexCharts(document.querySelector('#topCausesTurnChart'), {
+                    chart: { type: 'bar', height: 320, stacked: true, toolbar: { show: false } },
+                    plotOptions: { bar: { columnWidth: '55%' } },
+                    dataLabels: { enabled: false },
+                    series: payload.topCausesTurn.series,
+                    xaxis: { categories: payload.topCausesTurn.categories },
+                    yaxis: { title: { text: 'Detenciones' } },
+                    legend: { position: 'top' },
+                    colors: ['#1E90FF', '#FF4560', '#95A5A6']
                 }).render();
             }
 
