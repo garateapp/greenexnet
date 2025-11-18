@@ -714,7 +714,7 @@ $query = DB::query()
                 $categoria = DB::connection("sqlsrv")
                     ->table('dbo.PRO_P_categorias')
                     ->select('id')
-                    ->where('nombre', '=', $entry["n_categoria"])
+                    ->where('codigo', '=', $entry["n_categoria"])
                     ->first();
 
                 $calibre = DB::connection("sqlsrv")
@@ -732,12 +732,12 @@ $query = DB::query()
                 $productor = DB::connection("sqlsrv")
                     ->table('dbo.ADM_P_entidades')
                     ->select('id')
-                    ->where('nombre', '=', rtrim($entry["n_productor_rotulacion"], '.'))
+                    ->where('codigo_sag', '=', rtrim($entry["csg_productor_rotulacion"], '.'))
                     ->first();
 
                 // Asignar variedad de rotulación (si existe)
                 $variedad_rotulacion = 0;
-                if (!empty($entry["variedad_rotulada"])) {
+                if (!empty($entry["n_variedad_rotulacion"])) {
                     $variedad = DB::connection("sqlsrv")
                         ->table('dbo.PRO_P_variedades')
                         ->select('id')
@@ -749,7 +749,7 @@ $query = DB::query()
                 if(!empty($entry["csg_productor_rotulacion"])) {
                     $csg_rotulado = DB::connection("sqlsrv")->table('dbo.ADM_P_CentrosCosto')
                     ->select('id')
-                    ->where('codigo', 'like', $entry["csg_productor_rotulacion"].'%')
+                    ->where('id_adm_p_entidades', $productor->id)
                     ->where('id_pro_p_variedades', '=', $variedad_rotulacion)
                     ->first();
                 }
@@ -758,7 +758,7 @@ $query = DB::query()
                 $items->push([
                     'id_pkg_stock' => $entry["numero_instructivo"],
                     'folio' => $entry["folio"],
-                    'id_adm_p_centroscosto' => $entry["csg_productor_rotulacion"] ?? null,
+                    'id_adm_p_centroscosto' => $csg_rotulado->id ?? null,
                     'id_adm_p_items' => $envase->id ?? null,
                     'id_pro_p_categorias' => $categoria->id ?? null,
                     'id_pro_p_calibres' => $calibre->id ?? null,
@@ -772,7 +772,7 @@ $query = DB::query()
                     'trazabilidad' => 1,
                     'lote_recepcion' => 2,
                     'id_pro_etiquetas' => $etiquetas->id ?? null,
-                    'fecha_produccion' => Carbon::parse($this->convertirFechaExcel($entry["fecha_produccion"]))->format('d-m-Y'),
+                    'fecha_produccion' => Carbon::parse($this->convertirFechaExcel($entry["fecha_produccion"]))->format('Y-m-d H:i:s'),
                     'id_adm_p_entidad_exportadora' => 22,
                     'id_pro_turno_creacion' => 1,
                     'id_pro_turnos_destruccion' => 0,
@@ -782,12 +782,12 @@ $query = DB::query()
                     'id_pro_p_variedades_rotulacion' => $variedad_rotulacion,
                     'tara_envase' => 0,
                     'id_adm_items_plu' => 2383,
-                    'id_adm_p_bodegas_paso' => 1091,
+                    'id_adm_p_bodegas_paso' => 1149,
                     'termografo' => 0,
                     'id_adm_p_entidades_packing_origen' => 8892,
                     'id_origen' => 3,
                     'tipo_origen' => 'RFP',
-                    'fecha_packing'=>Carbon::parse($this->convertirFechaExcel($entry["fecha_produccion"]))->format('d-m-Y'),
+                    'fecha_packing'=>Carbon::parse($this->convertirFechaExcel($entry["fecha_produccion"]))->format('Y-m-d H:i:s'),
                 ]);
             }
         }
@@ -829,7 +829,7 @@ $query = DB::query()
         //     //'clave' => ''
 
         // ]);
-        $fecha_packing=Carbon::parse($this->convertirFechaExcel($entry["fecha_produccion"]))->format('d-m-Y');
+        $fecha_packing=Carbon::parse($this->convertirFechaExcel($entry["fecha_produccion"]))->format('d-m-Y H:i:s');
 
          DB::connection("sqlsrv")->statement('
 
@@ -870,27 +870,29 @@ $query = DB::query()
                                                 0,                       // @id_origen
                                                 '',                      // @origen
                                                 0,                       // @Id_PKG_P_Tratamiento
-                                                4313                     // @id_adm_p_entidades_productor_rotulado
+                                                $productor->id,                     // @id_adm_p_entidades_productor_rotulado
                                             ]);
 
-        // $stock_id = DB::connection("sqlsrv")->select('PKG_Stock')->insertGetId([
-        //    'folio'=>$entry["pallet"],
+        // $stock_id = DB::connection("sqlsrv")->table('PKG_Stock')->insertGetId([
+        //    'folio'=>$entry["folio"],
         //    'id_adm_p_items_contenedor'=>2733,
-        //    'id_adm_p_entidades'=>4138,
+        //    'id_adm_p_entidades'=>8892,
         //    'id_pro_p_alturas'=>7,
         //    'tara_contenedor'=>19.5,
         //    'texto_libre_hs'=>'',
         // ]);
         // Insertar los detalles
+        Log::critical("message--");
         $origen_id= DB::connection("sqlsrv")->table('PKG_G_Recepcion')
         ->select('id')
-
+        ->where('id_adm_p_entidades_empresa', '=', $id_adm_p_entidades_empresa)
         ->orderBy('id', 'desc')->limit(1)->get();
-
+                                            Log::debug("Origen id: " . $origen_id);
         //CAmbios
         $detalles = [];
-        foreach ($items as $item) {
 
+        foreach ($items as $item) {
+ try {
             DB::connection("sqlsrv")->statement('EXEC PKG_G_Recepcion_Grabar_Detalle
             @id = ?,
             @id_pkg_stock = ?,
@@ -933,8 +935,8 @@ $query = DB::query()
                 $item['peso_neto']*$item['cantidad'],                 // @peso_neto
                 $item['creacion_tipo'],             // @creacion_tipo
                 $origen_id[0]->id,               // @creacion_id
-                1091,                               // @id_adm_p_bodegas (puedes ajustarlo)
-                8581,        // @id_adm_p_entidades
+                1149,                               // @id_adm_p_bodegas (puedes ajustarlo)
+                8892,        // @id_adm_p_entidades
                 7,                               // @id_pro_p_alturas
                 $item['id_pro_etiquetas'],          // @id_pro_p_etiquetas
                 Carbon::parse($item['fecha_produccion'])->format('d-m-Y H:i:s'), // @fecha_produccion
@@ -950,7 +952,31 @@ $query = DB::query()
                 '',                                 // @textoLibreHS
                 0                                   // @SecuenciaImpresion
             ]);
+
+            } catch (QueryException $e) {
+
+        // Mensaje completo que viene de SQL Server (incluye el RAISERROR)
+        $mensaje = $e->getMessage();
+
+        // Detalle técnico del driver (SQLSTATE, código numérico, mensaje)
+        $errorInfo = $e->errorInfo; // [sqlstate, code, mensaje]
+
+        Log::error('Error en PKG_G_Recepcion_Grabar_Detalle', [
+            'item'      => $item,
+            'mensaje'   => $mensaje,
+            'sqlstate'  => $errorInfo[0] ?? null,
+            'code'      => $errorInfo[1] ?? null,
+            'detalle'   => $errorInfo[2] ?? null,
+        ]);
+
+        // Si quieres seguir con los demás items:
+        // continue;
+
+        // O si quieres cortar todo y devolver algo al usuario:
+        throw $e;
+    }
         }
+
 
         //dd($detalles);
         // Realizar el insert masivo de detalles
