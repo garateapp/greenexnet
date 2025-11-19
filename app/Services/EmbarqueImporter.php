@@ -36,9 +36,8 @@ class EmbarqueImporter
 
         if ($specificEmbarque) {
             $baseEmbarquesQuery->where(function ($query) use ($specificEmbarque) {
-                $query->where('n_embarque', $specificEmbarque)
-                    ->orWhere('numero', $specificEmbarque)
-                    ->orWhere('numero_referencia', $specificEmbarque);
+                $query->Where('numero', $specificEmbarque)
+
             });
         } else {
             $baseEmbarquesQuery->whereDate('fecha', '<', $today);
