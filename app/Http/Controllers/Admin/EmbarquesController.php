@@ -128,8 +128,8 @@ $baseColumns = array_values(array_unique(array_merge(
 )));
 
 $baseQuery = Embarque::query()
-    ->select($baseColumns)
-    ->whereNull('deleted_at');
+    ->select($baseColumns);
+    //->whereNull('deleted_at');
 
 $maxRows = (int) config('reporteria.embarques_index_max_rows', $this->embarquesIndexLimit);
 
@@ -324,9 +324,13 @@ $query = DB::query()
 
         return response(null, Response::HTTP_NO_CONTENT);
     }
-    public function ImportarEmbarques(EmbarqueImporter $importer)
+    public function ImportarEmbarques(Request $request, EmbarqueImporter $importer)
     {
-        $summary = $importer->import();
+        $targetShipment = $request->filled('num_embarque')
+            ? trim($request->input('num_embarque'))
+            : null;
+
+        $summary = $importer->import(null, false, $targetShipment);
 
         $message = $summary['processed'] > 0
             ? sprintf(

@@ -12,6 +12,16 @@
                 <a class="btn btn-success" href="{{ route('admin.embarques.ImportarEmbarques') }}">
                     Importar Embarques
                 </a>
+                <form method="GET" action="{{ route('admin.embarques.ImportarEmbarques') }}" class="d-inline-block ml-2">
+                    <div class="input-group">
+                        <input type="text" name="num_embarque" class="form-control" placeholder="N° embarque rezagado">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-primary" type="submit">
+                                Importar específico
+                            </button>
+                        </div>
+                    </div>
+                </form>
                 <a class="btn btn-success" href="{{ route('admin.embarques.enviarMail') }}">
                     Enviar Mail
                 </a>
