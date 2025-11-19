@@ -219,9 +219,26 @@ class EmbarqueImporter
                 ];
 
             /** @var Embarque $model */
-            $model = Embarque::Create($data);
+            $model = Embarque::firstOrNew($uniqueKeys);
+            $isNew = !$model->exists;
 
-            if ($model->wasRecentlyCreated) {
+            $dirty = false;
+            foreach ($data as $attribute => $value) {
+                if ($model->{$attribute} != $value) {
+                    $model->{$attribute} = $value;
+                    $dirty = true;
+                }
+            }
+
+            if (!$isNew && !$dirty) {
+                $skipped++;
+
+                continue;
+            }
+
+            $model->save();
+
+            if ($isNew) {
                 $created++;
             } else {
                 $updated++;
@@ -237,5 +254,4 @@ class EmbarqueImporter
         ];
     }
 }
-
 
