@@ -286,7 +286,9 @@ class EmbarqueImporter
             $preservedForCurrent = $numeroEmbarque && isset($preservedValues[$numeroEmbarque])
                 ? $preservedValues[$numeroEmbarque]
                 : null;
-
+                Log::debug("PreservedForCurrent", ['preservedForCurrent' => $preservedForCurrent,
+                                                    'numeroEmbarque' => $numeroEmbarque,
+                                                    'preservedValues' => $preservedValues]);
             $data = [
                 'temporada' => '2025-2026',
                 'num_embarque' => $numeroEmbarque,
