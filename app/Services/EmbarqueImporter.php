@@ -36,8 +36,9 @@ class EmbarqueImporter
 
         if ($specificEmbarque) {
             $baseEmbarquesQuery->where(function ($query) use ($specificEmbarque) {
-                $query->where('numero', $specificEmbarque)
-                    ->orWhere('numero_referencia', 'i'.$specificEmbarque);
+                $query->where('n_embarque', $specificEmbarque)
+                    ->orWhere('numero', $specificEmbarque)
+                    ->orWhere('numero_referencia', $specificEmbarque);
             });
         } else {
             $baseEmbarquesQuery->whereDate('fecha', '<', $today);
@@ -60,9 +61,19 @@ class EmbarqueImporter
             $ultimo = $localEmbarque->origen_embarque_id;
         }
 
+        $resolveEmbarqueNumber = static function ($record) {
+            foreach (['n_embarque', 'numero', 'numero_referencia'] as $field) {
+                if (!empty($record->{$field})) {
+                    return trim((string) $record->{$field});
+                }
+            }
+
+            return null;
+        };
+
         $preservedValues = [];
         $embarqueNumbers = $baseEmbarques
-            ->pluck('n_embarque')
+            ->map(fn ($record) => $resolveEmbarqueNumber($record))
             ->filter()
             ->unique()
             ->values();
@@ -253,7 +264,7 @@ class EmbarqueImporter
                 continue;
             }
 
-            $destinatarioCode = $record->c_destinatario  ?? null;
+            $destinatarioCode = $record->c_destinatario ?? null;
             if (!$destinatarioCode) {
                 Log::warning('Registro de embarque sin destinatario, se omite', [
                     'embarque' => $record->n_embarque ?? $baseInfo->n_embarque,
@@ -282,13 +293,11 @@ class EmbarqueImporter
                 } else {
                     $peso_embalaje = null; // No hay número
                 }
-            $numeroEmbarque = $record->n_embarque ?? $baseInfo->n_embarque;
+            $numeroEmbarque = $resolveEmbarqueNumber($record) ?? $resolveEmbarqueNumber($baseInfo);
             $preservedForCurrent = $numeroEmbarque && isset($preservedValues[$numeroEmbarque])
                 ? $preservedValues[$numeroEmbarque]
                 : null;
-                Log::debug("PreservedForCurrent", ['preservedForCurrent' => $preservedForCurrent,
-                                                    'numeroEmbarque' => $numeroEmbarque,
-                                                    'preservedValues' => $preservedValues]);
+
             $data = [
                 'temporada' => '2025-2026',
                 'num_embarque' => $numeroEmbarque,
