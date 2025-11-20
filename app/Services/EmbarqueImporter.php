@@ -28,8 +28,6 @@ class EmbarqueImporter
         //     ? Embarque::orderByDesc('origen_embarque_id')->first()
         //     : null;
 
-        $today = Carbon::today()->toDateString();
-        $ultimo = 0;
         $baseEmbarquesQuery = DB::connection('sqlsrv')
             ->table('dbo.PKG_Embarques')
             ->where('id_adm_p_entidades_exportadora', '=', '22');
@@ -39,15 +37,12 @@ class EmbarqueImporter
                 $query->Where('numero', $specificEmbarque);
 
             });
-        } else {
-            $baseEmbarquesQuery->whereDate('fecha', '<', $today);
         }
 
         $baseEmbarques = $baseEmbarquesQuery
             ->get()
             ->keyBy('id');
 
-        $localEmbarque = Embarque::orderByDesc('origen_embarque_id')->first();
         if ($baseEmbarques->isEmpty()) {
             return [
                 'processed' => 0,
@@ -55,9 +50,6 @@ class EmbarqueImporter
                 'updated' => 0,
                 'skipped' => 0,
             ];
-        }
-        if (!empty($localEmbarque)) {
-            $ultimo = $localEmbarque->origen_embarque_id;
         }
 
         $resolveEmbarqueNumber = static function ($record) {
@@ -145,9 +137,6 @@ class EmbarqueImporter
             ->where('c_destinatario', 'NOT LIKE', 'NAC%')
             ->whereIn('id_embarque', $baseEmbarques->keys()->all());
 
-        if (!$specificEmbarque && $ultimo > 0) {
-            $query->where('id_embarque', '>', $ultimo);
-        }
            // ->where('id_embarque','>',$lastExternalId? $lastExternalId->origen_embarque_id:0)
 
 
