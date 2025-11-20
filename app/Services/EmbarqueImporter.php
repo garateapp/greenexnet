@@ -131,7 +131,7 @@ class EmbarqueImporter
                 'total_pallets',
             ])
 
-            ->where('id_exportadora', '=', '22')
+            ->where('n_exportadora_embarque', '=', 'Greenex SpA')
             ->whereNotNull('id_destinatario')
             ->whereNotNull('n_destinatario')
             ->where('c_destinatario', 'NOT LIKE', 'NAC%');
@@ -139,12 +139,12 @@ class EmbarqueImporter
         if ($specificEmbarque) {
             $query->where(function ($builder) use ($specificEmbarque) {
                 $builder->where('n_embarque', $specificEmbarque)
-                    ->orWhere('numero_referencia', $specificEmbarque);
+                    ->orWhere('numero_referencia', "i".$specificEmbarque);
             });
         } else {
             $query->whereIn('id_embarque', $baseEmbarques->keys()->all());
         }
-
+        Log::info('Embarques a importar: ' . $query->toSql());
            // ->where('id_embarque','>',$lastExternalId? $lastExternalId->origen_embarque_id:0)
 
 
