@@ -166,6 +166,13 @@
                         Planificador de Personal
                     </a>
                 </li>
+                <li class="c-sidebar-nav-item">
+                    <a href="{{ route('admin.packing-line-attendances.index') }}"
+                        class="c-sidebar-nav-link {{ request()->is('admin/packing-line-attendances*') ? 'c-active' : '' }}">
+                        <i class="fa-fw fas fa-clipboard-check c-sidebar-nav-icon"></i>
+                        Registro Líneas de Embalaje
+                    </a>
+                </li>
                  <li class="c-sidebar-nav-item">
                     <a href="{{ route('admin.personals.assignLocationForm') }}"
                         class="c-sidebar-nav-link {{ request()->is('admin/personals/assign-location') ? 'c-active' : '' }}">
