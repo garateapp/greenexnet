@@ -111,6 +111,9 @@ class ControlAccessLogIngestController extends Controller
     public function getDeptoId(string $departamento)
     {
         $depto = Entidad::where('nombre', $departamento)->first();
+        if(!$depto){
+            return "";
+        }
         return  $depto->id;
 
     }
