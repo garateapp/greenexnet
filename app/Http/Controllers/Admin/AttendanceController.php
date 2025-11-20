@@ -10,6 +10,7 @@ use App\Models\PackingLineAttendance;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
 class AttendanceController extends Controller
@@ -68,7 +69,7 @@ class AttendanceController extends Controller
 
         Log::info('Packing line IDs: ' . json_encode($packingLineIds->toArray()));
 
-        if ($locacion==159) {
+        if ($packingLineIds->contains((int) $location)) {
             return $this->handlePackingLineAttendance((int) $request->input('person_id'), (int) $location);
         }
 
