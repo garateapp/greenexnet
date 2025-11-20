@@ -35,11 +35,18 @@ class ControlAccessLogIngestController extends Controller
         $stored = [];
 
         foreach ($payload['records'] as $record) {
+            $departmentName = $record['departamento'] ?? null;
+            $contractorGroup = $this->resolveContractorGroup($departmentName);
+
+            if ($contractorGroup) {
+                $departmentName = $contractorGroup;
+            }
+
             $log = ControlAccessLog::create([
                 'fecha' => $this->parseDate($record['fecha'] ?? null),
                 'personal_id' => $record['personal_id'],
                 'nombre' => $record['nombre'] ?? null,
-                'departamento' => $record['departamento'] ?? null,
+                'departamento' => $departmentName,
                 'primera_entrada' => $this->parseDate($record['primera_entrada'] ?? null),
                 'ultima_salida' => $this->parseDate($record['ultima_salida'] ?? null),
                 'pin' => $record['pin'] ?? null,
@@ -48,17 +55,17 @@ class ControlAccessLogIngestController extends Controller
              $personal = Personal::where('rut',$this->formatearRutConDv($record['personal_id']))->first();
         if(!($personal)){
            // 2) SOLO crear Personal si pertenece a un ContractorGroup
-            if ($this->belongsToContractorGroup($record['departamento'] ?? null)) {
+            if ($contractorGroup) {
 
                 $rutFormateado = $this->formatearRutConDv($record['personal_id']);
 
                 $personal = Personal::where('rut', $rutFormateado)->first();
-
-                if (!$personal) {
+                $deptoId = $this->getDeptoId($contractorGroup);
+                if (!$personal && $deptoId) {
                     Personal::create([
                         'nombre'     => $record['nombre'] ?? null,
                         'rut'        => $rutFormateado,
-                        'entidad_id' => $this->getDeptoId($record['departamento'] ?? null),
+                        'entidad_id' => $deptoId,
                         'cargo_id'   => 1,
                     ]);
                 }
@@ -78,24 +85,24 @@ class ControlAccessLogIngestController extends Controller
 
 
     }
-    protected function belongsToContractorGroup(?string $departamento): bool
-{
-    if (!$departamento) {
-        return false;
-    }
+    protected function resolveContractorGroup(?string $departamento): ?string
+    {
+        if (!$departamento) {
+            return null;
+        }
 
-    $dep = mb_strtolower(trim($departamento));
+        $dep = mb_strtolower(trim($departamento));
 
-    foreach ($this->contractorGroups as $groupName => $aliases) {
-        foreach ($aliases as $alias) {
-            if ($dep === mb_strtolower($alias)) {
-                return true;
+        foreach ($this->contractorGroups as $groupName => $aliases) {
+            foreach ($aliases as $alias) {
+                if ($dep === mb_strtolower($alias)) {
+                    return $groupName;
+                }
             }
         }
-    }
 
-    return false;
-}
+        return null;
+    }
     private function parseDate(?string $value): ?Carbon
     {
         if (empty($value)) {
@@ -110,9 +117,10 @@ class ControlAccessLogIngestController extends Controller
     }
     public function getDeptoId(string $departamento)
     {
-        $depto = Entidad::where('nombre', $departamento)->first();
+
+        $depto = Entidad::where('nombre','like', $departamento.'%')->first();
         if(!$depto){
-            return "";
+            return null;
         }
         return  $depto->id;
 
