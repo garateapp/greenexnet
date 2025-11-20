@@ -31,8 +31,8 @@
                 <button class="btn btn-secondary btn-sm" id="clearFilters">Limpiar</button>
             </div>
 
-            <div class="table-responsive">
-                 <table class=" table table-bordered table-striped table-hover ajaxTable datatable" id="packingAttendanceTable">
+
+                 <table class="table table-bordered table-striped table-hover ajaxTable datatable" id="packingAttendanceTable">
                     <thead>
                         <tr>
                             <th></th>
@@ -46,7 +46,7 @@
                     </thead>
                     <tbody></tbody>
                 </table>
-            </div>
+
         </div>
     </div>
 @endsection
