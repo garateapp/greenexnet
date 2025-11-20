@@ -20,6 +20,13 @@
                 {{ trans('global.dashboard') }}
             </a>
         </li>
+        <li class="c-sidebar-nav-item">
+            <a href="{{ route('admin.control-access.dashboard') }}"
+                class="c-sidebar-nav-link {{ request()->is('admin/control-access/dashboard') ? 'c-active' : '' }}">
+                <i class="c-sidebar-nav-icon fas fa-user-clock"></i>
+                Control Acceso
+            </a>
+        </li>
         @can('control_panel')
         <li class="c-sidebar-nav-item">
             <a href="{{ route('admin.liq-cx-cabeceras.selprods') }}" class="c-sidebar-nav-link">

@@ -182,7 +182,7 @@
                 order: [
                     [1, 'desc']
                 ],
-                pageLength: 100,
+                pageLength: 10000,
             };
             let table = $('.datatable-Personal').DataTable(dtOverrideGlobals);
             $('a[data-toggle="tab"]').on('shown.bs.tab click', function(e) {

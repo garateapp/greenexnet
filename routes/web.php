@@ -24,6 +24,7 @@ Auth::routes();
 
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'middleware' => ['auth', 'admin']], function () {
     Route::get('/', 'HomeController@index')->name('home');
+    Route::get('control-access/dashboard', 'ControlAccessDashboardController@index')->name('control-access.dashboard');
     Route::get('datos-cajas/getAttendanceData', 'DatosCajaController@getAttendanceData')->name('datos-cajas.getAttendanceData');
     Route::get('datos-cajas/daily', 'DatosCajaController@getDailyAttendanceData')->name('datos-cajas.getAttendanceData');
     Route::get('/datos-cajas/by-turn', 'DatosCajaController@getAttendanceByTurn')->name('datos-cajas.getAttendanceByTurn');
