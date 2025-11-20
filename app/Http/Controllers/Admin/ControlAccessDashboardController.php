@@ -27,6 +27,10 @@ class ControlAccessDashboardController extends Controller
         'Las Orquídeas SpA' => ['las orquideas', 'las orquídeas'],
         'Isaias Ballesteros' => ['isaias ballesteros', 'isaias ballesteros noche'],
         'Fernando Urbina' => ['fernando urbina'],
+        'Danich'=>['danich'],
+        'Sag'=>['sag'],
+        'Covarrubias'=>['covarrubias'],
+        'Casino Express'=>['casino express'],
     ];
 
     public function index(Request $request)
