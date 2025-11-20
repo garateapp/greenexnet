@@ -51,7 +51,7 @@ class EmbarqueImporter
                 'skipped' => 0,
             ];
         }
-        Log::info('Embarques obtenidos: ' . [$baseEmbarques]);
+        Log::info('Embarques obtenidos: ' , [$baseEmbarques]);
         $resolveEmbarqueNumber = static function ($record) {
             foreach (['numero'] as $field) {
                 if (!empty($record->{$field})) {
