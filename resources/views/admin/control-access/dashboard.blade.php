@@ -5,11 +5,11 @@
         <div class="card mb-4">
             <div class="card-body">
                 <form method="GET" id="control-access-filter-form" class="form-row align-items-end">
-                    <div class="form-group col-md-3">
+                    <div class="form-group col-lg-3 col-md-4">
                         <label for="date" class="font-weight-bold">Fecha base</label>
                         <input type="date" id="date" name="date" value="{{ $selectedDate }}" class="form-control">
                     </div>
-                    <div class="form-group col-md-4">
+                    <div class="form-group col-lg-4 col-md-6">
                         <label for="department" class="font-weight-bold">Departamento</label>
                         <select id="department" name="department" class="form-control">
                             <option value="">Todos</option>
@@ -19,7 +19,7 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="form-group col-md-5">
+                    <div class="form-group col-lg-5 col-md-12 mt-3 mt-md-0">
                         <label class="font-weight-bold d-block">Rango de análisis</label>
                         <div class="btn-group btn-group-sm" role="group">
                             @foreach ($rangeOptions as $key => $label)
@@ -34,81 +34,102 @@
                             {{ \Carbon\Carbon::parse($rangeEnd)->format('d/m/Y') }}
                         </small>
                     </div>
+                    <div class="form-group col-lg-12 mt-3">
+                        <button type="submit" class="btn btn-primary mr-2">Aplicar filtros</button>
+                        <a href="{{ route('admin.control-access.dashboard') }}" class="btn btn-outline-secondary">Reset</a>
+                    </div>
                 </form>
             </div>
         </div>
 
         <h5 class="text-uppercase text-muted">Resumen Ejecutivo</h5>
         <div class="row mb-4">
-            <div class="col-lg-4 mb-3">
-                <div class="card h-100">
-                    <div class="card-header border-0">
-                        Dotación Actual (En Planta)
-                    </div>
+            <div class="col-xl-3 col-lg-4 col-md-6 mb-3">
+                <div class="card h-100 border-primary">
                     <div class="card-body">
-                        <div id="capacity-gauge" style="min-height: 260px;"></div>
-                        <p class="text-center mb-0 text-muted">
-                            Aforo referencia {{ number_format($gaugeMax) }} personas
+                        <p class="text-uppercase text-muted font-weight-bold mb-2">Dotación actual</p>
+                        <h1 class="display-4 mb-1 text-primary">{{ number_format($totalInside) }}</h1>
+                        <p class="mb-0 text-muted">
+                            Capacidad referencial: {{ number_format($gaugeMax) }}
                         </p>
+                        <small class="text-muted d-block mt-2">
+                            Entradas sin salida en la fecha seleccionada
+                        </small>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-8 mb-3">
-                <div class="row h-100">
-                    <div class="col-md-4 mb-3">
-                        <div class="card bg-primary text-white h-100">
-                            <div class="card-body">
-                                <p class="mb-1 text-uppercase small">Personas únicas hoy</p>
-                                <h2 class="mb-1">{{ number_format($uniqueToday) }}</h2>
-                                <small>
-                                    Promedio semanal: {{ number_format($weeklyAverage, 1) }}
-                                    <span class="ml-2">
-                                        @if ($uniqueDelta >= 0)
-                                            <i class="fas fa-arrow-up"></i> +{{ number_format($uniqueDelta, 1) }}
-                                        @else
-                                            <i class="fas fa-arrow-down"></i> {{ number_format($uniqueDelta, 1) }}
-                                        @endif
-                                    </span>
-                                </small>
-                            </div>
+            <div class="col-xl-3 col-lg-4 col-md-6 mb-3">
+                <div class="card bg-primary text-white h-100">
+                    <div class="card-body">
+                        <p class="text-uppercase small mb-2">Personas únicas hoy</p>
+                        <h2 class="mb-1">{{ number_format($uniqueToday) }}</h2>
+                        <small>
+                            Promedio semanal: {{ number_format($weeklyAverage, 1) }}
+                            <span class="ml-2">
+                                @if ($uniqueDelta >= 0)
+                                    <i class="fas fa-arrow-up"></i> +{{ number_format($uniqueDelta, 1) }}
+                                @else
+                                    <i class="fas fa-arrow-down"></i> {{ number_format($uniqueDelta, 1) }}
+                                @endif
+                            </span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-lg-4 col-md-6 mb-3">
+                <div class="card bg-success text-white h-100">
+                    <div class="card-body">
+                        <p class="text-uppercase small mb-2">Entradas registradas</p>
+                        <h2 class="mb-1">{{ number_format($totalEntries) }}</h2>
+                        <small>Salidas: {{ number_format($totalExits) }}</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-lg-4 col-md-6 mb-3">
+                <div class="card bg-dark text-white h-100">
+                    <div class="card-body">
+                        <p class="text-uppercase small mb-2">Contratistas hoy</p>
+                        <h2 class="mb-1">{{ number_format($donutData['series'][1]) }}</h2>
+                        <small>Participación: {{ $contractorRatio }}%</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-lg-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <p class="text-uppercase small mb-1">Turno Día (08:00 - 16:30)</p>
+                        <h2 class="mb-0 text-primary">{{ number_format($shiftStats['day']['inside']) }}</h2>
+                        <small class="text-muted">Entradas turno día: {{ number_format($shiftStats['day']['total']) }}</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <p class="text-uppercase small mb-1">Turno Noche (16:30 - 06:00)</p>
+                        <h2 class="mb-0 text-secondary">{{ number_format($shiftStats['night']['inside']) }}</h2>
+                        <small class="text-muted">Entradas turno noche: {{ number_format($shiftStats['night']['total']) }}</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>Dotación máxima diaria</span>
+                        <div class="btn-group btn-group-sm" id="trend-window-buttons">
+                            @foreach ($trendWindows as $window)
+                                <button type="button" class="btn btn-outline-secondary {{ $loop->first ? 'active' : '' }}"
+                                    data-window="{{ $window }}">
+                                    Últimos {{ $window }}
+                                </button>
+                            @endforeach
                         </div>
                     </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="card bg-success text-white h-100">
-                            <div class="card-body">
-                                <p class="mb-1 text-uppercase small">Entradas registradas</p>
-                                <h2 class="mb-1">{{ number_format($totalEntries) }}</h2>
-                                <small>Salidas: {{ number_format($totalExits) }}</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="card bg-dark text-white h-100">
-                            <div class="card-body">
-                                <p class="mb-1 text-uppercase small">Contratistas hoy</p>
-                                <h2 class="mb-1">{{ number_format($donutData['series'][1]) }}</h2>
-                                <small>Participación: {{ $contractorRatio }}%</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 mt-auto">
-                        <div class="card h-100">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <span>Dotación máxima diaria</span>
-                                <div class="btn-group btn-group-sm" id="trend-window-buttons">
-                                    @foreach ($trendWindows as $window)
-                                        <button type="button"
-                                            class="btn btn-outline-secondary {{ $loop->first ? 'active' : '' }}"
-                                            data-window="{{ $window }}">
-                                            Últimos {{ $window }}
-                                        </button>
-                                    @endforeach
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <div id="daily-trend-chart" style="min-height: 260px;"></div>
-                            </div>
-                        </div>
+                    <div class="card-body">
+                        <div id="daily-trend-chart" style="min-height: 200px;"></div>
                     </div>
                 </div>
             </div>
@@ -293,34 +314,8 @@
         const donutData = @json($donutData);
         const hourlySeries = @json($hourlySeries);
         const deptChart = @json($deptChart);
-        const gaugeData = {
-            value: {{ (int) $totalInside }},
-            max: {{ (int) $gaugeMax }}
-        };
         const contractorBarData = @json($contractorBarData);
         const contractorStayTrend = @json($contractorStayTrend);
-
-        const gaugeChart = new ApexCharts(document.querySelector("#capacity-gauge"), {
-            chart: {
-                type: 'radialBar',
-                height: 280,
-                toolbar: { show: false }
-            },
-            series: [Math.round((gaugeData.value / Math.max(gaugeData.max, 1)) * 100)],
-            labels: ['% Aforo utilizado'],
-            plotOptions: {
-                radialBar: {
-                    hollow: { size: '60%' },
-                    dataLabels: {
-                        value: {
-                            formatter: () => `${gaugeData.value} pers.`
-                        }
-                    }
-                }
-            },
-            colors: ['#2E93fA']
-        });
-        gaugeChart.render();
 
         new ApexCharts(document.querySelector("#type-distribution-chart"), {
             chart: {

@@ -35,6 +35,12 @@ class ControlAccessDashboardController extends Controller
             ? Carbon::parse($request->input('date'))->startOfDay()
             : Carbon::today();
 
+        $dayStart = $selectedDate->copy()->startOfDay();
+        $dayEnd = $selectedDate->copy()->endOfDay();
+        $dayShiftStart = $dayStart->copy()->setTime(8, 0);
+        $dayShiftEnd = $dayStart->copy()->setTime(16, 40);
+        $nightShiftEnd = $dayStart->copy()->addDay()->setTime(6, 0);
+
         $selectedRange = $request->input('range', 'today');
         if (!array_key_exists($selectedRange, $this->rangeOptions)) {
             $selectedRange = 'today';
@@ -49,36 +55,41 @@ class ControlAccessDashboardController extends Controller
         $rangeQuery = ControlAccessLog::query()
             ->whereBetween('fecha', [$rangeStart->copy()->startOfDay(), $rangeEnd->copy()->endOfDay()]);
 
+        $entriesQuery = ControlAccessLog::query()
+            ->whereBetween('primera_entrada', [$dayStart, $dayEnd]);
+
+        $exitsQuery = ControlAccessLog::query()
+            ->whereBetween('ultima_salida', [$dayStart, $dayEnd]);
+
         $dayQuery = ControlAccessLog::query()
-            ->whereDate('fecha', $selectedDate->format('Y-m-d'));
+            ->where(function ($query) use ($dayStart, $dayEnd) {
+                $query->whereBetween('fecha', [$dayStart, $dayEnd])
+                    ->orWhereBetween('primera_entrada', [$dayStart, $dayEnd])
+                    ->orWhereBetween('ultima_salida', [$dayStart, $dayEnd]);
+            });
 
         if (!empty($selectedDepartment)) {
             $rangeQuery->where('departamento', $selectedDepartment);
             $dayQuery->where('departamento', $selectedDepartment);
+            $entriesQuery->where('departamento', $selectedDepartment);
+            $exitsQuery->where('departamento', $selectedDepartment);
         }
 
-        $totalInside = (clone $dayQuery)
-            ->whereNotNull('primera_entrada')
+        $totalInside = (clone $entriesQuery)
             ->whereNull('ultima_salida')
             ->count();
 
-        $totalEntries = (clone $dayQuery)
-            ->whereNotNull('primera_entrada')
-            ->count();
+        $totalEntries = (clone $entriesQuery)->count();
 
-        $totalExits = (clone $dayQuery)
-            ->whereNotNull('ultima_salida')
-            ->count();
+        $totalExits = (clone $exitsQuery)->count();
 
-        $uniqueToday = (clone $dayQuery)
+        $uniqueToday = (clone $entriesQuery)
             ->select('personal_id')
             ->whereNotNull('personal_id')
             ->distinct()
             ->count('personal_id');
 
-        $todayLogs = (clone $dayQuery)
-            ->whereNotNull('primera_entrada')
-            ->get();
+        $todayLogs = (clone $entriesQuery)->get();
 
         $todayInsideLogs = $todayLogs->filter(fn (ControlAccessLog $log) => empty($log->ultima_salida));
 
@@ -86,6 +97,19 @@ class ControlAccessDashboardController extends Controller
         $contractorRatio = $totalInside > 0
             ? round(($typeDistribution['contractor'] / $totalInside) * 100, 1)
             : 0;
+
+        $shiftStats = [
+            'day' => ['total' => 0, 'inside' => 0],
+            'night' => ['total' => 0, 'inside' => 0],
+        ];
+
+        foreach ($todayLogs as $log) {
+            $shift = $this->determineShift($log, $dayShiftStart, $dayShiftEnd, $nightShiftEnd);
+            $shiftStats[$shift]['total']++;
+            if (empty($log->ultima_salida)) {
+                $shiftStats[$shift]['inside']++;
+            }
+        }
 
         $trendStart = $selectedDate->copy()->subDays(29);
 
@@ -132,7 +156,7 @@ class ControlAccessDashboardController extends Controller
 
         $departmentOptions = ControlAccessLog::query()
             ->select('departamento')
-            ->whereDate('fecha', $selectedDate->format('Y-m-d'))
+            ->whereBetween('primera_entrada', [$dayStart, $dayEnd])
             ->whereNotNull('departamento')
             ->distinct()
             ->orderBy('departamento')
@@ -140,14 +164,12 @@ class ControlAccessDashboardController extends Controller
 
         $hours = collect(range(0, 23))->map(fn ($hour) => str_pad((string) $hour, 2, '0', STR_PAD_LEFT));
 
-        $entriesByHour = (clone $dayQuery)
-            ->whereNotNull('primera_entrada')
+        $entriesByHour = (clone $entriesQuery)
             ->get()
             ->groupBy(fn ($log) => optional($log->primera_entrada)->format('H'))
             ->map->count();
 
-        $exitsByHour = (clone $dayQuery)
-            ->whereNotNull('ultima_salida')
+        $exitsByHour = (clone $exitsQuery)
             ->get()
             ->groupBy(fn ($log) => optional($log->ultima_salida)->format('H'))
             ->map->count();
@@ -213,6 +235,7 @@ class ControlAccessDashboardController extends Controller
             'contractorBarData' => $contractorBarData,
             'contractorStayTrend' => $contractorStayTrend,
             'gaugeMax' => $gaugeMax,
+            'shiftStats' => $shiftStats,
         ]);
     }
 
@@ -458,5 +481,30 @@ class ControlAccessDashboardController extends Controller
             'keys' => $keys,
             'data' => $data,
         ];
+    }
+
+    protected function determineShift(ControlAccessLog $log, Carbon $dayShiftStart, Carbon $dayShiftEnd, Carbon $nightShiftEnd): string
+    {
+        $entry = $log->primera_entrada ?? $log->fecha;
+
+        if (!$entry) {
+            return 'day';
+        }
+
+        $entryTime = $entry->copy();
+
+        if ($entryTime->betweenIncluded($dayShiftStart, $dayShiftEnd)) {
+            return 'day';
+        }
+
+        if ($entryTime->betweenIncluded($dayShiftEnd, $nightShiftEnd)) {
+            return 'night';
+        }
+
+        if ($entryTime->lessThan($dayShiftStart)) {
+            return 'night';
+        }
+
+        return 'day';
     }
 }
