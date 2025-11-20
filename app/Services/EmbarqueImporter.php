@@ -54,7 +54,7 @@ class EmbarqueImporter
         }
 
         $resolveEmbarqueNumber = static function ($record) {
-            foreach (['n_embarque', 'numero', 'numero_referencia'] as $field) {
+            foreach (['numero'] as $field) {
                 if (!empty($record->{$field})) {
                     return trim((string) $record->{$field});
                 }
