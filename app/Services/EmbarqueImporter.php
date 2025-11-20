@@ -34,7 +34,7 @@ class EmbarqueImporter
 
         if ($specificEmbarque) {
             $baseEmbarquesQuery->where(function ($query) use ($specificEmbarque) {
-                $query->where('numero', $specificEmbarque)
+                $query->where('numero', $specificEmbarque);
 
             });
         }
