@@ -130,7 +130,6 @@ class EmbarqueImporter
                 'numero_reserva_agente_naviero',
                 'total_pallets',
             ])
-
             ->where('n_exportadora_embarque', '=', 'Greenex SpA')
             ->whereNotNull('id_destinatario')
             ->whereNotNull('n_destinatario')
