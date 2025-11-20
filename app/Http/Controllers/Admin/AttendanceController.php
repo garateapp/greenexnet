@@ -20,8 +20,11 @@ class AttendanceController extends Controller
         $personId = $request->query('person_id');
         $person = null;
         $supervisorLocation = null;
+        $supervisorLocationId = null;
         $error = null;
         $source = $request->query('source', 'automatico');
+        $packingMode = 'default';
+        $nextAction = 'salida';
 
         if ($personId) {
             $person = personal::where('rut', $personId)->first();
@@ -30,13 +33,43 @@ class AttendanceController extends Controller
             }
         }
 
-        // Get the logged-in user's associated personal record
+        $packingLineIds = collect(config('packing.line_locations', []))
+            ->map(fn ($value) => (int) $value)
+            ->filter()
+            ->values();
+
         $loggedInUser = Auth::user()->load('personal.assignedLocation');
         if ($loggedInUser && $loggedInUser->personal) {
             $supervisorLocation = $loggedInUser->personal->assignedLocation->nombre ?? 'Ubicación no asignada';
+            $supervisorLocationId = $loggedInUser->personal->assignedLocation->id ?? null;
+
+            if ($supervisorLocationId && $packingLineIds->contains((int) $supervisorLocationId)) {
+                $packingMode = 'packing';
+            }
         }
 
-        return view('admin.attendance.confirm', compact('person', 'supervisorLocation', 'error', 'source'));
+        if ($packingMode === 'packing' && $person) {
+            $openLog = PackingLineAttendance::where('personal_id', $person->id)
+                ->whereNull('fecha_hora_entrada')
+                ->latest('fecha_hora_salida')
+                ->first();
+
+            if ($openLog) {
+                $nextAction = 'entrada';
+            } else {
+                $nextAction = 'salida';
+            }
+        }
+
+        return view('admin.attendance.confirm', compact(
+            'person',
+            'supervisorLocation',
+            'supervisorLocationId',
+            'error',
+            'source',
+            'packingMode',
+            'nextAction'
+        ));
     }
 
     public function findPerson(Request $request)
