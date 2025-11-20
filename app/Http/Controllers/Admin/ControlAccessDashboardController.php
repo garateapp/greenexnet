@@ -41,7 +41,7 @@ class ControlAccessDashboardController extends Controller
 
         $dayStart = $selectedDate->copy()->startOfDay();
         $dayEnd = $selectedDate->copy()->endOfDay();
-        $dayShiftStart = $dayStart->copy()->setTime(8, 0);
+        $dayShiftStart = $dayStart->copy()->setTime(7, 0);
         $dayShiftEnd = $dayStart->copy()->setTime(16, 40);
         $nightShiftEnd = $dayStart->copy()->addDay()->setTime(6, 0);
 
@@ -138,15 +138,31 @@ class ControlAccessDashboardController extends Controller
         $weeklyAverage = $this->calculateAverage($dailyUniqueCounts, 7, $selectedDate->format('Y-m-d'));
         $uniqueDelta = $uniqueToday - $weeklyAverage;
 
+        $deptInsideCounts = (clone $entriesQuery)
+            ->whereNull('ultima_salida')
+            ->whereNotNull('departamento')
+            ->select([
+                'departamento',
+                DB::raw('COUNT(DISTINCT personal_id) as dentro'),
+            ])
+            ->groupBy('departamento')
+            ->pluck('dentro', 'departamento');
+
         $deptStats = (clone $dayQuery)
+            ->whereNotNull('departamento')
             ->select([
                 'departamento',
                 DB::raw('COUNT(*) as total_registros'),
-                DB::raw('SUM(CASE WHEN ultima_salida IS NULL THEN 1 ELSE 0 END) as dentro'),
             ])
             ->groupBy('departamento')
-            ->orderByDesc('dentro')
-            ->get();
+            ->get()
+            ->map(function ($row) use ($deptInsideCounts) {
+                $row->dentro = (int) ($deptInsideCounts[$row->departamento] ?? 0);
+
+                return $row;
+            })
+            ->sortByDesc('dentro')
+            ->values();
 
         $deptChart = [
             'labels' => $deptStats->pluck('departamento')->map(fn ($dept) => $dept ?: 'Sin departamento'),
