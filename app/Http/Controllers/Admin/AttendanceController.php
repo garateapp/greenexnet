@@ -66,6 +66,8 @@ class AttendanceController extends Controller
             ->filter()
             ->values();
 
+        Log::info('Packing line IDs: ' . json_encode($packingLineIds->toArray()));
+
         if ($packingLineIds->contains((int) $location)) {
             return $this->handlePackingLineAttendance((int) $request->input('person_id'), (int) $location);
         }
