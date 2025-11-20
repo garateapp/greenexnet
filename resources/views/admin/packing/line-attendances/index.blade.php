@@ -35,6 +35,7 @@
                 <table class="table table-bordered table-striped" id="packingAttendanceTable">
                     <thead>
                         <tr>
+                            <th></th>
                             <th>Nombre</th>
                             <th>RUT</th>
                             <th>Ubicación</th>
