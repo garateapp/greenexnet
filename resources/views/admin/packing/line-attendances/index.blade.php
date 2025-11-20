@@ -68,6 +68,7 @@
                 }
             },
             columns: [
+                 { data: 'placeholder', name: 'placeholder' },
                 { data: 'personal_name', name: 'personal_name' },
                 { data: 'personal_rut', name: 'personal_rut' },
                 { data: 'location', name: 'location' },
