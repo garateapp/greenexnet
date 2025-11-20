@@ -43,7 +43,7 @@ class EmbarqueImporter
             ->get()
             ->keyBy('id');
 
-        if ($baseEmbarques->isEmpty()) {
+        if ($baseEmbarques->isEmpty() && !$specificEmbarque) {
             return [
                 'processed' => 0,
                 'created' => 0,
@@ -247,9 +247,32 @@ class EmbarqueImporter
 
             $baseInfo = $baseEmbarques->get($record->id_embarque);
             if (!$baseInfo) {
-                $skipped++;
+                if ($specificEmbarque) {
+                    $baseInfo = (object) [
+                        'id_embarque' => $record->id_embarque,
+                        'n_embarque' => $record->n_embarque,
+                        'numero' => $record->numero_referencia,
+                        'numero_referencia' => $record->numero_referencia,
+                        'id_destinatario' => $record->id_destinatario,
+                        'c_destinatario' => $record->c_destinatario,
+                        'fecha_g_despacho' => $record->fecha_g_despacho,
+                        'n_packing_origen' => $record->n_packing_origen,
+                        'c_packing_origen' => $record->c_packing_origen,
+                        'n_naviera' => $record->n_naviera,
+                        'n_nave' => $record->n_nave ?? $record->nave,
+                        'nave' => $record->nave,
+                        'contenedor' => $record->contenedor,
+                        'transporte' => $record->transporte,
+                        'cant_pallets' => $record->total_pallets,
+                        'estado' => null,
+                        'fecha_zarpe_real' => null,
+                        'fecha_arribo_real' => null,
+                    ];
+                } else {
+                    $skipped++;
 
-                continue;
+                    continue;
+                }
             }
 
             $destinatarioCode = $record->c_destinatario ?? null;
