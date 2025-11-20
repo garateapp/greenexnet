@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\personal;
 use App\Models\Attendance;
 use App\Models\Locacion;
+use App\Models\PackingLineAttendance;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
@@ -58,6 +59,15 @@ class AttendanceController extends Controller
             $location = $loggedInUser->personal->assignedLocation->id;
         } else {
             return response()->json(['success' => false, 'message' => 'Ubicación del supervisor no encontrada.'], 400);
+        }
+
+        $packingLineIds = collect(config('packing.line_locations', []))
+            ->map(fn ($value) => (int) $value)
+            ->filter()
+            ->values();
+
+        if ($packingLineIds->contains((int) $location)) {
+            return $this->handlePackingLineAttendance((int) $request->input('person_id'), (int) $location);
         }
 
         try {
@@ -161,5 +171,49 @@ class AttendanceController extends Controller
             'locationChartData' => $locationChartData,
             'locationDateChartData' => $locationDateChartData,
         ]);
+    }
+
+    protected function handlePackingLineAttendance(int $personalId, int $locationId)
+    {
+        $now = Carbon::now();
+        $person = personal::find($personalId);
+        $personData = [
+            'id' => $personalId,
+            'nombre' => $person->nombre ?? null,
+            'rut' => $person->rut ?? null,
+        ];
+
+        $openLog = PackingLineAttendance::where('personal_id', $personalId)
+            ->whereNull('fecha_hora_entrada')
+            ->latest('fecha_hora_salida')
+            ->first();
+
+        if ($openLog) {
+            $openLog->fecha_hora_entrada = $now;
+            if ($openLog->fecha_hora_salida) {
+                $openLog->minutos = $openLog->fecha_hora_salida->diffInMinutes($now);
+            }
+            $openLog->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Entrada registrada correctamente.',
+                'action' => 'entrada',
+                'person' => $personData,
+            ], 200);
+        }
+
+        PackingLineAttendance::create([
+            'personal_id' => $personalId,
+            'location_id' => $locationId,
+            'fecha_hora_salida' => $now,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Salida registrada correctamente.',
+            'action' => 'salida',
+            'person' => $personData,
+        ], 200);
     }
 }
