@@ -134,8 +134,16 @@ class EmbarqueImporter
             ->where('id_exportadora', '=', '22')
             ->whereNotNull('id_destinatario')
             ->whereNotNull('n_destinatario')
-            ->where('c_destinatario', 'NOT LIKE', 'NAC%')
-            ->whereIn('id_embarque', $baseEmbarques->keys()->all());
+            ->where('c_destinatario', 'NOT LIKE', 'NAC%');
+
+        if ($specificEmbarque) {
+            $query->where(function ($builder) use ($specificEmbarque) {
+                $builder->where('n_embarque', $specificEmbarque)
+                    ->orWhere('numero_referencia', $specificEmbarque);
+            });
+        } else {
+            $query->whereIn('id_embarque', $baseEmbarques->keys()->all());
+        }
 
            // ->where('id_embarque','>',$lastExternalId? $lastExternalId->origen_embarque_id:0)
 
