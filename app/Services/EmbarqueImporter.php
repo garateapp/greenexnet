@@ -38,7 +38,7 @@ class EmbarqueImporter
 
             });
         }
-
+        Log::debug("message:", [$baseEmbarquesQuery]);
         $baseEmbarques = $baseEmbarquesQuery
             ->get()
             ->keyBy('id');
@@ -51,7 +51,7 @@ class EmbarqueImporter
                 'skipped' => 0,
             ];
         }
-
+        Log::info('Embarques obtenidos: ' . [$baseEmbarques]);
         $resolveEmbarqueNumber = static function ($record) {
             foreach (['numero'] as $field) {
                 if (!empty($record->{$field})) {
@@ -68,7 +68,7 @@ class EmbarqueImporter
             ->filter()
             ->unique()
             ->values();
-
+        Log::info('Embarques a importar: ' . $embarqueNumbers->count());
         if ($embarqueNumbers->isNotEmpty()) {
             $existingRecords = Embarque::query()
                 ->whereIn('num_embarque', $embarqueNumbers->all())
