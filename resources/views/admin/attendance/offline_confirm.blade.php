@@ -53,6 +53,33 @@
         const OFFLINE_DATA_URL = "{{ route('admin.attendance.offlineData') }}";
         const SYNC_URL = "{{ route('admin.attendance.offlineSync') }}";
         const CSRF_TOKEN = "{{ csrf_token() }}";
+        const loadingLayer = document.createElement('div');
+        loadingLayer.style.position = 'fixed';
+        loadingLayer.style.top = 0;
+        loadingLayer.style.left = 0;
+        loadingLayer.style.width = '100%';
+        loadingLayer.style.height = '100%';
+        loadingLayer.style.background = 'rgba(255,255,255,0.7)';
+        loadingLayer.style.display = 'none';
+        loadingLayer.style.zIndex = 1050;
+        loadingLayer.style.alignItems = 'center';
+        loadingLayer.style.justifyContent = 'center';
+        loadingLayer.innerHTML = '<div class="text-center"><div class="spinner-border text-primary" role="status"></div><div class="mt-2">Sincronizando...</div></div>';
+        document.body.appendChild(loadingLayer);
+
+        function toggleLoading(show) {
+            loadingLayer.style.display = show ? 'flex' : 'none';
+        }
+
+        function showToast(message, level = 'info') {
+            const colors = { info: 'primary', success: 'success', warning: 'warning', danger: 'danger' };
+            const toast = document.createElement('div');
+            toast.className = 'alert alert-' + (colors[level] || 'primary') + ' fixed-top m-3 shadow';
+            toast.style.zIndex = 1060;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
 
         const statusBanner = document.getElementById('statusBanner');
         const rutInput = document.getElementById('rutInput');
@@ -223,7 +250,10 @@
                         ...p,
                         normalizedRut: normalizeRut(p.rut)
                     }));
-                    const locaciones = data.locaciones || [];
+                    const locaciones = (data.locaciones || []).map((l) => ({
+                        ...l,
+                        locacion_padre_id: l.locacion_padre_id || null
+                    }));
                     return Promise.all([
                         saveCollection('personals', personals),
                         saveCollection('locaciones', locaciones)
@@ -231,10 +261,14 @@
                 })
                 .then(() => {
                     setStatus('Datos locales actualizados. Disponible sin conexion.', 'success');
+                    showToast('Sincronizacion de espejo completada: ' + new Date().toLocaleTimeString(), 'success');
                     refreshLocationsSelect();
                 })
                 .catch(() => {
                     setStatus('No se pudo actualizar el espejo local. Usando datos previos.', 'danger');
+                })
+                .finally(() => {
+                    toggleLoading(false);
                 });
         }
 
@@ -266,6 +300,7 @@
             getAllFromStore('pending').then((rows) => {
                 if (!rows.length) {
                     setStatus('Sincronizado: no hay registros pendientes.', 'success');
+                    showToast('No hay registros pendientes por sincronizar.', 'info');
                     return;
                 }
 
@@ -279,6 +314,7 @@
                 };
 
                 setStatus('Enviando ' + rows.length + ' registro(s) pendientes...', 'info');
+                toggleLoading(true);
                 fetch(SYNC_URL, {
                     method: 'POST',
                     headers: {
@@ -296,18 +332,26 @@
                                 renderPending();
                                 const successLabel = result.data.success ? 'success' : 'warning';
                                 setStatus('Sincronizados ' + syncedIds.length + ' registro(s).', successLabel);
+                                showToast('Sincronizados ' + syncedIds.length + ' registro(s).', successLabel);
                                 if (result.data.errors && result.data.errors.length) {
                                     console.warn('Errores de sincronizacion', result.data.errors);
+                                    showToast(result.data.errors.join(' | '), 'warning');
                                 }
                             });
                         }
                         setStatus('No se sincronizaron registros. Verifique los datos pendientes.', 'warning');
+                        showToast('No se sincronizaron registros. Verifique los pendientes.', 'warning');
                         if (result.data.errors && result.data.errors.length) {
                             console.warn('Errores de sincronizacion', result.data.errors);
+                            showToast(result.data.errors.join(' | '), 'warning');
                         }
                     })
                     .catch(() => {
                         setStatus('Fallo la sincronizacion. Reintentaremos cuando vuelva la conexion.', 'danger');
+                        showToast('Fallo la sincronizacion. Se reintentara con conexion.', 'danger');
+                    })
+                    .finally(() => {
+                        toggleLoading(false);
                     });
             });
         }
@@ -397,6 +441,7 @@
         openDatabase()
             .then(() => {
                 setStatus('Base local lista. Cargando datos...', 'info');
+                toggleLoading(true);
                 fetchMirrorData();
                 refreshLocationsSelect();
                 renderPending();

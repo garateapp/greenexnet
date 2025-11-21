@@ -129,7 +129,7 @@ class AttendanceController extends Controller
     {
         return response()->json([
             'personals' => personal::select('id', 'nombre', 'rut')->get(),
-            'locaciones' => Locacion::select('id', 'nombre')->get(),
+            'locaciones' => Locacion::select('id', 'nombre', 'locacion_padre_id')->get(),
         ]);
     }
 
@@ -152,13 +152,13 @@ class AttendanceController extends Controller
             $person = personal::whereRaw("REPLACE(REPLACE(LOWER(rut), '.', ''), '-', '') = ?", [strtolower($normalizedRut)])->first();
 
             if (!$person) {
-                $errors[] = "No se encontr� personal para el RUT {$entry['rut']}.";
+                $errors[] = "No se encontró personal para el RUT {$entry['rut']}.";
                 continue;
             }
 
             $location = Locacion::find($entry['location_id']);
             if (!$location) {
-                $errors[] = "La ubicaci�n {$entry['location_id']} no existe.";
+                $errors[] = "La ubicación {$entry['location_id']} no existe.";
                 continue;
             }
 
