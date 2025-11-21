@@ -198,14 +198,37 @@
             });
         }
 
+        function buildLocationPaths(locations) {
+            const map = new Map();
+            locations.forEach((loc) => map.set(Number(loc.id), loc));
+            const cache = {};
+
+            const compute = (loc) => {
+                if (cache[loc.id]) return cache[loc.id];
+                let label = loc.nombre;
+                const parent = loc.locacion_padre_id ? map.get(Number(loc.locacion_padre_id)) : null;
+                if (parent) {
+                    label = parent.nombre + ' - ' + loc.nombre;
+                }
+                cache[loc.id] = label;
+                return label;
+            };
+
+            return locations.map((loc) => ({
+                ...loc,
+                path: compute(loc)
+            }));
+        }
+
         function refreshLocationsSelect() {
             getAllFromStore('locaciones').then((locations) => {
                 locationSelect.innerHTML = '<option value=\"\">Seleccione una ubicacion</option>';
-                locations.sort((a, b) => a.nombre.localeCompare(b.nombre));
-                locations.forEach((loc) => {
+                const withPaths = buildLocationPaths(locations);
+                withPaths.sort((a, b) => a.path.localeCompare(b.path));
+                withPaths.forEach((loc) => {
                     const option = document.createElement('option');
                     option.value = loc.id;
-                    option.textContent = loc.nombre;
+                    option.textContent = loc.path || loc.nombre;
                     locationSelect.appendChild(option);
                 });
             }).catch(() => {
