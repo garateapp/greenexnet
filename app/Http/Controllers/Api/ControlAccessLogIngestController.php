@@ -41,6 +41,11 @@ class ControlAccessLogIngestController extends Controller
             if ($contractorGroup) {
                 $departmentName = $contractorGroup;
             }
+            $personal = Personal::where('rut',$this->formatearRutConDv($record['personal_id']))->first();
+            $entidad = Entidad::where('nombre', 'like', $departmentName.'%')->first();
+            if($entidad){
+               $departmentName = $entidad->nombre;
+            }
 
             $log = ControlAccessLog::create([
                 'fecha' => $this->parseDate($record['fecha'] ?? null),
@@ -52,7 +57,7 @@ class ControlAccessLogIngestController extends Controller
                 'pin' => $record['pin'] ?? null,
             ]);
             $stored[] = $log->id;
-             $personal = Personal::where('rut',$this->formatearRutConDv($record['personal_id']))->first();
+
         if(!($personal)){
            // 2) SOLO crear Personal si pertenece a un ContractorGroup
             if ($contractorGroup) {
@@ -69,6 +74,12 @@ class ControlAccessLogIngestController extends Controller
                         'cargo_id'   => 1,
                     ]);
                 }
+            }
+        }
+        else{
+            if($contractorGroup){
+                $personal->entidad_id = $this->getDeptoId($contractorGroup);
+                $personal->save();
             }
         }
         }
