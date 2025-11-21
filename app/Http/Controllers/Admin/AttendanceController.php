@@ -167,7 +167,7 @@ class AttendanceController extends Controller
                     'personal_id' => $person->id,
                     'location' => $location->id,
                     'timestamp' => isset($entry['timestamp']) ? Carbon::parse($entry['timestamp']) : now(),
-                    'entry_type' => 'manual',
+                    'entry_type' => 'offline',
                 ]);
                 $synced++;
                 $syncedIds[] = $entry['local_id'];
