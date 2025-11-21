@@ -49,7 +49,7 @@
 <script>
     (function () {
         const DB_NAME = 'attendance_offline';
-        const DB_VERSION = 1;
+        const DB_VERSION = 2;
         const OFFLINE_DATA_URL = "{{ route('admin.attendance.offlineData') }}";
         const SYNC_URL = "{{ route('admin.attendance.offlineSync') }}";
         const CSRF_TOKEN = "{{ csrf_token() }}";
@@ -141,13 +141,17 @@
 
                 request.onupgradeneeded = (event) => {
                     const database = event.target.result;
-                    if (!database.objectStoreNames.contains('personals')) {
-                        const personalStore = database.createObjectStore('personals', { keyPath: 'id' });
-                        personalStore.createIndex('rutIndex', 'normalizedRut', { unique: true });
+                    if (database.objectStoreNames.contains('personals')) {
+                        database.deleteObjectStore('personals');
                     }
-                    if (!database.objectStoreNames.contains('locaciones')) {
-                        database.createObjectStore('locaciones', { keyPath: 'id' });
+                    const personalStore = database.createObjectStore('personals', { keyPath: 'id' });
+                    personalStore.createIndex('rutIndex', 'normalizedRut', { unique: false });
+
+                    if (database.objectStoreNames.contains('locaciones')) {
+                        database.deleteObjectStore('locaciones');
                     }
+                    database.createObjectStore('locaciones', { keyPath: 'id' });
+
                     if (!database.objectStoreNames.contains('pending')) {
                         database.createObjectStore('pending', { keyPath: 'local_id' });
                     }
@@ -239,6 +243,7 @@
             }
 
             setStatus('Actualizando espejo local...', 'info');
+            toggleLoading(true);
             fetch(OFFLINE_DATA_URL, {
                 headers: {
                     'Accept': 'application/json'
@@ -264,8 +269,10 @@
                     showToast('Sincronizacion de espejo completada: ' + new Date().toLocaleTimeString(), 'success');
                     refreshLocationsSelect();
                 })
-                .catch(() => {
+                .catch((error) => {
                     setStatus('No se pudo actualizar el espejo local. Usando datos previos.', 'danger');
+                    console.error('Error al actualizar espejo local', error);
+                    showToast('Fallo al descargar datos locales.', 'danger');
                 })
                 .finally(() => {
                     toggleLoading(false);
