@@ -120,6 +120,75 @@ class AttendanceController extends Controller
         }
     }
 
+    public function offline()
+    {
+        return view('admin.attendance.offline_confirm');
+    }
+
+    public function offlineData()
+    {
+        return response()->json([
+            'personals' => personal::select('id', 'nombre', 'rut')->get(),
+            'locaciones' => Locacion::select('id', 'nombre')->get(),
+        ]);
+    }
+
+    public function syncOffline(Request $request)
+    {
+        $data = $request->validate([
+            'entries' => 'required|array',
+            'entries.*.local_id' => 'required|string',
+            'entries.*.rut' => 'required|string',
+            'entries.*.location_id' => 'required|integer|exists:locacions,id',
+            'entries.*.timestamp' => 'nullable|date',
+        ]);
+
+        $synced = 0;
+        $errors = [];
+        $syncedIds = [];
+
+        foreach ($data['entries'] as $entry) {
+            $normalizedRut = $this->normalizeRut($entry['rut']);
+            $person = personal::whereRaw("REPLACE(REPLACE(LOWER(rut), '.', ''), '-', '') = ?", [strtolower($normalizedRut)])->first();
+
+            if (!$person) {
+                $errors[] = "No se encontr� personal para el RUT {$entry['rut']}.";
+                continue;
+            }
+
+            $location = Locacion::find($entry['location_id']);
+            if (!$location) {
+                $errors[] = "La ubicaci�n {$entry['location_id']} no existe.";
+                continue;
+            }
+
+            try {
+                Attendance::create([
+                    'personal_id' => $person->id,
+                    'location' => $location->nombre,
+                    'timestamp' => isset($entry['timestamp']) ? Carbon::parse($entry['timestamp']) : now(),
+                    'entry_type' => 'manual',
+                ]);
+                $synced++;
+                $syncedIds[] = $entry['local_id'];
+            } catch (\Throwable $exception) {
+                $errors[] = "No se pudo sincronizar el registro de {$entry['rut']}: {$exception->getMessage()}";
+            }
+        }
+
+        return response()->json([
+            'success' => count($errors) === 0,
+            'synced' => $synced,
+            'synced_ids' => $syncedIds,
+            'errors' => $errors,
+        ], count($errors) === 0 ? 200 : 207);
+    }
+
+    private function normalizeRut(string $rut): string
+    {
+        return strtolower(preg_replace('/[^0-9kK]/', '', $rut));
+    }
+
     public function reportIndex()
     {
         $locations = Locacion::pluck('nombre', 'id');

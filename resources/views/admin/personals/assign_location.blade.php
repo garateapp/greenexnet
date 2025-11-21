@@ -2,7 +2,7 @@
 @section('content')
     <div class="card">
         <div class="card-header">
-            Asignar Ubicación a Supervisor
+            Asignar Ubicacion a Supervisor
         </div>
 
         <div class="card-body">
@@ -20,9 +20,9 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="location_id">Ubicación Padre</label>
+                    <label for="location_id">Ubicacion Padre</label>
                     <select class="form-control select2" name="location_id" id="location_id" required>
-                        <option value="">Seleccione una ubicación</option>
+                        <option value="">Seleccione una ubicacion</option>
                         @foreach($parentLocations as $id => $name)
                             <option value="{{ $id }}" {{ (old('location_id') ?? ($selectedLocation ?? '')) == $id ? 'selected' : '' }}>
                                 {{ $name }}</option>
@@ -32,8 +32,11 @@
 
                 <div class="form-group">
                     <button class="btn btn-success" type="submit">
-                        Asignar Ubicación
+                        Asignar Ubicacion
                     </button>
+                    <a href="{{ route('admin.attendance.offline') }}" target="_blank" class="btn btn-secondary ml-2">
+                        Trabajar sin Conexion
+                    </a>
                 </div>
             </form>
 
@@ -49,7 +52,7 @@
                             <thead>
                                 <tr>
                                     <th>Supervisor</th>
-                                    <th>Ubicación Asignada</th>
+                                    <th>Ubicacion Asignada</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -80,11 +83,9 @@
     $(document).ready(function() {
         $('.select2').select2();
 
-        // Initialize DataTable
         $('.datatable-assigned-locations').DataTable({
             order: [[ 0, 'asc' ]],
             pageLength: 10,
-            // Add other DataTable options as needed
         });
     });
 </script>

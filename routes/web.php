@@ -161,6 +161,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('attendance/confirm', 'AttendanceController@showConfirmation')->name('attendance.confirm');
     Route::post('attendance/find-person', 'AttendanceController@findPerson')->name('attendance.find_person');
     Route::post('attendance/store', 'AttendanceController@storeAttendance')->name('attendance.store');
+    Route::get('attendance/offline', 'AttendanceController@offline')->name('attendance.offline');
+    Route::get('attendance/offline/data', 'AttendanceController@offlineData')->name('attendance.offlineData');
+    Route::post('attendance/offline/sync', 'AttendanceController@syncOffline')->name('attendance.offlineSync');
     Route::get('attendance/report', 'AttendanceController@reportIndex')->name('attendance.reportIndex');
     Route::post('attendance/generate-report', 'AttendanceController@generateReport')->name('attendance.generateReport');
 
