@@ -146,17 +146,17 @@ class AttendanceController extends Controller
         $synced = 0;
         $errors = [];
         $syncedIds = [];
-
+        Log::info('Syncing offline data', $data);
         foreach ($data['entries'] as $entry) {
-            $normalizedRut = $this->normalizeRut($entry['rut']);
-            $person = personal::whereRaw("REPLACE(REPLACE(LOWER(rut), '.', ''), '-', '') = ?", [strtolower($normalizedRut)])->first();
+            $normalizedRut = $entry['rut'];
+            $person = personal::where("rut", strtolower($normalizedRut))->first();
 
             if (!$person) {
                 $errors[] = "No se encontró personal para el RUT {$entry['rut']}.";
                 continue;
             }
 
-            $location = Locacion::find($entry['location_id']);
+            $location = Locacion::where('id',$entry['location_id'])->first();
             if (!$location) {
                 $errors[] = "La ubicación {$entry['location_id']} no existe.";
                 continue;
@@ -165,7 +165,7 @@ class AttendanceController extends Controller
             try {
                 Attendance::create([
                     'personal_id' => $person->id,
-                    'location' => $location->nombre,
+                    'location' => $location->id,
                     'timestamp' => isset($entry['timestamp']) ? Carbon::parse($entry['timestamp']) : now(),
                     'entry_type' => 'manual',
                 ]);
@@ -173,6 +173,7 @@ class AttendanceController extends Controller
                 $syncedIds[] = $entry['local_id'];
             } catch (\Throwable $exception) {
                 $errors[] = "No se pudo sincronizar el registro de {$entry['rut']}: {$exception->getMessage()}";
+                Log::error("Error syncing offline data: {$exception->getMessage()}", $entry);
             }
         }
 
