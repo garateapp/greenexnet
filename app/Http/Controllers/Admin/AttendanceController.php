@@ -243,7 +243,7 @@ class AttendanceController extends Controller
                 'date' => Carbon::parse($record->timestamp)->format('d-m-Y'),
                 'personal_name' => $record->personal->nombre ?? 'N/A',
                 'personal_rut' => $record->personal->rut ?? 'N/A',
-                'location_name' => $record->location,
+                'location_name' =>is_int($record->location) ? Locacion::find($record->location)->nombre : $record->location ,
                 'time' => Carbon::parse($record->timestamp)->format('H:i:s'),
             ];
 
