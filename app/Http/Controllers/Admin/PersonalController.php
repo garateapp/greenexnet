@@ -188,7 +188,7 @@ class PersonalController extends Controller
         $nPersonal->cargo_id = $request->cargo_id;
         $nPersonal->estado_id = $request->estado_id;
         $nPersonal->entidad_id = $request->entidad_id;
-        if($request->user_id;){
+        if($request->user_id != null){
             $nPersonal->user_id = $request->user_id;
         }
         //$nPersonal->user_id = $request->user_id; // Update user_id
