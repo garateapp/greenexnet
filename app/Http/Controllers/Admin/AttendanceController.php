@@ -255,7 +255,7 @@ class AttendanceController extends Controller
             $chartData[$dateKey]++;
 
             // Chart Data: Attendance by Location
-            $locationName = $record->location;
+            $locationName = is_int($record->location) ? Locacion::find($record->location)->nombre : $record->location;
             if (!isset($locationChartData[$locationName])) {
                 $locationChartData[$locationName] = 0;
             }
