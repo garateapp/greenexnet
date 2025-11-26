@@ -199,18 +199,17 @@
         <ul class="nav nav-tabs" id="liquidacionesTabs" role="tablist">
             <!-- Pestaña de Liquidaciones -->
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="liquidaciones-tab" data-bs-toggle="tab"
-                    data-bs-target="#liquidaciones" type="button" role="tab" aria-controls="liquidaciones"
-                    aria-selected="true">
+                <a class="nav-link active" id="liquidaciones-tab" data-toggle="tab" href="#liquidaciones" role="tab"
+                    aria-controls="liquidaciones" aria-selected="true">
                     Liquidaciones
-                </button>
+                </a>
             </li>
             <!-- Pestaña de Costos -->
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="costos-tab" data-bs-toggle="tab" data-bs-target="#costos" type="button"
-                    role="tab" aria-controls="costos" aria-selected="false">
+                <a class="nav-link" id="costos-tab" data-toggle="tab" href="#costos" role="tab"
+                    aria-controls="costos" aria-selected="false">
                     Costos
-                </button>
+                </a>
             </li>
         </ul>
         <div class="tab-content" id="liquidacionesTabsContent">
