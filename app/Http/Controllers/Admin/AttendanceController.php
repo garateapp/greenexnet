@@ -240,6 +240,7 @@ class AttendanceController extends Controller
         $loc='';
         foreach ($attendanceRecords as $record) {
                 $locacion=Locacion::where('id',$record->location)->first();
+                Log::info($record->location);
                 if(!$locacion){
                     $loc=$locacion->nombre;
                 }
