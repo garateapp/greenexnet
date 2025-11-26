@@ -79,7 +79,13 @@
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
     $(document).ready(function() {
-        $('.date').datepicker({
+        $('#end_date').datepicker({
+            format: 'dd-mm-yyyy',
+            autoclose: true,
+            language: 'es',
+            dateFormat: 'dd-mm-yy' // Explicitly set dateFormat for consistency
+        });
+        $('#start_date').datepicker({
             format: 'dd-mm-yyyy',
             autoclose: true,
             language: 'es',

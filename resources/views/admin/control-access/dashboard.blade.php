@@ -66,7 +66,7 @@
         <div class="row mb-4">
             <div class="col-lg-4 mb-3">
                 <div class="card h-100">
-                    <div class="card-header">Contratistas vs otros</div>
+                    <div class="card-header">Distribución por empresa</div>
                     <div class="card-body">
                         <div id="contractor-pie"></div>
                     </div>
@@ -177,7 +177,7 @@
             chart: { type: 'donut', height: 320 },
             series: contractorPie.series,
             labels: contractorPie.labels,
-            colors: ['#00C853', '#ECEFF1'],
+            colors: ['#00C853', '#2962FF', '#FF7043', '#00ACC1', '#ECEFF1'],
             legend: { position: 'bottom' }
         }).render();
 
