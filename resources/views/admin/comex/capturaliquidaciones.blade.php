@@ -206,7 +206,7 @@
     }
 </style>
 @section('content')
-dd($datosExcel);
+
     <div class="content">
         <div class="row">
             <div class="col-lg-12">
@@ -292,7 +292,7 @@ dd($datosExcel);
                                     $totalesColumna = [];
 
                                     // Procesar datos de los items
-                                    
+
                                     foreach ($items as $fila) {
                                         foreach ($fila as $columna) {
                                             $coordenada = $columna['coordenada'];
@@ -301,7 +301,7 @@ dd($datosExcel);
 
                                             $col = preg_replace('/[0-9]/', '', $coordenada); // Extraer letras (columna)
                                             $row = preg_replace('/[A-Z]/', '', $coordenada); // Extraer números (fila)
-                                          
+
                                             $tabla[$row][$col][$propiedad] = $valor;
                                             // if($row==39 && $col=='K'){
                                             //     dd($tabla);
@@ -330,7 +330,7 @@ dd($datosExcel);
                                 @endphp
 
                                 {{-- Mostrar filas y calcular totales --}}
-                                
+
                                 @foreach ($tabla as $row => $columnas)
                                     @php
                                         $totalFila = 0;
@@ -340,15 +340,15 @@ dd($datosExcel);
                                         }
                                     @endphp
                                     <tr>
-                                      
+
                                         @foreach ($columnas as $col => $valores) {{-- Solo procesa columnas presentes en $columnas --}}
                                         <td>
                                             @foreach ($valores as $propiedad => $valor)
 
 
-                                                {{ $propiedad }}: {{ $valor }}<br>
-                                                
-                                                {{ $valor }}<br>
+
+
+                                                {{ $valor }}
 
                                             @endforeach
                                         </td>
@@ -388,7 +388,7 @@ dd($datosExcel);
                                 @php
                                 $TotalCostos = 0;
                                 @endphp
-                                dd($costos);
+
                                 @foreach ($costos as $costo)
                                     <tr>
                                         <td>{{ $costo['propiedad'] }}</td>

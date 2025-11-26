@@ -92,7 +92,7 @@ class ComexController extends Controller
             else{
                 $cliente = $capturador->cliente_id;
             }
-            
+
 
             $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($archivo->getPathname());
             $hoja = $spreadsheet->getActiveSheet();
@@ -157,7 +157,7 @@ class ComexController extends Controller
 
                 while (true) {
                     $valorCelda = $hoja->getCell("{$columna}{$fila}")->getValue();
-                    //Log::info('celdaItems1(' . $columna . $fila . ') :' . $hoja->getCell("{$columna}{$fila}")->getValue());
+                    Log::info('celdaItems1(' . $columna . $fila . ') :' . $hoja->getCell("{$columna}{$fila}")->getValue());
 
                     //Solo por temas de RVG debo depurar aca la fila
                     if ($hoja->getCell("{$columna}{$fila}")->getValue() == '') {
@@ -315,8 +315,8 @@ class ComexController extends Controller
 
             // 🧮 **Calcular Total General**
             $totalGeneral = $totalItems - $totalCostos;
-            
-           
+
+
             // 📤 Enviar datos a la vista
             return view('admin.comex.capturaliquidaciones', [
                 'cabecera' => $datos['cabecera'],
@@ -395,7 +395,7 @@ class ComexController extends Controller
             $tasa = $request->input('tasa');
 
             $datosLiq = ExcelDato::where('instructivo', $instructivo)->firstOrFail();
-            
+
             $datos = json_decode($datosLiq->datos, true);
 
             // 🛠️ Inicializar variables
@@ -468,7 +468,7 @@ class ComexController extends Controller
                     });
                 })
                 ->values();
-            
+
             $itemsLiquidacion=collect();
             foreach ($registros as $fila) {
 
@@ -505,7 +505,7 @@ class ComexController extends Controller
                 $monto_rmb = isset($fila['Monto RMB']) ? $fila['Monto RMB'] : 0;
                 $observaciones = isset($fila['Observaciones']) ? $fila['Observaciones'] : '';
                 $liqcabecera_id = $LiqCabecera->id;
-               
+
                 $LiqCabecera->save();
                 //dd($LiqCabecera);
                 //DB::statement('SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED');
@@ -544,7 +544,7 @@ class ComexController extends Controller
                     ->groupBy('n_variedad_rotulacion', 'C_Embalaje', 'c_calibre', 'n_etiqueta')
                     ->get();
                 }
-                    
+
                 $c_embalaje = '';
 
                 $folio_fx = '';
@@ -634,7 +634,7 @@ class ComexController extends Controller
                     Log::error('Error al guardar los datos: ' . $e->getMessage() . "----" . $e->getLine()."----".$e->getTraceAsString());
                 }
             }
-            
+
             $grupos = $itemsLiquidacion->groupBy(function ($item) {
                 return $item->folio_fx . '|' . $item->calibre . '|' . $item->variedad_id . '|' . $item->c_embalaje . '|' . $item->etiqueta_id;
             })->filter(function ($grupo) {
@@ -642,15 +642,15 @@ class ComexController extends Controller
             });
 
 
-           
+
             foreach ($grupos as $clave => $items) {
                 // Extraer los valores de la clave compuesta
                 [$folio_fx, $calibre, $variedad_id, $c_embalaje, $etiqueta_id] = explode('|', $clave);
-            
+
                 // Convertir folio_fx en formato para IN
                 $arrayFolios = explode(',', $folio_fx);
                 $folioTransformado = "'" . implode("','", $arrayFolios) . "'";
-            
+
                 // Consulta a la base de datos para obtener la suma de cantidades
                 $sumaCantidadDB = DB::connection('sqlsrv')
                     ->table('dbo.V_PKG_Despachos')
@@ -661,22 +661,22 @@ class ComexController extends Controller
                     ->where('C_Embalaje', $c_embalaje)
                     ->where('n_etiqueta', $etiqueta_id)
                     ->first();
-            
+
                 // Calcular suma de precio * cantidad desde los ítems en $itemsLiquidacion
                 $sumaPrecioCantidad = $items->sum(function ($item) {
                     return $item->precio_unitario * $item->cantidad;
                 });
-            
+
                 if ($sumaCantidadDB && $sumaCantidadDB->cantidad_total > 0) {
                     $precioPonderado = $sumaPrecioCantidad / $sumaCantidadDB->cantidad_total;
-            
+
                     // Actualizar todos los ítems en este grupo
                     foreach ($items as $item) {
                         $item->precio_unitario = $precioPonderado;
                         $item->monto_rmb = $precioPonderado * $item->cantidad; // Recalcular monto_rmb
                         $item->save(); // Guardar en la base de datos
                     }
-            
+
                     Log::info("Precio ponderado calculado para folio(s) {$folio_fx} (calibre: {$calibre}, variedad: {$variedad_id}, embalaje: {$c_embalaje}, etiqueta: {$etiqueta_id}): {$precioPonderado}");
                 } else {
                     Log::warning("No se pudo calcular precio ponderado para folio(s) {$folio_fx} (calibre: {$calibre}, variedad: {$variedad_id}, embalaje: {$c_embalaje}, etiqueta: {$etiqueta_id}): cantidad total es 0 o no hay datos");
@@ -1286,7 +1286,7 @@ class ComexController extends Controller
     {
         $instructivo = $request->input('instructivo');
         ExcelDato::where('instructivo', $instructivo)->delete();
-        
+
         return redirect()->route('admin.comex.capturador')->with('message', 'Datos eliminados correctamente.');
     }
     public function actualizarValorGD_en_fx()
@@ -1304,7 +1304,7 @@ class ComexController extends Controller
         //     $liqs = session('liqs');
         // } else {
         $liqs = $this->ConsolidadoLiquidaciones();
- 
+
         // session(['liqs' => $liqs]);
         // }
         // dd($liqs->count());
@@ -1312,18 +1312,18 @@ class ComexController extends Controller
         // Obtener cabeceras
         //$liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->get();
 
-        
+
         foreach ($liqs as $liq) {
-    
+
             $variedad=Variedad::where('nombre',$liq["variedad"])->first();
           //  dd($variedad);
             $especie=Especy::where('id',$variedad->especie_id)->first();
             //dd($especie);
            // Uncomment this to debug the structure of $liq if needed
-        
-           Fob::create([                
-                'cliente' => $liq['cliente'] ?? null,  
-                'nave' => $liq['nave'],              
+
+           Fob::create([
+                'cliente' => $liq['cliente'] ?? null,
+                'nave' => $liq['nave'],
                 'Liquidacion' => $liq['Liquidacion'] ?? null,
                 'ETA' => $liq['ETA'],
                 'ETA_Week' => $liq['ETA_Week'],
@@ -1368,11 +1368,11 @@ class ComexController extends Controller
                 'Costos_cajas_USD' => $liq['Costos_cajas_USD'] ?? null,
                 'Flete_Aereo_TO'=> $liq['Flete_Aereo_TO'] ?? null
             ]);
-          
+
             $affectedRows++;
         }
 
-        
+
 
         return response()->json(["message" => "Se modificaron $affectedRows registros", "data" => $affectedRows], 200);
     }
@@ -1487,7 +1487,7 @@ class ComexController extends Controller
                     }
                 }
                 //Variables
-                
+
                 $nave = $liqCxCabecera->nave_id ? Nafe::find($liqCxCabecera->nave_id)->nombre : "";
 
                 $Embarque = "";
