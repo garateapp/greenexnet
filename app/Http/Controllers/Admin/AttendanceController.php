@@ -237,10 +237,18 @@ class AttendanceController extends Controller
         $chartData = []; // For attendance by date
         $locationChartData = []; // For attendance by location
         $locationDateChartData = []; // For attendance by location and date
-        $locacion='';
+        $loc='';
         foreach ($attendanceRecords as $record) {
             if(is_int($record->location)){
                 $locacion=Locacion::where('id',$record->location)->first();
+                if(!$locacion){
+                    $loc=$locacion->nombre;
+                }
+                else
+                {
+                    $loc='N/A';
+                }
+
             }
             $tableData[] = [
                 'date' => Carbon::parse($record->timestamp)->format('d-m-Y'),
