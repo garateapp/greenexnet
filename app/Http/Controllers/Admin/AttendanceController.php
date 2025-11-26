@@ -203,6 +203,8 @@ class AttendanceController extends Controller
             $startDate = $this->parseDateOrDefault($request->input('start_date'), Carbon::now()->subDays(7)->startOfDay(), false);
             $endDate = $this->parseDateOrDefault($request->input('end_date'), Carbon::now()->endOfDay(), true);
         } catch (\InvalidArgumentException $e) {
+            $startDate = Carbon::now()->subDays(7)->startOfDay();
+            $endDate = Carbon::now()->endOfDay();
             return response()->json(['message' => $e->getMessage()], 400);
         }
 
