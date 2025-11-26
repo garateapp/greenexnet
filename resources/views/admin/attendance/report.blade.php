@@ -16,7 +16,7 @@
                     <input type="text" class="form-control date" id="end_date" name="end_date" value="{{ old('end_date', date('d-m-Y')) }}">
                 </div>
                 <div class="col-md-4 form-group">
-                    <label for="location_filter">Ubicación</label>
+                    <label for="location_filter">Ubicacion</label>
                     <select class="form-control select2" id="location_filter" name="location_filter">
                         <option value="">Todas las Ubicaciones</option>
                         @foreach($locations as $id => $name)
@@ -31,21 +31,64 @@
                 </div>
             </div>
 
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-white bg-primary h-100">
+                        <div class="card-body">
+                            <h6 class="card-title mb-1">Asistencias hoy</h6>
+                            <h3 class="mb-0" id="kpiTodayTotal">0</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-white bg-info h-100">
+                        <div class="card-body">
+                            <h6 class="card-title mb-1">Personas unicas hoy</h6>
+                            <h3 class="mb-0" id="kpiTodayUnique">0</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-white bg-success h-100">
+                        <div class="card-body">
+                            <h6 class="card-title mb-1">Registros en rango</h6>
+                            <h3 class="mb-0" id="kpiRangeTotal">0</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-white bg-dark h-100">
+                        <div class="card-body">
+                            <h6 class="card-title mb-1">Personas unicas rango</h6>
+                            <h3 class="mb-0" id="kpiRangeUnique">0</h3>
+                            <small id="kpiLocations" class="d-block mt-1 text-light-50">Ubicaciones: 0</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="row">
                 <div class="col-md-6">
                     <h5>Asistencia por Fecha</h5>
                     <div id="attendanceChart"></div>
                 </div>
                 <div class="col-md-6">
-                    <h5>Asistencia por Ubicación</h5>
+                    <h5>Asistencia por Ubicacion</h5>
                     <div id="locationChart"></div>
                 </div>
             </div>
 
             <div class="row mt-4">
                 <div class="col-md-12">
-                    <h5>Asistencia por Ubicación y Fecha</h5>
+                    <h5>Asistencia por Ubicacion y Fecha</h5>
                     <div id="locationDateChart"></div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <h5>Asistencia por Ubicacion y Entidad</h5>
+                    <div id="locationDepartmentChart"></div>
                 </div>
             </div>
 
@@ -59,7 +102,7 @@
                                     <th>Fecha</th>
                                     <th>Personal</th>
                                     <th>RUT</th>
-                                    <th>Ubicación</th>
+                                    <th>Ubicacion</th>
                                     <th>Hora</th>
                                 </tr>
                             </thead>
@@ -83,19 +126,19 @@
             format: 'dd-mm-yyyy',
             autoclose: true,
             language: 'es',
-            dateFormat: 'dd-mm-yy' // Explicitly set dateFormat for consistency
+            dateFormat: 'dd-mm-yy'
         });
         $('#start_date').datepicker({
             format: 'dd-mm-yyyy',
             autoclose: true,
             language: 'es',
-            dateFormat: 'dd-mm-yy' // Explicitly set dateFormat for consistency
+            dateFormat: 'dd-mm-yy'
         });
         $('.select2').select2();
 
         let attendanceTable = $('.datatable-attendance-detail').DataTable({
             processing: true,
-            serverSide: false, // Data will be loaded via custom AJAX, not server-side DataTable
+            serverSide: false,
             info: false,
             searching: false,
             paging: false,
@@ -109,12 +152,21 @@
             ]
         });
 
-        let attendanceChart = null; // Initialize chart variable for attendance by date
-        let locationChart = null; // Initialize chart variable for attendance by location
-        let locationDateChart = null; // Initialize chart variable for attendance by location and date
+        let attendanceChart = null;
+        let locationChart = null;
+        let locationDateChart = null;
+        let locationDepartmentChart = null;
+
+        function updateKpis(kpis) {
+            $('#kpiTodayTotal').text((kpis && kpis.today_total) ? kpis.today_total : 0);
+            $('#kpiTodayUnique').text((kpis && kpis.today_unique) ? kpis.today_unique : 0);
+            $('#kpiRangeTotal').text((kpis && kpis.range_total) ? kpis.range_total : 0);
+            $('#kpiRangeUnique').text((kpis && kpis.range_unique) ? kpis.range_unique : 0);
+            $('#kpiLocations').text('Ubicaciones: ' + ((kpis && kpis.locations_with_attendance) ? kpis.locations_with_attendance : 0));
+        }
 
         function renderAttendanceByDateChart(data) {
-            let categories = Object.keys(data.chartData).sort();
+            let categories = Object.keys(data.chartData || {}).sort();
             let seriesData = categories.map(cat => data.chartData[cat]);
 
             let options = {
@@ -146,7 +198,7 @@
                 },
                 yaxis: {
                     title: {
-                        text: 'Número de Asistencias'
+                        text: 'Numero de Asistencias'
                     }
                 },
                 fill: {
@@ -170,7 +222,7 @@
         }
 
         function renderAttendanceByLocationChart(data) {
-            let categories = Object.keys(data.locationChartData).sort();
+            let categories = Object.keys(data.locationChartData || {}).sort();
             let seriesData = categories.map(cat => data.locationChartData[cat]);
 
             let options = {
@@ -202,13 +254,14 @@
         }
 
         function renderAttendanceByLocationDateChart(data) {
-            let dates = Object.keys(data.locationDateChartData).sort();
-            let locations = [...new Set(Object.values(data.locationDateChartData).flatMap(Object.keys))].sort();
+            let chartSource = data.locationDateChartData || {};
+            let dates = Object.keys(chartSource).sort();
+            let locations = [...new Set(Object.values(chartSource).flatMap(obj => Object.keys(obj)))].sort();
 
             let series = locations.map(loc => {
                 return {
                     name: loc,
-                    data: dates.map(date => data.locationDateChartData[date][loc] || 0)
+                    data: dates.map(date => chartSource[date][loc] || 0)
                 };
             });
 
@@ -232,7 +285,7 @@
                 },
                 yaxis: {
                     title: {
-                        text: 'Número de Asistencias'
+                        text: 'Numero de Asistencias'
                     }
                 },
                 fill: {
@@ -254,13 +307,55 @@
             }
         }
 
+        function renderAttendanceByLocationDepartmentChart(data) {
+            let chartSource = data.locationDepartmentChartData || {};
+            let locations = Object.keys(chartSource).sort();
+            let entities = [...new Set(Object.values(chartSource).flatMap(obj => Object.keys(obj)))].sort();
+
+            let series = entities.map(entity => {
+                return {
+                    name: entity,
+                    data: locations.map(loc => (chartSource[loc] && chartSource[loc][entity]) ? chartSource[loc][entity] : 0)
+                };
+            });
+
+            let options = {
+                chart: {
+                    type: 'bar',
+                    height: 380,
+                    stacked: true
+                },
+                plotOptions: {
+                    bar: {
+                        horizontal: false
+                    }
+                },
+                xaxis: {
+                    categories: locations
+                },
+                yaxis: {
+                    title: {
+                        text: 'Numero de Asistencias'
+                    }
+                },
+                legend: {
+                    position: 'top'
+                },
+                series: series
+            };
+
+            if (locationDepartmentChart) {
+                locationDepartmentChart.updateOptions(options);
+            } else {
+                locationDepartmentChart = new ApexCharts(document.querySelector("#locationDepartmentChart"), options);
+                locationDepartmentChart.render();
+            }
+        }
+
         $('#generateReport').on('click', function() {
             let startDate = $('#start_date').val();
             let endDate = $('#end_date').val();
             let locationFilter = $('#location_filter').val();
-
-            console.log('Sending startDate:', startDate);
-            console.log('Sending endDate:', endDate);
 
             $.ajax({
                 url: "{{ route('admin.attendance.generateReport') }}",
@@ -272,13 +367,13 @@
                     location_filter: locationFilter
                 },
                 success: function(response) {
-                    // Update DataTable
                     attendanceTable.clear().rows.add(response.tableData).draw();
 
-                    // Update Charts
+                    updateKpis(response.kpis);
                     renderAttendanceByDateChart(response);
                     renderAttendanceByLocationChart(response);
                     renderAttendanceByLocationDateChart(response);
+                    renderAttendanceByLocationDepartmentChart(response);
                 },
                 error: function(xhr) {
                     console.error("Error al generar el reporte:", xhr.responseText);
@@ -287,7 +382,6 @@
             });
         });
 
-        // Initial report generation on page load
         $('#generateReport').click();
     });
 </script>

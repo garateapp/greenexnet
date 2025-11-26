@@ -7,6 +7,7 @@ use App\Models\personal;
 use App\Models\Attendance;
 use App\Models\Locacion;
 use App\Models\PackingLineAttendance;
+use App\Models\Entidad;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
@@ -29,7 +30,7 @@ class AttendanceController extends Controller
         if ($personId) {
             $person = personal::where('rut', $personId)->first();
             if (!$person) {
-                $error = 'No se encontró personal con el RUT proporcionado.';
+                $error = 'No se encontro personal con el RUT proporcionado.';
             }
         }
 
@@ -40,7 +41,7 @@ class AttendanceController extends Controller
 
         $loggedInUser = Auth::user()->load('personal.assignedLocation');
         if ($loggedInUser && $loggedInUser->personal) {
-            $supervisorLocation = $loggedInUser->personal->assignedLocation->nombre ?? 'Ubicación no asignada';
+            $supervisorLocation = $loggedInUser->personal->assignedLocation->nombre ?? 'Ubicacion no asignada';
             $supervisorLocationId = $loggedInUser->personal->assignedLocation->id ?? null;
 
             if ($supervisorLocationId && $packingLineIds->contains((int) $supervisorLocationId)) {
@@ -92,7 +93,7 @@ class AttendanceController extends Controller
         if ($loggedInUser && $loggedInUser->personal && $loggedInUser->personal->assignedLocation) {
             $location = $loggedInUser->personal->assignedLocation->id;
         } else {
-            return response()->json(['success' => false, 'message' => 'Ubicación del supervisor no encontrada.'], 400);
+            return response()->json(['success' => false, 'message' => 'Ubicacion del supervisor no encontrada.'], 400);
         }
 
         $packingLineIds = collect(config('packing.line_locations', []))
@@ -114,7 +115,7 @@ class AttendanceController extends Controller
                 'entry_type' => $request->input('entry_type'),
             ]);
 
-            return response()->json(['success' => true, 'message' => 'Asistencia confirmada con éxito.'], 200);
+            return response()->json(['success' => true, 'message' => 'Asistencia confirmada con exito.'], 200);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Error al guardar la asistencia: ' . $e->getMessage()], 500);
         }
@@ -152,13 +153,13 @@ class AttendanceController extends Controller
             $person = personal::where("rut", strtolower($normalizedRut))->first();
 
             if (!$person) {
-                $errors[] = "No se encontró personal para el RUT {$entry['rut']}.";
+                $errors[] = "No se encontro personal para el RUT {$entry['rut']}.";
                 continue;
             }
 
-            $location = Locacion::where('id',$entry['location_id'])->first();
+            $location = Locacion::where('id', $entry['location_id'])->first();
             if (!$location) {
-                $errors[] = "La ubicación {$entry['location_id']} no existe.";
+                $errors[] = "La ubicacion {$entry['location_id']} no existe.";
                 continue;
             }
 
@@ -198,63 +199,43 @@ class AttendanceController extends Controller
 
     public function generateReport(Request $request)
     {
-        $startDate = $request->input('start_date');
-        $endDate = $request->input('end_date');
-
-        // Validate and parse dates, provide defaults if empty
         try {
-            $startDate = $startDate ? Carbon::createFromFormat('m/d/Y', $startDate)->startOfDay() : Carbon::now()->subDays(7)->startOfDay();
-        } catch (\Exception $e) {
-            try {
-                $startDate = $startDate ? Carbon::createFromFormat('d-m-Y', $startDate)->startOfDay() : Carbon::now()->subDays(7)->startOfDay();
-            } catch (\Exception $e) {
-                return response()->json(['message' => 'Formato de fecha de inicio inválido.', 'error' => $e->getMessage()], 400);
-            }
-        }
-
-        try {
-            $endDate = $endDate ? Carbon::createFromFormat('m/d/Y', $endDate)->endOfDay() : Carbon::now()->endOfDay();
-        } catch (\Exception $e) {
-            try {
-                $endDate = $endDate ? Carbon::createFromFormat('d-m-Y', $endDate)->endOfDay() : Carbon::now()->endOfDay();
-            } catch (\Exception $e) {
-                return response()->json(['message' => 'Formato de fecha de fin inválido.', 'error' => $e->getMessage()], 400);
-            }
+            $startDate = $this->parseDateOrDefault($request->input('start_date'), Carbon::now()->subDays(7)->startOfDay(), false);
+            $endDate = $this->parseDateOrDefault($request->input('end_date'), Carbon::now()->endOfDay(), true);
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(['message' => $e->getMessage()], 400);
         }
 
         $locationFilter = $request->input('location_filter');
 
-        $query = Attendance::with('personal')
+        $query = Attendance::with(['personal', 'personal.entidad'])
             ->whereBetween('timestamp', [$startDate, $endDate]);
 
         if ($locationFilter) {
-            $query->where('location', Locacion::find($locationFilter)->nombre); // Filter by location name
+            $query->where('location', (int) $locationFilter);
         }
 
         $attendanceRecords = $query->get();
-       // dd($attendanceRecords);
+
+        $locationNames = Locacion::whereIn('id', $attendanceRecords->pluck('location')->filter()->unique())
+            ->pluck('nombre', 'id');
+        $entityNames = Entidad::whereIn('id', $attendanceRecords->pluck('personal.entidad_id')->filter()->unique())
+            ->pluck('nombre', 'id');
+
         $tableData = [];
         $chartData = []; // For attendance by date
         $locationChartData = []; // For attendance by location
         $locationDateChartData = []; // For attendance by location and date
-        $loc='';
+        $locationDepartmentChartData = []; // For attendance by location and department
         foreach ($attendanceRecords as $record) {
-                $locacion=Locacion::where('id',$record->location)->first();
-                Log::info($record->location);
-                if(!$locacion){
-                    $loc=$locacion->nombre;
-                }
-                else
-                {
-                    $loc='N/A';
-                }
-
+            $locationName = $locationNames[$record->location] ?? 'N/A';
+            $entityName = $entityNames[$record->personal->entidad_id ?? null] ?? 'Sin entidad';
 
             $tableData[] = [
                 'date' => Carbon::parse($record->timestamp)->format('d-m-Y'),
                 'personal_name' => $record->personal->nombre ?? 'N/A',
                 'personal_rut' => $record->personal->rut ?? 'N/A',
-                'location_name' => $loc,
+                'location_name' => $locationName,
                 'time' => Carbon::parse($record->timestamp)->format('H:i:s'),
             ];
 
@@ -266,7 +247,6 @@ class AttendanceController extends Controller
             $chartData[$dateKey]++;
 
             // Chart Data: Attendance by Location
-            $locationName = $loc;
             if (!isset($locationChartData[$locationName])) {
                 $locationChartData[$locationName] = 0;
             }
@@ -280,14 +260,56 @@ class AttendanceController extends Controller
                 $locationDateChartData[$dateKey][$locationName] = 0;
             }
             $locationDateChartData[$dateKey][$locationName]++;
+
+            // Chart Data: Attendance by Location and Department (Entidad)
+            if (!isset($locationDepartmentChartData[$locationName])) {
+                $locationDepartmentChartData[$locationName] = [];
+            }
+            if (!isset($locationDepartmentChartData[$locationName][$entityName])) {
+                $locationDepartmentChartData[$locationName][$entityName] = 0;
+            }
+            $locationDepartmentChartData[$locationName][$entityName]++;
         }
+
+        $todayStart = Carbon::today();
+        $todayEnd = Carbon::today()->endOfDay();
+
+        $kpis = [
+            'today_total' => Attendance::whereBetween('timestamp', [$todayStart, $todayEnd])->count(),
+            'today_unique' => Attendance::whereBetween('timestamp', [$todayStart, $todayEnd])->distinct('personal_id')->count('personal_id'),
+            'range_total' => $attendanceRecords->count(),
+            'range_unique' => $attendanceRecords->pluck('personal_id')->unique()->count(),
+            'locations_with_attendance' => $attendanceRecords->pluck('location')->filter()->unique()->count(),
+        ];
 
         return response()->json([
             'tableData' => $tableData,
             'chartData' => $chartData,
             'locationChartData' => $locationChartData,
             'locationDateChartData' => $locationDateChartData,
+            'locationDepartmentChartData' => $locationDepartmentChartData,
+            'kpis' => $kpis,
         ]);
+    }
+
+    private function parseDateOrDefault(?string $dateString, Carbon $default, bool $endOfDay = false): Carbon
+    {
+        if (!$dateString) {
+            return $default;
+        }
+
+        $formats = ['m/d/Y', 'd-m-Y', 'd/m/Y', 'Y-m-d'];
+
+        foreach ($formats as $format) {
+            try {
+                $date = Carbon::createFromFormat($format, $dateString);
+                return $endOfDay ? $date->endOfDay() : $date->startOfDay();
+            } catch (\Exception $e) {
+                continue;
+            }
+        }
+
+        throw new \InvalidArgumentException('Formato de fecha invalido.');
     }
 
     protected function handlePackingLineAttendance(int $personalId, int $locationId)
