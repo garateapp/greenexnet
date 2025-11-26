@@ -9,11 +9,11 @@
             <div class="row">
                 <div class="col-md-4 form-group">
                     <label for="start_date">Fecha Inicio</label>
-                    <input type="text" class="form-control date" id="start_date" name="start_date" value="{{ old('start_date', date('d-m-Y')) }}">
+                    <input type="text" class="form-control" id="start_date" name="start_date" value="{{ old('start_date', date('d-m-Y')) }}">
                 </div>
                 <div class="col-md-4 form-group">
                     <label for="end_date">Fecha Fin</label>
-                    <input type="text" class="form-control date" id="end_date" name="end_date" value="{{ old('end_date', date('d-m-Y')) }}">
+                    <input type="text" class="form-control" id="end_date" name="end_date" value="{{ old('end_date', date('d-m-Y')) }}">
                 </div>
                 <div class="col-md-4 form-group">
                     <label for="location_filter">Ubicacion</label>
