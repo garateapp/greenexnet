@@ -280,7 +280,7 @@ class AttendanceController extends Controller
             }
             $locationDateChartData[$dateKey][$locationName]++;
         }
-        dd($locationChartData);
+
         return response()->json([
             'tableData' => $tableData,
             'chartData' => $chartData,
