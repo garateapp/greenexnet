@@ -288,15 +288,28 @@ class AttendanceController extends Controller
             ->whereNull('ultima_salida')
             ->get();
 
+        $personalMap = personal::with('entidad')
+            ->whereIn('id', $controlAccessOpen->pluck('personal_id')->filter()->unique())
+            ->get()
+            ->keyBy('id');
+
+        $departmentsNames = Entidad::whereIn('id', $personalMap->pluck('entidad_id')->filter()->unique())
+            ->pluck('nombre', 'id');
+
         $departmentCrossData = [];
 
         foreach ($controlAccessOpen as $accessLog) {
-            $department = $accessLog->departamento ?? 'Sin departamento';
-            $normalizedRut = $this->normalizeRutWithoutVerifier($accessLog->personal_id);
+            $person = $personalMap->get($accessLog->personal_id);
+            if (!$person) {
+                continue;
+            }
 
+            $normalizedRut = $this->normalizeRutWithoutVerifier($person->rut ?? null);
             if (!$normalizedRut) {
                 continue;
             }
+
+            $department = $departmentsNames[$person->entidad_id ?? null] ?? 'Sin entidad';
 
             if (!isset($departmentCrossData[$department])) {
                 $departmentCrossData[$department] = [
@@ -328,7 +341,7 @@ class AttendanceController extends Controller
             ->sortByDesc('expected')
             ->values()
             ->all();
-            dd($departmentCrossData);
+
         $todayStart = Carbon::today();
         $todayEnd = Carbon::today()->endOfDay();
 
