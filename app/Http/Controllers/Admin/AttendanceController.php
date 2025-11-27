@@ -169,7 +169,9 @@ class AttendanceController extends Controller
                 Attendance::create([
                     'personal_id' => $person->id,
                     'location' => $location->id,
-                    'timestamp' => isset($entry['timestamp']) ? Carbon::parse($entry['timestamp']) : now(),
+                    'timestamp' => isset($entry['timestamp'])
+    ? Carbon::parse($entry['timestamp'])->setTimezone('America/Santiago')
+    : now('America/Santiago'),
                     'entry_type' => 'offline',
                 ]);
                 $synced++;
