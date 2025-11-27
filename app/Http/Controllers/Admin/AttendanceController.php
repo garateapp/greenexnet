@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\personal;
 use App\Models\Attendance;
+use App\Models\ControlAccessLog;
 use App\Models\Locacion;
 use App\Models\PackingLineAttendance;
 use App\Models\Entidad;
@@ -111,7 +112,7 @@ class AttendanceController extends Controller
             Attendance::create([
                 'personal_id' => $request->input('person_id'),
                 'location' => $location,
-                'timestamp' => now(),
+                'timestamp' => $request->input('fecha'),
                 'entry_type' => $request->input('entry_type'),
             ]);
 
@@ -224,6 +225,15 @@ class AttendanceController extends Controller
         $entityNames = Entidad::whereIn('id', $attendanceRecords->pluck('personal.entidad_id')->filter()->unique())
             ->pluck('nombre', 'id');
 
+        // Attendance ruts (normalized, without verifier digit)
+        $attendanceRutSet = $attendanceRecords
+            ->map(function ($record) {
+                return $this->normalizeRutWithoutVerifier($record->personal->rut ?? null);
+            })
+            ->filter()
+            ->unique()
+            ->flip();
+
         $tableData = [];
         $chartData = []; // For attendance by date
         $locationChartData = []; // For attendance by location
@@ -273,6 +283,52 @@ class AttendanceController extends Controller
             $locationDepartmentChartData[$locationName][$entityName]++;
         }
 
+        // Cross between ControlAccessLog (expected on site) and Attendance (recorded)
+        $controlAccessOpen = ControlAccessLog::whereBetween('fecha', [$startDate, $endDate])
+            ->whereNull('ultima_salida')
+            ->get();
+
+        $departmentCrossData = [];
+
+        foreach ($controlAccessOpen as $accessLog) {
+            $department = $accessLog->departamento ?? 'Sin departamento';
+            $normalizedRut = $this->normalizeRutWithoutVerifier($accessLog->personal_id);
+
+            if (!$normalizedRut) {
+                continue;
+            }
+
+            if (!isset($departmentCrossData[$department])) {
+                $departmentCrossData[$department] = [
+                    'department' => $department,
+                    'expected_ruts' => [],
+                    'attendance_ruts' => [],
+                ];
+            }
+
+            $departmentCrossData[$department]['expected_ruts'][$normalizedRut] = true;
+
+            if (isset($attendanceRutSet[$normalizedRut])) {
+                $departmentCrossData[$department]['attendance_ruts'][$normalizedRut] = true;
+            }
+        }
+
+        $departmentCrossData = collect($departmentCrossData)
+            ->map(function ($data) {
+                $expectedCount = count($data['expected_ruts']);
+                $attendanceCount = count($data['attendance_ruts']);
+
+                return [
+                    'department' => $data['department'],
+                    'expected' => $expectedCount,
+                    'attendance' => $attendanceCount,
+                    'difference' => $expectedCount - $attendanceCount,
+                ];
+            })
+            ->sortByDesc('expected')
+            ->values()
+            ->all();
+
         $todayStart = Carbon::today();
         $todayEnd = Carbon::today()->endOfDay();
 
@@ -291,6 +347,7 @@ class AttendanceController extends Controller
             'locationDateChartData' => $locationDateChartData,
             'locationDepartmentChartData' => $locationDepartmentChartData,
             'kpis' => $kpis,
+            'departmentCrossData' => $departmentCrossData,
         ]);
     }
 
@@ -312,6 +369,21 @@ class AttendanceController extends Controller
         }
 
         throw new \InvalidArgumentException('Formato de fecha invalido.');
+    }
+
+    private function normalizeRutWithoutVerifier(?string $rut): ?string
+    {
+        if ($rut === null) {
+            return null;
+        }
+
+        $cleanRut = preg_replace('/[^0-9kK]/', '', (string) $rut);
+
+        if ($cleanRut === '') {
+            return null;
+        }
+
+        return strlen($cleanRut) > 1 ? substr($cleanRut, 0, -1) : $cleanRut;
     }
 
     protected function handlePackingLineAttendance(int $personalId, int $locationId)

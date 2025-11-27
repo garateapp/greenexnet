@@ -93,6 +93,7 @@
                 let entryType = $('#entry_type').val();
                 let mode = $('#form_mode').val();
                 let _token = $('input[name="_token"]').val();
+                let fecha_hora=date('Y-m-d H:i:s');
 
                 if (!personId || !location) {
                     $('#responseMessage').html('<div class="alert alert-danger">Por favor, complete todos los campos.</div>');
@@ -107,6 +108,7 @@
                         location: location,
                         entry_type: entryType,
                         mode: mode,
+                        fecha:fecha_hora,
                         _token: _token
                     },
                     success: function(response) {

@@ -94,6 +94,26 @@
 
             <div class="row mt-4">
                 <div class="col-md-12">
+                    <h4>Dotacion vs Asistencia por Departamento</h4>
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="departmentCrossTable">
+                            <thead>
+                                <tr>
+                                    <th>Departamento</th>
+                                    <th>Debe estar (Control Acceso)</th>
+                                    <th>Registrados en Asistencia</th>
+                                    <th>Diferencia</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-md-12">
                     <h4>Detalle de Asistencia</h4>
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped table-hover datatable datatable-attendance-detail">
@@ -156,6 +176,30 @@
         let locationChart = null;
         let locationDateChart = null;
         let locationDepartmentChart = null;
+
+        function renderDepartmentCrossTable(data) {
+            const tbody = $('#departmentCrossTable tbody');
+            tbody.empty();
+
+            const rows = data.departmentCrossData || [];
+
+            if (!rows.length) {
+                tbody.append('<tr><td colspan="4" class="text-center text-muted">Sin datos para mostrar</td></tr>');
+                return;
+            }
+
+            rows.forEach(row => {
+                const differenceClass = row.difference > 0 ? 'text-danger' : (row.difference < 0 ? 'text-success' : '');
+                tbody.append(`
+                    <tr>
+                        <td>${row.department}</td>
+                        <td>${row.expected}</td>
+                        <td>${row.attendance}</td>
+                        <td class="${differenceClass}">${row.difference}</td>
+                    </tr>
+                `);
+            });
+        }
 
         function updateKpis(kpis) {
             $('#kpiTodayTotal').text((kpis && kpis.today_total) ? kpis.today_total : 0);
@@ -374,6 +418,7 @@
                     renderAttendanceByLocationChart(response);
                     renderAttendanceByLocationDateChart(response);
                     renderAttendanceByLocationDepartmentChart(response);
+                    renderDepartmentCrossTable(response);
                 },
                 error: function(xhr) {
                     console.error("Error al generar el reporte:", xhr.responseText);
