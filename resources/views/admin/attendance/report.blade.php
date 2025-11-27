@@ -24,6 +24,14 @@
                         @endforeach
                     </select>
                 </div>
+                <div class="col-md-4 form-group">
+                    <label for="shift_filter">Turno</label>
+                    <select class="form-control select2" id="shift_filter" name="shift_filter">
+                        <option value="todos">Todos</option>
+                        <option value="dia">Dia (07:00 - 16:50)</option>
+                        <option value="noche">Noche (16:30 - 06:00)</option>
+                    </select>
+                </div>
             </div>
             <div class="row mb-4">
                 <div class="col-md-12 text-right">
@@ -82,6 +90,25 @@
                 <div class="col-md-12">
                     <h5>Asistencia por Ubicacion y Fecha</h5>
                     <div id="locationDateChart"></div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <h5>Asistencia por Linea UNITEC y Fecha</h5>
+                    <div id="locationParentDateChart"></div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <h5>Comparativa por Turno</h5>
+                    <div id="shiftComparisonChart"></div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <h5>Detalle por Linea UNITEC</h5>
+                    <div id="locationParentSections" class="row"></div>
                 </div>
             </div>
 
@@ -175,7 +202,10 @@
         let attendanceChart = null;
         let locationChart = null;
         let locationDateChart = null;
+        let locationParentDateChart = null;
+        let shiftComparisonChart = null;
         let locationDepartmentChart = null;
+        let locationParentCharts = {};
 
         function renderDepartmentCrossTable(data) {
             const tbody = $('#departmentCrossTable tbody');
@@ -351,6 +381,199 @@
             }
         }
 
+        function renderAttendanceByParentLocationDateChart(data) {
+            let chartSource = data.locationParentDateShiftChartData || {};
+            let dates = Object.keys(chartSource).sort();
+            let parents = [...new Set(Object.values(chartSource).flatMap(obj => Object.keys(obj)))].sort();
+            let shifts = ['dia', 'noche'];
+            let shiftLabels = { dia: 'Dia', noche: 'Noche' };
+
+            let series = [];
+            parents.forEach(parent => {
+                shifts.forEach(shift => {
+                    series.push({
+                        name: `${parent} - ${shiftLabels[shift] || shift}`,
+                        data: dates.map(date => (chartSource[date] && chartSource[date][parent] && chartSource[date][parent][shift]) ? chartSource[date][parent][shift] : 0)
+                    });
+                });
+            });
+
+            let options = {
+                chart: {
+                    type: 'bar',
+                    height: 350,
+                    stacked: true,
+                },
+                plotOptions: {
+                    bar: {
+                        horizontal: false,
+                    },
+                },
+                stroke: {
+                    width: 1,
+                    colors: ['#fff']
+                },
+                xaxis: {
+                    categories: dates,
+                },
+                yaxis: {
+                    title: {
+                        text: 'Numero de Asistencias'
+                    }
+                },
+                fill: {
+                    opacity: 1
+                },
+                legend: {
+                    position: 'top',
+                    horizontalAlign: 'left',
+                    offsetX: 40
+                },
+                series: series
+            };
+
+            if (locationParentDateChart) {
+                locationParentDateChart.updateOptions(options);
+            } else {
+                locationParentDateChart = new ApexCharts(document.querySelector("#locationParentDateChart"), options);
+                locationParentDateChart.render();
+            }
+        }
+
+        function slugify(text) {
+            return (text || '').toString().toLowerCase()
+                .replace(/\s+/g, '-')
+                .replace(/[^\w\-]+/g, '')
+                .replace(/\-\-+/g, '-')
+                .replace(/^-+/, '')
+                .replace(/-+$/, '');
+        }
+
+        function renderParentLocationSections(data) {
+            let chartSource = data.locationParentDateShiftChartData || {};
+            let dates = Object.keys(chartSource).sort();
+            let parents = [...new Set(Object.values(chartSource).flatMap(obj => Object.keys(obj)))].sort();
+
+            let container = $('#locationParentSections');
+            container.empty();
+            locationParentCharts = {};
+
+            parents.forEach(parent => {
+                let sectionId = `parent-chart-${slugify(parent)}`;
+                let childChartId = `parent-children-chart-${slugify(parent)}`;
+                container.append(`
+                    <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h6 class="card-title mb-3">${parent}</h6>
+                    <div id="${sectionId}" class="apex-parent-chart mb-3"></div>
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-bordered mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>Ubicacion</th>
+                                                <th>Turno Dia</th>
+                                                <th>Turno Noche</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="${sectionId}-tbody"></tbody>
+                                    </table>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            `);
+                $(`#${sectionId}`).after(`
+                    <h6 class="card-title">Locaciones hijas</h6>
+                    <div id="${childChartId}" class="mb-3" style="height:220px;"></div>
+                `);
+
+                let seriesDataDia = dates.map(date => (chartSource[date] && chartSource[date][parent]) ? (chartSource[date][parent]['dia'] || 0) : 0);
+                let seriesDataNoche = dates.map(date => (chartSource[date] && chartSource[date][parent]) ? (chartSource[date][parent]['noche'] || 0) : 0);
+                let options = {
+                    chart: {
+                        type: 'bar',
+                        height: 300,
+                        stacked: true
+                    },
+                    plotOptions: {
+                        bar: {
+                            horizontal: false,
+                            columnWidth: '60%'
+                        },
+                    },
+                    dataLabels: {
+                        enabled: false
+                    },
+                    xaxis: {
+                        categories: dates,
+                    },
+                    yaxis: {
+                        title: {
+                            text: 'Numero de Asistencias'
+                        }
+                    },
+                    series: [
+                        { name: `${parent} - Dia`, data: seriesDataDia },
+                        { name: `${parent} - Noche`, data: seriesDataNoche }
+                    ]
+                };
+
+                if (locationParentCharts[parent]) {
+                    locationParentCharts[parent].updateOptions(options);
+                } else {
+                    locationParentCharts[parent] = new ApexCharts(document.querySelector(`#${sectionId}`), options);
+                    locationParentCharts[parent].render();
+                }
+
+                let totals = (data.locationParentChildrenShiftTotals && data.locationParentChildrenShiftTotals[parent]) ? data.locationParentChildrenShiftTotals[parent] : {};
+                let tbody = $(`#${sectionId}-tbody`);
+                tbody.empty();
+                let childEntries = Object.keys(totals).sort().map(loc => ({
+                    loc,
+                    dia: totals[loc]['dia'] || 0,
+                    noche: totals[loc]['noche'] || 0
+                }));
+                if (!childEntries.length) {
+                    tbody.append('<tr><td colspan="3" class="text-center text-muted">Sin datos</td></tr>');
+                } else {
+                    childEntries.forEach(entry => {
+                        tbody.append(`<tr><td>${entry.loc}</td><td>${entry.dia}</td><td>${entry.noche}</td></tr>`);
+                    });
+                }
+
+                let childCategories = childEntries.map(e => e.loc);
+                let childSeriesDia = childEntries.map(e => e.dia);
+                let childSeriesNoche = childEntries.map(e => e.noche);
+                let childOptions = {
+                    chart: {
+                        type: 'bar',
+                        height: 240,
+                        stacked: true
+                    },
+                    plotOptions: {
+                        bar: {
+                            horizontal: true,
+                            barHeight: '70%'
+                        }
+                    },
+                    dataLabels: { enabled: false },
+                    xaxis: { categories: childCategories },
+                    series: [
+                        { name: 'Dia', data: childSeriesDia },
+                        { name: 'Noche', data: childSeriesNoche }
+                    ]
+                };
+                let childChartKey = `${parent}-children`;
+                if (locationParentCharts[childChartKey]) {
+                    locationParentCharts[childChartKey].updateOptions(childOptions);
+                } else {
+                    locationParentCharts[childChartKey] = new ApexCharts(document.querySelector(`#${childChartId}`), childOptions);
+                    locationParentCharts[childChartKey].render();
+                }
+            });
+        }
+
         function renderAttendanceByLocationDepartmentChart(data) {
             let chartSource = data.locationDepartmentChartData || {};
             let locations = Object.keys(chartSource).sort();
@@ -396,10 +619,58 @@
             }
         }
 
+        function renderShiftComparisonChart(data) {
+            let comparison = data.shiftComparison || {};
+            let categories = [];
+            let totalSeries = [];
+            let uniqueSeries = [];
+
+            ['dia', 'noche'].forEach(key => {
+                if (comparison[key]) {
+                    categories.push(comparison[key].label || key);
+                    totalSeries.push(comparison[key].total || 0);
+                    uniqueSeries.push(comparison[key].unique || 0);
+                }
+            });
+
+            let options = {
+                chart: {
+                    type: 'bar',
+                    height: 320,
+                    stacked: false
+                },
+                plotOptions: {
+                    bar: {
+                        horizontal: false,
+                        columnWidth: '45%',
+                        endingShape: 'rounded'
+                    }
+                },
+                dataLabels: { enabled: false },
+                xaxis: { categories },
+                yaxis: {
+                    title: { text: 'Asistencias' }
+                },
+                legend: { position: 'top' },
+                series: [
+                    { name: 'Total', data: totalSeries },
+                    { name: 'Unicos', data: uniqueSeries }
+                ]
+            };
+
+            if (shiftComparisonChart) {
+                shiftComparisonChart.updateOptions(options);
+            } else {
+                shiftComparisonChart = new ApexCharts(document.querySelector("#shiftComparisonChart"), options);
+                shiftComparisonChart.render();
+            }
+        }
+
         $('#generateReport').on('click', function() {
             let startDate = $('#start_date').val();
             let endDate = $('#end_date').val();
             let locationFilter = $('#location_filter').val();
+            let shiftFilter = $('#shift_filter').val();
 
             $.ajax({
                 url: "{{ route('admin.attendance.generateReport') }}",
@@ -408,7 +679,8 @@
                     _token: $('meta[name="csrf-token"]').attr('content'),
                     start_date: startDate,
                     end_date: endDate,
-                    location_filter: locationFilter
+                    location_filter: locationFilter,
+                    shift_filter: shiftFilter
                 },
                 success: function(response) {
                     attendanceTable.clear().rows.add(response.tableData).draw();
@@ -417,7 +689,10 @@
                     renderAttendanceByDateChart(response);
                     renderAttendanceByLocationChart(response);
                     renderAttendanceByLocationDateChart(response);
+                    renderAttendanceByParentLocationDateChart(response);
+                    renderParentLocationSections(response);
                     renderAttendanceByLocationDepartmentChart(response);
+                    renderShiftComparisonChart(response);
                     renderDepartmentCrossTable(response);
                 },
                 error: function(xhr) {

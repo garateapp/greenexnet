@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Carbon\Carbon;
 
 class AttendanceController extends Controller
@@ -210,20 +211,55 @@ class AttendanceController extends Controller
         }
 
         $locationFilter = $request->input('location_filter');
+        $shiftFilter = $request->input('shift_filter', 'todos');
 
-        $query = Attendance::with(['personal', 'personal.entidad'])
+        $baseQuery = Attendance::with(['personal', 'personal.entidad'])
             ->whereBetween('timestamp', [$startDate, $endDate]);
 
         if ($locationFilter) {
-            $query->where('location', (int) $locationFilter);
+            $baseQuery->where('location', (int) $locationFilter);
         }
 
-        $attendanceRecords = $query->get();
+        $allAttendanceRecords = $baseQuery->get();
 
-        $locationNames = Locacion::whereIn('id', $attendanceRecords->pluck('location')->filter()->unique())
+        $attendanceRecords = $allAttendanceRecords->filter(function ($record) use ($shiftFilter) {
+            if ($shiftFilter === 'todos' || !$shiftFilter) {
+                return true;
+            }
+
+            $shift = $this->determineShift(Carbon::parse($record->timestamp));
+            return $shift === $shiftFilter;
+        })->values();
+
+        $locationNames = Locacion::whereIn('id', $allAttendanceRecords->pluck('location')->filter()->unique())
             ->pluck('nombre', 'id');
-        $entityNames = Entidad::whereIn('id', $attendanceRecords->pluck('personal.entidad_id')->filter()->unique())
+        $locationsMeta = Locacion::select('id', 'nombre', 'locacion_padre_id')->get()->keyBy('id');
+        $unitecParents = collect([131, 132, 133]);
+        $unitecParentNames = Locacion::whereIn('id', $unitecParents)->pluck('nombre', 'id');
+        $entityNames = Entidad::whereIn('id', $allAttendanceRecords->pluck('personal.entidad_id')->filter()->unique())
             ->pluck('nombre', 'id');
+
+        $shiftComparison = [
+            'dia' => [
+                'label' => 'Turno Dia',
+                'total' => 0,
+                'unique' => 0,
+            ],
+            'noche' => [
+                'label' => 'Turno Noche',
+                'total' => 0,
+                'unique' => 0,
+            ],
+        ];
+
+        foreach (['dia', 'noche'] as $shiftKey) {
+            $shifted = $allAttendanceRecords->filter(function ($record) use ($shiftKey) {
+                return $this->determineShift(Carbon::parse($record->timestamp)) === $shiftKey;
+            });
+
+            $shiftComparison[$shiftKey]['total'] = $shifted->count();
+            $shiftComparison[$shiftKey]['unique'] = $shifted->pluck('personal_id')->unique()->count();
+        }
 
         // Attendance ruts (normalized, without verifier digit)
         $attendanceRutSet = $attendanceRecords
@@ -242,6 +278,8 @@ class AttendanceController extends Controller
         foreach ($attendanceRecords as $record) {
             $locationName = $locationNames[$record->location] ?? 'N/A';
             $entityName = $entityNames[$record->personal->entidad_id ?? null] ?? 'Sin entidad';
+            $locationMeta = $locationsMeta[$record->location] ?? null;
+            $parentId = $locationMeta->locacion_padre_id ?? null;
 
             $tableData[] = [
                 'date' => Carbon::parse($record->timestamp)->format('d-m-Y'),
@@ -283,37 +321,127 @@ class AttendanceController extends Controller
             $locationDepartmentChartData[$locationName][$entityName]++;
         }
 
+        // Rebuild line/parent charts using all attendance records (to always show ambos turnos)
+        $locationParentDateChartData = []; // For attendance by parent location (UNITEC lines) and date
+        $locationParentDateShiftChartData = []; // For attendance by parent location, date and shift
+        $locationParentChildrenTotals = []; // Totals per child location under each parent
+        $locationParentChildrenShiftTotals = []; // Totals per child location under each parent, split by shift
+        foreach ($allAttendanceRecords as $record) {
+            $locationName = $locationNames[$record->location] ?? 'N/A';
+            $locationMeta = $locationsMeta[$record->location] ?? null;
+            $parentId = $locationMeta->locacion_padre_id ?? null;
+            $parentKey = $unitecParents->contains($parentId)
+                ? ($unitecParentNames[$parentId] ?? "UNITEC {$parentId}")
+                : 'Otras Ubicaciones';
+            $shift = $this->determineShift(Carbon::parse($record->timestamp));
+
+            // Chart Data: Attendance by parent location (UNITEC lines) and date
+            $dateKey = Carbon::parse($record->timestamp)->format('Y-m-d');
+            if (!isset($locationParentDateChartData[$dateKey])) {
+                $locationParentDateChartData[$dateKey] = [];
+            }
+            if (!isset($locationParentDateChartData[$dateKey][$parentKey])) {
+                $locationParentDateChartData[$dateKey][$parentKey] = 0;
+            }
+            $locationParentDateChartData[$dateKey][$parentKey]++;
+
+            // Chart Data: Attendance by parent location, date and shift
+            if (!isset($locationParentDateShiftChartData[$dateKey])) {
+                $locationParentDateShiftChartData[$dateKey] = [];
+            }
+            if (!isset($locationParentDateShiftChartData[$dateKey][$parentKey])) {
+                $locationParentDateShiftChartData[$dateKey][$parentKey] = [
+                    'dia' => 0,
+                    'noche' => 0,
+                ];
+            }
+            $locationParentDateShiftChartData[$dateKey][$parentKey][$shift]++;
+
+            // Totals per child location under each parent
+            if (!isset($locationParentChildrenTotals[$parentKey])) {
+                $locationParentChildrenTotals[$parentKey] = [];
+            }
+            if (!isset($locationParentChildrenTotals[$parentKey][$locationName])) {
+                $locationParentChildrenTotals[$parentKey][$locationName] = 0;
+            }
+            $locationParentChildrenTotals[$parentKey][$locationName]++;
+
+            // Totals per child location split by shift
+            if (!isset($locationParentChildrenShiftTotals[$parentKey])) {
+                $locationParentChildrenShiftTotals[$parentKey] = [];
+            }
+            if (!isset($locationParentChildrenShiftTotals[$parentKey][$locationName])) {
+                $locationParentChildrenShiftTotals[$parentKey][$locationName] = [
+                    'dia' => 0,
+                    'noche' => 0,
+                ];
+            }
+            $locationParentChildrenShiftTotals[$parentKey][$locationName][$shift]++;
+        }
+
         // Cross between ControlAccessLog (expected on site) and Attendance (recorded)
         $controlAccessOpen = ControlAccessLog::whereBetween('fecha', [$startDate, $endDate])
             ->whereNull('ultima_salida')
             ->get();
 
-        $personalMap = personal::with('entidad')
-            ->whereIn('id', $controlAccessOpen->pluck('personal_id')->filter()->unique())
-            ->get()
-            ->keyBy('id');
+        // Apply shift filter to ControlAccessLog entries
+        if ($shiftFilter !== 'todos' && $shiftFilter) {
+            $controlAccessOpen = $controlAccessOpen->filter(function ($log) use ($shiftFilter) {
+                $ts = $log->primera_entrada ?? $log->fecha;
+                if (!$ts) {
+                    return false;
+                }
+                $shift = $this->determineShift(Carbon::parse($ts));
+                return $shift === $shiftFilter;
+            })->values();
+        }
 
+        // Normalize RUTs from access log (stored in personal_id field) and map to personals by normalized rut
+        $controlAccessRutSet = $controlAccessOpen->pluck('personal_id')
+            ->map(function ($rut) {
+                return str_replace(' ', '', $this->normalizeRutWithoutVerifier($rut));
+            })
+            ->filter()
+            ->unique();
+        Log::info($controlAccessRutSet);
+
+
+        $personalMap = personal::with('entidad')
+            ->select('id', 'rut', 'entidad_id', 'nombre')
+            ->get()
+            ->mapWithKeys(function ($person) {
+                $normalizedRut = str_replace(' ', '', $this->normalizeRutWithoutVerifier($person->rut ?? null));
+
+                return $normalizedRut ? [$normalizedRut => $person] : [];
+            })
+            ->only($controlAccessRutSet->all());
+             Log::info($personalMap);
         $departmentsNames = Entidad::whereIn('id', $personalMap->pluck('entidad_id')->filter()->unique())
             ->pluck('nombre', 'id');
 
         $departmentCrossData = [];
 
         foreach ($controlAccessOpen as $accessLog) {
-            $person = $personalMap->get($accessLog->personal_id);
-            if (!$person) {
-                continue;
-            }
-
-            $normalizedRut = $this->normalizeRutWithoutVerifier($person->rut ?? null);
+            $normalizedRut = str_replace(' ', '', $this->normalizeRutWithoutVerifier($accessLog->personal_id));
             if (!$normalizedRut) {
                 continue;
             }
 
-            $department = $departmentsNames[$person->entidad_id ?? null] ?? 'Sin entidad';
+            $person = $personalMap->get($normalizedRut);
+            if (!$person) {
+                continue;
+            }
+
+            $departmentDisplay = trim($accessLog->departamento ?? '');
+            if ($departmentDisplay === '') {
+                $departmentDisplay = $departmentsNames[$person->entidad_id ?? null] ?? 'Sin entidad';
+            }
+
+            $department = $this->normalizeDepartmentName($departmentDisplay);
 
             if (!isset($departmentCrossData[$department])) {
                 $departmentCrossData[$department] = [
-                    'department' => $department,
+                    'department' => $departmentDisplay,
                     'expected_ruts' => [],
                     'attendance_ruts' => [],
                 ];
@@ -358,12 +486,50 @@ class AttendanceController extends Controller
             'chartData' => $chartData,
             'locationChartData' => $locationChartData,
             'locationDateChartData' => $locationDateChartData,
+            'locationParentDateChartData' => $locationParentDateChartData,
+            'locationParentDateShiftChartData' => $locationParentDateShiftChartData,
+            'locationParentChildrenTotals' => $locationParentChildrenTotals,
+            'locationParentChildrenShiftTotals' => $locationParentChildrenShiftTotals,
             'locationDepartmentChartData' => $locationDepartmentChartData,
+            'shiftComparison' => $shiftComparison,
             'kpis' => $kpis,
             'departmentCrossData' => $departmentCrossData,
         ]);
     }
+    function formatearRutConDv($rut) {
 
+
+       // Inicializa el acumulador en 1
+    $acumulador = 1;
+    // Inicializa el contador en 0
+    $contador = 0;
+    // Mientras el RUT no sea igual a 0, continúa el bucle
+    while ($rut != 0) {
+        // Calcula el dígito verificador utilizando el algoritmo específico
+        $acumulador = ($acumulador + ($rut % 10) * (9 - $contador++ % 6)) % 11;
+        // Reduce el RUT al siguiente dígito
+        $rut = (int)($rut / 10);
+    }
+    // Si el acumulador es diferente de 0, calcula el dígito verificador
+    // utilizando el valor del acumulador más 47 en la tabla ASCII
+    // de lo contrario, establece el dígito verificador en 'K'
+    $dv = $acumulador ? chr($acumulador + 47) : 'K';
+
+    // ---- FORMATEAR RUT ----
+    $rutInvertido = strrev($rut);
+    $rutFormateado = '';
+
+    for ($i = 0; $i < strlen($rutInvertido); $i++) {
+        if ($i > 0 && $i % 3 === 0) {
+            $rutFormateado .= '.';
+        }
+        $rutFormateado .= $rutInvertido[$i];
+    }
+
+    $rutFormateado = strrev($rutFormateado);
+
+    return $rutFormateado . '-' . $dv;
+}
     private function parseDateOrDefault(?string $dateString, Carbon $default, bool $endOfDay = false): Carbon
     {
         if (!$dateString) {
@@ -390,13 +556,35 @@ class AttendanceController extends Controller
             return null;
         }
 
-        $cleanRut = preg_replace('/[^0-9kK]/', '', (string) $rut);
-
+        //$cleanRut = preg_replace('/[^0-9kK]/', '', (string) $rut);
+        $rutSinDv=explode('-',$rut);
+        $cleanRut = preg_replace('/[^0-9]/', '', $rutSinDv[0]);
         if ($cleanRut === '') {
             return null;
         }
 
-        return strlen($cleanRut) > 1 ? substr($cleanRut, 0, -1) : $cleanRut;
+        return $cleanRut;
+    }
+
+    private function normalizeDepartmentName(?string $department): string
+    {
+        $trimmed = trim($department ?? '');
+        if ($trimmed === '') {
+            return 'SIN ENTIDAD';
+        }
+
+        return Str::upper($trimmed);
+    }
+
+    private function determineShift(Carbon $timestamp): string
+    {
+        $time = $timestamp->format('H:i');
+        // Prioritize day shift if overlapping window; everything else counts as night
+        if ($time >= '07:00' && $time <= '16:50') {
+            return 'dia';
+        }
+
+        return 'noche';
     }
 
     protected function handlePackingLineAttendance(int $personalId, int $locationId)
