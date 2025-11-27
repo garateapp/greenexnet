@@ -474,6 +474,7 @@
                                                 <th>Ubicacion</th>
                                                 <th>Turno Dia</th>
                                                 <th>Turno Noche</th>
+                                                <th>Total</th>
                                             </tr>
                                         </thead>
                                         <tbody id="${sectionId}-tbody"></tbody>
@@ -535,11 +536,19 @@
                     noche: totals[loc]['noche'] || 0
                 }));
                 if (!childEntries.length) {
-                    tbody.append('<tr><td colspan="3" class="text-center text-muted">Sin datos</td></tr>');
+                    tbody.append('<tr><td colspan="4" class="text-center text-muted">Sin datos</td></tr>');
                 } else {
+                    let sumDia = 0;
+                    let sumNoche = 0;
+                    let sumTotal = 0;
                     childEntries.forEach(entry => {
-                        tbody.append(`<tr><td>${entry.loc}</td><td>${entry.dia}</td><td>${entry.noche}</td></tr>`);
+                        const totalRow = entry.dia + entry.noche;
+                        sumDia += entry.dia;
+                        sumNoche += entry.noche;
+                        sumTotal += totalRow;
+                        tbody.append(`<tr><td>${entry.loc}</td><td>${entry.dia}</td><td>${entry.noche}</td><td>${totalRow}</td></tr>`);
                     });
+                    tbody.append(`<tr class="font-weight-bold"><td>Total</td><td>${sumDia}</td><td>${sumNoche}</td><td>${sumTotal}</td></tr>`);
                 }
 
                 let childCategories = childEntries.map(e => e.loc);
