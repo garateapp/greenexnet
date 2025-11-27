@@ -137,35 +137,23 @@ class ControlAccessLogIngestController extends Controller
 
     }
     function formatearRutConDv($rut) {
-    // Dejar solo números
-    $rut = preg_replace('/[^0-9]/', '', $rut);
 
-    if ($rut === '' || !ctype_digit($rut)) {
-        return null; // Manejo básico de error
+
+       // Inicializa el acumulador en 1
+    $acumulador = 1;
+    // Inicializa el contador en 0
+    $contador = 0;
+    // Mientras el RUT no sea igual a 0, continúa el bucle
+    while ($rut != 0) {
+        // Calcula el dígito verificador utilizando el algoritmo específico
+        $acumulador = ($acumulador + ($rut % 10) * (9 - $contador++ % 6)) % 11;
+        // Reduce el RUT al siguiente dígito
+        $rut = (int)($rut / 10);
     }
-
-    // ---- CALCULAR DV ----
-    $suma = 0;
-    $multiplicador = 2;
-
-    for ($i = strlen($rut) - 1; $i >= 0; $i--) {
-        $suma += intval($rut[$i]) * $multiplicador;
-        $multiplicador++;
-        if ($multiplicador > 7) {
-            $multiplicador = 2;
-        }
-    }
-
-    $resto = $suma % 11;
-    $dv = 11 - $resto;
-
-    if ($dv == 11) {
-        $dv = "0";
-    } elseif ($dv == 10) {
-        $dv = "K";
-    } else {
-        $dv = (string)$dv;
-    }
+    // Si el acumulador es diferente de 0, calcula el dígito verificador
+    // utilizando el valor del acumulador más 47 en la tabla ASCII
+    // de lo contrario, establece el dígito verificador en 'K'
+    $dv = $acumulador ? chr($acumulador + 47) : 'K';
 
     // ---- FORMATEAR RUT ----
     $rutInvertido = strrev($rut);
