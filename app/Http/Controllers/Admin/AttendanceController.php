@@ -328,7 +328,7 @@ class AttendanceController extends Controller
             ->sortByDesc('expected')
             ->values()
             ->all();
-
+            dd($departmentCrossData);
         $todayStart = Carbon::today();
         $todayEnd = Carbon::today()->endOfDay();
 
