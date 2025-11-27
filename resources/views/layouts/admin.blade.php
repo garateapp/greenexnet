@@ -368,7 +368,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.5.1/min/dropzone.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vanilla-icon-picker@1.4.1/dist/icon-picker.min.js"></script>
-    <script src="{{ asset('js/Chart.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
     <script src="{{ asset('js/main.js') }}"></script>
     <script>
         $(function() {
