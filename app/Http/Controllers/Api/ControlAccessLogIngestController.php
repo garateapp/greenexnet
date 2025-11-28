@@ -14,10 +14,11 @@ class ControlAccessLogIngestController extends Controller
 {
     protected array $contractorGroups = [
         'Valsán Ltda' => ['valsan', 'valsán', 'valsan ltda', 'valsan noche'],
-        'Las Orquídeas SpA' => ['las orquideas', 'las orquídeas'],
+        'Las Orquídeas SpA' => ['las orquideas', 'las orquídeas','Orquídeas Noche'],
         'Isaias Ballesteros' => ['isaias ballesteros', 'isaias ballesteros noche'],
-        'Agrícola Lancair' => ['agricola lancair', 'agricola lancair noche'],
+        'Agrícola Lancair' => ['agrícola lancair', 'lancair noche'],
         'Fernando Urbina' => ['fernando urbina'],
+        'Claudia Viera'=>['claudia viera'],
 
     ];
     public function store(Request $request): JsonResponse
