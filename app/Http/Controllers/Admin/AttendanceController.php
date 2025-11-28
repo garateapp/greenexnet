@@ -588,7 +588,7 @@ class AttendanceController extends Controller
         if ($time >= '08:00' && $time <= '13:00') {
             return 'pass1';
         }
-        if ($time >= '14:00' && $time <= '16:30') {
+        if ($time >= '14:00' && $time <= '18:30') {
             return 'pass2';
         }
         return null;
@@ -598,7 +598,7 @@ class AttendanceController extends Controller
     {
         $time = $timestamp->format('H:i');
         // Prioritize day shift if overlapping window; everything else counts as night
-        if ($time >= '07:00' && $time <= '16:50') {
+        if ($time >= '07:00' && $time <= '18:50') {
             return 'dia';
         }
 
