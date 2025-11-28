@@ -20,6 +20,10 @@ class ControlAccessDashboardController extends Controller
         'Isaias Ballesteros',
         'Isaias Ballesteros Noche',
         'Valsán Noche',
+        'Agricola Lancair',
+        'Lancair Noche',
+        'Claudia Viera',
+
     ];
 
     /**
