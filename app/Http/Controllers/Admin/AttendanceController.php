@@ -385,8 +385,10 @@ class AttendanceController extends Controller
         }
 
         // Cross between ControlAccessLog (expected on site) and Attendance (recorded)
-        $controlAccessOpen = ControlAccessLog::whereBetween('fecha', [$startDate, $endDate])
+        $controlAccessOpen = ControlAccessLog::select('personal_id', 'nombre', 'departamento', 'primera_entrada', 'ultima_salida')
             ->whereNull('ultima_salida')
+            ->whereBetween('primera_entrada', [$startDate->copy()->setTime(7, 0), $endDate])
+            ->orderBy('primera_entrada')
             ->get();
 
         // Apply shift filter to ControlAccessLog entries
@@ -400,6 +402,8 @@ class AttendanceController extends Controller
                 return $shift === $shiftFilter;
             })->values();
         }
+        // Avoid duplicates per persona
+        $controlAccessOpen = $controlAccessOpen->unique('personal_id')->values();
 
         $departmentCrossData = [];
 
