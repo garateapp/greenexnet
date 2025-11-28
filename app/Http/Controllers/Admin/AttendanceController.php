@@ -410,7 +410,7 @@ class AttendanceController extends Controller
         // Attendance side: count by Entidad nombre
         foreach ($attendanceRecords as $record) {
             $departmentDisplay = $record->personal->entidad->nombre ?? 'Sin entidad';
-            if(!$record->personal->entidad->nombre){
+            if(!$record->personal->entidad){
 
                 Log::info("ControlAccessLogIngestController::store", $record);
             }
