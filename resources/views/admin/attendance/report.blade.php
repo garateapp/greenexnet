@@ -169,6 +169,19 @@
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
     $(document).ready(function() {
+        function getCurrentShift() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const current = hours * 60 + minutes;
+            const diaStart = 7 * 60; // 07:00
+            const diaEnd = 16 * 60 + 50; // 16:50
+            if (current >= diaStart && current <= diaEnd) {
+                return 'dia';
+            }
+            return 'noche';
+        }
+
         $('#end_date').datepicker({
             format: 'dd-mm-yyyy',
             autoclose: true,
@@ -182,6 +195,7 @@
             dateFormat: 'dd-mm-yy'
         });
         $('.select2').select2();
+        $('#shift_filter').val(getCurrentShift()).trigger('change');
 
         let attendanceTable = $('.datatable-attendance-detail').DataTable({
             processing: true,

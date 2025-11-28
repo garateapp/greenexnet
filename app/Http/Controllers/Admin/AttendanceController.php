@@ -213,7 +213,10 @@ class AttendanceController extends Controller
         }
 
         $locationFilter = $request->input('location_filter');
-        $shiftFilter = $request->input('shift_filter', 'todos');
+        $shiftFilter = $request->input('shift_filter');
+        if (!$shiftFilter || $shiftFilter === 'todos') {
+            $shiftFilter = $this->determineShift(Carbon::now());
+        }
 
         $baseQuery = Attendance::with(['personal', 'personal.entidad'])
             ->whereBetween('timestamp', [$startDate, $endDate]);
@@ -398,68 +401,49 @@ class AttendanceController extends Controller
             })->values();
         }
 
-        // Normalize RUTs from access log (stored in personal_id field) and map to personals by normalized rut
-        $controlAccessRutSet = $controlAccessOpen->pluck('personal_id')
-            ->map(function ($rut) {
-                return str_replace(' ', '', $this->normalizeRutWithoutVerifier($rut));
-            })
-            ->filter()
-            ->unique();
-        Log::info($controlAccessRutSet);
-
-
-        $personalMap = personal::with('entidad')
-            ->select('id', 'rut', 'entidad_id', 'nombre')
-            ->get()
-            ->mapWithKeys(function ($person) {
-                $normalizedRut = str_replace(' ', '', $this->normalizeRutWithoutVerifier($person->rut ?? null));
-
-                return $normalizedRut ? [$normalizedRut => $person] : [];
-            })
-            ->only($controlAccessRutSet->all());
-             Log::info($personalMap);
-        $departmentsNames = Entidad::whereIn('id', $personalMap->pluck('entidad_id')->filter()->unique())
-            ->pluck('nombre', 'id');
-
         $departmentCrossData = [];
 
-        foreach ($controlAccessOpen as $accessLog) {
-            $normalizedRut = str_replace(' ', '', $this->normalizeRutWithoutVerifier($accessLog->personal_id));
-            if (!$normalizedRut) {
-                continue;
-            }
+        // Attendance side: count by Entidad nombre
+        foreach ($attendanceRecords as $record) {
+            $departmentDisplay = $record->personal->entidad->nombre ?? 'Sin entidad';
+            $departmentKey = $this->normalizeDepartmentName($departmentDisplay);
 
-            $person = $personalMap->get($normalizedRut);
-            if (!$person) {
-                continue;
-            }
-
-            $departmentDisplay = trim($accessLog->departamento ?? '');
-            if ($departmentDisplay === '') {
-                $departmentDisplay = $departmentsNames[$person->entidad_id ?? null] ?? 'Sin entidad';
-            }
-
-            $department = $this->normalizeDepartmentName($departmentDisplay);
-
-            if (!isset($departmentCrossData[$department])) {
-                $departmentCrossData[$department] = [
+            if (!isset($departmentCrossData[$departmentKey])) {
+                $departmentCrossData[$departmentKey] = [
                     'department' => $departmentDisplay,
-                    'expected_ruts' => [],
-                    'attendance_ruts' => [],
+                    'expected' => 0,
+                    'attendance' => 0,
                 ];
             }
 
-            $departmentCrossData[$department]['expected_ruts'][$normalizedRut] = true;
+            $departmentCrossData[$departmentKey]['attendance']++;
+        }
 
-            if (isset($attendanceRutSet[$normalizedRut])) {
-                $departmentCrossData[$department]['attendance_ruts'][$normalizedRut] = true;
+        // Control access side: count by departamento (fallback to Entidad if not present)
+        foreach ($controlAccessOpen as $accessLog) {
+            $departmentDisplay = trim($accessLog->departamento ?? '');
+            if ($departmentDisplay === '') {
+                // Try to resolve Entidad via personal
+                $person = personal::where('rut', $accessLog->personal_id)->with('entidad')->first();
+                $departmentDisplay = $person->entidad->nombre ?? 'Sin entidad';
             }
+            $departmentKey = $this->normalizeDepartmentName($departmentDisplay);
+
+            if (!isset($departmentCrossData[$departmentKey])) {
+                $departmentCrossData[$departmentKey] = [
+                    'department' => $departmentDisplay,
+                    'expected' => 0,
+                    'attendance' => 0,
+                ];
+            }
+
+            $departmentCrossData[$departmentKey]['expected']++;
         }
 
         $departmentCrossData = collect($departmentCrossData)
             ->map(function ($data) {
-                $expectedCount = count($data['expected_ruts']);
-                $attendanceCount = count($data['attendance_ruts']);
+                $expectedCount = $data['expected'] ?? 0;
+                $attendanceCount = $data['attendance'] ?? 0;
 
                 return [
                     'department' => $data['department'],
