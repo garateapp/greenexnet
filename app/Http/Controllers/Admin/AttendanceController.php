@@ -410,6 +410,10 @@ class AttendanceController extends Controller
         // Attendance side: count by Entidad nombre
         foreach ($attendanceRecords as $record) {
             $departmentDisplay = $record->personal->entidad->nombre ?? 'Sin entidad';
+            if(!$record->personal->entidad->nombre){
+
+                Log::info("ControlAccessLogIngestController::store", $record);
+            }
             $departmentKey = $this->normalizeDepartmentName($departmentDisplay);
 
             if (!isset($departmentCrossData[$departmentKey])) {
@@ -417,10 +421,18 @@ class AttendanceController extends Controller
                     'department' => $departmentDisplay,
                     'expected' => 0,
                     'attendance' => 0,
+                    'pass1' => 0,
+                    'pass2' => 0,
                 ];
             }
 
             $departmentCrossData[$departmentKey]['attendance']++;
+            $pass = $this->determinePassWindow(Carbon::parse($record->timestamp));
+            if ($pass === 'pass1') {
+                $departmentCrossData[$departmentKey]['pass1']++;
+            } elseif ($pass === 'pass2') {
+                $departmentCrossData[$departmentKey]['pass2']++;
+            }
         }
 
         // Control access side: count by departamento (fallback to Entidad if not present)
@@ -438,6 +450,8 @@ class AttendanceController extends Controller
                     'department' => $departmentDisplay,
                     'expected' => 0,
                     'attendance' => 0,
+                    'pass1' => 0,
+                    'pass2' => 0,
                 ];
             }
 
@@ -453,6 +467,8 @@ class AttendanceController extends Controller
                     'department' => $data['department'],
                     'expected' => $expectedCount,
                     'attendance' => $attendanceCount,
+                    'pass1' => $data['pass1'] ?? 0,
+                    'pass2' => $data['pass2'] ?? 0,
                     'difference' => $expectedCount - $attendanceCount,
                 ];
             })
@@ -564,6 +580,18 @@ class AttendanceController extends Controller
         }
 
         return Str::upper($trimmed);
+    }
+
+    private function determinePassWindow(Carbon $timestamp): ?string
+    {
+        $time = $timestamp->format('H:i');
+        if ($time >= '08:00' && $time <= '13:00') {
+            return 'pass1';
+        }
+        if ($time >= '14:00' && $time <= '16:30') {
+            return 'pass2';
+        }
+        return null;
     }
 
     private function determineShift(Carbon $timestamp): string

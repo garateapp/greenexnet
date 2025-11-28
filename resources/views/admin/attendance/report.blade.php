@@ -128,6 +128,8 @@
                                 <tr>
                                     <th>Departamento</th>
                                     <th>Debe estar (Control Acceso)</th>
+                                    <th>Asistencia 1 (08:00-13:00)</th>
+                                    <th>Asistencia 2 (14:00-16:30)</th>
                                     <th>Registrados en Asistencia</th>
                                     <th>Diferencia</th>
                                 </tr>
@@ -228,21 +230,45 @@
             const rows = data.departmentCrossData || [];
 
             if (!rows.length) {
-                tbody.append('<tr><td colspan="4" class="text-center text-muted">Sin datos para mostrar</td></tr>');
+                tbody.append('<tr><td colspan="5" class="text-center text-muted">Sin datos para mostrar</td></tr>');
                 return;
             }
 
+            let totalExpected = 0;
+            let totalPass1 = 0;
+            let totalPass2 = 0;
+            let totalAttendance = 0;
+            let totalDifference = 0;
+
             rows.forEach(row => {
                 const differenceClass = row.difference > 0 ? 'text-danger' : (row.difference < 0 ? 'text-success' : '');
+                totalExpected += row.expected || 0;
+                totalPass1 += row.pass1 || 0;
+                totalPass2 += row.pass2 || 0;
+                totalAttendance += row.attendance || 0;
+                totalDifference += row.difference || 0;
                 tbody.append(`
                     <tr>
                         <td>${row.department}</td>
                         <td>${row.expected}</td>
+                        <td>${row.pass1 || 0}</td>
+                        <td>${row.pass2 || 0}</td>
                         <td>${row.attendance}</td>
                         <td class="${differenceClass}">${row.difference}</td>
                     </tr>
                 `);
             });
+
+            tbody.append(`
+                <tr class="font-weight-bold">
+                    <td>Total</td>
+                    <td>${totalExpected}</td>
+                    <td>${totalPass1}</td>
+                    <td>${totalPass2}</td>
+                    <td>${totalAttendance}</td>
+                    <td>${totalDifference}</td>
+                </tr>
+            `);
         }
 
         function updateKpis(kpis) {
