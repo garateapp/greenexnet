@@ -412,7 +412,7 @@ class AttendanceController extends Controller
             $departmentDisplay = $record->personal->entidad->nombre ?? 'Sin entidad';
             if(!$record->personal->entidad){
 
-                Log::info("ControlAccessLogIngestController::store", $record);
+                Log::info("ControlAccessLogIngestController::store", [$record]);
             }
             $departmentKey = $this->normalizeDepartmentName($departmentDisplay);
 
