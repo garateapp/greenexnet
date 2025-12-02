@@ -80,6 +80,21 @@ class ControlAccessDashboardController extends Controller
         $selectedDepartments = array_values(array_filter($selectedDepartments));
         $onlyContractors = $request->boolean('contractor_only');
 
+        $historicalStart = $request->filled('historical_start')
+            ? Carbon::parse($request->input('historical_start'))->startOfDay()
+            : Carbon::today()->subDays(6)->startOfDay();
+        $historicalEnd = $request->filled('historical_end')
+            ? Carbon::parse($request->input('historical_end'))->endOfDay()
+            : Carbon::today()->endOfDay();
+
+        if ($historicalEnd->lessThan($historicalStart)) {
+            [$historicalStart, $historicalEnd] = [$historicalEnd->copy()->startOfDay(), $historicalStart->copy()->endOfDay()];
+        }
+
+        $historicalDepartments = $request->input('historical_departments', []);
+        $historicalDepartments = is_array($historicalDepartments) ? $historicalDepartments : [$historicalDepartments];
+        $historicalDepartments = array_values(array_filter($historicalDepartments));
+
         $dayStart = $baseDate->copy()->setTime(6, 0, 0);
         $dayEnd = $baseDate->copy()->setTime(23, 59, 59);
         $dayShiftEnd = $baseDate->copy()->setTime(16, 29, 59);
@@ -186,6 +201,9 @@ class ControlAccessDashboardController extends Controller
                 max((int) $totalInside - $groupSum, 0),
             ],
         ];
+
+        $historicalChart = $this->buildHistoricalSeries($historicalStart, $historicalEnd, $historicalDepartments);
+
         return view('admin.control-access.dashboard', [
             'selectedDate' => $baseDate->format('Y-m-d'),
             'selectedDepartments' => $selectedDepartments,
@@ -204,6 +222,10 @@ class ControlAccessDashboardController extends Controller
             'deptChart' => $deptChart,
             'contractorPie' => $contractorPie,
             'hourlySeries' => $hourlySeries,
+            'historicalStartDate' => $historicalStart->format('Y-m-d'),
+            'historicalEndDate' => $historicalEnd->format('Y-m-d'),
+            'historicalDepartments' => $historicalDepartments,
+            'historicalChart' => $historicalChart,
         ]);
     }
 
@@ -246,5 +268,39 @@ class ControlAccessDashboardController extends Controller
             ->whereNull('ultima_salida')
             ->distinct('personal_id')
             ->count('personal_id');
+    }
+
+    protected function buildHistoricalSeries(Carbon $start, Carbon $end, array $departments): array
+    {
+        $raw = ControlAccessLog::query()
+            ->selectRaw("DATE(primera_entrada) as day")
+            ->selectRaw("COUNT(DISTINCT personal_id) as total")
+            ->whereBetween('primera_entrada', [$start, $end])
+            ->when(!empty($departments), fn ($q) => $q->whereIn('departamento', $departments))
+            ->groupBy('day')
+            ->orderBy('day')
+            ->get()
+            ->pluck('total', 'day');
+
+        $labels = [];
+        $data = [];
+
+        $cursor = $start->copy();
+        while ($cursor->lte($end)) {
+            $key = $cursor->toDateString();
+            $labels[] = $cursor->format('d-m');
+            $data[] = (int) ($raw[$key] ?? 0);
+            $cursor->addDay();
+        }
+
+        return [
+            'labels' => $labels,
+            'series' => [
+                [
+                    'name' => 'Personal',
+                    'data' => $data,
+                ],
+            ],
+        ];
     }
 }

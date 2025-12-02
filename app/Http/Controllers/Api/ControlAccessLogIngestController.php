@@ -14,7 +14,7 @@ class ControlAccessLogIngestController extends Controller
 {
     protected array $contractorGroups = [
         'Valsán Ltda' => ['valsan', 'valsán', 'valsan ltda', 'valsan noche'],
-        'Las Orquídeas SpA' => ['las orquideas', 'las orquídeas','Orquídeas Noche'],
+        'Las Orquídeas SpA' => ['Las Orquideas SpA','las orquideas', 'las orquídeas','Orquídeas Noche'],
         'Isaias Ballesteros' => ['isaias ballesteros', 'isaias ballesteros noche'],
         'Agrícola Lancair' => ['agrícola lancair', 'lancair noche'],
         'Fernando Urbina' => ['fernando urbina'],
@@ -33,7 +33,7 @@ class ControlAccessLogIngestController extends Controller
             'records.*.ultima_salida' => ['nullable', 'string'],
             'records.*.pin' => ['nullable', 'string', 'max:255'],
         ]);
-        Log::info("ControlAccessLogIngestController::store", $payload);
+
         $stored = [];
 
         foreach ($payload['records'] as $record) {
