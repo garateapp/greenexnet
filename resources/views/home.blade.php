@@ -98,7 +98,7 @@
                 @can('control_panel')
                     <div class="card">
                         <div class="card-header">
-                            Liquidaciones Temporada 2024 -2025
+                            Liquidaciones Temporada 2025 -2026
                         </div>
 
                         <div class="card-body">
