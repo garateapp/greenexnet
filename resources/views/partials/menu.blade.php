@@ -20,7 +20,7 @@
                 {{ trans('global.dashboard') }}
             </a>
         </li>
-          @can('control_panel')
+          @can('control_acceso')
         <li class="c-sidebar-nav-item">
             <a href="{{ route('admin.control-access.dashboard') }}"
                 class="c-sidebar-nav-link {{ request()->is('admin/control-access/dashboard') ? 'c-active' : '' }}">
@@ -28,7 +28,8 @@
                 Control Acceso
             </a>
         </li>
-
+         @endcan
+         @can("control_panel")
         <li class="c-sidebar-nav-item">
             <a href="{{ route('admin.liq-cx-cabeceras.selprods') }}" class="c-sidebar-nav-link">
                 <i class="c-sidebar-nav-icon fas fa-fw fa-chart-pie">

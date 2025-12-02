@@ -143,6 +143,29 @@
 
             <div class="row mt-4">
                 <div class="col-md-12">
+                    <h4>Faltantes sin asistencia</h4>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <p class="mb-0 text-muted">Lista quienes ingresaron (control de acceso) pero no tienen asistencia registrada, usando el rango de fechas de arriba.</p>
+                        <button class="btn btn-outline-primary btn-sm" id="loadMissingAttendance">Cargar faltantes</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped table-hover" id="missingAttendanceTable">
+                            <thead>
+                                <tr>
+                                    <th>RUT</th>
+                                    <th>Nombre</th>
+                                    <th>Personal ID</th>
+                                    <th>Departamento</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-md-12">
                     <h4>Detalle de Asistencia</h4>
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped table-hover datatable datatable-attendance-detail">
@@ -213,6 +236,12 @@
                 { data: 'location_name' },
                 { data: 'time' }
             ]
+        });
+        let missingTable = $('#missingAttendanceTable').DataTable({
+            paging: true,
+            searching: true,
+            info: true,
+            order: [[1, 'asc']]
         });
 
         let attendanceChart = null;
@@ -747,6 +776,29 @@
                 error: function(xhr) {
                     console.error("Error al generar el reporte:", xhr.responseText);
                     alert("Error al generar el reporte. Por favor, intente de nuevo.");
+                }
+            });
+        });
+
+        $('#loadMissingAttendance').on('click', function() {
+            let startDate = $('#start_date').val();
+            let endDate = $('#end_date').val();
+            $.ajax({
+                url: "{{ route('admin.attendance.missing') }}",
+                method: "GET",
+                data: { start_date: startDate, end_date: endDate },
+                success: function(response) {
+                    const rows = response.data || [];
+                    missingTable.clear().rows.add(rows.map(r => [
+                        r.rut || '',
+                        r.nombre || '',
+                        r.personal_id || '',
+                        r.departamento || ''
+                    ])).draw();
+                },
+                error: function(xhr) {
+                    console.error("Error al cargar faltantes:", xhr.responseText);
+                    alert("Error al cargar faltantes. Por favor, intente de nuevo.");
                 }
             });
         });

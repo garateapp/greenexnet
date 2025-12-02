@@ -588,7 +588,7 @@ class AttendanceController extends Controller
         if ($time >= '08:00' && $time <= '13:00') {
             return 'pass1';
         }
-        if ($time >= '14:00' && $time <= '18:30') {
+        if ($time >= '14:00' && $time <= '17:30') {
             return 'pass2';
         }
         return null;
@@ -598,7 +598,7 @@ class AttendanceController extends Controller
     {
         $time = $timestamp->format('H:i');
         // Prioritize day shift if overlapping window; everything else counts as night
-        if ($time >= '07:00' && $time <= '18:50') {
+        if ($time >= '07:00' && $time <= '18:30') {
             return 'dia';
         }
 
@@ -647,5 +647,41 @@ class AttendanceController extends Controller
             'action' => 'salida',
             'person' => $personData,
         ], 200);
+    }
+
+    /**
+     * Regresa el listado de personas presentes en control de acceso sin asistencia registrada.
+     */
+    public function missingAttendance(Request $request)
+    {
+        try {
+            $startDate = $this->parseDateOrDefault($request->input('start_date'), Carbon::today()->startOfDay(), false)
+                ->setTime(7, 0);
+            $endDate = $this->parseDateOrDefault($request->input('end_date'), Carbon::today()->endOfDay(), true);
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(['message' => $e->getMessage()], 400);
+        }
+
+        $entidades = [4, 5, 6, 7, 9];
+
+        $faltantes = ControlAccessLog::from('control_access_logs as c')
+            ->selectRaw('DISTINCT p.rut, c.nombre, c.personal_id, c.departamento')
+            ->join('personals as p', 'p.codigo', '=', 'c.personal_id')
+            ->leftJoin('attendances as a', 'a.personal_id', '=', 'p.id')
+            ->whereNull('a.personal_id')
+            ->whereBetween('c.primera_entrada', [$startDate, $endDate])
+            ->whereNull('c.ultima_salida')
+            ->whereIn('p.entidad_id', $entidades)
+            ->orderBy('c.nombre')
+            ->get();
+
+        return response()->json([
+            'data' => $faltantes,
+            'meta' => [
+                'start_date' => $startDate->toDateTimeString(),
+                'end_date' => $endDate->toDateTimeString(),
+                'entidades' => $entidades,
+            ],
+        ]);
     }
 }
