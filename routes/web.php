@@ -367,6 +367,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('packing/detenciones-lineas', 'PackingDetentionReportController@index')
         ->name('packing.detenciones')
         ->middleware('can:packing');
+    Route::get('packing/detenciones-lineas/export', 'PackingDetentionReportController@export')
+        ->name('packing.detenciones.export')
+        ->middleware('can:packing');
 
     // // Conversor Xls
     // Route::delete('conversor-xls/destroy', 'ConversorXlsController@massDestroy')->name('conversor-xls.massDestroy');

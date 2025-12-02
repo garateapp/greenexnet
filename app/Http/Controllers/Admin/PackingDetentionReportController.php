@@ -33,7 +33,6 @@ class PackingDetentionReportController extends Controller
                 'estado as status',
             ])
             ->orderByDesc('event_date')
-            ->limit(250)
             ->get();
 
         $kpiRow = (clone $baseQuery)
@@ -254,6 +253,55 @@ class PackingDetentionReportController extends Controller
             'lineComparison' => $lineComparison,
             'chartPayload' => $chartPayload,
         ]);
+    }
+
+    public function export(Request $request)
+    {
+        abort_if(Gate::denies('packing'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $filters = $this->validateFilters($request);
+        $rows = $this->buildBaseQuery($filters)
+            ->select([
+                'event_id',
+                'line',
+                'event_date',
+                'activation_date',
+                'duration_minutes',
+                'motivo',
+                'causa',
+                'turno',
+                'estado',
+                'notas',
+            ])
+            ->orderByDesc('event_date')
+            ->get();
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="detenciones_lineas.csv"',
+        ];
+
+        $callback = function () use ($rows) {
+            $output = fopen('php://output', 'w');
+            fputcsv($output, ['ID', 'Línea', 'Fecha evento', 'Fecha activación', 'Duración (min)', 'Motivo', 'Causa', 'Turno', 'Estado', 'Notas']);
+            foreach ($rows as $row) {
+                fputcsv($output, [
+                    $row->event_id,
+                    $row->line,
+                    $row->event_date,
+                    $row->activation_date,
+                    $row->duration_minutes,
+                    $row->motivo,
+                    $row->causa,
+                    $row->turno,
+                    $row->estado,
+                    $row->notas,
+                ]);
+            }
+            fclose($output);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     private function validateFilters(Request $request): array

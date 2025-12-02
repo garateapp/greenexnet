@@ -4,7 +4,12 @@
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <span>Reporte de Detenciones en Líneas</span>
-            <small class="text-muted">Última actualización {{ now()->format('d/m/Y H:i') }}</small>
+            <div class="d-flex align-items-center">
+                <a href="{{ route('admin.packing.detenciones.export', request()->query()) }}" class="btn btn-outline-success btn-sm mr-3">
+                    Exportar Excel
+                </a>
+                <small class="text-muted mb-0">Última actualización {{ now()->format('d/m/Y H:i') }}</small>
+            </div>
         </div>
         <div class="card-body">
             <form method="GET" action="{{ route('admin.packing.detenciones') }}" class="mb-4">
