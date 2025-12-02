@@ -177,7 +177,7 @@
         const hourlySeries = @json($hourlySeries);
 
         new ApexCharts(document.querySelector("#department-chart"), {
-            chart: { type: 'bar', height: 320 },
+            chart: { type: 'bar', height: 520 },
             series: [{ name: 'En planta', data: deptChart.series }],
             xaxis: { categories: deptChart.labels },
             colors: ['#2962FF'],
