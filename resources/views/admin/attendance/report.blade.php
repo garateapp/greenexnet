@@ -149,7 +149,7 @@
                         <button class="btn btn-outline-primary btn-sm" id="loadMissingAttendance">Cargar faltantes</button>
                     </div>
                     <div class="table-responsive">
-                        <table class="table table-bordered table-striped table-hover" id="missingAttendanceTable">
+                        <table class="table table-bordered table-striped table-hover" id="missingAttendanceTable" style="width: 100%;">
                             <thead>
                                 <tr>
                                     <th>RUT</th>
@@ -241,7 +241,15 @@
             paging: true,
             searching: true,
             info: true,
-            order: [[1, 'asc']]
+            order: [[1, 'asc']],
+            autoWidth: false,
+            scrollX: true,
+            columns: [
+                { title: 'RUT' },
+                { title: 'Nombre' },
+                { title: 'Personal ID' },
+                { title: 'Departamento' }
+            ]
         });
 
         let attendanceChart = null;
