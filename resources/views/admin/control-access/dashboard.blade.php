@@ -200,6 +200,10 @@
                 <div class="card">
                     <div class="card-header">Histórico de personal por día</div>
                     <div class="card-body">
+                        <p class="text-muted small mb-3">
+                            Se cuenta a cada persona cuya primera entrada del día esté dentro del rango seleccionado,
+                            sin importar si registró salida. Los departamentos filtrados aplican sobre ese mismo criterio.
+                        </p>
                         <div id="historical-chart" style="min-height: 360px;"></div>
                     </div>
                 </div>
@@ -257,7 +261,7 @@
         const historicalChart = @json($historicalChart);
 
         new ApexCharts(document.querySelector("#department-chart"), {
-            chart: { type: 'bar', height: 520 },
+            chart: { type: 'bar', height: 620 },
             series: [{ name: 'En planta', data: deptChart.series }],
             xaxis: { categories: deptChart.labels },
             colors: ['#2962FF'],
