@@ -186,7 +186,6 @@ class ControlAccessDashboardController extends Controller
                 max((int) $totalInside - $groupSum, 0),
             ],
         ];
-
         return view('admin.control-access.dashboard', [
             'selectedDate' => $baseDate->format('Y-m-d'),
             'selectedDepartments' => $selectedDepartments,

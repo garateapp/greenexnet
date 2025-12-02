@@ -62,7 +62,6 @@
                 </div>
             </div>
         </div>
-
         <div class="row mb-4">
             <div class="col-lg-4 mb-3">
                 <div class="card h-100">
@@ -81,7 +80,6 @@
                 </div>
             </div>
         </div>
-
         <div class="card mb-4">
             <div class="card-header">
                 Dotación por departamento (último movimiento del día)
