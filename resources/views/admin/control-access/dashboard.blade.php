@@ -4,11 +4,11 @@
     <div class="container-fluid">
         <ul class="nav nav-tabs mb-3" id="dashboardTabs" role="tablist">
             <li class="nav-item" role="presentation">
-                <a class="nav-link active" id="daily-tab" data-bs-toggle="tab" href="#tab-daily" role="tab"
+                <a class="nav-link active" id="daily-tab" data-toggle="tab" href="#tab-daily" role="tab"
                     aria-controls="tab-daily" aria-selected="true">Vista actual</a>
             </li>
             <li class="nav-item" role="presentation">
-                <a class="nav-link" id="historical-tab" data-bs-toggle="tab" href="#tab-historical" role="tab"
+                <a class="nav-link" id="historical-tab" data-toggle="tab" href="#tab-historical" role="tab"
                     aria-controls="tab-historical" aria-selected="false">Histórico</a>
             </li>
         </ul>
