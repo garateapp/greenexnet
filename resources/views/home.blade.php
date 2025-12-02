@@ -1223,7 +1223,8 @@
                         const variedadesSel = ($("#filtroVariedad").val() || []).map(val => val.toUpperCase());
                         const transporteSel = ($("#filtroTransporte").val() || []).map(val => val.toUpperCase());
                         const coloresSel = ($("#filtroFobVariedadColor").val() || []).map(val => val.toUpperCase());
-                        const paisSel = ($("#filtroPais").val() || '');
+                        const paisSel = ($("#filtroPais").val() || '').toUpperCase();
+                        const colorSel = ($("#filtroColor").val() || '').toUpperCase();
                         //const etiquetasSel = ($("#filtroFobVariedadEtiqueta").val() || []).map(val => val.toUpperCase());
                         const clientesSel = ($("#filtroCliente").val() || []).map(val => val.toUpperCase());
                         const especiesSel = ($("#filtroEspecie").val() || []).map(val => val.toUpperCase());
@@ -1232,22 +1233,31 @@
 
                         // Filtrar liquidacionesData
                         let datosFiltrados = liquidacionesData.filter(item => {
+                            const transporte = (item.Transporte || "").toUpperCase();
+                            const variedad = (item.variedad || "").toUpperCase();
+                            const cliente = (item.cliente || "").toUpperCase();
+                            const especie = (item.especie || "").toUpperCase();
+                            const pais = (item.Pais || "").toUpperCase();
+                            const color = (item.color || "").toUpperCase();
+
+                            const coincideTransporte = transporteSel.length === 0 || transporteSel.includes(transporte);
+                            const coincideVariedad = variedadesSel.length === 0 || variedadesSel.includes(variedad);
+                            const coincideCliente = clientesSel.length === 0 || clientesSel.includes(cliente);
+                            const coincideEspecie = especiesSel.length === 0 || especiesSel.includes(especie);
+                            const coincidePais = !paisSel || paisSel === pais;
+                            const coincideColor = (
+                                (colorSel && colorSel === color) ||
+                                (coloresSel.length > 0 && coloresSel.includes(color)) ||
+                                (!colorSel && coloresSel.length === 0)
+                            );
+
                             return (
-                                (transporteSel.length === 0 || transporteSel.includes((item.Transporte
-                                        .toUpperCase() || "")
-                                    .toUpperCase())) &&
-                                (variedadesSel.length === 0 || variedadesSel.includes((item.variedad
-                                        .toUpperCase() || "")
-                                    .toUpperCase())) &&
-                                // (etiquetasSel.length === 0 || etiquetasSel.includes((item.etiqueta.toUpperCase() || "")
-                                //     .toUpperCase())) &&
-                                (clientesSel.length === 0 || clientesSel.includes((item.cliente.toUpperCase() ||
-                                        "")
-                                    .toUpperCase())) &&
-                                (especiesSel.length === 0 || especiesSel.includes((item.especie.toUpperCase() ||
-                                        "")
-                                    .toUpperCase())) && paisSel == item.Pais || '' && colorSel === item.color ||
-                                ""
+                                coincideTransporte &&
+                                coincideVariedad &&
+                                coincideCliente &&
+                                coincideEspecie &&
+                                coincidePais &&
+                                coincideColor
                             );
                         });
                         actualizarTablaVariedadFOBKG(datosFiltrados);
