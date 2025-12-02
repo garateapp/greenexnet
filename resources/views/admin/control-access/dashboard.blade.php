@@ -11,10 +11,10 @@
                     </div>
                     <div class="form-group col-md-4">
                         <label for="department" class="font-weight-bold">Departamento</label>
-                        <select id="department" name="department" class="form-control">
-                            <option value="">Todos</option>
+                        <select id="department" name="department[]" class="form-control" multiple>
+                            <option value=""></option>
                             @foreach ($departmentOptions as $department)
-                                <option value="{{ $department }}" @selected($department === $selectedDepartment)>{{ $department }}</option>
+                                <option value="{{ $department }}" @selected(in_array($department, $selectedDepartments ?? []))>{{ $department }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -158,8 +158,22 @@
 @endsection
 
 @section('scripts')
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script>
+        $(function() {
+            const selectedDepartments = @json($selectedDepartments);
+            $('#department').select2({
+                placeholder: 'Todos los departamentos',
+                allowClear: true,
+                width: '100%'
+            });
+            if (selectedDepartments && selectedDepartments.length) {
+                $('#department').val(selectedDepartments).trigger('change');
+            }
+        });
+
         const deptChart = @json($deptChart);
         const contractorPie = @json($contractorPie);
         const hourlySeries = @json($hourlySeries);

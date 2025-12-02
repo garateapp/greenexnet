@@ -75,7 +75,9 @@ class ControlAccessDashboardController extends Controller
             ? Carbon::parse($request->input('date'))
             : Carbon::today();
 
-        $selectedDepartment = $request->filled('department') ? $request->input('department') : null;
+        $selectedDepartments = $request->input('department', []);
+        $selectedDepartments = is_array($selectedDepartments) ? $selectedDepartments : [$selectedDepartments];
+        $selectedDepartments = array_values(array_filter($selectedDepartments));
         $onlyContractors = $request->boolean('contractor_only');
 
         $dayStart = $baseDate->copy()->setTime(6, 0, 0);
@@ -84,7 +86,7 @@ class ControlAccessDashboardController extends Controller
         $nightShiftStart = $baseDate->copy()->setTime(15, 30, 0);
 
         // Dotación por departamento (último movimiento del día, sólo los que no registran salida)
-        [$whereClause, $bindings] = $this->buildWhereClause($dayStart, $dayEnd, $selectedDepartment, $onlyContractors);
+        [$whereClause, $bindings] = $this->buildWhereClause($dayStart, $dayEnd, $selectedDepartments, $onlyContractors);
 
         $departmentCounts = collect(DB::select(
             "
@@ -107,42 +109,42 @@ class ControlAccessDashboardController extends Controller
             $bindings
         ));
 
-        $totalInside = $this->buildBaseQuery($dayStart, $dayEnd, $selectedDepartment, $onlyContractors)
+        $totalInside = $this->buildBaseQuery($dayStart, $dayEnd, $selectedDepartments, $onlyContractors)
             ->whereNull('ultima_salida')
             ->distinct('personal_id')
             ->count('personal_id');
 
-        $dayShiftInside = $this->buildBaseQuery($dayStart, $dayShiftEnd, $selectedDepartment, $onlyContractors)
+        $dayShiftInside = $this->buildBaseQuery($dayStart, $dayShiftEnd, $selectedDepartments, $onlyContractors)
             ->whereNull('ultima_salida')
             ->distinct('personal_id')
             ->count('personal_id');
 
-        $nightShiftInside = $this->buildBaseQuery($nightShiftStart, $dayEnd, $selectedDepartment, $onlyContractors)
+        $nightShiftInside = $this->buildBaseQuery($nightShiftStart, $dayEnd, $selectedDepartments, $onlyContractors)
             ->whereNull('ultima_salida')
             ->distinct('personal_id')
             ->count('personal_id');
 
-        $contractorDayInside = $this->buildBaseQuery($dayStart, $dayShiftEnd, $selectedDepartment, true)
+        $contractorDayInside = $this->buildBaseQuery($dayStart, $dayShiftEnd, $selectedDepartments, true)
             ->whereNull('ultima_salida')
             ->distinct('personal_id')
             ->count('personal_id');
 
-        $contractorNightInside = $this->buildBaseQuery($nightShiftStart, $dayEnd, $selectedDepartment, true)
+        $contractorNightInside = $this->buildBaseQuery($nightShiftStart, $dayEnd, $selectedDepartments, true)
             ->whereNull('ultima_salida')
             ->distinct('personal_id')
             ->count('personal_id');
 
-        $contractorInside = $this->buildBaseQuery($dayStart, $dayEnd, $selectedDepartment, true)
+        $contractorInside = $this->buildBaseQuery($dayStart, $dayEnd, $selectedDepartments, true)
             ->whereNull('ultima_salida')
             ->distinct('personal_id')
             ->count('personal_id');
 
-        $greenexInside = $this->countByDepartments($dayStart, $dayEnd, $selectedDepartment, $onlyContractors, $this->greenexDepartments);
-        $garateInside = $this->countByDepartments($dayStart, $dayEnd, $selectedDepartment, $onlyContractors, $this->garateDepartments);
-        $sanExpeditoInside = $this->countByDepartments($dayStart, $dayEnd, $selectedDepartment, $onlyContractors, $this->sanExpeditoDepartments);
+        $greenexInside = $this->countByDepartments($dayStart, $dayEnd, $selectedDepartments, $onlyContractors, $this->greenexDepartments);
+        $garateInside = $this->countByDepartments($dayStart, $dayEnd, $selectedDepartments, $onlyContractors, $this->garateDepartments);
+        $sanExpeditoInside = $this->countByDepartments($dayStart, $dayEnd, $selectedDepartments, $onlyContractors, $this->sanExpeditoDepartments);
         $groupSum = (int) $contractorInside + (int) $garateInside + (int) $sanExpeditoInside + (int) $greenexInside;
 
-        $hourlyRaw = $this->buildBaseQuery($dayStart, $dayEnd, $selectedDepartment, $onlyContractors)
+        $hourlyRaw = $this->buildBaseQuery($dayStart, $dayEnd, $selectedDepartments, $onlyContractors)
             ->select(DB::raw("DATE_FORMAT(primera_entrada, '%H') as hour"), DB::raw('COUNT(*) as total'))
             ->groupBy('hour')
             ->orderBy('hour')
@@ -163,7 +165,7 @@ class ControlAccessDashboardController extends Controller
 
         $latestMovements = ControlAccessLog::query()
             ->whereBetween('primera_entrada', [$dayStart, $dayEnd])
-            ->when($selectedDepartment, fn ($q) => $q->where('departamento', $selectedDepartment))
+            ->when(!empty($selectedDepartments), fn ($q) => $q->whereIn('departamento', $selectedDepartments))
             ->when($onlyContractors, fn ($q) => $q->whereIn('departamento', $this->contractorDepartments))
             ->orderByDesc('primera_entrada')
             ->limit(20)
@@ -187,7 +189,7 @@ class ControlAccessDashboardController extends Controller
 
         return view('admin.control-access.dashboard', [
             'selectedDate' => $baseDate->format('Y-m-d'),
-            'selectedDepartment' => $selectedDepartment,
+            'selectedDepartments' => $selectedDepartments,
             'onlyContractors' => $onlyContractors,
             'totalInside' => $totalInside,
             'dayShiftInside' => $dayShiftInside,
@@ -206,14 +208,15 @@ class ControlAccessDashboardController extends Controller
         ]);
     }
 
-    protected function buildWhereClause(Carbon $start, Carbon $end, ?string $department, bool $onlyContractors): array
+    protected function buildWhereClause(Carbon $start, Carbon $end, array $departments, bool $onlyContractors): array
     {
         $clauses = ['primera_entrada BETWEEN ? AND ?'];
         $bindings = [$start, $end];
 
-        if ($department) {
-            $clauses[] = 'departamento = ?';
-            $bindings[] = $department;
+        if (!empty($departments)) {
+            $placeholders = implode(',', array_fill(0, count($departments), '?'));
+            $clauses[] = "departamento IN ({$placeholders})";
+            $bindings = array_merge($bindings, $departments);
         }
 
         if ($onlyContractors) {
@@ -225,21 +228,21 @@ class ControlAccessDashboardController extends Controller
         return [implode(' AND ', $clauses), $bindings];
     }
 
-    protected function buildBaseQuery(Carbon $start, Carbon $end, ?string $department, bool $onlyContractors)
+    protected function buildBaseQuery(Carbon $start, Carbon $end, array $departments, bool $onlyContractors)
     {
         return ControlAccessLog::query()
             ->whereBetween('primera_entrada', [$start, $end])
-            ->when($department, fn ($q) => $q->where('departamento', $department))
+            ->when(!empty($departments), fn ($q) => $q->whereIn('departamento', $departments))
             ->when($onlyContractors, fn ($q) => $q->whereIn('departamento', $this->contractorDepartments));
     }
 
-    protected function countByDepartments(Carbon $start, Carbon $end, ?string $department, bool $onlyContractors, array $departments): int
+    protected function countByDepartments(Carbon $start, Carbon $end, array $selectedDepartments, bool $onlyContractors, array $departments): int
     {
         if (empty($departments)) {
             return 0;
         }
 
-        return $this->buildBaseQuery($start, $end, $department, $onlyContractors)
+        return $this->buildBaseQuery($start, $end, $selectedDepartments, $onlyContractors)
             ->whereIn('departamento', $departments)
             ->whereNull('ultima_salida')
             ->distinct('personal_id')
