@@ -166,6 +166,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('attendance/offline/sync', 'AttendanceController@syncOffline')->name('attendance.offlineSync');
     Route::get('attendance/report', 'AttendanceController@reportIndex')->name('attendance.reportIndex');
     Route::post('attendance/generate-report', 'AttendanceController@generateReport')->name('attendance.generateReport');
+    Route::get('attendance/missing', 'AttendanceController@missingAttendance')->name('attendance.missing');
 
 
     // Recibe Master
