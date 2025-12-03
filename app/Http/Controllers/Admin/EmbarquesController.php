@@ -505,9 +505,14 @@ $query = DB::query()
                 ->unique()
                 ->values();
              Log::info("Enviando correo de seguimiento de embarques a ", ['mailList' => $mailList]);
-            foreach ($mailList as $email) {
-                Log::info("Enviando correo de seguimiento de embarques a {$email}");
-                Mail::to($email)
+            // Dividimos en 2 grupos para evitar bloqueos por cantidad de destinatarios
+            $groups = $mailList->split(2);
+            foreach ($groups as $index => $group) {
+                if ($group->isEmpty()) {
+                    continue;
+                }
+                Log::info("Enviando correo de seguimiento de embarques al grupo " . ($index + 1), ['destinatarios' => $group]);
+                Mail::to($group->all())
                     ->send(new MensajeGenericoMailable(
                         $mensaje,
                         $fileName,
