@@ -283,6 +283,8 @@ class PackingDetentionReportController extends Controller
 
         $callback = function () use ($rows) {
             $output = fopen('php://output', 'w');
+            // BOM para que Excel respete UTF-8
+            fwrite($output, "\xEF\xBB\xBF");
             fputcsv($output, ['ID', 'Línea', 'Fecha evento', 'Fecha activación', 'Duración (min)', 'Motivo', 'Causa', 'Turno', 'Estado', 'Notas']);
             foreach ($rows as $row) {
                 fputcsv($output, [
