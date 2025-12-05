@@ -282,15 +282,19 @@ class AttendanceController extends Controller
         $locationDepartmentChartData = []; // For attendance by location and department
         foreach ($attendanceRecords as $record) {
             $locationName = $locationNames[$record->location] ?? 'N/A';
-            $entityName = $entityNames[$record->personal->entidad_id ?? null] ?? 'Sin entidad';
             $locationMeta = $locationsMeta[$record->location] ?? null;
             $parentId = $locationMeta->locacion_padre_id ?? null;
+            $parentName = $parentId ? ($locationsMeta[$parentId]->nombre ?? 'N/A') : null;
+            $locationDisplay = $parentName ? "{$parentName} - {$locationName}" : $locationName;
+            $entityName = $entityNames[$record->personal->entidad_id ?? null] ?? 'Sin entidad';
 
             $tableData[] = [
                 'date' => Carbon::parse($record->timestamp)->format('d-m-Y'),
                 'personal_name' => $record->personal->nombre ?? 'N/A',
                 'personal_rut' => $record->personal->rut ?? 'N/A',
-                'location_name' => $locationName,
+                'location_name' => $locationDisplay,
+                'location_parent' => $parentName,
+                'entity_name' => $entityName,
                 'time' => Carbon::parse($record->timestamp)->format('H:i:s'),
             ];
 

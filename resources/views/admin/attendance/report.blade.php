@@ -174,7 +174,8 @@
                                     <th>Fecha</th>
                                     <th>Personal</th>
                                     <th>RUT</th>
-                                    <th>Ubicacion</th>
+                                    <th>Ubicacion (Padre - Ubicacion)</th>
+                                    <th>Entidad</th>
                                     <th>Hora</th>
                                 </tr>
                             </thead>
@@ -246,6 +247,7 @@
                 { data: 'personal_name' },
                 { data: 'personal_rut' },
                 { data: 'location_name' },
+                { data: 'entity_name' },
                 { data: 'time' }
             ]
         });
