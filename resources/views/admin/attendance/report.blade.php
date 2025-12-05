@@ -229,6 +229,18 @@
             searching: false,
             paging: false,
             order: [[ 0, 'desc' ]],
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'excelHtml5',
+                    text: 'Exportar Excel',
+                    filename: 'Detalle_Asistencia',
+                    title: 'Detalle de Asistencia',
+                    exportOptions: {
+                        columns: ':visible'
+                    }
+                }
+            ],
             columns: [
                 { data: 'date' },
                 { data: 'personal_name' },
