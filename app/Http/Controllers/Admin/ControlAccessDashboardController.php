@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\LatestMovementsExport;
 use App\Http\Controllers\Controller;
 use App\Models\ControlAccessLog;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ControlAccessDashboardController extends Controller
 {
@@ -178,13 +180,27 @@ class ControlAccessDashboardController extends Controller
             ->orderBy('departamento')
             ->pluck('departamento');
 
-        $latestMovements = ControlAccessLog::query()
-            ->whereBetween('primera_entrada', [$dayStart, $dayEnd])
+        $latestDayStart = $baseDate->copy()->startOfDay();
+        $latestDayEnd = $baseDate->copy()->endOfDay();
+
+        $latestMovementsQuery = ControlAccessLog::query()
+            ->whereBetween('primera_entrada', [$latestDayStart, $latestDayEnd])
             ->when(!empty($selectedDepartments), fn ($q) => $q->whereIn('departamento', $selectedDepartments))
             ->when($onlyContractors, fn ($q) => $q->whereIn('departamento', $this->contractorDepartments))
-            ->orderByDesc('primera_entrada')
-            ->limit(20)
-            ->get();
+            ->select('personal_id', 'nombre', 'departamento', 'primera_entrada', 'ultima_salida')
+            ->distinct()
+            ->orderByDesc('primera_entrada');
+
+        if ($request->get('export') === 'latest-movements') {
+            $fileName = 'movimientos_' . $latestDayStart->format('Ymd') . '.xlsx';
+
+            return Excel::download(
+                new LatestMovementsExport($latestMovementsQuery->get()),
+                $fileName
+            );
+        }
+
+        $latestMovements = $latestMovementsQuery->get();
 
         $deptChart = [
             'labels' => $departmentCounts->pluck('departamento')->map(fn ($d) => $d ?? 'Sin departamento'),

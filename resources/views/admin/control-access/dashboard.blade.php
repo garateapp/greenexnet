@@ -124,8 +124,21 @@
                 </div>
 
                 <div class="card">
-                    <div class="card-header">
-                        Últimos movimientos (día seleccionado)
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>Últimos movimientos (día seleccionado)</span>
+                        <form method="GET" class="mb-0">
+                            @foreach (request()->except('export') as $key => $value)
+                                @if (is_array($value))
+                                    @foreach ($value as $item)
+                                        <input type="hidden" name="{{ $key }}[]" value="{{ $item }}">
+                                    @endforeach
+                                @elseif(!is_null($value))
+                                    <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                                @endif
+                            @endforeach
+                            <input type="hidden" name="export" value="latest-movements">
+                            <button type="submit" class="btn btn-sm btn-success">Exportar Excel</button>
+                        </form>
                     </div>
                     <div class="table-responsive">
                         <table class="table table-striped mb-0">
