@@ -134,11 +134,11 @@ class EmbarqueImporter
             ->whereNotNull('id_destinatario')
             ->whereNotNull('n_destinatario')
             ->where('c_destinatario', 'NOT LIKE', 'NAC%');
-
+                Log::debug("n_embarque: ", [$specificEmbarque]);
         if ($specificEmbarque) {
             $query->where(function ($builder) use ($specificEmbarque) {
                 $builder->where('n_embarque', $specificEmbarque)
-                    ->orWhere('numero_referencia', "i".$specificEmbarque);
+                    ->orWhere('numero_referencia', "I".$specificEmbarque);
             });
         } else {
             $query->whereIn('id_embarque', $baseEmbarques->keys()->all());
@@ -369,7 +369,7 @@ class EmbarqueImporter
             ];
 
             $embarque = Embarque::Create($data);
-            Log::debug('Embarque creado: ' . $embarque->n_embarque);
+            Log::debug('Embarque creado: ' . $embarque->num_embarque);
             $created++;
 
         }
