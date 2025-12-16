@@ -28,6 +28,7 @@ use App\Models\Mensaje;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use App\Mail\MensajeGenericoMailable;
+use Illuminate\Database\QueryException;
 
 class EmbarquesController extends Controller
 {
