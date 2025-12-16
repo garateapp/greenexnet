@@ -131,11 +131,11 @@ $baseQuery = Embarque::query()
     ->select($baseColumns);
     //->whereNull('deleted_at');
 
-$maxRows = (int) config('reporteria.embarques_index_max_rows', $this->embarquesIndexLimit);
+// $maxRows = (int) config('reporteria.embarques_index_max_rows', $this->embarquesIndexLimit);
 
-if (! $request->boolean('mostrar_todos', false)) {
-    $baseQuery->orderByDesc('num_embarque')->limit($maxRows);
-}
+// if (! $request->boolean('mostrar_todos', false)) {
+//     $baseQuery->orderByDesc('num_embarque')->limit($maxRows);
+// }
 
 $query = DB::query()
     ->fromSub($baseQuery, 'emb')
