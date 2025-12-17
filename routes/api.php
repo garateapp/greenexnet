@@ -4,6 +4,11 @@ Route::post('register', 'Api\\AuthController@register');
 Route::post('login', 'Api\\AuthController@login');
 Route::post('packing-line-detentions', 'Api\\PackingLineDetentionIngestController@store');
 Route::post('control-access-logs', 'Api\\ControlAccessLogIngestController@store');
+Route::group(['prefix' => 'v1', 'as' => 'api.', 'namespace' => 'Api\V1\Admin'], function () {
+    // Endpoints de sincronizacion Kptura (sin auth)
+    Route::get('sync-data', 'KpturaSyncController@syncData')->name('kptura.sync-data');
+    Route::post('attendances/bulk', 'KpturaSyncController@storeAttendances')->name('kptura.attendances.bulk');
+});
 Route::group(['prefix' => 'v1', 'as' => 'api.', 'namespace' => 'Api\V1\Admin', 'middleware' => ['auth:sanctum']], function () {
     // Permissions
     Route::apiResource('permissions', 'PermissionsApiController');
