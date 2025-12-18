@@ -672,8 +672,7 @@ class AttendanceController extends Controller
             ->selectRaw('DISTINCT p.rut, c.nombre, c.personal_id, c.departamento')
             ->join('personals as p', 'p.codigo', '=', 'c.personal_id')
             ->leftJoin('attendances as a', function ($join) use ($startDate, $endDate) {
-                $join->on('a.personal_id', '=', 'p.id')
-                    ->whereBetween('a.timestamp', [$startDate, $endDate]);
+                $join->on('a.personal_id', '=', 'p.id');
             })
             ->whereNull('a.id')
             ->whereBetween('c.primera_entrada', [$startDate, $endDate])
