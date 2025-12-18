@@ -45,7 +45,7 @@ class PersonalController extends Controller
 
     protected array $contractorGroups = [
         'Valsan Ltda' => ['valsan', 'valsán', 'valsan ltda', 'valsan noche'],
-        'Las Orquídeas SpA' => ['Las Orquideas SpA','las orquideas', 'las orquídeas','Orquídeas Noche'],
+        'Las Orquídeas SpA' => ['Las Orquideas SpA','las orquideas', 'las orquídeas','Orquídeas Noche','Las Orquídeas SpA Noche'],
         'Isaias Ballesteros' => ['isaias ballesteros', 'isaias ballesteros noche'],
         'Agrícola Lancair' => ['agrícola lancair', 'lancair noche'],
         'Fernando Urbina' => ['fernando urbina'],
@@ -149,7 +149,7 @@ class PersonalController extends Controller
 
             $entidadId = $departmentName ? $this->getDeptoId($departmentName) : null;
             $personal = Personal::where('rut', $rutFormateado)->first();
-
+            Log::info([$personal, $entidadId, $rutFormateado,$departmentName]);
             if (!$personal) {
                 if ($contractorGroup && $entidadId) {
                     Personal::create([
