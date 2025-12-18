@@ -670,9 +670,9 @@ class AttendanceController extends Controller
         Log::info("fechas: $startDate - $endDate",[$startDate,$endDate]);
         $faltantes = ControlAccessLog::from('control_access_logs as c')
            ->join('personals as p', 'p.codigo', '=', 'c.personal_id')
-    ->leftJoin('attendances as a', function($join) use ($dateStart, $dateEnd) {
+    ->leftJoin('attendances as a', function($join) use ($startDate, $endDate) {
         $join->on('a.personal_id', '=', 'p.id')
-             ->whereBetween('a.timestamp', [$dateStart, $dateEnd]);
+             ->whereBetween('a.timestamp', [$startDate, $endDate]);
     })
     ->select([
         'p.rut',
@@ -681,7 +681,7 @@ class AttendanceController extends Controller
         DB::raw('MAX(c.departamento) as departamento'),
         DB::raw('MIN(c.primera_entrada) as primera_marca')
     ])
-    ->whereBetween('c.primera_entrada', [$logStart, $dateEnd])
+    ->whereBetween('c.primera_entrada', [$startDate, $endDate])
     ->whereIn('p.entidad_id', [4, 5, 6, 7, 9])
     ->whereNull('a.id') // Aquí filtramos los que NO están en attendances
     ->groupBy('p.rut', 'p.nombre', 'p.entidad_id')
