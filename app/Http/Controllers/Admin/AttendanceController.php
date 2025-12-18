@@ -680,7 +680,17 @@ class AttendanceController extends Controller
             ->whereIn('p.entidad_id', $entidades)
             ->orderBy('c.nombre')
             ->get();
-
+        Log::info("faltantes: ",[ControlAccessLog::from('control_access_logs as c')
+            ->selectRaw('DISTINCT p.rut, c.nombre, c.personal_id, c.departamento')
+            ->join('personals as p', 'p.codigo', '=', 'c.personal_id')
+            ->leftJoin('attendances as a', function ($join) use ($startDate, $endDate) {
+                $join->on('a.personal_id', '=', 'p.id');
+            })
+            ->whereNull('a.id')
+            ->whereBetween('c.primera_entrada', [$startDate, $endDate])
+            ->whereNull('c.ultima_salida')
+            ->whereIn('p.entidad_id', $entidades)
+            ->orderBy('c.nombre')->toSql()]);
         return response()->json([
             'data' => $faltantes,
             'meta' => [
