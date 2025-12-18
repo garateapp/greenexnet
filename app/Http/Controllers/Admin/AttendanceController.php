@@ -666,7 +666,7 @@ class AttendanceController extends Controller
             return response()->json(['message' => $e->getMessage()], 400);
         }
 
-        $entidades = [4, 5, 6, 7, 9];
+        $entidades = [4, 5, 6, 7, 9,10];
         Log::info("fechas: $startDate - $endDate",[$startDate,$endDate]);
         $faltantes = ControlAccessLog::from('control_access_logs as c')
             ->selectRaw('DISTINCT p.rut, c.nombre, c.personal_id, c.departamento')

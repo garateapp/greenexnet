@@ -50,6 +50,7 @@ class PersonalController extends Controller
         'Agrícola Lancair' => ['agrícola lancair', 'lancair noche','Agrícola Lancair Noche'],
         'Fernando Urbina' => ['fernando urbina'],
         'Claudia Viera'=>['claudia viera', 'claudia viera noche', 'Claudia Viera Noche', 'Claudia Viera'],
+        'Jenny Padilla'=>['Jenny Padilla'],
     ];
 
     public function index(Request $request)
@@ -125,12 +126,12 @@ class PersonalController extends Controller
     public function importFromAccessLogs()
     {
         abort_if(Gate::denies('personal_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-
         $logs = ControlAccessLog::select('personal_id', 'nombre', 'departamento')
             ->whereNotNull('personal_id')
             ->whereIn('departamento',['valsan', 'valsán', 'valsan ltda', 'valsan noche','Valsán Noche','Valsán Ltda Noche',
             'Las Orquídeas SpA Noche','Las Orquideas SpA','Lancair Noche','Isaias Ballesteros Noche','Isaias Ballesteros',
-            'Fernando Urbina Noche','Fernando Urbina','claudia viera', 'claudia viera noche', 'Claudia Viera Noche', 'Claudia Viera','Jenny Padilla','agrícola lancair', 'lancair noche','Agrícola Lancair Noche'])
+            'Fernando Urbina Noche','Fernando Urbina','claudia viera', 'claudia viera noche', 'Claudia Viera Noche', 'Claudia Viera',
+            'Jenny Padilla','agrícola lancair', 'lancair noche','Agrícola Lancair Noche'])
             ->get()
             ->unique('personal_id');
 
