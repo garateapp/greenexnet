@@ -128,9 +128,9 @@ class PersonalController extends Controller
 
         $logs = ControlAccessLog::select('personal_id', 'nombre', 'departamento')
             ->whereNotNull('personal_id')
-            ->whereIn('departamento',['Valsán Noche','Valsán Ltda Noche','Valsán Ltda','Orquídeas Noche',
+            ->whereIn('departamento',['valsan', 'valsán', 'valsan ltda', 'valsan noche','Valsán Noche','Valsán Ltda Noche',
             'Las Orquídeas SpA Noche','Las Orquideas SpA','Lancair Noche','Isaias Ballesteros Noche','Isaias Ballesteros',
-            'Fernando Urbina Noche','Fernando Urbina','Claudia Viera Noche','Claudia Viera','Jenny Padilla','Agricola Lancair Noche','Agrícola Lancair'])
+            'Fernando Urbina Noche','Fernando Urbina','claudia viera', 'claudia viera noche', 'Claudia Viera Noche', 'Claudia Viera','Jenny Padilla','agrícola lancair', 'lancair noche','Agrícola Lancair Noche'])
             ->get()
             ->unique('personal_id');
 
