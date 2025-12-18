@@ -164,6 +164,7 @@ class PersonalController extends Controller
                     ]);
                     $created++;
                 }
+                Log::debug("bypassed", $log->personal_id);
                 $bypassed++;
                 continue;
 
