@@ -44,12 +44,12 @@ class PersonalController extends Controller
     use CsvImportTrait;
 
     protected array $contractorGroups = [
-        'Valsan Ltda' => ['valsan', 'valsán', 'valsan ltda', 'valsan noche'],
+        'Valsan Ltda' => ['valsan', 'valsán', 'valsan ltda', 'valsan noche','Valsán Noche','Valsán Ltda Noche'],
         'Las Orquídeas SpA' => ['Las Orquideas SpA','las orquideas', 'las orquídeas','Orquídeas Noche','Las Orquídeas SpA Noche'],
         'Isaias Ballesteros' => ['isaias ballesteros', 'isaias ballesteros noche'],
         'Agrícola Lancair' => ['agrícola lancair', 'lancair noche','Agrícola Lancair Noche'],
         'Fernando Urbina' => ['fernando urbina'],
-        'Claudia Viera'=>['claudia viera'],
+        'Claudia Viera'=>['claudia viera', 'claudia viera noche', 'Claudia Viera Noche', 'Claudia Viera'],
     ];
 
     public function index(Request $request)
