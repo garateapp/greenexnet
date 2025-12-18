@@ -13,6 +13,7 @@ use App\Imports\ExcelImport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\ControlAccessLog;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -41,6 +42,15 @@ use App\Models\User; // Import the User model
 class PersonalController extends Controller
 {
     use CsvImportTrait;
+
+    protected array $contractorGroups = [
+        'Valsan Ltda' => ['valsan', 'valsán', 'valsan ltda', 'valsan noche'],
+        'Las Orquídeas SpA' => ['Las Orquideas SpA','las orquideas', 'las orquídeas','Orquídeas Noche'],
+        'Isaias Ballesteros' => ['isaias ballesteros', 'isaias ballesteros noche'],
+        'Agrícola Lancair' => ['agrícola lancair', 'lancair noche'],
+        'Fernando Urbina' => ['fernando urbina'],
+        'Claudia Viera'=>['claudia viera'],
+    ];
 
     public function index(Request $request)
     {
@@ -110,6 +120,59 @@ class PersonalController extends Controller
         }
 
         return view('admin.personals.index');
+    }
+
+    public function importFromAccessLogs()
+    {
+        abort_if(Gate::denies('personal_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $logs = ControlAccessLog::select('personal_id', 'nombre', 'departamento')
+            ->whereNotNull('personal_id')
+            ->get()
+            ->unique('personal_id');
+
+        $created = 0;
+        $updated = 0;
+
+        foreach ($logs as $log) {
+            $rutFormateado = $this->formatearRutConDv($log->personal_id);
+            if (!$rutFormateado) {
+                continue;
+            }
+
+            $departmentName = $log->departamento ?? null;
+            $contractorGroup = $this->resolveContractorGroup($departmentName);
+
+            if ($contractorGroup) {
+                $departmentName = $contractorGroup;
+            }
+
+            $entidadId = $departmentName ? $this->getDeptoId($departmentName) : null;
+            $personal = Personal::where('rut', $rutFormateado)->first();
+
+            if (!$personal) {
+                if ($contractorGroup && $entidadId) {
+                    Personal::create([
+                        'nombre'     => $log->nombre,
+                        'codigo'     => $log->personal_id,
+                        'rut'        => $rutFormateado,
+                        'entidad_id' => $entidadId,
+                        'cargo_id'   => 1,
+                    ]);
+                    $created++;
+                }
+                continue;
+            }
+
+            if ($contractorGroup && $entidadId && $personal->entidad_id !== $entidadId) {
+                $personal->entidad_id = $entidadId;
+                $personal->save();
+                $updated++;
+            }
+        }
+
+        return redirect()->route('admin.personals.index')
+            ->with('import_personals_message', "Importación completada. Creados {$created}, actualizados {$updated}.");
     }
 
     public function create()
@@ -518,6 +581,83 @@ class PersonalController extends Controller
             $t->contratista = $personal->entidad->nombre;
         }
         return response()->json($tratoHP);
+    }
+
+    protected function resolveContractorGroup(?string $departamento): ?string
+    {
+        if (!$departamento) {
+            return null;
+        }
+
+        $dep = mb_strtolower(trim($departamento));
+
+        foreach ($this->contractorGroups as $groupName => $aliases) {
+            foreach ($aliases as $alias) {
+                if ($dep === mb_strtolower($alias)) {
+                    return $groupName;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    protected function getDeptoId(string $departamento)
+    {
+        $depto = Entidad::where('nombre', 'like', $departamento . '%')->first();
+        if (!$depto) {
+            return null;
+        }
+
+        return $depto->id;
+    }
+
+    protected function formatearRutConDv($rut)
+    {
+        // Dejar solo n£meros
+        $rut = preg_replace('/[^0-9]/', '', $rut);
+
+        if ($rut === '' || !ctype_digit($rut)) {
+            return null; // Manejo b sico de error
+        }
+
+        // ---- CALCULAR DV ----
+        $suma = 0;
+        $multiplicador = 2;
+
+        for ($i = strlen($rut) - 1; $i >= 0; $i--) {
+            $suma += intval($rut[$i]) * $multiplicador;
+            $multiplicador++;
+            if ($multiplicador > 7) {
+                $multiplicador = 2;
+            }
+        }
+
+        $resto = $suma % 11;
+        $dv = 11 - $resto;
+
+        if ($dv == 11) {
+            $dv = "0";
+        } elseif ($dv == 10) {
+            $dv = "K";
+        } else {
+            $dv = (string)$dv;
+        }
+
+        // ---- FORMATEAR RUT ----
+        $rutInvertido = strrev($rut);
+        $rutFormateado = '';
+
+        for ($i = 0; $i < strlen($rutInvertido); $i++) {
+            if ($i > 0 && $i % 3 === 0) {
+                $rutFormateado .= '.';
+            }
+            $rutFormateado .= $rutInvertido[$i];
+        }
+
+        $rutFormateado = strrev($rutFormateado);
+
+        return $rutFormateado . '-' . $dv;
     }
     //Trato de embalaje
 

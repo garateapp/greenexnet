@@ -9,6 +9,12 @@
                 <button class="btn btn-warning" data-toggle="modal" data-target="#csvImportModal">
                     {{ trans('global.app_csvImport') }}
                 </button>
+                <form method="POST" action="{{ route('admin.personals.importFromAccessLogs') }}" class="d-inline-block" onsubmit="return confirm('Importar personas desde Control Access Logs?');">
+                    @csrf
+                    <button type="submit" class="btn btn-primary">
+                        Importar Control de Acceso
+                    </button>
+                </form>
                 @include('csvImport.modal', [
                     'model' => 'Personal',
                     'route' => 'admin.personals.parseCsvImport',
@@ -16,6 +22,11 @@
             </div>
         </div>
     @endcan
+    @if(session('import_personals_message'))
+        <div class="alert alert-info">
+            {{ session('import_personals_message') }}
+        </div>
+    @endif
     <div class="card">
         <div class="card-header">
             {{ trans('cruds.personal.title_singular') }} {{ trans('global.list') }}

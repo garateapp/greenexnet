@@ -126,6 +126,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::delete('personals/destroy', 'PersonalController@massDestroy')->name('personals.massDestroy');
     Route::post('personals/parse-csv-import', 'PersonalController@parseCsvImport')->name('personals.parseCsvImport');
     Route::post('personals/process-csv-import', 'PersonalController@processCsvImport')->name('personals.processCsvImport');
+    Route::post('personals/import-access-logs', 'PersonalController@importFromAccessLogs')->name('personals.importFromAccessLogs');
     Route::get('personals/cuadratura', 'PersonalController@cuadratura')->name('personals.cuadratura');
     Route::post('personals/ejecutaCuadratura', 'PersonalController@ejecutaCuadratura')->name('personals.ejecutaCuadratura');
     Route::get('personals/tratoembalaje', 'PersonalController@tratoembalaje')->name('personals.tratoembalaje');
