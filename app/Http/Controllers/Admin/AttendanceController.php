@@ -667,7 +667,7 @@ class AttendanceController extends Controller
         }
 
         $entidades = [4, 5, 6, 7, 9];
-
+        Log::info("fechas: $startDate - $endDate",[$startDate,$endDate]);
         $faltantes = ControlAccessLog::from('control_access_logs as c')
             ->selectRaw('DISTINCT p.rut, c.nombre, c.personal_id, c.departamento')
             ->join('personals as p', 'p.codigo', '=', 'c.personal_id')
