@@ -152,7 +152,7 @@ class PersonalController extends Controller
 
             $entidadId = $departmentName ? $this->getDeptoId($departmentName) : null;
             $personal = Personal::where('rut', $rutFormateado)->first();
-            Log::info([$personal, $entidadId, $rutFormateado,$departmentName]);
+
             if (!$personal) {
                 if ($contractorGroup && $entidadId) {
                     Personal::create([
@@ -174,6 +174,10 @@ class PersonalController extends Controller
                 $personal->entidad_id = $entidadId;
                 $personal->save();
                 $updated++;
+            }
+            else{
+                Log::debug("bypassed: ",[$rutFormateado, $log->personal_id]);
+                $bypassed++;
             }
         }
 
