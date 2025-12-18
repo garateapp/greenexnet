@@ -131,7 +131,7 @@ class PersonalController extends Controller
             ->whereIn('deparatamento',['Valsán Noche','Valsán Ltda Noche','Valsán Ltda','Orquídeas Noche',
             'Las Orquídeas SpA Noche','Las Orquideas SpA','Lancair Noche','Isaias Ballesteros Noche','Isaias Ballesteros',
             'Fernando Urbina Noche','Fernando Urbina','Claudia Viera Noche','Claudia Viera','Jenny Padilla','Agricola Lancair Noche','Agrícola Lancair'])
-            ->get(),
+            ->get()
             ->unique('personal_id');
 
         $created = 0;
