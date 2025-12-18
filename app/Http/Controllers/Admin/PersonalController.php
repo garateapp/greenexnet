@@ -133,7 +133,7 @@ class PersonalController extends Controller
 
         $created = 0;
         $updated = 0;
-
+        $bypassed = 0;
         foreach ($logs as $log) {
             $rutFormateado = $this->formatearRutConDv($log->personal_id);
             if (!$rutFormateado) {
@@ -161,7 +161,9 @@ class PersonalController extends Controller
                     ]);
                     $created++;
                 }
+                $bypassed++;
                 continue;
+
             }
 
             if ($contractorGroup && $entidadId && $personal->entidad_id !== $entidadId) {
@@ -172,7 +174,7 @@ class PersonalController extends Controller
         }
 
         return redirect()->route('admin.personals.index')
-            ->with('import_personals_message', "Importación completada. Creados {$created}, actualizados {$updated}.");
+            ->with('import_personals_message', "Importación completada. Creados {$created}, actualizados {$updated}, omitidos {$bypassed}.");
     }
 
     public function create()
