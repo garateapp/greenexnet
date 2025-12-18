@@ -47,7 +47,7 @@ class PersonalController extends Controller
         'Valsan Ltda' => ['valsan', 'valsán', 'valsan ltda', 'valsan noche'],
         'Las Orquídeas SpA' => ['Las Orquideas SpA','las orquideas', 'las orquídeas','Orquídeas Noche','Las Orquídeas SpA Noche'],
         'Isaias Ballesteros' => ['isaias ballesteros', 'isaias ballesteros noche'],
-        'Agrícola Lancair' => ['agrícola lancair', 'lancair noche'],
+        'Agrícola Lancair' => ['agrícola lancair', 'lancair noche','Agrícola Lancair Noche'],
         'Fernando Urbina' => ['fernando urbina'],
         'Claudia Viera'=>['claudia viera'],
     ];
@@ -128,7 +128,10 @@ class PersonalController extends Controller
 
         $logs = ControlAccessLog::select('personal_id', 'nombre', 'departamento')
             ->whereNotNull('personal_id')
-            ->get()
+            ->whereIn('deparatamento',['Valsán Noche','Valsán Ltda Noche','Valsán Ltda','Orquídeas Noche',
+            'Las Orquídeas SpA Noche','Las Orquideas SpA','Lancair Noche','Isaias Ballesteros Noche','Isaias Ballesteros',
+            'Fernando Urbina Noche','Fernando Urbina','Claudia Viera Noche','Claudia Viera','Jenny Padilla','Agricola Lancair Noche','Agrícola Lancair'])
+            ->get(),
             ->unique('personal_id');
 
         $created = 0;
