@@ -175,10 +175,7 @@ class PersonalController extends Controller
                 $personal->save();
                 $updated++;
             }
-            else{
-                Log::debug("bypassed: ",[$rutFormateado, $log->personal_id]);
-                $bypassed++;
-            }
+
         }
 
         return redirect()->route('admin.personals.index')
