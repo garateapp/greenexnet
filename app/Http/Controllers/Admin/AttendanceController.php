@@ -666,20 +666,27 @@ class AttendanceController extends Controller
             return response()->json(['message' => $e->getMessage()], 400);
         }
 
-        $entidades = [4, 5, 6, 7, 9,10];
+        $entidades = [4, 5, 6, 7, 9];
         Log::info("fechas: $startDate - $endDate",[$startDate,$endDate]);
         $faltantes = ControlAccessLog::from('control_access_logs as c')
-            ->selectRaw('DISTINCT p.rut, c.nombre, c.personal_id, c.departamento')
-            ->join('personals as p', 'p.codigo', '=', 'c.personal_id')
-            ->leftJoin('attendances as a', function ($join) use ($startDate, $endDate) {
-                $join->on('a.personal_id', '=', 'p.id');
-            })
-            ->whereNull('a.id')
-            ->whereBetween('c.primera_entrada', [$startDate, $endDate])
-            //->whereNull('c.ultima_salida')
-            ->whereIn('p.entidad_id', $entidades)
-            ->orderBy('c.nombre')
-            ->get();
+           ->join('personals as p', 'p.codigo', '=', 'c.personal_id')
+    ->leftJoin('attendances as a', function($join) use ($dateStart, $dateEnd) {
+        $join->on('a.personal_id', '=', 'p.id')
+             ->whereBetween('a.timestamp', [$dateStart, $dateEnd]);
+    })
+    ->select([
+        'p.rut',
+        'p.nombre',
+        'p.entidad_id',
+        DB::raw('MAX(c.departamento) as departamento'),
+        DB::raw('MIN(c.primera_entrada) as primera_marca')
+    ])
+    ->whereBetween('c.primera_entrada', [$logStart, $dateEnd])
+    ->whereIn('p.entidad_id', [4, 5, 6, 7, 9])
+    ->whereNull('a.id') // Aquí filtramos los que NO están en attendances
+    ->groupBy('p.rut', 'p.nombre', 'p.entidad_id')
+    ->orderByDesc('primera_marca') // Ordenamos por el alias creado
+    ->get();
         Log::info("faltantes: ",[ControlAccessLog::from('control_access_logs as c')
             ->selectRaw('DISTINCT p.rut, c.nombre, c.personal_id, c.departamento')
             ->join('personals as p', 'p.codigo', '=', 'c.personal_id')
