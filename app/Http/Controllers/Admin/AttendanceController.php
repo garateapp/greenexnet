@@ -676,7 +676,7 @@ class AttendanceController extends Controller
             })
             ->whereNull('a.id')
             ->whereBetween('c.primera_entrada', [$startDate, $endDate])
-            ->whereNull('c.ultima_salida')
+            //->whereNull('c.ultima_salida')
             ->whereIn('p.entidad_id', $entidades)
             ->orderBy('c.nombre')
             ->get();
@@ -688,7 +688,7 @@ class AttendanceController extends Controller
             })
             ->whereNull('a.id')
             ->whereBetween('c.primera_entrada', [$startDate, $endDate])
-            ->whereNull('c.ultima_salida')
+            //->whereNull('c.ultima_salida')
             ->whereIn('p.entidad_id', $entidades)
             ->orderBy('c.nombre')->toSql()]);
         return response()->json([
