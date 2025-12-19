@@ -406,6 +406,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::delete('capturador-estructuras/destroy', 'CapturadorEstructuraController@massDestroy')->name('capturador-estructuras.massDestroy');
     Route::post('capturador-estructuras/parse-csv-import', 'CapturadorEstructuraController@parseCsvImport')->name('capturador-estructuras.parseCsvImport');
     Route::post('capturador-estructuras/process-csv-import', 'CapturadorEstructuraController@processCsvImport')->name('capturador-estructuras.processCsvImport');
+    Route::patch('capturador-estructuras/{capturadorEstructura}/inline', 'CapturadorEstructuraController@inlineUpdate')->name('capturador-estructuras.inlineUpdate');
 
     Route::resource('capturador-estructuras', 'CapturadorEstructuraController');
 
