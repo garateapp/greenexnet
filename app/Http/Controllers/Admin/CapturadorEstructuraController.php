@@ -122,6 +122,40 @@ class CapturadorEstructuraController extends Controller
         return redirect()->route('admin.capturador-estructuras.index');
     }
 
+    public function inlineUpdate(Request $request, CapturadorEstructura $capturadorEstructura)
+    {
+        abort_if(Gate::denies('capturador_estructura_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $rules = [
+            'field' => ['required', 'in:propiedad,coordenada,orden'],
+            'value' => ['nullable'],
+        ];
+
+        if ($request->input('field') === 'orden') {
+            $rules['value'] = ['nullable', 'integer', 'min:-2147483648', 'max:2147483647'];
+        }
+
+        if (in_array($request->input('field'), ['propiedad', 'coordenada'], true)) {
+            $rules['value'] = ['required', 'string'];
+        }
+
+        $data = $request->validate($rules);
+
+        $value = $data['value'];
+        if ($data['field'] === 'orden' && $value === '') {
+            $value = null;
+        }
+
+        $capturadorEstructura->{$data['field']} = $value;
+        $capturadorEstructura->save();
+
+        return response()->json([
+            'status' => 'ok',
+            'field' => $data['field'],
+            'value' => $capturadorEstructura->{$data['field']},
+        ]);
+    }
+
     public function show(CapturadorEstructura $capturadorEstructura)
     {
         abort_if(Gate::denies('capturador_estructura_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');

@@ -153,6 +153,20 @@
     orderCellsTop: true,
     order: [[ 1, 'desc' ]],
     pageLength: 100,
+    createdRow: function(row, data) {
+        $(row).attr('data-row-id', data.id);
+        const editableFields = [
+            { index: 3, field: 'propiedad' },
+            { index: 4, field: 'coordenada' },
+            { index: 5, field: 'orden' },
+        ];
+        editableFields.forEach(function(item) {
+            const cell = $('td', row).eq(item.index);
+            cell.addClass('editable-cell');
+            cell.attr('contenteditable', true);
+            cell.attr('data-field', item.field);
+        });
+    }
   };
   let table = $('.datatable-CapturadorEstructura').DataTable(dtOverrideGlobals);
   $('a[data-toggle="tab"]').on('shown.bs.tab click', function(e){
@@ -160,6 +174,47 @@
           .columns.adjust();
   });
   
+const inlineBaseUrl = "{{ url('admin/capturador-estructuras') }}";
+
+$('.datatable-CapturadorEstructura').on('keydown', 'td.editable-cell', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        $(this).blur();
+    }
+});
+
+$('.datatable-CapturadorEstructura').on('blur', 'td.editable-cell', function() {
+    const cell = $(this);
+    const rowId = cell.closest('tr').data('row-id');
+    const field = cell.data('field');
+    const value = cell.text().trim();
+
+    if (!rowId || !field) {
+        return;
+    }
+
+    $.ajax({
+        url: `${inlineBaseUrl}/${rowId}/inline`,
+        method: 'PATCH',
+        data: {
+            _token: _token,
+            field: field,
+            value: value
+        },
+        success: function() {
+            cell.addClass('bg-success text-white');
+            setTimeout(function() {
+                cell.removeClass('bg-success text-white');
+            }, 800);
+            table.ajax.reload(null, false);
+        },
+        error: function(xhr) {
+            alert('No se pudo guardar el cambio: ' + (xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : xhr.statusText));
+            table.ajax.reload(null, false);
+        }
+    });
+});
+
 let visibleColumnsIndexes = null;
 $('.datatable thead').on('input', '.search', function () {
       let strict = $(this).attr('strict') || false
