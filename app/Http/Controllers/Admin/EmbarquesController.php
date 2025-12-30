@@ -105,8 +105,9 @@ $groupColumns = [
 
 // reemplazamos las columnas “planas” por sus GROUP_CONCAT
 $aggregatedSelect = str_replace(
-    ['variedad,', 'embalajes', 'etiqueta'],
+    ['especie','variedad,', 'embalajes', 'etiqueta'],
     [
+        'GROUP_CONCAT(DISTINCT especie SEPARATOR ", ") as especie,',
         'GROUP_CONCAT(DISTINCT variedad SEPARATOR ", ") as variedad,',
         'GROUP_CONCAT(DISTINCT embalajes SEPARATOR ", ") as embalajes',
         'GROUP_CONCAT(DISTINCT etiqueta SEPARATOR ", ") as etiqueta',
@@ -119,7 +120,7 @@ $optimizedSelect = 'SQL_BIG_RESULT ' . $aggregatedSelect;
 
 // en el GROUP BY no van las columnas agregadas
 $groupColumnsForQuery = array_values(
-    array_diff($groupColumns, ['variedad', 'embalajes', 'etiqueta'])
+    array_diff($groupColumns, ['especie','variedad', 'embalajes', 'etiqueta'])
 );
 
 // columnas base que necesita la subquery interna
