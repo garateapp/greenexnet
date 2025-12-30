@@ -444,7 +444,7 @@ $query = DB::query()
         n_naviera,
         nave,
         num_contenedor,
-        especie,
+        GROUP_CONCAT(DISTINCT especie  ORDER BY especie  SEPARATOR ', ') AS especie,
         GROUP_CONCAT(DISTINCT variedad  ORDER BY variedad  SEPARATOR ', ') AS variedades,
         GROUP_CONCAT(DISTINCT embalajes ORDER BY embalajes SEPARATOR ', ') AS embalajes,
         GROUP_CONCAT(DISTINCT etiqueta  ORDER BY etiqueta  SEPARATOR ', ') AS etiquetas,
