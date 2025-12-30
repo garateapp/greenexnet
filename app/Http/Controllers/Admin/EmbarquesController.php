@@ -105,7 +105,7 @@ $groupColumns = [
 
 // reemplazamos las columnas “planas” por sus GROUP_CONCAT
 $aggregatedSelect = str_replace(
-    ['especie','variedad,', 'embalajes', 'etiqueta'],
+    ['especie,','variedad,', 'embalajes', 'etiqueta'],
     [
         'GROUP_CONCAT(DISTINCT especie SEPARATOR ", ") as especie,',
         'GROUP_CONCAT(DISTINCT variedad SEPARATOR ", ") as variedad,',
