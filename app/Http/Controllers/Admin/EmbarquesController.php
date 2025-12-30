@@ -469,7 +469,7 @@ $query = DB::query()
     //->whereNull('fecha_arribo_real')
     ->groupBy([
         'temporada', 'semana', 'transporte', 'num_embarque', 'n_cliente', 'planta_carga',
-        'n_naviera', 'nave', 'num_contenedor', 'especie', 'puerto_embarque', 'pais_destino',
+        'n_naviera', 'nave', 'num_contenedor',  'puerto_embarque', 'pais_destino',
         'puerto_destino', 'etd_estimado', 'eta_estimado', 'fecha_zarpe_real', 'estado',
         'descargado', 'retirado_full', 'devuelto_vacio', 'notas', 'num_orden', 'tipo_especie',
         'cant_pallets',
