@@ -697,7 +697,7 @@ $query = DB::query()
         $numero_r = DB::connection("sqlsrv")
             ->table('dbo.V_PKG_Embarques')
             ->select('numero_guia_cliente')
-            ->where('numero_referencia', '=', $numeroReferencia)
+            ->where('numero_referencia', '=', 'I'.$numeroReferencia)
             ->first();
 
         if (!$numero_r) {
