@@ -43,16 +43,31 @@ class KpturaSyncController extends Controller
         }
 
         $inserted = 0;
+        $skipped = 0;
         foreach ($validator->validated() as $attendance) {
+            $ts = Carbon::parse($attendance['timestamp'])->setTimezone('America/Santiago');
+            $windowStart = $ts->copy()->subHours(2);
+            $windowEnd = $ts->copy()->addHours(2);
+
+            $exists = Attendance::where('personal_id', $attendance['personal_id'])
+                ->where('location', $attendance['location_id'])
+                ->whereBetween('timestamp', [$windowStart, $windowEnd])
+                ->exists();
+
+            if ($exists) {
+                $skipped++;
+                continue;
+            }
+
             Attendance::create([
                 'personal_id' => $attendance['personal_id'],
                 'location' => $attendance['location_id'],
-                'timestamp' => Carbon::parse($attendance['timestamp'])->setTimezone('America/Santiago'),
+                'timestamp' => $ts,
                 'entry_type' => 'kptura',
             ]);
             $inserted++;
         }
 
-        return response()->json(['pushed' => $inserted], Response::HTTP_CREATED);
+        return response()->json(['pushed' => $inserted, 'skipped' => $skipped], Response::HTTP_CREATED);
     }
 }
