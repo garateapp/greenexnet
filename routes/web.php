@@ -15,7 +15,7 @@ use App\Models\TratoContratistas;
 //use Illuminate\Routing\Route;
 // Ruta para recibir datos PUSH (POST requests)
 Route::post('/iclock/cdata',  'ZktecoController@receiveData')->name('iclock.cdata');
-
+Route::post('hand-packs', 'Api\\HandPackIngestController@store');
 // Ruta para manejar peticiones GET (heartbeats o para enviar comandos al dispositivo)
 Route::get('/iclock/cdata', 'ZktecoController@handleIClockGet')->name('iclock.cdata');
 Route::view('/', '/welcome');
@@ -658,7 +658,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('tarjado/getMaterialesUtilizados','TarjadoController@getMaterialesUtilizados')->name('tarjado.getMaterialesUtilizados');
     Route::post('tarjado/getMateriales','TarjadoController@getMateriales')->name('tarjado.getMateriales');
     Route::post('tarjado/getTarjado','TarjadoController@getTarjado')->name('tarjado.getTarjado');
-    
+
     Route::resource('tarjado', 'TarjadoController');
 
     //Generador de Liquidaciones
