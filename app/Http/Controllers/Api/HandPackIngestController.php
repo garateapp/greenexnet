@@ -7,6 +7,7 @@ use App\Models\HandPack;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class HandPackIngestController extends Controller
@@ -19,7 +20,16 @@ class HandPackIngestController extends Controller
             'guuid' => ['required', 'string', 'max:255'],
         ]);
 
+        Log::info('HandPack ingest payload received.', [
+            'rut' => $payload['rut'],
+            'embalaje' => $payload['embalaje'],
+            'guuid' => $payload['guuid'],
+        ]);
+
         if (HandPack::where('guuid', $payload['guuid'])->exists()) {
+            Log::warning('HandPack ingest rejected: guuid already exists.', [
+                'guuid' => $payload['guuid'],
+            ]);
             return response()->json([
                 'status' => 'error',
                 'message' => 'CAJA REPETIDA',
@@ -31,6 +41,11 @@ class HandPackIngestController extends Controller
             'embalaje' => $payload['embalaje'],
             'guuid' => $payload['guuid'],
             'fecha' => Carbon::now(),
+        ]);
+
+        Log::info('HandPack ingest stored.', [
+            'id' => $handPack->id,
+            'guuid' => $handPack->guuid,
         ]);
 
         return response()->json([
