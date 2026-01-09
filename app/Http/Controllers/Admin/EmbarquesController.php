@@ -674,6 +674,7 @@ $query = DB::query()
 
         $request->validate([
             'file' => 'required|file|mimes:xlsx,xls,csv',
+            'id_adm_p_entidades_packing' => 'required|integer',
         ]);
 
 
@@ -704,9 +705,9 @@ $query = DB::query()
         }
 
         // Variables globales (cabecera)
-        $id_adm_p_entidades_empresa = 5525;
+        $id_adm_p_entidades_packing = (int) $request->input('id_adm_p_entidades_packing');
+        $id_adm_p_entidades_empresa = $id_adm_p_entidades_packing;
         $id_adm_p_estados = 2;
-        $id_adm_p_entidades_packing = 5525;
         $items = new Collection();
 
         foreach ($data[0] as $index => $entry) {
@@ -794,7 +795,7 @@ $query = DB::query()
                     'id_adm_items_plu' => 2383,
                     'id_adm_p_bodegas_paso' => 1149,
                     'termografo' => 0,
-                    'id_adm_p_entidades_packing_origen' => 5525,
+                    'id_adm_p_entidades_packing_origen' => $id_adm_p_entidades_packing,
                     'id_origen' => 3,
                     'tipo_origen' => 'RFP',
                     'fecha_packing'=>Carbon::parse($this->convertirFechaExcel($entry["fecha_produccion"]))->format('Y-m-d H:i:s'),
@@ -946,7 +947,7 @@ $query = DB::query()
                 $item['creacion_tipo'],             // @creacion_tipo
                 $origen_id[0]->id,               // @creacion_id
                 1149,                               // @id_adm_p_bodegas (puedes ajustarlo)
-                5525,        // @id_adm_p_entidades
+                $id_adm_p_entidades_empresa,        // @id_adm_p_entidades
                 7,                               // @id_pro_p_alturas
                 $item['id_pro_etiquetas'],          // @id_pro_p_etiquetas
                 Carbon::parse($item['fecha_produccion'])->format('d-m-Y H:i:s'), // @fecha_produccion
@@ -998,7 +999,16 @@ $query = DB::query()
     }
     public function ingresagrecepcion()
     {
-        return view('admin.embarques.ingresagrecepcion');
+        $packings = DB::connection('sqlsrv')
+            ->table('dbo.V_ADM_Entidades')
+            ->select('id', 'nombre')
+            ->where('tipo', 'packing')
+            ->orderBy('nombre')
+            ->get();
+
+        return view('admin.embarques.ingresagrecepcion', [
+            'packings' => $packings,
+        ]);
     }
     function formatDate2($date)
     {
