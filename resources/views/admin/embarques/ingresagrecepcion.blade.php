@@ -14,7 +14,7 @@
             <select name="id_adm_p_entidades_packing" id="id_adm_p_entidades_packing" class="form-control select2" required>
                 <option value="">Selecciona packing</option>
                 @foreach ($packings as $packing)
-                    <option value="{{ $packing->id }}" @selected(old('id_adm_p_entidades_packing') == $packing->id)>
+                    <option value="{{ $packing->id }}">
                         {{ $packing->nombre }}
                     </option>
                 @endforeach
