@@ -1001,7 +1001,7 @@ $query = DB::query()
     {
         $packings = DB::connection('sqlsrv')
             ->table('dbo.V_ADM_Entidades')
-            ->select('id', 'nombre')
+            ->select('id', 'nombre','n_comuna')
             ->where('tipo', 'packing')
             ->orderBy('nombre')
             ->get();
