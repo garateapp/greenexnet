@@ -15,7 +15,7 @@
                 <option value="">Selecciona packing</option>
                 @foreach ($packings as $packing)
                     <option value="{{ $packing->id }}">
-                        {{ $packing->nombre - $packing->n_comuna }}
+                        {{ $packing->nombre  }} - {{ $packing->n_comuna }}
                     </option>
                 @endforeach
             </select>
