@@ -10,5 +10,7 @@ return [
         'pt-br' => 'Brazilian Portuguese',
     ],
     'registration_default_role' => '2',
+    'adquisiciones_notificacion_email' => env('ADQUISICIONES_NOTIFICACION_EMAIL', ''),
+    'adquisiciones_puede_subir_cotizaciones' => env('ADQUISICIONES_PUEDE_SUBIR_COTIZACIONES', false),
 
 ];

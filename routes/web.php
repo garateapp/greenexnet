@@ -721,6 +721,16 @@ Route::post('constructorliquidacion/exportNormaExcel', 'ConstructorLiquidacionCo
     Route::post('planificador-personal', 'PlanificadorController@store')->name('planificador-personal.store');
     Route::get('planificador-personal/data', 'PlanificadorController@getPlanificacionData')->name('planificador-personal.data');
 
+    // Adquisiciones
+    Route::delete('solicitud-compras/destroy', 'SolicitudComprasController@massDestroy')->name('solicitud-compras.massDestroy');
+    Route::post('solicitud-compras/{solicitudCompra}/estado', 'SolicitudComprasController@updateEstado')->name('solicitud-compras.updateEstado');
+    Route::post('solicitud-compras/{solicitudCompra}/cotizaciones', 'SolicitudComprasController@storeCotizacion')->name('solicitud-compras.storeCotizacion');
+    Route::get('solicitud-compras/kanban', 'SolicitudComprasController@kanban')->name('solicitud-compras.kanban');
+    Route::resource('solicitud-compras', 'SolicitudComprasController');
+
+    Route::delete('politica-cotizaciones/destroy', 'PoliticaCotizacionesController@massDestroy')->name('politica-cotizaciones.massDestroy');
+    Route::resource('politica-cotizaciones', 'PoliticaCotizacionesController');
+
 
     Route::get('messenger', 'MessengerController@index')->name('messenger.index');
     Route::get('messenger/create', 'MessengerController@createTopic')->name('messenger.createTopic');

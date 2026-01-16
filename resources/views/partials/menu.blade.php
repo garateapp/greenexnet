@@ -1243,6 +1243,41 @@
                 </ul>
             </li>
         @endcan
+        @canany(['solicitud_compra_access', 'politica_cotizacion_access'])
+            <li class="c-sidebar-nav-dropdown {{ request()->is('admin/solicitud-compras*') ? 'c-show' : '' }} {{ request()->is('admin/politica-cotizaciones*') ? 'c-show' : '' }}">
+                <a class="c-sidebar-nav-dropdown-toggle" href="#">
+                    <i class="fa-fw fas fa-clipboard-list c-sidebar-nav-icon"></i>
+                    {{ trans('cruds.adquisicion.title') }}
+                </a>
+                <ul class="c-sidebar-nav-dropdown-items">
+                    @can('solicitud_compra_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.solicitud-compras.index') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/solicitud-compras') || request()->is('admin/solicitud-compras/*') ? 'c-active' : '' }}">
+                                <i class="fa-fw fas fa-list c-sidebar-nav-icon"></i>
+                                {{ trans('cruds.solicitudCompra.title') }}
+                            </a>
+                        </li>
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.solicitud-compras.kanban') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/solicitud-compras/kanban') ? 'c-active' : '' }}">
+                                <i class="fa-fw fas fa-columns c-sidebar-nav-icon"></i>
+                                {{ trans('cruds.solicitudCompra.kanban') }}
+                            </a>
+                        </li>
+                    @endcan
+                    @can('politica_cotizacion_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.politica-cotizaciones.index') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/politica-cotizaciones') || request()->is('admin/politica-cotizaciones/*') ? 'c-active' : '' }}">
+                                <i class="fa-fw fas fa-sliders-h c-sidebar-nav-icon"></i>
+                                {{ trans('cruds.politicaCotizacion.title') }}
+                            </a>
+                        </li>
+                    @endcan
+                </ul>
+            </li>
+        @endcanany
         <li class="c-sidebar-nav-item">
             <a href="#" class="c-sidebar-nav-link"
                 onclick="event.preventDefault(); document.getElementById('logoutform').submit();">

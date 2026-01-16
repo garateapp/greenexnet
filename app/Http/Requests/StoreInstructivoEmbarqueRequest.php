@@ -40,17 +40,17 @@ class StoreInstructivoEmbarqueRequest extends FormRequest
             'num_booking' => [
                 'nullable',
                 'string',
-                
+
             ],
             'nave' => [
                 'nullable',
                 'string',
-                
+
             ],
             'cut_off' => [
                 'nullable',
                 'string',
-                
+
             ],
             'stacking_ini' => [
                 'nullable',
@@ -147,6 +147,8 @@ class StoreInstructivoEmbarqueRequest extends FormRequest
             'emision_de_bl_id' => [
                 'nullable',
                 'integer',
+                'required_if:tipo_embarque,1',
+
             ],
             'clausula_de_venta_id' => [
                 'nullable',
