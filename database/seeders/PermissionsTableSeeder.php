@@ -15,25 +15,47 @@ class PermissionsTableSeeder extends Seeder
     public function run()
     {
         $permissions = [
-                      [
-                'id'    => 822,
-                'title' => 'otroscargo_create',
+
+
+            [
+                'id'    => 1005,
+                'title' => 'solicitud_compra_create',
             ],
             [
-                'id'    => 823,
-                'title' => 'otroscargo_edit',
+                'id'    => 1006,
+                'title' => 'solicitud_compra_edit',
             ],
             [
-                'id'    => 824,
-                'title' => 'otroscargo_show',
+                'id'    => 1007,
+                'title' => 'solicitud_compra_show',
             ],
             [
-                'id'    => 825,
-                'title' => 'otroscargo_delete',
+                'id'    => 1008,
+                'title' => 'solicitud_compra_delete',
             ],
             [
-                'id'    => 826,
-                'title' => 'otroscargo_access',
+                'id'    => 1009,
+                'title' => 'solicitud_compra_access',
+            ],
+            [
+                'id'    => 1010,
+                'title' => 'politica_cotizacion_create',
+            ],
+            [
+                'id'    => 1011,
+                'title' => 'politica_cotizacion_edit',
+            ],
+            [
+                'id'    => 1012,
+                'title' => 'politica_cotizacion_show',
+            ],
+            [
+                'id'    => 1013,
+                'title' => 'politica_cotizacion_delete',
+            ],
+            [
+                'id'    => 1014,
+                'title' => 'politica_cotizacion_access',
             ],
 
 
