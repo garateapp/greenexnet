@@ -33,6 +33,9 @@
                         {{ trans('cruds.solicitudCompra.fields.solicitante') }}
                     </th>
                     <th>
+                        {{ trans('cruds.solicitudCompra.fields.centro_costo') }}
+                    </th>
+                    <th>
                         {{ trans('cruds.solicitudCompra.fields.monto_estimado') }}
                     </th>
                     <th>
@@ -50,6 +53,9 @@
                 </tr>
                 <tr>
                     <td>
+                    </td>
+                    <td>
+                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                     </td>
                     <td>
                         <input class="search" type="text" placeholder="{{ trans('global.search') }}">
@@ -128,6 +134,7 @@
       { data: 'id', name: 'id' },
       { data: 'titulo', name: 'titulo' },
       { data: 'solicitante_name', name: 'solicitante.name' },
+      { data: 'centro_costo_nombre', name: 'centroCosto.n_centrocosto' },
       { data: 'monto_estimado', name: 'monto_estimado' },
       { data: 'moneda_nombre', name: 'moneda.nombre' },
       { data: 'cotizaciones_requeridas', name: 'cotizaciones_requeridas' },
