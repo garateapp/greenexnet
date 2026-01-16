@@ -230,6 +230,12 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
 
     Route::resource('embalajes', 'EmbalajesController');
 
+    // Centro Costos
+    Route::delete('centro-costos/destroy', 'CentroCostoController@massDestroy')->name('centro-costos.massDestroy');
+    Route::post('centro-costos/parse-csv-import', 'CentroCostoController@parseCsvImport')->name('centro-costos.parseCsvImport');
+    Route::post('centro-costos/process-csv-import', 'CentroCostoController@processCsvImport')->name('centro-costos.processCsvImport');
+    Route::resource('centro-costos', 'CentroCostoController');
+
     // Clientes Comex
     Route::delete('clientes-comexes/destroy', 'ClientesComexController@massDestroy')->name('clientes-comexes.massDestroy');
     Route::post('clientes-comexes/parse-csv-import', 'ClientesComexController@parseCsvImport')->name('clientes-comexes.parseCsvImport');

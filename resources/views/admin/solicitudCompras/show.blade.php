@@ -52,6 +52,19 @@
                     </tr>
                     <tr>
                         <th>
+                            {{ trans('cruds.solicitudCompra.fields.centro_costo') }}
+                        </th>
+                        <td>
+                            @php
+                                $centro = $solicitudCompra->centroCosto;
+                                $label = $centro ? trim(($centro->c_centrocosto ? $centro->c_centrocosto . ' - ' : '') . $centro->n_centrocosto) : '';
+                                $entidad = $centro && $centro->entidad ? $centro->entidad->nombre : '';
+                            @endphp
+                            {{ $label }}{{ $entidad ? ' (' . $entidad . ')' : '' }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
                             {{ trans('cruds.solicitudCompra.fields.moneda') }}
                         </th>
                         <td>
@@ -159,7 +172,7 @@
             </div>
             <div class="form-group">
                 <label class="required" for="monto">{{ trans('cruds.cotizacionCompra.fields.monto') }}</label>
-                <input class="form-control {{ $errors->has('monto') ? 'is-invalid' : '' }}" type="number" name="monto" id="monto" value="{{ old('monto', '') }}" step="0.01" required>
+                <input class="form-control {{ $errors->has('monto') ? 'is-invalid' : '' }}" type="number" name="monto" id="monto" value="{{ old('monto', '') }}" step="1" required>
                 @if($errors->has('monto'))
                     <div class="invalid-feedback">
                         {{ $errors->first('monto') }}

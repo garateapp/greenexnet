@@ -1031,6 +1031,17 @@
                             Embalajes
                         </a>
                     </li>
+                    @can('centro_costo_access')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.centro-costos.index') }}"
+                                class="c-sidebar-nav-link {{ request()->is('admin/centro-costos') || request()->is('admin/centro-costos/*') ? 'c-active' : '' }}">
+                                <i class="fa-fw fas fa-sitemap c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.centroCosto.title') }}
+                            </a>
+                        </li>
+                    @endcan
                     @can('proveedor_access')
                         <li class="c-sidebar-nav-item">
                             <a href="{{ route('admin.proveedors.index') }}"

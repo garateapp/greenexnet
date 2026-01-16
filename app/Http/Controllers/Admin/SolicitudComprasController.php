@@ -9,6 +9,7 @@ use App\Http\Requests\UpdateSolicitudCompraRequest;
 use App\Mail\SolicitudCompraMail;
 use App\Models\AdquisicionEstado;
 use App\Models\AuditLog;
+use App\Models\CentroCosto;
 use App\Models\CotizacionCompra;
 use App\Models\Moneda;
 use App\Models\PoliticaCotizacion;
@@ -27,7 +28,7 @@ class SolicitudComprasController extends Controller
         abort_if(Gate::denies('solicitud_compra_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         if ($request->ajax()) {
-            $query = SolicitudCompra::with(['solicitante', 'estado', 'moneda'])->select(sprintf('%s.*', (new SolicitudCompra)->table));
+            $query = SolicitudCompra::with(['solicitante', 'estado', 'moneda', 'centroCosto'])->select(sprintf('%s.*', (new SolicitudCompra)->table));
             $table = Datatables::of($query);
 
             $table->addColumn('placeholder', '&nbsp;');
@@ -66,6 +67,13 @@ class SolicitudComprasController extends Controller
             $table->addColumn('estado_nombre', function ($row) {
                 return $row->estado ? $row->estado->nombre : '';
             });
+            $table->addColumn('centro_costo_nombre', function ($row) {
+                if (!$row->centroCosto) {
+                    return '';
+                }
+                $label = trim(($row->centroCosto->c_centrocosto ? $row->centroCosto->c_centrocosto . ' - ' : '') . $row->centroCosto->n_centrocosto);
+                return $label;
+            });
             $table->addColumn('moneda_nombre', function ($row) {
                 return $row->moneda ? $row->moneda->nombre : '';
             });
@@ -82,7 +90,9 @@ class SolicitudComprasController extends Controller
     {
         abort_if(Gate::denies('solicitud_compra_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        return view('admin.solicitudCompras.create');
+        $centroCostos = $this->getCentroCostos();
+
+        return view('admin.solicitudCompras.create', compact('centroCostos'));
     }
 
     public function store(StoreSolicitudCompraRequest $request)
@@ -96,6 +106,7 @@ class SolicitudComprasController extends Controller
         $solicitud = SolicitudCompra::create([
             'solicitante_id' => auth()->id(),
             'adquisicion_estado_id' => $estadoInicialId,
+            'centro_costo_id' => $request->centro_costo_id,
             'moneda_id' => $monedaId,
             'titulo' => $request->titulo,
             'descripcion' => $request->descripcion,
@@ -112,9 +123,10 @@ class SolicitudComprasController extends Controller
     {
         abort_if(Gate::denies('solicitud_compra_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $solicitudCompra->load('solicitante', 'estado', 'moneda');
+        $solicitudCompra->load('solicitante', 'estado', 'moneda', 'centroCosto');
+        $centroCostos = $this->getCentroCostos();
 
-        return view('admin.solicitudCompras.edit', compact('solicitudCompra'));
+        return view('admin.solicitudCompras.edit', compact('solicitudCompra', 'centroCostos'));
     }
 
     public function update(UpdateSolicitudCompraRequest $request, SolicitudCompra $solicitudCompra)
@@ -125,6 +137,7 @@ class SolicitudComprasController extends Controller
         $cotizacionesPorAdquisiciones = $this->resolveCotizacionesPorAdquisiciones($request);
 
         $solicitudCompra->update([
+            'centro_costo_id' => $request->centro_costo_id,
             'moneda_id' => $monedaId,
             'titulo' => $request->titulo,
             'descripcion' => $request->descripcion,
@@ -141,7 +154,7 @@ class SolicitudComprasController extends Controller
     {
         abort_if(Gate::denies('solicitud_compra_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $solicitudCompra->load(['solicitante', 'estado', 'moneda', 'cotizaciones.moneda']);
+        $solicitudCompra->load(['solicitante', 'estado', 'moneda', 'centroCosto', 'cotizaciones.moneda']);
 
         return view('admin.solicitudCompras.show', compact('solicitudCompra'));
     }
@@ -171,12 +184,13 @@ class SolicitudComprasController extends Controller
         abort_if(Gate::denies('solicitud_compra_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $estados = AdquisicionEstado::orderBy('orden')->get();
-        $solicitudes = SolicitudCompra::with(['solicitante', 'estado', 'moneda', 'cotizaciones'])
+        $solicitudes = SolicitudCompra::with(['solicitante', 'estado', 'moneda', 'cotizaciones', 'centroCosto'])
             ->orderBy('created_at', 'desc')
             ->get()
             ->groupBy('adquisicion_estado_id');
+        $centroCostos = $this->getCentroCostos();
 
-        return view('admin.solicitudCompras.kanban', compact('estados', 'solicitudes'));
+        return view('admin.solicitudCompras.kanban', compact('estados', 'solicitudes', 'centroCostos'));
     }
 
     public function updateEstado(Request $request, SolicitudCompra $solicitudCompra)
@@ -258,7 +272,7 @@ class SolicitudComprasController extends Controller
             ],
             'monto' => [
                 'required',
-                'numeric',
+                'integer',
                 'min:0',
             ],
             'archivo' => [
@@ -353,6 +367,14 @@ class SolicitudComprasController extends Controller
         }
 
         return $user->roles->pluck('title')->contains('Adquisiciones');
+    }
+
+    protected function getCentroCostos()
+    {
+        return CentroCosto::query()
+            ->with('entidad')
+            ->orderBy('n_centrocosto')
+            ->get();
     }
 
     protected function getAdquisicionesEmails(): array

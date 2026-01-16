@@ -26,8 +26,13 @@ class StoreSolicitudCompraRequest extends FormRequest
             ],
             'monto_estimado' => [
                 'required',
-                'numeric',
+                'integer',
                 'min:0',
+            ],
+            'centro_costo_id' => [
+                'required',
+                'integer',
+                'exists:centro_costos,id',
             ],
             'cotizaciones_por_adquisiciones' => [
                 'boolean',
