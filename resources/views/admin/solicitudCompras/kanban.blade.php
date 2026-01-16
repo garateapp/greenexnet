@@ -59,10 +59,10 @@
                 @php
                     $items = $solicitudes->get($estado->id, collect());
                 @endphp
-                <div class="kanban-column" data-estado-id="{{ $estado->id }}">
-                    <div class="kanban-column-header">
+                <div class="kanban-column" data-estado-id="{{ $estado->id }}" data-color="{{ $estado->color ?: '#6c757d' }}">
+                    <div class="kanban-column-header" style="background-color: {{ $estado->color ?: '#6c757d' }}20; border-bottom-color: {{ $estado->color ?: '#6c757d' }};">
                         <span>{{ $estado->nombre }}</span>
-                        <span class="kanban-pill">{{ $items->count() }}</span>
+                        <span class="kanban-pill" style="background-color: {{ $estado->color ?: '#6c757d' }}; color: #fff;">{{ $items->count() }}</span>
                     </div>
                     <div class="kanban-items" data-estado-id="{{ $estado->id }}">
                         @foreach($items as $solicitud)
@@ -126,6 +126,8 @@
                         const toCount = destino.querySelector('.kanban-pill');
                         fromCount.textContent = evt.from.children.length;
                         toCount.textContent = evt.to.children.length;
+                        const color = destino.dataset.color || '#6c757d';
+                        card.style.borderLeftColor = color;
                     })
                     .catch(function (error) {
                         evt.from.appendChild(card);
