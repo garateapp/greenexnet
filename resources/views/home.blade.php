@@ -147,7 +147,7 @@
                                     </select> --}}
 
                                 </div>
-                                <div class="col-lg-10" id="divGraficos" style="overflow-y: scroll; height: 800px;">
+                                <div class="col-lg-10" id="divGraficos" style="overflow-y: scroll; height: 1400px;">
                                     <!-- Sección REsumen General-->
                                     <div class="row">
                                         <div class="card col-lg-3" style="margin-right: 15px;">
@@ -280,6 +280,38 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody id="tbodyVariedadFOBKG">
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="card col-lg-6" style="margin-right: 10px;">
+                                            <table class="table table-striped table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>CALIBRE</th>
+                                                        <th>KILOS</th>
+                                                        <th>FOB/KG EQ</th>
+                                                        <th>FOB TOTAL</th>
+                                                        <th>RNP Estimado</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="tbodyCalibreFOBKG">
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="card col-lg-6">
+                                            <table class="table table-striped table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>SEMANA ETD</th>
+                                                        <th>KILOS</th>
+                                                        <th>FOB/KG EQ</th>
+                                                        <th>FOB TOTAL</th>
+                                                        <th>RNP Estimado</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="tbodySemanaEtdFOBKG">
                                                 </tbody>
                                             </table>
                                         </div>
@@ -706,6 +738,8 @@
                             calcularRNP(liquidacionesData);
                             actualizarTablaLiquidacionesPorCliente(liquidacionesData);
                             actualizarTablaVariedadFOBKG(liquidacionesData);
+                            actualizarTablaCalibreFOBKG(liquidacionesData);
+                            actualizarTablaSemanaEtdFOBKG(liquidacionesData);
                             actualizarTablaDesempenoClientes(liquidacionesData);
                             actualizarTablaSaldosComparativos(liquidacionesData);
                             actualizarTablaCostosPorCliente(liquidacionesData);
@@ -881,6 +915,8 @@
                         calcularRNP(datos);
                         actualizarTablaLiquidacionesPorCliente(datos);
                         actualizarTablaVariedadFOBKG(datos);
+                        actualizarTablaCalibreFOBKG(datos);
+                        actualizarTablaSemanaEtdFOBKG(datos);
                         actualizarTablaDesempenoClientes(datos);
                         actualizarTablaSaldosComparativos(datos);
                         actualizarTablaCostosPorCliente(datos);
@@ -1161,32 +1197,50 @@
                         $(".indicador").eq(3).text(`$${promedioFobKilo}`); // Promedio FOB Kilo
                     }
 
-                    function calcularRNP(datos) {
-
+                    function obtenerCostoComision(mostrarAlertas) {
                         const costoKgInput = $("#CostoKg").val().trim();
                         const comisionInput = $("#Comision").val().trim();
 
-
-
                         // Validación 2: Campos no vacíos
                         if (!costoKgInput || !comisionInput) {
-                            alert("Por favor, completa ambos campos: Costo por Kg y Comisión.");
-                            return;
+                            if (mostrarAlertas) {
+                                alert("Por favor, completa ambos campos: Costo por Kg y Comisión.");
+                            }
+                            return null;
                         }
 
                         // Validación 3: Campos son números válidos
                         const costoKg = parseFloat(costoKgInput);
                         const comision = parseFloat(comisionInput);
                         if (isNaN(costoKg) || isNaN(comision)) {
-                            alert("Costo por Kg y Comisión deben ser números válidos.");
-                            return;
+                            if (mostrarAlertas) {
+                                alert("Costo por Kg y Comisión deben ser números válidos.");
+                            }
+                            return null;
                         }
 
                         // Validación 4: Valores positivos o cero
                         if (costoKg < 0 || comision < 0) {
-                            alert("Costo por Kg y Comisión deben ser valores positivos o cero.");
+                            if (mostrarAlertas) {
+                                alert("Costo por Kg y Comisión deben ser valores positivos o cero.");
+                            }
+                            return null;
+                        }
+
+                        return {
+                            costoKg,
+                            comision
+                        };
+                    }
+
+                    function calcularRNP(datos) {
+                        const costos = obtenerCostoComision(true);
+                        if (!costos) {
                             return;
                         }
+
+                        const costoKg = costos.costoKg;
+                        const comision = costos.comision;
 
                         // // Filtrar datos según el tipo de flete
                         // let datosFiltrados = [];
@@ -1261,6 +1315,8 @@
                             );
                         });
                         actualizarTablaVariedadFOBKG(datosFiltrados);
+                        actualizarTablaCalibreFOBKG(datosFiltrados);
+                        actualizarTablaSemanaEtdFOBKG(datosFiltrados);
                     }
 
                     function actualizarTablaLiquidacionesPorCliente(datos) {
@@ -1294,72 +1350,51 @@
                         $("#tbodyCxLiquidaciones").html(htmlFilas);
                     }
 
-                    function actualizarTablaVariedadFOBKG(datos) {
-                        // Agrupar datos por variedad (homologando a mayúsculas)
-                        const datosPorVariedad = {};
+                    function actualizarTablaPorAgrupadorFOBKG(datos, obtenerGrupo, tbodyId) {
+                        const costos = obtenerCostoComision(false);
+                        if (!costos) {
+                            return;
+                        }
+
+                        const datosPorGrupo = {};
 
                         datos.forEach(item => {
-                            const variedad = (item.variedad || "Sin variedad")
-                                .toUpperCase(); // Normalizar a mayúsculas
-                            if (!datosPorVariedad[variedad]) {
-                                datosPorVariedad[variedad] = {
+                            const grupo = obtenerGrupo(item);
+                            if (!datosPorGrupo[grupo]) {
+                                datosPorGrupo[grupo] = {
                                     kilosTotal: 0,
                                     sumaFobEquivalente: 0,
                                     totalCajas: 0,
                                     fob_total_usd: 0
                                 };
                             }
-                            datosPorVariedad[variedad].kilosTotal += item.Kilos_Total || 0;
-                            datosPorVariedad[variedad].sumaFobEquivalente += item.FOB_TO_USD || 0;
-                            datosPorVariedad[variedad].totalCajas += item.Cajas || 0;
-                            datosPorVariedad[variedad].fob_total_usd += item.FOB_TO_USD || 0;
+                            datosPorGrupo[grupo].kilosTotal += item.Kilos_Total || 0;
+                            datosPorGrupo[grupo].sumaFobEquivalente += item.FOB_TO_USD || 0;
+                            datosPorGrupo[grupo].totalCajas += item.Cajas || 0;
+                            datosPorGrupo[grupo].fob_total_usd += item.FOB_TO_USD || 0;
                         });
 
-                        // Generar las filas para la tabla
                         let htmlFilas = "";
-                        const costoKgInput = $("#CostoKg").val().trim();
-                        const comisionInput = $("#Comision").val().trim();
-
-
-
-                        // Validación 2: Campos no vacíos
-                        if (!costoKgInput || !comisionInput) {
-                            alert("Por favor, completa ambos campos: Costo por Kg y Comisión.");
-                            return;
-                        }
-
-                        // Validación 3: Campos son números válidos
-                        const costoKg = parseFloat(costoKgInput);
-                        const comision = parseFloat(comisionInput);
-                        if (isNaN(costoKg) || isNaN(comision)) {
-                            alert("Costo por Kg y Comisión deben ser números válidos.");
-                            return;
-                        }
-
-                        // Validación 4: Valores positivos o cero
-                        if (costoKg < 0 || comision < 0) {
-                            alert("Costo por Kg y Comisión deben ser valores positivos o cero.");
-                            return;
-                        }
-                        for (const [variedad, datos] of Object.entries(datosPorVariedad)) {
-                            const kilos = datos.kilosTotal.toLocaleString('es-CL', {
+                        for (const [grupo, datosGrupo] of Object.entries(datosPorGrupo)) {
+                            const kilos = datosGrupo.kilosTotal.toLocaleString('es-CL', {
                                 minimumFractionDigits: 0,
                                 maximumFractionDigits: 0
                             });
-                            const fobCajaEq = datos.kilosTotal > 0 ?
-                                (datos.sumaFobEquivalente / datos.kilosTotal).toLocaleString('es-CL', {
+                            const fobCajaEq = datosGrupo.kilosTotal > 0 ?
+                                (datosGrupo.sumaFobEquivalente / datosGrupo.kilosTotal).toLocaleString('es-CL', {
                                     minimumFractionDigits: 2,
                                     maximumFractionDigits: 2
                                 }) :
                                 "0,00";
-                            const fob_total = datos.fob_total_usd.toLocaleString('es-CL', {
+                            const fob_total = datosGrupo.fob_total_usd.toLocaleString('es-CL', {
                                 minimumFractionDigits: 2,
                                 maximumFractionDigits: 2
-                            })
-                            console.log("Datos por variedad:", variedad, datos);
-                            const RnpEstimado = datos.kilosTotal > 0 ?
-                                ((datos.sumaFobEquivalente / datos.kilosTotal) - costoKg - ((datos.sumaFobEquivalente /
-                                    datos.kilosTotal) * (comision / 100))).toLocaleString('es-CL', {
+                            });
+                            console.log("Datos por grupo:", grupo, datosGrupo);
+                            const RnpEstimado = datosGrupo.kilosTotal > 0 ?
+                                ((datosGrupo.sumaFobEquivalente / datosGrupo.kilosTotal) - costos.costoKg - ((
+                                    datosGrupo.sumaFobEquivalente / datosGrupo.kilosTotal) * (costos.comision / 100)))
+                                .toLocaleString('es-CL', {
                                     minimumFractionDigits: 2,
                                     maximumFractionDigits: 2
                                 }) :
@@ -1367,7 +1402,7 @@
 
                             htmlFilas += `
             <tr>
-                <td>${variedad}</td>
+                <td>${grupo}</td>
                 <td>${kilos}</td>
                 <td>$${fobCajaEq}</td>
                 <td>${fob_total}</td>
@@ -1376,9 +1411,36 @@
         `;
                         }
 
-                        // Insertar las filas en el tbody
-                        $("#tbodyVariedadFOBKG").html(htmlFilas);
+                        $(tbodyId).html(htmlFilas);
                     }
+
+                    function actualizarTablaVariedadFOBKG(datos) {
+                        actualizarTablaPorAgrupadorFOBKG(
+                            datos,
+                            (item) => (item.variedad || "Sin variedad").toUpperCase(),
+                            "#tbodyVariedadFOBKG"
+                        );
+                    }
+
+                    function actualizarTablaCalibreFOBKG(datos) {
+                        actualizarTablaPorAgrupadorFOBKG(
+                            datos,
+                            (item) => (item.calibre || item.Calibre || "Sin calibre").toUpperCase(),
+                            "#tbodyCalibreFOBKG"
+                        );
+                    }
+
+                    function actualizarTablaSemanaEtdFOBKG(datos) {
+                        actualizarTablaPorAgrupadorFOBKG(
+                            datos,
+                            (item) => {
+                                const semana = item.ETD ? getISOWeek(item.ETD) : null;
+                                return (semana || "Sin semana").toUpperCase();
+                            },
+                            "#tbodySemanaEtdFOBKG"
+                        );
+                    }
+
                     $("#cboDesempenoMedida").on("change", function() {
                         const medida = $(this).val();
                         const variedadesSel = ($("#filtroVariedad").val() || []).map(val => val.toUpperCase());
