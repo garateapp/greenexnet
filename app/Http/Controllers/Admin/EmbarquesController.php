@@ -731,7 +731,7 @@ $query = DB::query()
                 $calibre = DB::connection("sqlsrv")
                     ->table('dbo.PRO_P_calibres')
                     ->select('id')
-                    ->where('codigo', '=', "'".$entry["c_calibre"]."'")
+                    ->where('codigo', '=', $entry["c_calibre"])
                     ->first();
 
                 $etiquetas = DB::connection("sqlsrv")
