@@ -1434,7 +1434,7 @@
                         actualizarTablaPorAgrupadorFOBKG(
                             datos,
                             (item) => {
-                                const semana = item.fecha_venta ? getISOWeek(item.fecha_venta) : null;
+                                const semana = item.Fecha_Venta ? getISOWeek(item.Fecha_Venta) : null;
                                 return (semana || "Sin semana").toUpperCase();
                             },
                             "#tbodySemanaVentaFOBKG"
