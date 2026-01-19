@@ -304,14 +304,14 @@
                                             <table class="table table-striped table-hover">
                                                 <thead>
                                                     <tr>
-                                                        <th>SEMANA ETD</th>
+                                                        <th>SEMANA VENTA</th>
                                                         <th>KILOS</th>
                                                         <th>FOB/KG EQ</th>
                                                         <th>FOB TOTAL</th>
                                                         <th>RNP Estimado</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody id="tbodySemanaEtdFOBKG">
+                                                <tbody id="tbodySemanaVentaFOBKG">
                                                 </tbody>
                                             </table>
                                         </div>
@@ -739,7 +739,7 @@
                             actualizarTablaLiquidacionesPorCliente(liquidacionesData);
                             actualizarTablaVariedadFOBKG(liquidacionesData);
                             actualizarTablaCalibreFOBKG(liquidacionesData);
-                            actualizarTablaSemanaEtdFOBKG(liquidacionesData);
+                            actualizarTablaSemanaVentaFOBKG(liquidacionesData);
                             actualizarTablaDesempenoClientes(liquidacionesData);
                             actualizarTablaSaldosComparativos(liquidacionesData);
                             actualizarTablaCostosPorCliente(liquidacionesData);
@@ -916,7 +916,7 @@
                         actualizarTablaLiquidacionesPorCliente(datos);
                         actualizarTablaVariedadFOBKG(datos);
                         actualizarTablaCalibreFOBKG(datos);
-                        actualizarTablaSemanaEtdFOBKG(datos);
+                        actualizarTablaSemanaVentaFOBKG(datos);
                         actualizarTablaDesempenoClientes(datos);
                         actualizarTablaSaldosComparativos(datos);
                         actualizarTablaCostosPorCliente(datos);
@@ -1316,7 +1316,7 @@
                         });
                         actualizarTablaVariedadFOBKG(datosFiltrados);
                         actualizarTablaCalibreFOBKG(datosFiltrados);
-                        actualizarTablaSemanaEtdFOBKG(datosFiltrados);
+                        actualizarTablaSemanaVentaFOBKG(datosFiltrados);
                     }
 
                     function actualizarTablaLiquidacionesPorCliente(datos) {
@@ -1430,14 +1430,14 @@
                         );
                     }
 
-                    function actualizarTablaSemanaEtdFOBKG(datos) {
+                    function actualizarTablaSemanaVentaFOBKG(datos) {
                         actualizarTablaPorAgrupadorFOBKG(
                             datos,
                             (item) => {
-                                const semana = item.ETD ? getISOWeek(item.ETD) : null;
+                                const semana = item.fecha_venta ? getISOWeek(item.fecha_venta) : null;
                                 return (semana || "Sin semana").toUpperCase();
                             },
-                            "#tbodySemanaEtdFOBKG"
+                            "#tbodySemanaVentaFOBKG"
                         );
                     }
 
