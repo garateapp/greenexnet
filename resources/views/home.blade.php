@@ -1111,7 +1111,7 @@
                             placeholder: "Selecciona Especies",
                             allowClear: true
                         });
-                        $("#filtroFamilia").val(1).trigger("change");
+                        $("#filtroFamilia").val(2).trigger("change");
                         $("#clientePrincipalComparativo").select2({
                             data: clientePrincipalComparativo.map(cliente => ({
                                 id: cliente,
@@ -1184,7 +1184,7 @@
                         ); // FOB Total
                         if ($("#filtroFamilia").val() == 2) {
                             $(".indicador").eq(2).text(
-                                `$${(promedioFobCaja2*5).toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                                `$${(promedioFobKilo*5).toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
                             ); // Promedio FOB Caja Formula 2
                             $("#CostoKg").val("2.19");
                         } else {
