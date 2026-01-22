@@ -709,101 +709,155 @@ $query = DB::query()
         $id_adm_p_entidades_empresa = $id_adm_p_entidades_packing;
         $id_adm_p_estados = 2;
         $items = new Collection();
+        $validationErrors = [];
+        $requiredFields = [
+            'c_embalaje' => 'c_embalaje',
+            'n_categoria' => 'n_categoria',
+            'c_calibre' => 'c_calibre',
+            'c_etiqueta' => 'c_etiqueta',
+            'csg_productor_rotulacion' => 'csg_productor_rotulacion',
+        ];
 
         foreach ($data[0] as $index => $entry) {
-            // Saltar el encabezado (primera fila)
+            if (empty($entry["folio"])) {
+                continue;
+            }
 
-
-            //if (!empty($entry["instructivo"])) {
-                // Consultas a la base de datos para los IDs
-                $envase = DB::connection("sqlsrv")
-                    ->table('dbo.ADM_P_items')
-                    ->select('id')
-                    ->where('codigo', '=', $entry["c_embalaje"])
-                    ->first();
-
-                $categoria = DB::connection("sqlsrv")
-                    ->table('dbo.PRO_P_categorias')
-                    ->select('id')
-                    ->where('codigo', '=', $entry["n_categoria"])
-                    ->first();
-
-                $calibre = DB::connection("sqlsrv")
-                    ->table('dbo.PRO_P_calibres')
-                    ->select('id')
-                    ->where('codigo', '=', strval($entry['c_calibre']))
-                    ->first();
-
-                $etiquetas = DB::connection("sqlsrv")
-                    ->table('dbo.PRO_P_etiquetas')
-                    ->select('id')
-                    ->where('nombre', '=', $entry["c_etiqueta"])
-                    ->first();
-
-                $productor = DB::connection("sqlsrv")
-                    ->table('dbo.ADM_P_entidades')
-                    ->select('id')
-                    ->where('codigo_sag', '=', rtrim($entry["csg_productor_rotulacion"], '.'))
-                    ->first();
-
-                // Asignar variedad de rotulación (si existe)
-                $variedad_rotulacion = 0;
-                if (!empty($entry["n_variedad_rotulacion"])) {
-                    $variedad = DB::connection("sqlsrv")
-                        ->table('dbo.PRO_P_variedades')
-                        ->select('id')
-                        ->where('nombre', '=', $entry["n_variedad_rotulacion"])
-                        ->first();
-                    $variedad_rotulacion = $variedad->id ?? 0;
+            $rowErrors = [];
+            foreach ($requiredFields as $field => $label) {
+                if (!array_key_exists($field, $entry) || trim((string) $entry[$field]) === '') {
+                    $rowErrors[] = $label;
                 }
+            }
 
-                if(!empty($entry["csg_productor_rotulacion"])) {
-                    $csg_rotulado = DB::connection("sqlsrv")->table('dbo.ADM_P_CentrosCosto')
+            if (!empty($rowErrors)) {
+                $validationErrors[] = 'Fila ' . ($index + 1) . ': campos vacios o nulos -> ' . implode(', ', $rowErrors);
+                continue;
+            }
+
+            // Consultas a la base de datos para los IDs
+            $envase = DB::connection("sqlsrv")
+                ->table('dbo.ADM_P_items')
+                ->select('id')
+                ->where('codigo', '=', $entry["c_embalaje"])
+                ->first();
+
+            $categoria = DB::connection("sqlsrv")
+                ->table('dbo.PRO_P_categorias')
+                ->select('id')
+                ->where('codigo', '=', $entry["n_categoria"])
+                ->first();
+
+            $calibre = DB::connection("sqlsrv")
+                ->table('dbo.PRO_P_calibres')
+                ->select('id')
+                ->where('codigo', '=', strval($entry['c_calibre']))
+                ->first();
+
+            $etiquetas = DB::connection("sqlsrv")
+                ->table('dbo.PRO_P_etiquetas')
+                ->select('id')
+                ->where('nombre', '=', $entry["c_etiqueta"])
+                ->first();
+
+            $productor = DB::connection("sqlsrv")
+                ->table('dbo.ADM_P_entidades')
+                ->select('id')
+                ->where('codigo_sag', '=', rtrim($entry["csg_productor_rotulacion"], '.'))
+                ->first();
+
+            // Asignar variedad de rotulacion (si existe)
+            $variedad_rotulacion = 0;
+            $variedad = null;
+            if (!empty($entry["n_variedad_rotulacion"])) {
+                $variedad = DB::connection("sqlsrv")
+                    ->table('dbo.PRO_P_variedades')
+                    ->select('id')
+                    ->where('nombre', '=', $entry["n_variedad_rotulacion"])
+                    ->first();
+                $variedad_rotulacion = $variedad->id ?? 0;
+            }
+
+            $csg_rotulado = null;
+            if (!empty($entry["csg_productor_rotulacion"]) && $productor) {
+                $csg_rotulado = DB::connection("sqlsrv")->table('dbo.ADM_P_CentrosCosto')
                     ->select('id')
                     ->where('id_adm_p_entidades', $productor->id)
                     ->where('id_pro_p_variedades', '=', $variedad_rotulacion)
                     ->first();
-                }
-
-                if($entry["folio"]){
-                $items->push([
-                    'id_pkg_stock' => $entry["numero_instructivo"],
-                    'folio' => $entry["folio"],
-                    'id_adm_p_centroscosto' => $csg_rotulado->id ?? null,
-                    'id_adm_p_items' => $envase->id ?? null,
-                    'id_pro_p_categorias' => $categoria->id ?? null,
-                    'id_pro_p_calibres' => $calibre->id ?? null,
-                    'cantidad' => $entry["cantidad"],
-                    'peso_neto' => $entry["peso_neto_embalaje"],
-                    'creacion_tipo' => 'RFP',
-                    'creacion_id' => 3,
-                    'destruccion_tipo' => '',
-                    'destruccion_id' => 0,
-                    'inventario' => 1,
-                    'trazabilidad' => 1,
-                    'lote_recepcion' => 2,
-                    'id_pro_etiquetas' => $etiquetas->id ?? null,
-                    'fecha_produccion' => Carbon::parse($this->convertirFechaExcel($entry["fecha_produccion"]))->format('Y-m-d H:i:s'),
-                    'id_adm_p_entidad_exportadora' => 22,
-                    'id_pro_turno_creacion' => 1,
-                    'id_pro_turnos_destruccion' => 0,
-                    'fecha_hora_creacion' => date('Y-m-d H:i:s'),
-                    'fecha_hora_destruccion' => "1900-01-01 00:00:00",
-                    'id_adm_p_entidades_productor_rotulacion' => $productor->id ?? null,
-                    'id_pro_p_variedades_rotulacion' => $variedad_rotulacion,
-                    'tara_envase' => 0,
-                    'id_adm_items_plu' => 2383,
-                    'id_adm_p_bodegas_paso' => 1149,
-                    'termografo' => 0,
-                    'id_adm_p_entidades_packing_origen' => $id_adm_p_entidades_packing,
-                    'id_origen' => 3,
-                    'tipo_origen' => 'RFP',
-                    'fecha_packing'=>Carbon::parse($this->convertirFechaExcel($entry["fecha_produccion"]))->format('Y-m-d H:i:s'),
-                ]);
             }
+
+            if (!$envase) {
+                $rowErrors[] = 'c_embalaje (no encontrado)';
+            }
+            if (!$categoria) {
+                $rowErrors[] = 'n_categoria (no encontrado)';
+            }
+            if (!$calibre) {
+                $rowErrors[] = 'c_calibre (no encontrado)';
+            }
+            if (!$etiquetas) {
+                $rowErrors[] = 'c_etiqueta (no encontrado)';
+            }
+            if (!$productor) {
+                $rowErrors[] = 'csg_productor_rotulacion (no encontrado)';
+            }
+            if (!empty($entry["n_variedad_rotulacion"]) && !$variedad) {
+                $rowErrors[] = 'n_variedad_rotulacion (no encontrado)';
+            }
+            if (!empty($entry["csg_productor_rotulacion"]) && !$csg_rotulado) {
+                $rowErrors[] = 'csg_rotulado (no encontrado)';
+            }
+
+            if (!empty($rowErrors)) {
+                $validationErrors[] = 'Fila ' . ($index + 1) . ': ' . implode(', ', $rowErrors);
+                continue;
+            }
+
+            $items->push([
+                'id_pkg_stock' => $entry["numero_instructivo"],
+                'folio' => $entry["folio"],
+                'id_adm_p_centroscosto' => $csg_rotulado->id ?? null,
+                'id_adm_p_items' => $envase->id ?? null,
+                'id_pro_p_categorias' => $categoria->id ?? null,
+                'id_pro_p_calibres' => $calibre->id ?? null,
+                'cantidad' => $entry["cantidad"],
+                'peso_neto' => $entry["peso_neto_embalaje"],
+                'creacion_tipo' => 'RFP',
+                'creacion_id' => 3,
+                'destruccion_tipo' => '',
+                'destruccion_id' => 0,
+                'inventario' => 1,
+                'trazabilidad' => 1,
+                'lote_recepcion' => 2,
+                'id_pro_etiquetas' => $etiquetas->id ?? null,
+                'fecha_produccion' => Carbon::parse($this->convertirFechaExcel($entry["fecha_produccion"]))->format('Y-m-d H:i:s'),
+                'id_adm_p_entidad_exportadora' => 22,
+                'id_pro_turno_creacion' => 1,
+                'id_pro_turnos_destruccion' => 0,
+                'fecha_hora_creacion' => date('Y-m-d H:i:s'),
+                'fecha_hora_destruccion' => "1900-01-01 00:00:00",
+                'id_adm_p_entidades_productor_rotulacion' => $productor->id ?? null,
+                'id_pro_p_variedades_rotulacion' => $variedad_rotulacion,
+                'tara_envase' => 0,
+                'id_adm_items_plu' => 2383,
+                'id_adm_p_bodegas_paso' => 1149,
+                'termografo' => 0,
+                'id_adm_p_entidades_packing_origen' => $id_adm_p_entidades_packing,
+                'id_origen' => 3,
+                'tipo_origen' => 'RFP',
+                'fecha_packing'=>Carbon::parse($this->convertirFechaExcel($entry["fecha_produccion"]))->format('Y-m-d H:i:s'),
+            ]);
         }
 
-        // Iniciar una transacción
+        if (!empty($validationErrors)) {
+            return response()->json([
+                'error' => 'Hay filas con datos invalidos en el archivo.',
+                'details' => $validationErrors,
+            ], 422);
+        }
+
+        // Iniciar una transaccion
         // Insertar la cabecera
         $num_i = DB::connection("sqlsrv")->table('PKG_G_Recepcion')->select('numero_i')
             ->where('tipo_i', 'RFP')
