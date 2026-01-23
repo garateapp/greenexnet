@@ -70,6 +70,22 @@
     .select2-container {
         width: 100% !important;
     }
+
+    .fob-tree-table .tree-toggle {
+        cursor: pointer;
+        display: inline-block;
+        width: 18px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .fob-tree-table .tree-indent-1 {
+        padding-left: 20px;
+    }
+
+    .fob-tree-table .tree-indent-2 {
+        padding-left: 40px;
+    }
 </style>
 @section('content')
     <div class="content">
@@ -269,49 +285,17 @@
                                         </div>
 
                                         <div class="card col-lg-6" style="margin-right: 10px;">
-                                            <table class="table table-striped table-hover">
+                                            <table class="table table-striped table-hover fob-tree-table">
                                                 <thead>
                                                     <tr>
-                                                        <th>VARIEDAD</th>
+                                                        <th>DETALLE</th>
                                                         <th>KILOS</th>
                                                         <th>FOB/KG EQ</th>
                                                         <th>FOB TOTAL</th>
                                                         <th>RNP Estimado</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody id="tbodyVariedadFOBKG">
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="card col-lg-6" style="margin-right: 10px;">
-                                            <table class="table table-striped table-hover">
-                                                <thead>
-                                                    <tr>
-                                                        <th>CALIBRE</th>
-                                                        <th>KILOS</th>
-                                                        <th>FOB/KG EQ</th>
-                                                        <th>FOB TOTAL</th>
-                                                        <th>RNP Estimado</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="tbodyCalibreFOBKG">
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        <div class="card col-lg-6">
-                                            <table class="table table-striped table-hover">
-                                                <thead>
-                                                    <tr>
-                                                        <th>SEMANA VENTA</th>
-                                                        <th>KILOS</th>
-                                                        <th>FOB/KG EQ</th>
-                                                        <th>FOB TOTAL</th>
-                                                        <th>RNP Estimado</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="tbodySemanaVentaFOBKG">
+                                                <tbody id="tbodyTreeViewFOBKG">
                                                 </tbody>
                                             </table>
                                         </div>
@@ -737,9 +721,7 @@
                             actualizarResumenGeneral(liquidacionesData);
                             calcularRNP(liquidacionesData);
                             actualizarTablaLiquidacionesPorCliente(liquidacionesData);
-                            actualizarTablaVariedadFOBKG(liquidacionesData);
-                            actualizarTablaCalibreFOBKG(liquidacionesData);
-                            actualizarTablaSemanaVentaFOBKG(liquidacionesData);
+                            actualizarTablaTreeviewFOBKG(liquidacionesData);
                             actualizarTablaDesempenoClientes(liquidacionesData);
                             actualizarTablaSaldosComparativos(liquidacionesData);
                             actualizarTablaCostosPorCliente(liquidacionesData);
@@ -914,9 +896,7 @@
                         actualizarResumenGeneral(datos);
                         calcularRNP(datos);
                         actualizarTablaLiquidacionesPorCliente(datos);
-                        actualizarTablaVariedadFOBKG(datos);
-                        actualizarTablaCalibreFOBKG(datos);
-                        actualizarTablaSemanaVentaFOBKG(datos);
+                        actualizarTablaTreeviewFOBKG(datos);
                         actualizarTablaDesempenoClientes(datos);
                         actualizarTablaSaldosComparativos(datos);
                         actualizarTablaCostosPorCliente(datos);
@@ -1314,9 +1294,7 @@
                                 coincideColor
                             );
                         });
-                        actualizarTablaVariedadFOBKG(datosFiltrados);
-                        actualizarTablaCalibreFOBKG(datosFiltrados);
-                        actualizarTablaSemanaVentaFOBKG(datosFiltrados);
+                        actualizarTablaTreeviewFOBKG(datosFiltrados);
                     }
 
                     function actualizarTablaLiquidacionesPorCliente(datos) {
@@ -1350,95 +1328,148 @@
                         $("#tbodyCxLiquidaciones").html(htmlFilas);
                     }
 
-                    function actualizarTablaPorAgrupadorFOBKG(datos, obtenerGrupo, tbodyId) {
+                    function actualizarTablaTreeviewFOBKG(datos) {
                         const costos = obtenerCostoComision(false);
                         if (!costos) {
                             return;
                         }
 
-                        const datosPorGrupo = {};
-
-                        datos.forEach(item => {
-                            const grupo = obtenerGrupo(item);
-                            if (!datosPorGrupo[grupo]) {
-                                datosPorGrupo[grupo] = {
-                                    kilosTotal: 0,
-                                    sumaFobEquivalente: 0,
-                                    totalCajas: 0,
-                                    fob_total_usd: 0
-                                };
-                            }
-                            datosPorGrupo[grupo].kilosTotal += item.Kilos_Total || 0;
-                            datosPorGrupo[grupo].sumaFobEquivalente += item.FOB_TO_USD || 0;
-                            datosPorGrupo[grupo].totalCajas += item.Cajas || 0;
-                            datosPorGrupo[grupo].fob_total_usd += item.FOB_TO_USD || 0;
+                        const crearNodo = (nombre, level) => ({
+                            name: nombre,
+                            level,
+                            kilosTotal: 0,
+                            fobTotalUsd: 0,
+                            children: new Map()
                         });
 
-                        let htmlFilas = "";
-                        for (const [grupo, datosGrupo] of Object.entries(datosPorGrupo)) {
-                            const kilos = datosGrupo.kilosTotal.toLocaleString('es-CL', {
+                        const sumarItem = (node, item) => {
+                            node.kilosTotal += item.Kilos_Total || 0;
+                            node.fobTotalUsd += item.FOB_TO_USD || 0;
+                        };
+
+                        const variedades = new Map();
+
+                        datos.forEach(item => {
+                            const variedad = (item.variedad || "Sin variedad").toUpperCase();
+                            const calibre = (item.calibre || item.Calibre || "Sin calibre").toUpperCase();
+                            const semanaValor = item.Fecha_Venta ? getISOWeek(item.Fecha_Venta) : "Sin semana";
+                            const semana = `${semanaValor}`.toUpperCase();
+
+                            if (!variedades.has(variedad)) {
+                                variedades.set(variedad, crearNodo(variedad, 0));
+                            }
+                            const variedadNode = variedades.get(variedad);
+                            sumarItem(variedadNode, item);
+
+                            if (!variedadNode.children.has(calibre)) {
+                                variedadNode.children.set(calibre, crearNodo(calibre, 1));
+                            }
+                            const calibreNode = variedadNode.children.get(calibre);
+                            sumarItem(calibreNode, item);
+
+                            if (!calibreNode.children.has(semana)) {
+                                calibreNode.children.set(semana, crearNodo(semana, 2));
+                            }
+                            const semanaNode = calibreNode.children.get(semana);
+                            sumarItem(semanaNode, item);
+                        });
+
+                        let rowId = 0;
+                        const rows = [];
+                        const buildRows = (node, parentId) => {
+                            const id = `tree-${rowId++}`;
+                            const hasChildren = node.children.size > 0;
+                            rows.push({
+                                id,
+                                parentId,
+                                level: node.level,
+                                name: node.name,
+                                kilosTotal: node.kilosTotal,
+                                fobTotalUsd: node.fobTotalUsd,
+                                hasChildren
+                            });
+
+                            const childKeys = Array.from(node.children.keys()).sort();
+                            childKeys.forEach(key => buildRows(node.children.get(key), id));
+                        };
+
+                        const topKeys = Array.from(variedades.keys()).sort();
+                        topKeys.forEach(key => buildRows(variedades.get(key), ""));
+
+                        const htmlFilas = rows.map(row => {
+                            const kilos = row.kilosTotal.toLocaleString('es-CL', {
                                 minimumFractionDigits: 0,
                                 maximumFractionDigits: 0
                             });
-                            const fobCajaEq = datosGrupo.kilosTotal > 0 ?
-                                (datosGrupo.sumaFobEquivalente / datosGrupo.kilosTotal).toLocaleString('es-CL', {
+                            const fobKgEq = row.kilosTotal > 0 ?
+                                (row.fobTotalUsd / row.kilosTotal).toLocaleString('es-CL', {
                                     minimumFractionDigits: 2,
                                     maximumFractionDigits: 2
                                 }) :
                                 "0,00";
-                            const fob_total = datosGrupo.fob_total_usd.toLocaleString('es-CL', {
+                            const fobTotal = row.fobTotalUsd.toLocaleString('es-CL', {
                                 minimumFractionDigits: 2,
                                 maximumFractionDigits: 2
                             });
-                            console.log("Datos por grupo:", grupo, datosGrupo);
-                            const RnpEstimado = datosGrupo.kilosTotal > 0 ?
-                                ((datosGrupo.sumaFobEquivalente / datosGrupo.kilosTotal) - costos.costoKg - ((
-                                    datosGrupo.sumaFobEquivalente / datosGrupo.kilosTotal) * (costos.comision / 100)))
+                            const rnpEstimado = row.kilosTotal > 0 ?
+                                ((row.fobTotalUsd / row.kilosTotal) - costos.costoKg - ((row.fobTotalUsd / row
+                                        .kilosTotal) * (costos.comision / 100)))
                                 .toLocaleString('es-CL', {
                                     minimumFractionDigits: 2,
                                     maximumFractionDigits: 2
                                 }) :
                                 "0,00";
+                            const indentClass = row.level > 0 ? `tree-indent-${row.level}` : "";
+                            const toggleHtml = row.hasChildren ? `<span class="tree-toggle">+</span>` :
+                                `<span class="tree-toggle"></span>`;
 
-                            htmlFilas += `
-            <tr>
-                <td>${grupo}</td>
+                            return `
+            <tr data-node-id="${row.id}" data-parent-id="${row.parentId}" data-level="${row.level}" data-expanded="false" data-has-children="${row.hasChildren ? 1 : 0}">
+                <td class="${indentClass}">${toggleHtml}<span class="tree-label">${row.name}</span></td>
                 <td>${kilos}</td>
-                <td>$${fobCajaEq}</td>
-                <td>${fob_total}</td>
-                <td>$${RnpEstimado}</td>
+                <td>$${fobKgEq}</td>
+                <td>${fobTotal}</td>
+                <td>$${rnpEstimado}</td>
             </tr>
         `;
-                        }
+                        }).join("");
 
-                        $(tbodyId).html(htmlFilas);
-                    }
+                        const $tbody = $("#tbodyTreeViewFOBKG");
+                        $tbody.html(htmlFilas);
+                        $tbody.find('tr[data-level!="0"]').hide();
 
-                    function actualizarTablaVariedadFOBKG(datos) {
-                        actualizarTablaPorAgrupadorFOBKG(
-                            datos,
-                            (item) => (item.variedad || "Sin variedad").toUpperCase(),
-                            "#tbodyVariedadFOBKG"
-                        );
-                    }
+                        const ocultarDescendientes = (nodeId) => {
+                            const $children = $tbody.find(`tr[data-parent-id="${nodeId}"]`);
+                            $children.each(function() {
+                                const $child = $(this);
+                                const childId = $child.data("node-id");
+                                $child.hide().attr("data-expanded", "false");
+                                $child.find(".tree-toggle").text("+");
+                                ocultarDescendientes(childId);
+                            });
+                        };
 
-                    function actualizarTablaCalibreFOBKG(datos) {
-                        actualizarTablaPorAgrupadorFOBKG(
-                            datos,
-                            (item) => (item.calibre || item.Calibre || "Sin calibre").toUpperCase(),
-                            "#tbodyCalibreFOBKG"
-                        );
-                    }
+                        $tbody.off("click", ".tree-toggle, .tree-label");
+                        $tbody.on("click", ".tree-toggle, .tree-label", function() {
+                            const $row = $(this).closest("tr");
+                            const hasChildren = $row.data("has-children") === 1;
+                            if (!hasChildren) {
+                                return;
+                            }
+                            const isExpanded = $row.attr("data-expanded") === "true";
+                            const nodeId = $row.data("node-id");
 
-                    function actualizarTablaSemanaVentaFOBKG(datos) {
-                        actualizarTablaPorAgrupadorFOBKG(
-                            datos,
-                            (item) => {
-                                const semana = item.Fecha_Venta ? getISOWeek(item.Fecha_Venta) : null;
-                                return (semana || "Sin semana").toUpperCase();
-                            },
-                            "#tbodySemanaVentaFOBKG"
-                        );
+                            if (isExpanded) {
+                                $row.attr("data-expanded", "false");
+                                $row.find(".tree-toggle").text("+");
+                                ocultarDescendientes(nodeId);
+                                return;
+                            }
+
+                            $row.attr("data-expanded", "true");
+                            $row.find(".tree-toggle").text("-");
+                            $tbody.find(`tr[data-parent-id="${nodeId}"]`).show();
+                        });
                     }
 
                     $("#cboDesempenoMedida").on("change", function() {
