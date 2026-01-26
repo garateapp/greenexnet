@@ -1348,15 +1348,35 @@
                         };
 
                         const variedades = new Map();
+                        const variedadEspecie = new Map();
+                        const cherryCalibreOrder = [
+                            "5JD",
+                            "5J",
+                            "4JD",
+                            "4J",
+                            "3JD",
+                            "3J",
+                            "2JD",
+                            "2J",
+                            "JD",
+                            "J",
+                            "XLD",
+                            "XL"
+                        ];
+                        const cherryOrderIndex = new Map(
+                            cherryCalibreOrder.map((value, index) => [value, index])
+                        );
 
                         datos.forEach(item => {
                             const variedad = (item.variedad || "Sin variedad").toUpperCase();
+                            const especie = (item.especie || "").toUpperCase();
                             const calibre = (item.calibre || item.Calibre || "Sin calibre").toUpperCase();
                             const semanaValor = item.Fecha_Venta ? getISOWeek(item.Fecha_Venta) : "Sin semana";
                             const semana = `${semanaValor}`.toUpperCase();
 
                             if (!variedades.has(variedad)) {
                                 variedades.set(variedad, crearNodo(variedad, 0));
+                                variedadEspecie.set(variedad, especie);
                             }
                             const variedadNode = variedades.get(variedad);
                             sumarItem(variedadNode, item);
@@ -1389,7 +1409,26 @@
                                 hasChildren
                             });
 
-                            const childKeys = Array.from(node.children.keys()).sort();
+                            let childKeys = Array.from(node.children.keys());
+                            if (node.level === 0) {
+                                const especie = variedadEspecie.get(node.name) || "";
+                                if (especie === "CHERRIES") {
+                                    childKeys.sort((a, b) => {
+                                        const aIndex = cherryOrderIndex.has(a) ? cherryOrderIndex.get(a) : Number.MAX_SAFE_INTEGER;
+                                        const bIndex = cherryOrderIndex.has(b) ? cherryOrderIndex.get(b) : Number.MAX_SAFE_INTEGER;
+                                        if (aIndex !== bIndex) {
+                                            return aIndex - bIndex;
+                                        }
+                                        return b.localeCompare(a, "es", { numeric: true, sensitivity: "base" });
+                                    });
+                                } else {
+                                    childKeys.sort((a, b) =>
+                                        b.localeCompare(a, "es", { numeric: true, sensitivity: "base" })
+                                    );
+                                }
+                            } else {
+                                childKeys.sort();
+                            }
                             childKeys.forEach(key => buildRows(node.children.get(key), id));
                         };
 
