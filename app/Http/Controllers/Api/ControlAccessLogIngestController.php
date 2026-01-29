@@ -83,6 +83,12 @@ class ControlAccessLogIngestController extends Controller
                 $personal->entidad_id = $this->getDeptoId($contractorGroup);
                 $personal->save();
             }
+            else{
+                $personal->entidad_id =$entidad ? $entidad->id : $personal->entidad_id;
+                $personal->save();
+            }
+
+
         }
         }
         Log::info("resultado:", [
