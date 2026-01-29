@@ -670,8 +670,8 @@ class AttendanceController extends Controller
         $entidades = [4, 5, 6, 7, 9];
         Log::info("fechas: $startDate - $endDate", [$startDate, $endDate]);
 
-        $dayStartTime = '07:00:00';   // 08:00 - 60 min
-        $nightStartTime = '17:00:00'; // 18:00 - 60 min
+        $dayStartTime = '07:15:00';   // 08:00 - 60 min
+        $nightStartTime = '18:30:00'; // 18:00 - 60 min
 
         $baseSelect = 'p.rut, p.nombre, e.nombre as departamento, c.primera_entrada as primera_marca';
 
