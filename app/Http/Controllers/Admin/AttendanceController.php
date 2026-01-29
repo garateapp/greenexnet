@@ -660,45 +660,60 @@ class AttendanceController extends Controller
     {
         try {
             $startDate = $this->parseDateOrDefault($request->input('start_date'), Carbon::today()->startOfDay(), false)
-                ->setTime(7, 0);
-            $endDate = $this->parseDateOrDefault($request->input('end_date'), Carbon::today()->endOfDay(), true);
+                ->startOfDay();
+            $endDate = $this->parseDateOrDefault($request->input('end_date'), Carbon::today()->endOfDay(), true)
+                ->endOfDay();
         } catch (\InvalidArgumentException $e) {
             return response()->json(['message' => $e->getMessage()], 400);
         }
 
         $entidades = [4, 5, 6, 7, 9];
-        Log::info("fechas: $startDate - $endDate",[$startDate,$endDate]);
-        $faltantes = ControlAccessLog::from('control_access_logs as c')
-        ->join('personals as p', 'c.personal_id', '=', 'p.codigo')
-    ->join('entidads as e', 'e.id', '=', 'p.entidad_id')
-    ->selectRaw('
-        p.rut,
-        p.nombre,
-        e.nombre as departamento,
-        MIN(c.primera_entrada) as primera_marca
-    ')
-    ->whereBetween('c.primera_entrada', [$startDate, $endDate])
-    ->whereIn('p.entidad_id', [4, 5, 6, 7, 9])
-    ->whereNotExists(function ($q) use ($startDate, $endDate) {
-        $q->select(DB::raw(1))
-          ->from('attendances as a')
-          ->whereColumn('a.personal_id', 'p.id')
-          ->whereBetween('a.timestamp', [$startDate, $endDate]); // si timestamp es reservado en tu motor, ver nota abajo
-    })
-    ->groupBy('p.rut', 'p.nombre', 'e.nombre')
-    ->orderByDesc('primera_marca') // Ordenamos por el alias creado
-    ->get();
-        Log::info("faltantes: ",[ControlAccessLog::from('control_access_logs as c')
-            ->selectRaw('DISTINCT p.rut, c.nombre, c.personal_id, c.departamento')
-            ->join('personals as p', 'p.codigo', '=', 'c.personal_id')
-            ->leftJoin('attendances as a', function ($join) use ($startDate, $endDate) {
-                $join->on('a.personal_id', '=', 'p.id');
-            })
-            ->whereNull('a.id')
-            ->whereBetween('c.primera_entrada', [$startDate, $endDate])
-            //->whereNull('c.ultima_salida')
+        Log::info("fechas: $startDate - $endDate", [$startDate, $endDate]);
+
+        $dayStartTime = '07:00:00';   // 08:00 - 60 min
+        $nightStartTime = '17:00:00'; // 18:00 - 60 min
+
+        $baseSelect = 'p.rut, p.nombre, e.nombre as departamento, c.primera_entrada as primera_marca';
+
+        $dayQuery = ControlAccessLog::from('control_access_logs as c')
+            ->join('personals as p', 'c.personal_id', '=', 'p.codigo')
+            ->join('entidads as e', 'e.id', '=', 'p.entidad_id')
+            ->selectRaw($baseSelect)
+            ->whereBetween('c.fecha', [$startDate, $endDate])
             ->whereIn('p.entidad_id', $entidades)
-            ->orderBy('c.nombre')->toSql()]);
+            ->whereRaw('TIME(c.primera_entrada) >= ? AND TIME(c.primera_entrada) < ?', [$dayStartTime, $nightStartTime])
+            ->whereNotExists(function ($q) {
+                $q->select(DB::raw(1))
+                    ->from('attendances as a')
+                    ->whereColumn('a.personal_id', 'p.id')
+                    ->whereRaw(
+                        'a.timestamp BETWEEN DATE_ADD(DATE(c.fecha), INTERVAL 7 HOUR) AND DATE_ADD(DATE(c.fecha), INTERVAL 18 HOUR)'
+                    );
+            });
+
+        $nightQuery = ControlAccessLog::from('control_access_logs as c')
+            ->join('personals as p', 'c.personal_id', '=', 'p.codigo')
+            ->join('entidads as e', 'e.id', '=', 'p.entidad_id')
+            ->selectRaw($baseSelect)
+            ->whereBetween('c.fecha', [$startDate, $endDate])
+            ->whereIn('p.entidad_id', $entidades)
+            ->whereRaw('TIME(c.primera_entrada) >= ? OR TIME(c.primera_entrada) < ?', [$nightStartTime, $dayStartTime])
+            ->whereNotExists(function ($q) {
+                $q->select(DB::raw(1))
+                    ->from('attendances as a')
+                    ->whereColumn('a.personal_id', 'p.id')
+                    ->whereRaw(
+                        "a.timestamp BETWEEN DATE_ADD(DATE(c.fecha), INTERVAL 17 HOUR)
+                         AND DATE_ADD(DATE_ADD(DATE_ADD(DATE(c.fecha), INTERVAL 1 DAY), INTERVAL 7 HOUR), INTERVAL 45 MINUTE)"
+                    );
+            });
+
+        $faltantes = DB::query()
+            ->fromSub($dayQuery->unionAll($nightQuery), 'faltantes')
+            ->selectRaw('rut, nombre, departamento, MIN(primera_marca) as primera_marca')
+            ->groupBy('rut', 'nombre', 'departamento')
+            ->orderByDesc('primera_marca')
+            ->get();
         return response()->json([
             'data' => $faltantes,
             'meta' => [
