@@ -669,23 +669,23 @@ class AttendanceController extends Controller
         $entidades = [4, 5, 6, 7, 9];
         Log::info("fechas: $startDate - $endDate",[$startDate,$endDate]);
         $faltantes = ControlAccessLog::from('control_access_logs as c')
-        ->join('personals as p', 'p.codigo', '=', 'c.personal_id')
-        ->join('entidads as e', 'e.id', '=', 'p.entidad_id')
-    ->leftJoin('attendances as a', function($join) use ($startDate, $endDate) {
-        $join->on('a.personal_id', '=', 'p.id')
-             ->whereBetween('a.timestamp', [$startDate, $endDate]);
-    })
-    ->select([
-        'p.rut',
-        'p.nombre',
-        'p.entidad_id',
-        DB::raw('e.nombre as departamento'),
-        DB::raw('MIN(c.primera_entrada) as primera_marca')
-    ])
+        ->join('personals as p', 'c.personal_id', '=', 'p.codigo')
+    ->join('entidads as e', 'e.id', '=', 'p.entidad_id')
+    ->selectRaw('
+        p.rut,
+        p.nombre,
+        e.nombre as departamento,
+        MIN(c.primera_entrada) as primera_marca
+    ')
     ->whereBetween('c.primera_entrada', [$startDate, $endDate])
     ->whereIn('p.entidad_id', [4, 5, 6, 7, 9])
-    ->whereNull('a.id') // Aquí filtramos los que NO están en attendances
-    ->groupBy('p.rut', 'p.nombre', 'p.entidad_id','e.nombre')
+    ->whereNotExists(function ($q) use ($startDate, $endDate) {
+        $q->select(DB::raw(1))
+          ->from('attendances as a')
+          ->whereColumn('a.personal_id', 'p.id')
+          ->whereBetween('a.timestamp', [$startDate, $endDate]); // si timestamp es reservado en tu motor, ver nota abajo
+    })
+    ->groupBy('p.rut', 'p.nombre', 'e.nombre')
     ->orderByDesc('primera_marca') // Ordenamos por el alias creado
     ->get();
         Log::info("faltantes: ",[ControlAccessLog::from('control_access_logs as c')
