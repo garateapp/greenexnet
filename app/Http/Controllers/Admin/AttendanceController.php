@@ -670,7 +670,7 @@ class AttendanceController extends Controller
         Log::info("fechas: $startDate - $endDate",[$startDate,$endDate]);
         $faltantes = ControlAccessLog::from('control_access_logs as c')
         ->join('personals as p', 'p.codigo', '=', 'c.personal_id')
-        ->join('entidades as e', 'e.id', '=', 'p.entidad_id')
+        ->join('entidads as e', 'e.id', '=', 'p.entidad_id')
     ->leftJoin('attendances as a', function($join) use ($startDate, $endDate) {
         $join->on('a.personal_id', '=', 'p.id')
              ->whereBetween('a.timestamp', [$startDate, $endDate]);
