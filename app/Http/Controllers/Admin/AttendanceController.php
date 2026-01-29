@@ -691,31 +691,26 @@ class AttendanceController extends Controller
                     );
             });
 
-        $nightQuery = ControlAccessLog::from('control_access_logs as c')
+        $faltantes = DB::query()
+            ->fromSub($dayQuery, 'faltantes')
+            ->selectRaw('rut, nombre, departamento, MIN(primera_marca) as primera_marca')
+            ->groupBy('rut', 'nombre', 'departamento')
+            ->orderByDesc('primera_marca')
+            ->get();
+
+        $nightPresent = ControlAccessLog::from('control_access_logs as c')
             ->join('personals as p', 'c.personal_id', '=', 'p.codigo')
             ->join('entidads as e', 'e.id', '=', 'p.entidad_id')
             ->selectRaw($baseSelect)
             ->whereBetween('c.fecha', [$startDate, $endDate])
             ->whereIn('p.entidad_id', $entidades)
             ->whereRaw('TIME(c.primera_entrada) >= ? OR TIME(c.primera_entrada) < ?', [$nightStartTime, $dayStartTime])
-            ->whereNotExists(function ($q) {
-                $q->select(DB::raw(1))
-                    ->from('attendances as a')
-                    ->whereColumn('a.personal_id', 'p.id')
-                    ->whereRaw(
-                        "a.timestamp BETWEEN DATE_ADD(DATE(c.fecha), INTERVAL 17 HOUR)
-                         AND DATE_ADD(DATE_ADD(DATE_ADD(DATE(c.fecha), INTERVAL 1 DAY), INTERVAL 7 HOUR), INTERVAL 45 MINUTE)"
-                    );
-            });
-
-        $faltantes = DB::query()
-            ->fromSub($dayQuery->unionAll($nightQuery), 'faltantes')
-            ->selectRaw('rut, nombre, departamento, MIN(primera_marca) as primera_marca')
-            ->groupBy('rut', 'nombre', 'departamento')
+            ->groupBy('p.rut', 'p.nombre', 'e.nombre', 'c.primera_entrada')
             ->orderByDesc('primera_marca')
             ->get();
         return response()->json([
             'data' => $faltantes,
+            'night_present' => $nightPresent,
             'meta' => [
                 'start_date' => $startDate->toDateTimeString(),
                 'end_date' => $endDate->toDateTimeString(),
