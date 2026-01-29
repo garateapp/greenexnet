@@ -116,6 +116,11 @@ class SolicitudComprasController extends Controller
             'fecha_requerida' => $request->fecha_requerida,
         ]);
 
+        if ($cotizacionesPorAdquisiciones) {
+            $solicitud->load(['solicitante', 'estado', 'moneda']);
+            $this->sendCreacionAdquisicionesNotification($solicitud);
+        }
+
         return redirect()->route('admin.solicitud-compras.show', $solicitud);
     }
 
@@ -405,6 +410,21 @@ class SolicitudComprasController extends Controller
 
         if (!empty($destinatarios)) {
             Mail::to($destinatarios)->send(new SolicitudCompraMail($solicitudCompra, 'status', $estadoAnterior, $estadoNuevo));
+        }
+    }
+
+    protected function sendCreacionAdquisicionesNotification(SolicitudCompra $solicitudCompra): void
+    {
+        $notificacionEmail = config('panel.adquisiciones_notificacion_email');
+        $destinatarios = collect($this->getAdquisicionesEmails())
+            ->merge([$notificacionEmail])
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
+        if (!empty($destinatarios)) {
+            Mail::to($destinatarios)->send(new SolicitudCompraMail($solicitudCompra, 'created'));
         }
     }
 

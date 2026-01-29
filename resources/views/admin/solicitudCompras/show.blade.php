@@ -153,7 +153,17 @@
     </div>
 </div>
 
-@if(auth()->id() === $solicitudCompra->solicitante_id || config('panel.adquisiciones_puede_subir_cotizaciones'))
+@php
+    $user = auth()->user();
+    $esSolicitante = $user && $user->id === $solicitudCompra->solicitante_id;
+    $esAdquisiciones = $user && $user->roles->pluck('title')->contains('Adquisiciones');
+    $puedeAdquisiciones = (bool) config('panel.adquisiciones_puede_subir_cotizaciones');
+    $cotizacionesPorAdquisiciones = (bool) $solicitudCompra->cotizaciones_por_adquisiciones;
+    $puedeSubirCotizacion = ($esSolicitante && !$cotizacionesPorAdquisiciones)
+        || ($esAdquisiciones && $puedeAdquisiciones && $cotizacionesPorAdquisiciones);
+@endphp
+
+@if($puedeSubirCotizacion)
 <div class="card mt-3">
     <div class="card-header">
         {{ trans('cruds.cotizacionCompra.add') }}
