@@ -26,6 +26,7 @@ class SolicitudCompra extends Model
         'solicitante_id',
         'responsable_id',
         'adquisicion_estado_id',
+        'centro_costo_id',
         'moneda_id',
         'titulo',
         'descripcion',
@@ -60,6 +61,11 @@ class SolicitudCompra extends Model
     public function estado()
     {
         return $this->belongsTo(AdquisicionEstado::class, 'adquisicion_estado_id');
+    }
+
+    public function centroCosto()
+    {
+        return $this->belongsTo(CentroCosto::class, 'centro_costo_id');
     }
 
     public function moneda()
