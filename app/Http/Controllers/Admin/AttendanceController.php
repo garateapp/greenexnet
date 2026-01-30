@@ -690,7 +690,7 @@ class AttendanceController extends Controller
                         'a.timestamp BETWEEN DATE_ADD(DATE(c.fecha), INTERVAL 7 HOUR) AND DATE_ADD(DATE(c.fecha), INTERVAL 18 HOUR)'
                     );
             });
-
+        Log::debug('Day Query SQL: ' . $dayQuery->toSql(), $dayQuery->getBindings());
         $faltantes = DB::query()
             ->fromSub($dayQuery, 'faltantes')
             ->selectRaw('rut, nombre, departamento, MIN(primera_marca) as primera_marca')
