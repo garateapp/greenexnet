@@ -46,16 +46,25 @@
                 </div>
 
                 <div class="row mb-4">
-                    <div class="col-lg-4 col-md-6 mb-3">
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card h-100 border-success">
+                            <div class="card-body">
+                                <p class="text-uppercase text-muted font-weight-bold mb-2">Actualmente dentro</p>
+                                <h1 class="display-4 mb-0 text-success">{{ number_format($currentInside) }}</h1>
+                                <small class="text-muted">Estado en tiempo real</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
                         <div class="card h-100 border-primary">
                             <div class="card-body">
-                                <p class="text-uppercase text-muted font-weight-bold mb-2">Personas en planta</p>
+                                <p class="text-uppercase text-muted font-weight-bold mb-2">Personas en planta (día seleccionado)</p>
                                 <h1 class="display-4 mb-0 text-primary">{{ number_format($totalInside) }}</h1>
                                 <small class="text-muted">Entradas sin salida entre 06:00 y 23:59</small>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-4 col-md-6 mb-3">
+                    <div class="col-lg-3 col-md-6 mb-3">
                         <div class="card h-100">
                             <div class="card-body">
                                 <p class="text-uppercase text-muted font-weight-bold mb-2">Turno Día (06:00 - 18:29)</p>
@@ -64,7 +73,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-4 col-md-6 mb-3">
+                    <div class="col-lg-3 col-md-6 mb-3">
                         <div class="card h-100">
                             <div class="card-body">
                                 <p class="text-uppercase text-muted font-weight-bold mb-2">Turno Noche (18:30 - 23:59)</p>
@@ -125,7 +134,7 @@
 
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <span>Últimos movimientos (día seleccionado)</span>
+                        <span>Personas actualmente dentro</span>
                         <form method="GET" class="mb-0">
                             @foreach (request()->except('export') as $key => $value)
                                 @if (is_array($value))
@@ -147,7 +156,7 @@
                                     <th>Personal</th>
                                     <th>Nombre</th>
                                     <th>Departamento</th>
-                                    <th>Primera entrada</th>
+                                    <th>Última entrada</th>
                                     <th>Última salida</th>
                                     <th>Estado</th>
                                 </tr>
@@ -158,10 +167,10 @@
                                         <td>{{ $movement->personal_id }}</td>
                                         <td>{{ $movement->nombre }}</td>
                                         <td>{{ $movement->departamento ?? 'Sin departamento' }}</td>
-                                        <td>{{ optional($movement->primera_entrada)->format('d-m H:i') ?? '-' }}</td>
-                                        <td>{{ optional($movement->ultima_salida)->format('d-m H:i') ?? '-' }}</td>
+                                        <td>{{ optional($movement->last_entry_at)->format('d-m H:i') ?? '-' }}</td>
+                                        <td>{{ optional($movement->last_exit_at)->format('d-m H:i') ?? '-' }}</td>
                                         <td>
-                                            @if ($movement->ultima_salida)
+                                            @if ($movement->last_exit_at)
                                                 <span class="badge badge-secondary">Fuera</span>
                                             @else
                                                 <span class="badge badge-success">Dentro</span>
@@ -170,7 +179,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="text-center text-muted">Sin registros.</td>
+                                        <td colspan="6" class="text-center text-muted">Sin personas dentro.</td>
                                     </tr>
                                 @endforelse
                             </tbody>

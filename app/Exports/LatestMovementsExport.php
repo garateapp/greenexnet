@@ -28,21 +28,24 @@ class LatestMovementsExport implements FromCollection, WithHeadings, WithMapping
             'Personal',
             'Nombre',
             'Departamento',
-            'Primera entrada',
-            'Ultima salida',
+            'Entrada',
+            'Salida',
             'Estado',
         ];
     }
 
     public function map($row): array
     {
+        $entrada = $row->primera_entrada ?? $row->last_entry_at;
+        $salida = $row->ultima_salida ?? $row->last_exit_at;
+
         return [
             $row->personal_id,
             $row->nombre,
             $row->departamento,
-            optional($row->primera_entrada)?->format('Y-m-d H:i'),
-            optional($row->ultima_salida)?->format('Y-m-d H:i'),
-            $row->ultima_salida ? 'Fuera' : 'Dentro',
+            optional($entrada)?->format('Y-m-d H:i'),
+            optional($salida)?->format('Y-m-d H:i'),
+            $salida ? 'Fuera' : 'Dentro',
         ];
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Exports\LatestMovementsExport;
 use App\Http\Controllers\Controller;
 use App\Models\ControlAccessLog;
+use App\Models\ControlAccessPresence;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -156,6 +157,14 @@ class ControlAccessDashboardController extends Controller
             ->distinct('personal_id')
             ->count('personal_id');
 
+        $currentPresenceQuery = ControlAccessPresence::query()
+            ->when(!empty($selectedDepartments), fn ($q) => $q->whereIn('departamento', $selectedDepartments))
+            ->when($onlyContractors, fn ($q) => $q->whereIn('departamento', $this->contractorDepartments));
+
+        $currentInside = (clone $currentPresenceQuery)
+            ->whereNull('last_exit_at')
+            ->count();
+
         $greenexInside = $this->countByDepartments($dayStart, $dayEnd, $selectedDepartments, $onlyContractors, $this->greenexDepartments);
         $garateInside = $this->countByDepartments($dayStart, $dayEnd, $selectedDepartments, $onlyContractors, $this->garateDepartments);
         $sanExpeditoInside = $this->countByDepartments($dayStart, $dayEnd, $selectedDepartments, $onlyContractors, $this->sanExpeditoDepartments);
@@ -180,19 +189,13 @@ class ControlAccessDashboardController extends Controller
             ->orderBy('departamento')
             ->pluck('departamento');
 
-        $latestDayStart = $baseDate->copy()->startOfDay();
-        $latestDayEnd = $baseDate->copy()->endOfDay();
-
-        $latestMovementsQuery = ControlAccessLog::query()
-            ->whereBetween('primera_entrada', [$latestDayStart, $latestDayEnd])
-            ->when(!empty($selectedDepartments), fn ($q) => $q->whereIn('departamento', $selectedDepartments))
-            ->when($onlyContractors, fn ($q) => $q->whereIn('departamento', $this->contractorDepartments))
-            ->select('personal_id', 'nombre', 'departamento', 'primera_entrada', 'ultima_salida')
-            ->distinct()
-            ->orderByDesc('primera_entrada');
+        $latestMovementsQuery = (clone $currentPresenceQuery)
+            ->whereNull('last_exit_at')
+            ->select('personal_id', 'nombre', 'departamento', 'last_entry_at', 'last_exit_at')
+            ->orderByDesc('last_entry_at');
 
         if ($request->get('export') === 'latest-movements') {
-            $fileName = 'movimientos_' . $latestDayStart->format('Ymd') . '.xlsx';
+            $fileName = 'presencia_actual_' . Carbon::now()->format('Ymd_His') . '.xlsx';
 
             return Excel::download(
                 new LatestMovementsExport($latestMovementsQuery->get()),
@@ -224,6 +227,7 @@ class ControlAccessDashboardController extends Controller
             'selectedDate' => $baseDate->format('Y-m-d'),
             'selectedDepartments' => $selectedDepartments,
             'onlyContractors' => $onlyContractors,
+            'currentInside' => $currentInside,
             'totalInside' => $totalInside,
             'dayShiftInside' => $dayShiftInside,
             'nightShiftInside' => $nightShiftInside,
