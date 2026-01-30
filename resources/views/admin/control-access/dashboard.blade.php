@@ -58,7 +58,7 @@
                     <div class="col-lg-4 col-md-6 mb-3">
                         <div class="card h-100">
                             <div class="card-body">
-                                <p class="text-uppercase text-muted font-weight-bold mb-2">Turno Día (06:00 - 16:29)</p>
+                                <p class="text-uppercase text-muted font-weight-bold mb-2">Turno Día (06:00 - 18:29)</p>
                                 <h2 class="mb-0 text-primary">{{ number_format($dayShiftInside) }}</h2>
                                 <small class="text-muted">Contratistas: {{ number_format($contractorDayInside) }}</small>
                             </div>
@@ -67,7 +67,7 @@
                     <div class="col-lg-4 col-md-6 mb-3">
                         <div class="card h-100">
                             <div class="card-body">
-                                <p class="text-uppercase text-muted font-weight-bold mb-2">Turno Noche (15:30 - 23:59)</p>
+                                <p class="text-uppercase text-muted font-weight-bold mb-2">Turno Noche (18:30 - 23:59)</p>
                                 <h2 class="mb-0 text-secondary">{{ number_format($nightShiftInside) }}</h2>
                                 <small class="text-muted">Contratistas: {{ number_format($contractorNightInside) }}</small>
                             </div>

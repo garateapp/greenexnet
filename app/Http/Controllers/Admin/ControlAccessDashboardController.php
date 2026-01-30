@@ -99,8 +99,8 @@ class ControlAccessDashboardController extends Controller
 
         $dayStart = $baseDate->copy()->setTime(6, 0, 0);
         $dayEnd = $baseDate->copy()->setTime(23, 59, 59);
-        $dayShiftEnd = $baseDate->copy()->setTime(16, 29, 59);
-        $nightShiftStart = $baseDate->copy()->setTime(15, 30, 0);
+        $dayShiftEnd = $baseDate->copy()->setTime(18, 29, 59);
+        $nightShiftStart = $baseDate->copy()->setTime(18, 30, 0);
 
         // Dotación por departamento (último movimiento del día, sólo los que no registran salida)
         [$whereClause, $bindings] = $this->buildWhereClause($dayStart, $dayEnd, $selectedDepartments, $onlyContractors);

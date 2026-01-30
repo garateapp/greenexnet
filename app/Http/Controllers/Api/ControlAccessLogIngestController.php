@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\ControlAccessLog;
+use App\Models\ControlAccessPresence;
 use App\Models\Personal;
 use App\Models\Entidad;
 use Carbon\Carbon;
@@ -104,6 +105,8 @@ class ControlAccessLogIngestController extends Controller
             $log->save();
             $stored[] = $log->id;
 
+            $this->updatePresence($record, $departmentName, $primera, $ultima);
+
             // ----------- Tu lógica Personal / contractorGroup se mantiene -----------
             if (!($personal)) {
                 // SOLO crear Personal si pertenece a un ContractorGroup
@@ -195,6 +198,63 @@ class ControlAccessLogIngestController extends Controller
         } catch (\Throwable $exception) {
             return null;
         }
+    }
+
+    private function updatePresence(array $record, ?string $departmentName, ?Carbon $primera, ?Carbon $ultima): void
+    {
+        $presence = ControlAccessPresence::firstOrNew([
+            'personal_id' => $record['personal_id'],
+        ]);
+
+        if (!empty($record['nombre'])) {
+            $presence->nombre = $record['nombre'];
+        }
+        if ($departmentName) {
+            $presence->departamento = $departmentName;
+        }
+        if (!empty($record['pin'])) {
+            $presence->pin = $record['pin'];
+        }
+
+        $pairMaxTime = $this->parseDate($record['pair_max_time'] ?? null);
+        $incomingLatest = $this->maxDate([$primera, $ultima, $pairMaxTime]);
+        $currentLatest = $this->maxDate([$presence->last_entry_at, $presence->last_exit_at]);
+
+        if ($incomingLatest && (!$currentLatest || $incomingLatest->gt($currentLatest))) {
+            $isEntry = $primera && (!$ultima || $primera->gt($ultima));
+            $isExit = $ultima && (!$primera || $ultima->gte($primera));
+
+            if ($isEntry) {
+                $presence->last_entry_at = $primera;
+                $presence->last_exit_at = null;
+            } elseif ($isExit) {
+                if ($primera && (!$presence->last_entry_at || $primera->gt($presence->last_entry_at))) {
+                    $presence->last_entry_at = $primera;
+                }
+                $presence->last_exit_at = $ultima;
+            }
+
+            if (!empty($record['max_event_id_pair'])) {
+                $presence->last_event_id_pair = $record['max_event_id_pair'];
+            }
+        }
+
+        if ($presence->isDirty()) {
+            $presence->save();
+        }
+    }
+
+    private function maxDate(array $dates): ?Carbon
+    {
+        $max = null;
+
+        foreach ($dates as $date) {
+            if ($date instanceof Carbon && (!$max || $date->gt($max))) {
+                $max = $date;
+            }
+        }
+
+        return $max;
     }
 
     public function getDeptoId(string $departamento)
