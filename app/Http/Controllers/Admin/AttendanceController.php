@@ -682,7 +682,7 @@ class AttendanceController extends Controller
             ->whereBetween('c.fecha', [$startDate, $endDate])
             ->whereIn('p.entidad_id', $entidades)
             ->whereRaw('TIME(c.primera_entrada) >= ? AND TIME(c.primera_entrada) < ?', [$dayStartTime, $nightStartTime])
-            ->whereIsNull('p.deleted_at')
+            ->whereNull('p.deleted_at')
             ->whereNotExists(function ($q) {
                 $q->select(DB::raw(1))
                     ->from('attendances as a')
