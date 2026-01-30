@@ -35,13 +35,13 @@
         <tbody>
         @forelse ($rows as $row)
             <tr>
-                <td>{{ optional($row->fecha)->format('Y-m-d') }}</td>
+                <td>{{ $row->fecha }}</td>
                 <td>{{ $row->personal_id }}</td>
                 <td>{{ $row->rut }}</td>
                 <td>{{ $row->nombre }}</td>
                 <td>{{ $row->departamento }}</td>
-                <td>{{ optional($row->primera_entrada)->format('H:i') }}</td>
-                <td>{{ optional($row->ultima_salida)->format('H:i') }}</td>
+                <td>{{ $row->primera_marca ? \Illuminate\Support\Carbon::parse($row->primera_marca)->format('H:i') : '' }}</td>
+                <td>{{ $row->ultima_salida ? \Illuminate\Support\Carbon::parse($row->ultima_salida)->format('H:i') : '' }}</td>
                 <td>
                     @if ($row->sin_asistencia)
                         <span class="badge-no">SIN REGISTRO</span>
