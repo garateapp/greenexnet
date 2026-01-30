@@ -68,9 +68,8 @@ class SendControlAccessReport extends Command
         $base = config('reports.control_access.subject', 'Reporte Control de Acceso');
         $range = $start->format('Y-m-d');
 
-        return Str::of($base)
+        return (string) Str::of($base)
             ->append(' ')
-            ->append($range)
-            ->toString();
+            ->append($range);
     }
 }
