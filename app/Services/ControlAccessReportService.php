@@ -55,4 +55,33 @@ class ControlAccessReportService
             ->orderBy('p.rut')
             ->get();
     }
+
+    public function buildSummary(Collection $rows): array
+    {
+        $total = $rows->count();
+        $sinAsistencia = $rows->where('sin_asistencia', 1)->count();
+        $conAsistencia = $total - $sinAsistencia;
+
+        return [
+            'total' => $total,
+            'con_asistencia' => $conAsistencia,
+            'sin_asistencia' => $sinAsistencia,
+        ];
+    }
+
+    public function buildTotalsByDepartment(Collection $rows): Collection
+    {
+        return $rows
+            ->groupBy('departamento')
+            ->map(function ($group, $departamento) {
+                return [
+                    'departamento' => $departamento,
+                    'total' => $group->count(),
+                    'con_asistencia' => $group->where('sin_asistencia', 0)->count(),
+                    'sin_asistencia' => $group->where('sin_asistencia', 1)->count(),
+                ];
+            })
+            ->sortByDesc('total')
+            ->values();
+    }
 }

@@ -30,6 +30,8 @@ class SendControlAccessReport extends Command
 
         $rows = $service->buildForRange($start, $end);
         $subjectLine = $this->buildSubject($start, $end);
+        $summary = $service->buildSummary($rows);
+        $totalsByDepartment = $service->buildTotalsByDepartment($rows);
 
         $mail = Mail::to($recipients['to']);
         if (!empty($recipients['cc'])) {
@@ -39,7 +41,7 @@ class SendControlAccessReport extends Command
             $mail->bcc($recipients['bcc']);
         }
 
-        $mail->send(new ControlAccessReportMail($rows, $start, $end, $subjectLine));
+        $mail->send(new ControlAccessReportMail($rows, $summary, $totalsByDepartment, $start, $end, $subjectLine));
 
         $this->info('Reporte de control de acceso enviado.');
         return self::SUCCESS;
@@ -72,4 +74,5 @@ class SendControlAccessReport extends Command
             ->append(' ')
             ->append($range);
     }
+
 }

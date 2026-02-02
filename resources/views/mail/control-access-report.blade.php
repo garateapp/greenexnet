@@ -19,6 +19,51 @@
         Rango: {{ $start->format('Y-m-d H:i') }} - {{ $end->format('Y-m-d H:i') }}
     </p>
 
+    <h3>Resumen ejecutivo</h3>
+    <table>
+        <thead>
+        <tr>
+            <th>Total personal</th>
+            <th>Con asistencia</th>
+            <th>Sin asistencia</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>{{ $summary['total'] ?? 0 }}</td>
+            <td>{{ $summary['con_asistencia'] ?? 0 }}</td>
+            <td>{{ $summary['sin_asistencia'] ?? 0 }}</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h3>Personal por departamento</h3>
+    <table>
+        <thead>
+        <tr>
+            <th>Departamento</th>
+            <th>Total</th>
+            <th>Con asistencia</th>
+            <th>Sin asistencia</th>
+        </tr>
+        </thead>
+        <tbody>
+        @forelse ($totalsByDepartment as $item)
+            <tr>
+                <td>{{ $item['departamento'] }}</td>
+                <td>{{ $item['total'] }}</td>
+                <td>{{ $item['con_asistencia'] }}</td>
+                <td>{{ $item['sin_asistencia'] }}</td>
+            </tr>
+        @empty
+            <tr>
+                <td colspan="4" class="muted">Sin datos por departamento.</td>
+            </tr>
+        @endforelse
+        </tbody>
+    </table>
+
+    <h3>Detalle</h3>
     <table>
         <thead>
         <tr>

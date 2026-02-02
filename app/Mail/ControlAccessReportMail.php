@@ -13,13 +13,17 @@ class ControlAccessReportMail extends Mailable
     use Queueable, SerializesModels;
 
     public Collection $rows;
+    public array $summary;
+    public Collection $totalsByDepartment;
     public CarbonInterface $start;
     public CarbonInterface $end;
     public string $subjectLine;
 
-    public function __construct(Collection $rows, CarbonInterface $start, CarbonInterface $end, string $subjectLine)
+    public function __construct(Collection $rows, array $summary, Collection $totalsByDepartment, CarbonInterface $start, CarbonInterface $end, string $subjectLine)
     {
         $this->rows = $rows;
+        $this->summary = $summary;
+        $this->totalsByDepartment = $totalsByDepartment;
         $this->start = $start;
         $this->end = $end;
         $this->subjectLine = $subjectLine;
@@ -30,6 +34,8 @@ class ControlAccessReportMail extends Mailable
         return $this->subject($this->subjectLine)
             ->view('mail.control-access-report', [
                 'rows' => $this->rows,
+                'summary' => $this->summary,
+                'totalsByDepartment' => $this->totalsByDepartment,
                 'start' => $this->start,
                 'end' => $this->end,
             ]);
