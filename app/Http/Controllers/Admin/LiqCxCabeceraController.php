@@ -734,6 +734,7 @@ protected function generatePdfZip(array $imagePaths)
                         ->where('id', $despacho->id_pkg_stock_det)
                         ->where('destruccion_tipo', 'GDP')
                         ->update(['valor' => $valor]);
+                        Log::debug("Actualizado folio {$despacho->folio} con valor {$valor}. Filas afectadas: {$affectedRows}");
                 }
             } catch (Exception $e) {
                 Log::error("Error al actualizar valor GD en FX: " . $e->getMessage());
