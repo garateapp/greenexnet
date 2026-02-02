@@ -495,6 +495,10 @@ class ComexController extends Controller
                 }
                 //}
                 $pallet = isset($fila['Pallet']) ? $fila['Pallet'] : '';
+                $palletFiltro = is_string($pallet) ? trim($pallet) : '';
+                if ($palletFiltro !== '' && str_contains($palletFiltro, ',')) {
+                    $palletFiltro = trim(explode(',', $palletFiltro, 2)[0]);
+                }
                 $etiqueta_id = isset($fila['Etiqueta']) ? $fila['Etiqueta'] : '';
                 $calibre = isset($fila['Calibre']) ? $fila['Calibre'] : '';
                 $embalaje_id = isset($fila['Embalaje']) ? $fila['Embalaje'] : '';
@@ -509,7 +513,7 @@ class ComexController extends Controller
                 $LiqCabecera->save();
                 //dd($LiqCabecera);
                 //DB::statement('SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED');
-                if($pallet!=''){
+                if ($palletFiltro !== '') {
                 $resultados = DB::connection('sqlsrv')
                     ->table('dbo.V_PKG_Embarques')
                     ->selectRaw('
@@ -523,7 +527,7 @@ class ComexController extends Controller
                     ->where('n_variedad_rotulacion', $variedad_id)
                     ->where('n_etiqueta', $etiqueta_id)
                     ->where('c_calibre', (string)$calibre)
-                    ->where('folio','like','%'.$pallet)
+                    ->where('folio', 'like', '%' . $palletFiltro)
                     ->groupBy('n_variedad_rotulacion', 'C_Embalaje', 'c_calibre', 'n_etiqueta')
                     ->get();
                 }
