@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Gate;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreSolicitudCompraRequest extends FormRequest
 {
@@ -30,9 +31,15 @@ class StoreSolicitudCompraRequest extends FormRequest
                 'min:0',
             ],
             'centro_costo_id' => [
-                'required',
+                Rule::requiredIf($this->isAdquisicionesUser()),
+                'nullable',
                 'integer',
                 'exists:centro_costos,id',
+                function ($attribute, $value, $fail) {
+                    if (!$this->isAdquisicionesUser() && !is_null($value)) {
+                        $fail('No tiene permisos para asignar centro de costo.');
+                    }
+                },
             ],
             'cotizaciones_por_adquisiciones' => [
                 'boolean',
@@ -42,5 +49,15 @@ class StoreSolicitudCompraRequest extends FormRequest
                 'date_format:' . config('panel.date_format'),
             ],
         ];
+    }
+
+    protected function isAdquisicionesUser(): bool
+    {
+        $user = $this->user();
+        if (!$user) {
+            return false;
+        }
+
+        return $user->roles->pluck('title')->contains('Adquisiciones');
     }
 }

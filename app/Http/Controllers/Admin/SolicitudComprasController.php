@@ -102,11 +102,12 @@ class SolicitudComprasController extends Controller
         $estadoInicialId = AdquisicionEstado::orderBy('orden')->value('id');
         $monedaId = $this->getClpMonedaId();
         $cotizacionesPorAdquisiciones = $this->resolveCotizacionesPorAdquisiciones($request);
+        $centroCostoId = $this->isAdquisicionesUser() ? $request->centro_costo_id : null;
 
         $solicitud = SolicitudCompra::create([
             'solicitante_id' => auth()->id(),
             'adquisicion_estado_id' => $estadoInicialId,
-            'centro_costo_id' => $request->centro_costo_id,
+            'centro_costo_id' => $centroCostoId,
             'moneda_id' => $monedaId,
             'titulo' => $request->titulo,
             'descripcion' => $request->descripcion,
@@ -140,9 +141,10 @@ class SolicitudComprasController extends Controller
         $cotizacionesRequeridas = $policy ? $policy->cotizaciones_requeridas : $solicitudCompra->cotizaciones_requeridas;
         $monedaId = $this->getClpMonedaId();
         $cotizacionesPorAdquisiciones = $this->resolveCotizacionesPorAdquisiciones($request);
+        $centroCostoId = $this->isAdquisicionesUser() ? $request->centro_costo_id : $solicitudCompra->centro_costo_id;
 
         $solicitudCompra->update([
-            'centro_costo_id' => $request->centro_costo_id,
+            'centro_costo_id' => $centroCostoId,
             'moneda_id' => $monedaId,
             'titulo' => $request->titulo,
             'descripcion' => $request->descripcion,

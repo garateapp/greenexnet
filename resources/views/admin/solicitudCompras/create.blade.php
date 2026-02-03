@@ -29,27 +29,40 @@
                 @endif
                 <span class="help-block">{{ trans('cruds.solicitudCompra.fields.descripcion_helper') }}</span>
             </div>
-            <div class="form-group">
-                <label class="required" for="centro_costo_id">{{ trans('cruds.solicitudCompra.fields.centro_costo') }}</label>
-                <select class="form-control select2 {{ $errors->has('centro_costo_id') ? 'is-invalid' : '' }}" name="centro_costo_id" id="centro_costo_id" required>
-                    <option value="">{{ trans('global.pleaseSelect') }}</option>
-                    @foreach($centroCostos as $centro)
-                        @php
-                            $label = trim(($centro->c_centrocosto ? $centro->c_centrocosto . ' - ' : '') . $centro->n_centrocosto);
-                            $entidad = $centro->entidad ? $centro->entidad->nombre : '';
-                        @endphp
-                        <option value="{{ $centro->id }}" {{ old('centro_costo_id') == $centro->id ? 'selected' : '' }}>
-                            {{ $label }}{{ $entidad ? ' (' . $entidad . ')' : '' }}
-                        </option>
-                    @endforeach
-                </select>
-                @if($errors->has('centro_costo_id'))
-                    <div class="invalid-feedback">
-                        {{ $errors->first('centro_costo_id') }}
+            @php
+                $user = auth()->user();
+                $esAdquisiciones = $user && $user->roles->pluck('title')->contains('Adquisiciones');
+            @endphp
+            @if($esAdquisiciones)
+                <div class="form-group">
+                    <label class="required" for="centro_costo_id">{{ trans('cruds.solicitudCompra.fields.centro_costo') }}</label>
+                    <select class="form-control select2 {{ $errors->has('centro_costo_id') ? 'is-invalid' : '' }}" name="centro_costo_id" id="centro_costo_id" required>
+                        <option value="">{{ trans('global.pleaseSelect') }}</option>
+                        @foreach($centroCostos as $centro)
+                            @php
+                                $label = trim(($centro->c_centrocosto ? $centro->c_centrocosto . ' - ' : '') . $centro->n_centrocosto);
+                                $entidad = $centro->entidad ? $centro->entidad->nombre : '';
+                            @endphp
+                            <option value="{{ $centro->id }}" {{ old('centro_costo_id') == $centro->id ? 'selected' : '' }}>
+                                {{ $label }}{{ $entidad ? ' (' . $entidad . ')' : '' }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @if($errors->has('centro_costo_id'))
+                        <div class="invalid-feedback">
+                            {{ $errors->first('centro_costo_id') }}
+                        </div>
+                    @endif
+                    <span class="help-block">{{ trans('cruds.solicitudCompra.fields.centro_costo_helper') }}</span>
+                </div>
+            @else
+                <div class="form-group">
+                    <label>{{ trans('cruds.solicitudCompra.fields.centro_costo') }}</label>
+                    <div class="alert alert-info mb-0">
+                        El centro de costo sera asignado por Adquisiciones.
                     </div>
-                @endif
-                <span class="help-block">{{ trans('cruds.solicitudCompra.fields.centro_costo_helper') }}</span>
-            </div>
+                </div>
+            @endif
             <div class="form-group">
                 <label class="required" for="monto_estimado">{{ trans('cruds.solicitudCompra.fields.monto_estimado') }}</label>
                 <input class="form-control {{ $errors->has('monto_estimado') ? 'is-invalid' : '' }}" type="number" name="monto_estimado" id="monto_estimado" value="{{ old('monto_estimado', '') }}" step="1" required>

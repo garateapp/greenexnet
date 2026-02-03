@@ -15,6 +15,7 @@ class SolicitudCompraMail extends Mailable
     public $tipo;
     public $estadoAnterior;
     public $estadoNuevo;
+    public $url;
 
     public function __construct(SolicitudCompra $solicitud, string $tipo, ?string $estadoAnterior = null, ?string $estadoNuevo = null)
     {
@@ -22,6 +23,7 @@ class SolicitudCompraMail extends Mailable
         $this->tipo = $tipo;
         $this->estadoAnterior = $estadoAnterior;
         $this->estadoNuevo = $estadoNuevo;
+        $this->url = url(route('admin.solicitud-compras.show', $solicitud, false));
     }
 
     public function build()
@@ -31,6 +33,12 @@ class SolicitudCompraMail extends Mailable
             : 'Cambio de estado solicitud #' . $this->solicitud->id;
 
         return $this->subject($subject)
-            ->view('mail.solicitud-compra');
+            ->view('mail.solicitud-compra')
+            ->withSwiftMessage(function (\Swift_Message $message) {
+                $headers = $message->getHeaders();
+                $headers->addTextHeader('X-Mailgun-Track', 'no');
+                $headers->addTextHeader('X-Mailgun-Track-Clicks', 'no');
+                $headers->addTextHeader('X-Mailgun-Track-Opens', 'no');
+            });
     }
 }

@@ -28,7 +28,7 @@
     @endif
 
     <p>
-        <a href="{{ route('admin.solicitud-compras.show', $solicitud) }}">Ver solicitud</a>
+        <a href="{{ $url }}">Ver solicitud</a>
     </p>
 </body>
 </html>
