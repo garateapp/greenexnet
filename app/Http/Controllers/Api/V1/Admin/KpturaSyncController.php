@@ -36,8 +36,10 @@ class KpturaSyncController extends Controller
         ]);
 
         if ($validator->fails()) {
+            Log::error($validator->errors());
             return response()->json(
                 ['message' => 'Datos invalidos', 'errors' => $validator->errors()],
+
                 Response::HTTP_UNPROCESSABLE_ENTITY
             );
         }
@@ -50,7 +52,6 @@ class KpturaSyncController extends Controller
             $windowEnd = $ts->copy()->addHours(2);
 
             $exists = Attendance::where('personal_id', $attendance['personal_id'])
-                ->where('location', $attendance['location_id'])
                 ->whereBetween('timestamp', [$windowStart, $windowEnd])
                 ->exists();
 
