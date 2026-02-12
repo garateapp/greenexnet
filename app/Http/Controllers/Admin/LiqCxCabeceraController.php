@@ -1125,7 +1125,7 @@ protected function generatePdfZip(array $imagePaths)
                         case 'Comisión':
                             $comision += $costo->valor;
                             $porcComision = $comision / $total_ventas;
-                            //   Log::info("Porcentaje Comision: " . $porcComision);
+                            Log::info("Porcentaje Comision: " . $porcComision);
                             break;
                         case 'Entrada Mercado':
                             $entradamercado = $costo->valor;
