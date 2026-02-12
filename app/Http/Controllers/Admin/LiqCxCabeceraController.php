@@ -1097,7 +1097,7 @@ protected function generatePdfZip(array $imagePaths)
                 // Log::info("Total Venta: " . $total_ventas);
             }
 
-            $porcComision = '0,06';
+            $porcComision = '0';
             foreach ($detalle as $item) {
 
                 $costos = LiqCosto::where('liq_cabecera_id', $liqCxCabecera->id)->get();
