@@ -667,6 +667,21 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
 
     Route::resource('tarjado', 'TarjadoController');
 
+    // Costeo real de materiales por proceso
+    Route::get('material-consumption', 'MaterialConsumptionController@index')->name('material-consumption.index');
+    Route::post('material-consumption/calculate', 'MaterialConsumptionController@calculate')->name('material-consumption.calculate');
+    Route::get('material-consumption/calculations/{calculation}', 'MaterialConsumptionController@show')->name('material-consumption.show');
+    Route::post('material-consumption/calculations/{calculation}/adjustments', 'MaterialConsumptionController@addAdjustment')->name('material-consumption.adjustments.store');
+    Route::get('material-consumption/rules', 'MaterialConsumptionController@rules')->name('material-consumption.rules.index');
+    Route::post('material-consumption/rules', 'MaterialConsumptionController@storeRuleSet')->name('material-consumption.rules.store');
+    Route::put('material-consumption/rules/{ruleSet}', 'MaterialConsumptionController@updateRuleSet')->name('material-consumption.rules.update');
+    Route::delete('material-consumption/rules/{ruleSet}', 'MaterialConsumptionController@destroyRuleSet')->name('material-consumption.rules.destroy');
+    Route::post('material-consumption/rules/{ruleSet}/patterns', 'MaterialConsumptionController@upsertRowPattern')->name('material-consumption.rules.patterns.upsert');
+    Route::delete('material-consumption/rule-patterns/{rowPattern}', 'MaterialConsumptionController@destroyRowPattern')->name('material-consumption.rule-patterns.destroy');
+    Route::post('material-consumption/rules/{ruleSet}/materials', 'MaterialConsumptionController@storeRuleMaterial')->name('material-consumption.rules.materials.store');
+    Route::put('material-consumption/rule-materials/{ruleMaterial}', 'MaterialConsumptionController@updateRuleMaterial')->name('material-consumption.rule-materials.update');
+    Route::delete('material-consumption/rule-materials/{ruleMaterial}', 'MaterialConsumptionController@destroyRuleMaterial')->name('material-consumption.rule-materials.destroy');
+
     //Generador de Liquidaciones
 
 
