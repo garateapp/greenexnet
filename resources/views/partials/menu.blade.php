@@ -582,7 +582,7 @@
         </li>
         @endcan
         @can('operacione_access')
-            <li class="c-sidebar-nav-dropdown {{ request()->is("admin/materials*") ? "c-show" : "" }} {{ request()->is("admin/material-productos*") ? "c-show" : "" }}">
+            <li class="c-sidebar-nav-dropdown {{ request()->is("admin/materials*") ? "c-show" : "" }} {{ request()->is("admin/material-productos*") ? "c-show" : "" }} {{ request()->is("admin/tarjado*") ? "c-show" : "" }} {{ request()->is("admin/material-consumption*") ? "c-show" : "" }}">
                 <a class="c-sidebar-nav-dropdown-toggle" href="#">
                     <i class="fa-fw fab fa-algolia c-sidebar-nav-icon">
 
@@ -610,7 +610,7 @@
                             </a>
                         </li>
                         <li class="c-sidebar-nav-item">
-                            <a href="{{ route("admin.tarjado.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/material-productos") || request()->is("admin/material-productos/*") ? "c-active" : "" }}">
+                            <a href="{{ route("admin.tarjado.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/tarjado") || request()->is("admin/tarjado/*") ? "c-active" : "" }}">
                                 <i class="fa-fw fas fa-cogs c-sidebar-nav-icon">
 
                                 </i>
@@ -618,6 +618,14 @@
                             </a>
                         </li>
                     @endcan
+                    <li class="c-sidebar-nav-item">
+                        <a href="{{ route("admin.material-consumption.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/material-consumption") || request()->is("admin/material-consumption/*") ? "c-active" : "" }}">
+                            <i class="fa-fw fas fa-calculator c-sidebar-nav-icon">
+
+                            </i>
+                            Costeo Real Materiales
+                        </a>
+                    </li>
                 </ul>
             </li>
         @endcan
