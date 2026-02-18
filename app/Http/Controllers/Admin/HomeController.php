@@ -15,7 +15,7 @@ class HomeController
     {
         $liqs = LiqCxCabecera::all()->count();
         $total = DB::connection('sqlsrv')->table('dbo.V_PKG_Embarques')
-            ->where('n_embarque', 'like', '2425%')
+            ->where('n_embarque', 'like', '2526%')
             ->where('id_especie', 7)
             ->distinct('n_embarque')
             ->count('n_embarque');
