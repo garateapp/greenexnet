@@ -21,6 +21,7 @@ use App\Models\ExcelDato;
 use App\Models\Diccionario;
 use App\Models\Nafe;
 use App\Models\Fob;
+use App\Models\Especy;
 use Illuminate\Support\Str;
 use Log;
 use Carbon\Carbon;
@@ -2150,6 +2151,39 @@ class ReporteriaController extends Controller
             return $item;
         });
         return $datos;
+    }
+    public function getTotalEmbarques(Request $request)
+    {
+
+
+        $especies = collect((array) $request->input('especie', []))
+            ->map(function ($especie) {
+                return Str::upper(trim((string) $especie));
+            })
+            ->filter()
+            ->values()
+            ->all();
+        $especie=Especy::whereIn('nombre',$especies)->pluck('id')->toArray();
+
+        $liqs = LiqCxCabecera::where('instructivo', 'like', 'I2526%');
+        if (!empty($especie)) {
+            $liqs->whereIn('especie_id', $especie);
+        }
+        $cargado=$liqs->count();
+        $query = DB::connection('sqlsrv')->table('dbo.V_PKG_Embarques')
+            ->where('numero_referencia', 'like', 'I2526%');
+
+        if (!empty($especies)) {
+            $query->whereIn(DB::raw('UPPER(n_especie)'), $especies);
+        }
+        Log::info("SQL: " . $query->toSql());
+        Log::info("SQL: " . $liqs->toSql());
+        $total = $query
+            ->distinct('numero_referencia')
+            ->count('numero_referencia');
+        Log::info("total: " . $total . " cargado: " . $cargado);
+        $porCargar = ($cargado)*100/$total;
+        return response()->json(['total' => $total], 200);
     }
      public function obtenerDataComparativaInicial()
     {

@@ -218,6 +218,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('reporteria/obtenerliquidacionesagrupadas', 'ReporteriaController@obtenerliquidacionesagrupadas')->name('reporteria.obtenerliquidacionesagrupadas');
     Route::get('reporteria/getReporteInstructivos', 'ReporteriaController@getReporteInstructivos')->name('reporteria.getReporteInstructivos');
     Route::get('reporteria/SabanaLiquidaciones', 'ReporteriaController@SabanaLiquidaciones')->name('reporteria.SabanaLiquidaciones');
+    Route::get('reporteria/getTotalEmbarques', 'ReporteriaController@getTotalEmbarques')->name('reporteria.getTotalEmbarques');
     Route::get('reporteria/access-report','ReporteriaController@SabanaLiquidaciones')->name('reporteria.accessreport');
     Route::post('reporteria/obtenerComparativo', 'ReporteriaController@obtenerComparativo')->name('reporteria.obtenerComparativo');
     Route::get('reporteria/obtenerDataComparativaInicial', 'ReporteriaController@obtenerDataComparativaInicial')->name('reporteria.obtenerDataComparativaInicial');

@@ -170,14 +170,15 @@
                                             <div class="card-body">
                                                 <div class="fs-4 fw-bold text-center">
                                                     <p><i class="fas fa-file-contract fa-3x "></i></p>
-                                                    <p class="indicador">449</p>
+                                                    <p class="indicador"></p>
                                                 </div>
 
                                                 <div class="text-center">Liquidaciones Cargadas</div>
                                                 <div class="progress progress-thin my-2">
-                                                    <div class="progress-bar bg-success text-white text-center"
-                                                        role="progressbar" style="width: 100%" aria-valuenow="100"
-                                                        aria-valuemin="0" aria-valuemax="100">100%</div>
+                                                    <div id="progressLiquidaciones"
+                                                        class="progress-bar bg-success text-white text-center"
+                                                        role="progressbar" style="width: 0%" aria-valuenow="0"
+                                                        aria-valuemin="0" aria-valuemax="100">0%</div>
                                                     <div class="text-body-primary">
 
                                                     </div>
@@ -705,6 +706,65 @@
 
 
                     });
+                    let totalEmbarquesFiltrados = 0;
+                    let progressRequestToken = 0;
+                    let ultimaClaveEspecies = null;
+
+                    function obtenerEspeciesSeleccionadas() {
+                        return ($("#filtroEspecie").val() || [])
+                            .map(val => (val || "").toString().toUpperCase())
+                            .filter(Boolean);
+                    }
+
+                    function renderProgressLiquidaciones(totalLiquidaciones) {
+                        const porcentaje = totalEmbarquesFiltrados > 0 ?
+                            Math.min(100, Math.max(0, (totalLiquidaciones / totalEmbarquesFiltrados) * 100)) :
+                            0;
+
+                        const porcentajeTexto = `${Math.round(porcentaje)}%`;
+
+                        $("#progressLiquidaciones")
+                            .css("width", `${porcentaje.toFixed(2)}%`)
+                            .attr("aria-valuenow", porcentaje.toFixed(2))
+                            .text(porcentajeTexto)
+                            .attr("title",
+                                `${totalLiquidaciones} liquidaciones de ${totalEmbarquesFiltrados} embarques`);
+                    }
+
+                    function actualizarProgressLiquidaciones(totalLiquidaciones) {
+                        const especies = obtenerEspeciesSeleccionadas();
+                        const claveEspecies = especies.slice().sort().join("|");
+
+                        if (ultimaClaveEspecies === claveEspecies) {
+                            renderProgressLiquidaciones(totalLiquidaciones);
+                            return;
+                        }
+
+                        ultimaClaveEspecies = claveEspecies;
+                        const tokenActual = ++progressRequestToken;
+
+                        $.ajax({
+                            url: "{{ route('admin.reporteria.getTotalEmbarques') }}",
+                            type: "GET",
+                            data: {
+                                especie: especies
+                            },
+                            success: function(response) {
+                                if (tokenActual !== progressRequestToken) {
+                                    return;
+                                }
+                                console.log("totalEmbarquesFiltrados: " + totalEmbarquesFiltrados);
+                                const total = Number((response && response.total) || 0);
+                                totalEmbarquesFiltrados = Number.isFinite(total) ? total : 0;
+                                renderProgressLiquidaciones(totalLiquidaciones);
+                            },
+                            error: function(xhr, status, error) {
+                                console.error("Error al obtener total de embarques:", error);
+                                totalEmbarquesFiltrados = 0;
+                                renderProgressLiquidaciones(totalLiquidaciones);
+                            }
+                        });
+                    }
 
                     $.ajax({
                         url: "{{ route('admin.reporteria.SabanaLiquidaciones') }}",
@@ -1124,7 +1184,7 @@
                         const instructivosUnicos = [...new Set(datos.map(item => item.Liquidacion))].filter(
                             Boolean);
                         const totalLiquidaciones = instructivosUnicos.length;
-
+                        console.log(datos);
                         // 2. FOB Total: Suma de FOB_TO_USD
                         const fobTotal = datos.reduce((sum, item) => sum + (item.FOB_TO_USD || 0), 0);
 
@@ -1159,6 +1219,7 @@
 
                         // Actualizar las calugas en la interfaz
                         $(".indicador").eq(0).text(totalLiquidaciones); // Liquidaciones Cargadas
+                        actualizarProgressLiquidaciones(totalLiquidaciones);
                         $(".indicador").eq(1).text(
                             `$${fobTotal.toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
                         ); // FOB Total
