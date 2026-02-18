@@ -311,48 +311,48 @@
                                                 <ul class="nav nav-tabs col-lg-12" id="ComparativaTabs" role="tablist">
                                                     <!-- Pestaña Comparativa General -->
                                                     <li class="nav-item" role="presentation">
-                                                        <button class="nav-link active" id="FobVariedad-tab"
-                                                            data-bs-toggle="tab" data-bs-target="#FobVariedad" type="button"
-                                                            role="tab" aria-controls="FobVariedad" aria-selected="false">
+                                                        <a class="nav-link active" id="FobVariedad-tab"
+                                                            data-toggle="tab" href="#FobVariedad" role="tab"
+                                                            aria-controls="FobVariedad" aria-selected="true">
                                                             Por Variedad
-                                                        </button>
+                                                        </a>
                                                     </li>
                                                     <!-- Pestaña Comparativa x Cliente -->
                                                     <li class="nav-item" role="presentation">
-                                                        <button class="nav-link" id="FobFormato-tab" data-bs-toggle="tab"
-                                                            data-bs-target="#FobFormato" type="button" role="tab"
-                                                            aria-controls="FobFormato" aria-selected="true">
+                                                        <a class="nav-link" id="FobFormato-tab" data-toggle="tab"
+                                                            href="#FobFormato" role="tab"
+                                                            aria-controls="FobFormato" aria-selected="false">
                                                             Por Formato
-                                                        </button>
+                                                        </a>
                                                     </li>
                                                     <!-- Pestaña de Rendimiento -->
                                                     <li class="nav-item" role="presentation">
-                                                        <button class="nav-link" id="FobCliente-tab" data-bs-toggle="tab"
-                                                            data-bs-target="#FobCliente" type="button" role="tab"
+                                                        <a class="nav-link" id="FobCliente-tab" data-toggle="tab"
+                                                            href="#FobCliente" role="tab"
                                                             aria-controls="FobCliente" aria-selected="false">
                                                             Por Cliente
-                                                        </button>
+                                                        </a>
                                                     </li>
                                                     <li class="nav-item" role="presentation">
-                                                        <button class="nav-link" id="FobCalibre-tab" data-bs-toggle="tab"
-                                                            data-bs-target="#FobCalibre" type="button" role="tab"
+                                                        <a class="nav-link" id="FobCalibre-tab" data-toggle="tab"
+                                                            href="#FobCalibre" role="tab"
                                                             aria-controls="FobCalibre" aria-selected="false">
                                                             Por Calibre
-                                                        </button>
+                                                        </a>
                                                     </li>
                                                     <li class="nav-item" role="presentation">
-                                                        <button class="nav-link" id="FobEtiqueta-tab" data-bs-toggle="tab"
-                                                            data-bs-target="#FobEtiqueta" type="button" role="tab"
+                                                        <a class="nav-link" id="FobEtiqueta-tab" data-toggle="tab"
+                                                            href="#FobEtiqueta" role="tab"
                                                             aria-controls="FobEtiqueta" aria-selected="false">
                                                             Por Etiqueta
-                                                        </button>
+                                                        </a>
                                                     </li>
                                                     <li class="nav-item" role="presentation">
-                                                        <button class="nav-link" id="FobFlete-tab" data-bs-toggle="tab"
-                                                            data-bs-target="#FobFlete" type="button" role="tab"
+                                                        <a class="nav-link" id="FobFlete-tab" data-toggle="tab"
+                                                            href="#FobFlete" role="tab"
                                                             aria-controls="FobFlete" aria-selected="false">
                                                             Por tipo de Flete
-                                                        </button>
+                                                        </a>
                                                     </li>
 
                                                 </ul>
