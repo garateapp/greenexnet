@@ -372,10 +372,13 @@
                     url: "{{ route('admin.embarques.ActualizaSistemaFX') }}",
                     className: 'btn-success',
                     action: function(e, dt, node, config) {
-                        var ids = $.map(dt.rows({
+                        var selectedRows = dt.rows({
                             selected: true
-                        }).data(), function(entry) {
-                            return entry.id
+                        }).data().toArray();
+
+                        var ids = $.map(selectedRows, function(entry) {
+                            var id = parseInt(entry.id, 10);
+                            return Number.isInteger(id) && id > 0 ? id : null;
                         });
 
                         if (ids.length === 0) {
@@ -398,6 +401,13 @@
                                 })
                                 .done(function() {
                                     location.reload()
+                                })
+                                .fail(function(xhr) {
+                                    let message = 'No se pudo actualizar en FX.';
+                                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                                        message = xhr.responseJSON.message;
+                                    }
+                                    alert(message);
                                 })
                         }
                     }

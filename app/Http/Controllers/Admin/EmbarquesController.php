@@ -41,7 +41,8 @@ class EmbarquesController extends Controller
         abort_if(Gate::denies('embarque_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         if ($request->ajax()) {
-        $select = <<<SQL
+$select = <<<SQL
+MIN(id) as id,
 temporada,
 semana,
 transporte,
@@ -126,7 +127,7 @@ $groupColumnsForQuery = array_values(
 // columnas base que necesita la subquery interna
 $baseColumns = array_values(array_unique(array_merge(
     $groupColumns,
-    ['cajas', 'cant_pallets', 'peso_neto', 'notas'] // <-- aquí agregamos notas
+    ['id', 'cajas', 'cant_pallets', 'peso_neto', 'notas'] // <-- aquí agregamos notas
 )));
 
 $baseQuery = Embarque::query()
@@ -422,15 +423,38 @@ $query = DB::query()
 
     public function ActualizaSistemaFX(Request $request)
     {
-        foreach ($request->ids as $id) {
-            $embarque = Embarque::find($id)->first();
-              $actualizacion=DB::connection("sqlsrv")->table('dbo.PKG_Embarques')->where("id_embarque", "=", $embarque->origen_embarque_id)
-              ->update([
-                  "eta" => $embarque->fecha_arribo_real]);
+        $ids = collect((array) $request->input('ids', []))
+            ->map(fn ($id) => (int) $id)
+            ->filter(fn ($id) => $id > 0)
+            ->unique()
+            ->values();
 
-
+        if ($ids->isEmpty()) {
+            return response()->json([
+                'message' => 'No se recibieron IDs válidos para actualizar.',
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-        return response()->json(['message' => 'Se han actualizado los embarques seleccionados'], Response::HTTP_CREATED);
+
+        $embarques = Embarque::whereIn('id', $ids)->get();
+        $actualizados = 0;
+
+        foreach ($embarques as $embarque) {
+            if (!$embarque->origen_embarque_id) {
+                continue;
+            }
+
+            $actualizados += DB::connection("sqlsrv")->table('dbo.PKG_Embarques')
+                ->where("id", "=", $embarque->origen_embarque_id)
+                ->update([
+                    "eta" => $embarque->fecha_arribo_real,
+                ]);
+        }
+
+        return response()->json([
+            'message' => 'Se han actualizado los embarques seleccionados',
+            'ids_recibidos' => $ids->all(),
+            'registros_actualizados' => $actualizados,
+        ], Response::HTTP_CREATED);
     }
     public function enviarMail()
     {
