@@ -60,6 +60,13 @@ return [
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+                PDO::MYSQL_ATTR_INIT_COMMAND => sprintf(
+                    'SET SESSION sort_buffer_size=%d, SESSION join_buffer_size=%d, SESSION tmp_table_size=%d, SESSION max_heap_table_size=%d',
+                    (int) env('DB_SORT_BUFFER_SIZE', 4194304),
+                    (int) env('DB_JOIN_BUFFER_SIZE', 4194304),
+                    (int) env('DB_TMP_TABLE_SIZE', 67108864),
+                    (int) env('DB_MAX_HEAP_TABLE_SIZE', 67108864)
+                ),
             ]) : [],
         ],
         'mysqlAppGreenex' => [
@@ -79,6 +86,13 @@ return [
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+                PDO::MYSQL_ATTR_INIT_COMMAND => sprintf(
+                    'SET SESSION sort_buffer_size=%d, SESSION join_buffer_size=%d, SESSION tmp_table_size=%d, SESSION max_heap_table_size=%d',
+                    (int) env('DB_SORT_BUFFER_SIZE', 4194304),
+                    (int) env('DB_JOIN_BUFFER_SIZE', 4194304),
+                    (int) env('DB_TMP_TABLE_SIZE', 67108864),
+                    (int) env('DB_MAX_HEAP_TABLE_SIZE', 67108864)
+                ),
             ]) : [],
         ],
         'pgsql' => [
@@ -121,7 +135,22 @@ return [
             'prefix' => '',
             // 'encrypt' => env('DB_ENCRYPT', 'yes'),
             'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'true'),
-        ]
+        ],
+         'unitec_db_register' => [
+            'driver' => 'sqlsrv',
+            'url' => env('UNITEC_DB_UNIREGISTER_URL'),
+            'host' => env('UNITEC_DB_UNIREGISTER_HOST', '192.168.0.9'),
+            'port' => env('UNITEC_DB_UNIREGISTER_PORT', '1433'),
+            'database' => env('UNITEC_DB_UNIREGISTER_DATABASE', 'UNITEC_DB_UNIREGISTER'),
+            'username' => env('UNITEC_DB_UNIREGISTER_USERNAME', 'fx'),
+            'password' => env('UNITEC_DB_UNIREGISTER_PASSWORD', 'Primet3c1'),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            // 'encrypt' => env('DB_ENCRYPT', 'yes'),
+            'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'true'),
+        ],
+
     ],
 
     /*
@@ -176,4 +205,3 @@ return [
     ],
 
 ];
- 
