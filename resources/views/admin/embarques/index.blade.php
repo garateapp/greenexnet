@@ -399,15 +399,40 @@
                                         ids: ids
                                     }
                                 })
-                                .done(function() {
-                                    location.reload()
+                                .done(function(response) {
+                                    const message = (response && response.message) ?
+                                        response.message :
+                                        'Se han actualizado los embarques seleccionados';
+
+                                    if (typeof Swal !== 'undefined') {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Actualizar FX',
+                                            text: message,
+                                            confirmButtonText: 'Aceptar'
+                                        }).then(function() {
+                                            dt.ajax.reload(null, false);
+                                        });
+                                    } else {
+                                        alert(message);
+                                        dt.ajax.reload(null, false);
+                                    }
                                 })
                                 .fail(function(xhr) {
                                     let message = 'No se pudo actualizar en FX.';
                                     if (xhr.responseJSON && xhr.responseJSON.message) {
                                         message = xhr.responseJSON.message;
                                     }
-                                    alert(message);
+                                    if (typeof Swal !== 'undefined') {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Actualizar FX',
+                                            text: message,
+                                            confirmButtonText: 'Cerrar'
+                                        });
+                                    } else {
+                                        alert(message);
+                                    }
                                 })
                         }
                     }

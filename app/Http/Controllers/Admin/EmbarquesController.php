@@ -439,7 +439,8 @@ $query = DB::query()
         $actualizados = 0;
 
         foreach ($embarques as $embarque) {
-            if (!$embarque->origen_embarque_id) {
+            if (!$embarque->origen_embarque_id || !$embarque->fecha_arribo_real || $embarque->fecha_arribo_real=='' || $embarque->fecha_arribo_real==null) {
+
                 continue;
             }
 
