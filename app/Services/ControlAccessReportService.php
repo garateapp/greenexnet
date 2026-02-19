@@ -7,7 +7,7 @@ use App\Models\ControlAccessLog;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Log;
 class ControlAccessReportService
 {
     public function buildForRange(CarbonInterface $start, CarbonInterface $end): Collection
