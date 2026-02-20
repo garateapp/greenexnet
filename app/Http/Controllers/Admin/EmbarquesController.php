@@ -21,6 +21,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Yajra\DataTables\Facades\DataTables;
 use DB;
 use Carbon\Carbon;
+use DateTimeInterface;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use App\Services\EmbarqueImporter;
@@ -444,24 +445,39 @@ SQL;
 
         $embarques = Embarque::whereIn('id', $ids)->get();
         $actualizados = 0;
+        $omitidos = 0;
 
         foreach ($embarques as $embarque) {
             if (!$embarque->origen_embarque_id || !$embarque->fecha_arribo_real || $embarque->fecha_arribo_real=='' || $embarque->fecha_arribo_real==null) {
+                $omitidos++;
+                continue;
+            }
+
+            $eta = $this->formatDateForSqlServer($embarque->fecha_arribo_real);
+
+            if (!$eta) {
+                $omitidos++;
+
+                Log::warning('No fue posible convertir fecha_arribo_real para sincronizar embarque en SistemaFX.', [
+                    'embarque_id' => $embarque->id,
+                    'origen_embarque_id' => $embarque->origen_embarque_id,
+                    'fecha_arribo_real' => $embarque->fecha_arribo_real,
+                ]);
 
                 continue;
             }
 
-            $actualizados += DB::connection("sqlsrv")->table('dbo.PKG_Embarques')
-                ->where("id", "=", $embarque->origen_embarque_id)
-                ->update([
-                    "eta" => $embarque->fecha_arribo_real,
-                ]);
+            $actualizados += DB::connection('sqlsrv')->update(
+                'UPDATE dbo.PKG_Embarques SET eta = CONVERT(datetime2(3), ?, 126) WHERE id = ?',
+                [$eta, $embarque->origen_embarque_id]
+            );
         }
 
         return response()->json([
             'message' => 'Se han actualizado los embarques seleccionados',
             'ids_recibidos' => $ids->all(),
             'registros_actualizados' => $actualizados,
+            'registros_omitidos' => $omitidos,
         ], Response::HTTP_CREATED);
     }
     public function enviarMail()
@@ -1124,6 +1140,49 @@ SQL;
         $fecha = $fechaBase->addDays($valorFechaExcel - 2);
 
         return $fecha->format('Y-m-d H:i:s');
+    }
+
+    protected function formatDateForSqlServer($value): ?string
+    {
+        if ($value instanceof DateTimeInterface) {
+            return Carbon::instance($value)->format('Y-m-d\TH:i:s.v');
+        }
+
+        if (!is_string($value)) {
+            return null;
+        }
+
+        $value = trim($value);
+
+        if ($value === '') {
+            return null;
+        }
+
+        $formats = [
+            'd/m/Y H:i:s',
+            'd/m/Y H:i',
+            'd/m/Y',
+            'd-m-Y H:i:s',
+            'd-m-Y H:i',
+            'd-m-Y',
+            'Y-m-d H:i:s.u',
+            'Y-m-d H:i:s',
+            'Y-m-d',
+        ];
+
+        foreach ($formats as $format) {
+            try {
+                return Carbon::createFromFormat($format, $value)->format('Y-m-d\TH:i:s.v');
+            } catch (\Throwable $e) {
+                continue;
+            }
+        }
+
+        try {
+            return Carbon::parse($value)->format('Y-m-d\TH:i:s.v');
+        } catch (\Throwable $e) {
+            return null;
+        }
     }
 
     protected function buildTotalsByTransport(Collection $embarques): Collection
