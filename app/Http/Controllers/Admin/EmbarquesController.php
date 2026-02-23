@@ -452,7 +452,7 @@ SQL;
                 $omitidos++;
                 continue;
             }
-
+            $etd=$this->formatDateForSqlServer($embarque->fecha_zarpe_real);
             $eta = $this->formatDateForSqlServer($embarque->fecha_arribo_real);
 
             if (!$eta) {
@@ -462,14 +462,15 @@ SQL;
                     'embarque_id' => $embarque->id,
                     'origen_embarque_id' => $embarque->origen_embarque_id,
                     'fecha_arribo_real' => $embarque->fecha_arribo_real,
+                    'fecha_zarpe_real'=>$embarque->fecha_zarpe_real
                 ]);
 
                 continue;
             }
 
             $actualizados += DB::connection('sqlsrv')->update(
-                'UPDATE dbo.PKG_Embarques SET eta = CONVERT(datetime2(3), ?, 126) WHERE id = ?',
-                [$eta, $embarque->origen_embarque_id]
+                'UPDATE dbo.PKG_Embarques SET eta = CONVERT(datetime2(3), ?, 126), etd = CONVERT(datetime2(3), ?, 126) WHERE id = ?',
+                [$eta, $etd, $embarque->origen_embarque_id]
             );
         }
 
