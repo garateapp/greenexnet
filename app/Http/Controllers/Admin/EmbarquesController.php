@@ -471,13 +471,14 @@ SQL;
             $actualizados += DB::connection('sqlsrv')->update(
                 'UPDATE dbo.PKG_Embarques SET eta = CONVERT(datetime2(3), ?, 126), etd = CONVERT(datetime2(3), ?, 126) WHERE id = ?',
                 [$eta, $etd, $embarque->origen_embarque_id]
-                 Log::warning('Actualizado.', [
+
+            );
+            Log::warning('Actualizado.', [
                     'embarque_id' => $embarque->id,
                     'origen_embarque_id' => $embarque->origen_embarque_id,
                     'fecha_arribo_real' => $embarque->fecha_arribo_real,
                     'fecha_zarpe_real'=>$embarque->fecha_zarpe_real
                 ]);
-            );
         }
 
         return response()->json([
