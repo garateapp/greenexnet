@@ -44,18 +44,6 @@
                         {{ trans('cruds.materialProducto.fields.unidadxpallet') }}
                     </th>
                     <th>
-                        {{ trans('cruds.materialProducto.fields.costoxcajaclp') }}
-                    </th>
-                    <th>
-                        {{ trans('cruds.materialProducto.fields.costoxpallet_clp') }}
-                    </th>
-                    <th>
-                        {{ trans('cruds.materialProducto.fields.costoxcaja_usd') }}
-                    </th>
-                    <th>
-                        {{ trans('cruds.materialProducto.fields.costoxpallet_usd') }}
-                    </th>
-                    <th>
                         &nbsp;
                     </th>
                 </tr>
@@ -82,18 +70,6 @@
                         </select>
                     </td>
                     <td>
-                    </td>
-                    <td>
-                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                    </td>
-                    <td>
-                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                    </td>
-                    <td>
-                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                    </td>
-                    <td>
-                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                     </td>
                     <td>
                         <input class="search" type="text" placeholder="{{ trans('global.search') }}">
@@ -162,10 +138,6 @@
 { data: 'material.codigo', name: 'material.codigo' },
 { data: 'unidadxcaja', name: 'unidadxcaja' },
 { data: 'unidadxpallet', name: 'unidadxpallet' },
-{ data: 'costoxcajaclp', name: 'costoxcajaclp' },
-{ data: 'costoxpallet_clp', name: 'costoxpallet_clp' },
-{ data: 'costoxcaja_usd', name: 'costoxcaja_usd' },
-{ data: 'costoxpallet_usd', name: 'costoxpallet_usd' },
 { data: 'actions', name: '{{ trans('global.actions') }}' }
     ],
     orderCellsTop: true,

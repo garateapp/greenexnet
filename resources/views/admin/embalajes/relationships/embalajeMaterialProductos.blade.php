@@ -40,18 +40,6 @@
                             {{ trans('cruds.materialProducto.fields.unidadxpallet') }}
                         </th>
                         <th>
-                            {{ trans('cruds.materialProducto.fields.costoxcajaclp') }}
-                        </th>
-                        <th>
-                            {{ trans('cruds.materialProducto.fields.costoxpallet_clp') }}
-                        </th>
-                        <th>
-                            {{ trans('cruds.materialProducto.fields.costoxcaja_usd') }}
-                        </th>
-                        <th>
-                            {{ trans('cruds.materialProducto.fields.costoxpallet_usd') }}
-                        </th>
-                        <th>
                             &nbsp;
                         </th>
                     </tr>
@@ -79,18 +67,6 @@
                             </td>
                             <td>
                                 {{ $materialProducto->unidadxpallet ?? '' }}
-                            </td>
-                            <td>
-                                {{ $materialProducto->costoxcajaclp ?? '' }}
-                            </td>
-                            <td>
-                                {{ $materialProducto->costoxpallet_clp ?? '' }}
-                            </td>
-                            <td>
-                                {{ $materialProducto->costoxcaja_usd ?? '' }}
-                            </td>
-                            <td>
-                                {{ $materialProducto->costoxpallet_usd ?? '' }}
                             </td>
                             <td>
                                 @can('material_producto_show')

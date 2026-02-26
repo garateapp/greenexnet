@@ -58,46 +58,6 @@
                 <span class="help-block">{{ trans('cruds.materialProducto.fields.unidadxpallet_helper') }}</span>
             </div>
             <div class="form-group">
-                <label class="required" for="costoxcajaclp">{{ trans('cruds.materialProducto.fields.costoxcajaclp') }}</label>
-                <input class="form-control {{ $errors->has('costoxcajaclp') ? 'is-invalid' : '' }}" type="number" name="costoxcajaclp" id="costoxcajaclp" value="{{ old('costoxcajaclp', '') }}" step="0.01" required>
-                @if($errors->has('costoxcajaclp'))
-                    <div class="invalid-feedback">
-                        {{ $errors->first('costoxcajaclp') }}
-                    </div>
-                @endif
-                <span class="help-block">{{ trans('cruds.materialProducto.fields.costoxcajaclp_helper') }}</span>
-            </div>
-            <div class="form-group">
-                <label class="required" for="costoxpallet_clp">{{ trans('cruds.materialProducto.fields.costoxpallet_clp') }}</label>
-                <input class="form-control {{ $errors->has('costoxpallet_clp') ? 'is-invalid' : '' }}" type="number" name="costoxpallet_clp" id="costoxpallet_clp" value="{{ old('costoxpallet_clp', '') }}" step="0.01" required>
-                @if($errors->has('costoxpallet_clp'))
-                    <div class="invalid-feedback">
-                        {{ $errors->first('costoxpallet_clp') }}
-                    </div>
-                @endif
-                <span class="help-block">{{ trans('cruds.materialProducto.fields.costoxpallet_clp_helper') }}</span>
-            </div>
-            <div class="form-group">
-                <label class="required" for="costoxcaja_usd">{{ trans('cruds.materialProducto.fields.costoxcaja_usd') }}</label>
-                <input class="form-control {{ $errors->has('costoxcaja_usd') ? 'is-invalid' : '' }}" type="number" name="costoxcaja_usd" id="costoxcaja_usd" value="{{ old('costoxcaja_usd', '') }}" step="0.01" required>
-                @if($errors->has('costoxcaja_usd'))
-                    <div class="invalid-feedback">
-                        {{ $errors->first('costoxcaja_usd') }}
-                    </div>
-                @endif
-                <span class="help-block">{{ trans('cruds.materialProducto.fields.costoxcaja_usd_helper') }}</span>
-            </div>
-            <div class="form-group">
-                <label class="required" for="costoxpallet_usd">{{ trans('cruds.materialProducto.fields.costoxpallet_usd') }}</label>
-                <input class="form-control {{ $errors->has('costoxpallet_usd') ? 'is-invalid' : '' }}" type="text" name="costoxpallet_usd" id="costoxpallet_usd" value="{{ old('costoxpallet_usd', '') }}" required>
-                @if($errors->has('costoxpallet_usd'))
-                    <div class="invalid-feedback">
-                        {{ $errors->first('costoxpallet_usd') }}
-                    </div>
-                @endif
-                <span class="help-block">{{ trans('cruds.materialProducto.fields.costoxpallet_usd_helper') }}</span>
-            </div>
-            <div class="form-group">
                 <button class="btn btn-danger" type="submit">
                     {{ trans('global.save') }}
                 </button>

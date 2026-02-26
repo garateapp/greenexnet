@@ -417,14 +417,10 @@
                     <th>Unidad de Medida</th>
                     <th>Material Usado</th>
                     <th>Material Faltante</th>
-                    <th>Costo Generado (CLP)</th>
-                    <th>Costo Faltante (CLP)</th>
-                    <th>Total (CLP)</th>
                 </tr>
             </thead>
             <tbody>
                 ${res.materialesUtilizados.map(m => {
-                    const totalCLP = m.cantidadTotal * m.costoxcajaclp;
                     return `
                                     <tr>
                                         <td>${m.material.nombre}</td>
@@ -438,21 +434,6 @@
                                             'es-CL', {
                                                 minimumFractionDigits: 2,
                                                 maximumFractionDigits: 2
-                                            })}</td>
-                                        <td>${Math.abs(m.costoxcajaclp*cantidad).toLocaleString(
-                                            'es-CL', {
-                                                minimumFractionDigits: 0,
-                                                maximumFractionDigits: 0
-                                            })}</td>
-                                        <td>$${Math.abs(m.costoxcajaclp*m.cajasFaltantes) .toLocaleString(
-                                            'es-CL', {
-                                                minimumFractionDigits: 0,
-                                                maximumFractionDigits: 0
-                                            })}</td>
-                                        <td>$${totalCLP.toFixed(0).toLocaleString(
-                                            'es-CL', {
-                                                minimumFractionDigits: 0,
-                                                maximumFractionDigits: 0
                                             })}</td>
                                     </tr>
                                 `;

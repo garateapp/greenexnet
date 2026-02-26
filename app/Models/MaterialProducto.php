@@ -25,13 +25,6 @@ class MaterialProducto extends Model
         'material_id',
         'unidadxcaja',
         'unidadxpallet',
-        'costoxcajaclp',
-        'costoxpallet_clp',
-        'costoxcaja_usd',
-        'costoxpallet_usd',
-        'created_at',
-        'updated_at',
-        'deleted_at',
     ];
 
     protected function serializeDate(DateTimeInterface $date)

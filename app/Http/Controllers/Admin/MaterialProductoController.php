@@ -65,18 +65,6 @@ class MaterialProductoController extends Controller
             $table->editColumn('unidadxpallet', function ($row) {
                 return $row->unidadxpallet ? $row->unidadxpallet : '';
             });
-            $table->editColumn('costoxcajaclp', function ($row) {
-                return $row->costoxcajaclp ? $row->costoxcajaclp : '';
-            });
-            $table->editColumn('costoxpallet_clp', function ($row) {
-                return $row->costoxpallet_clp ? $row->costoxpallet_clp : '';
-            });
-            $table->editColumn('costoxcaja_usd', function ($row) {
-                return $row->costoxcaja_usd ? $row->costoxcaja_usd : '';
-            });
-            $table->editColumn('costoxpallet_usd', function ($row) {
-                return $row->costoxpallet_usd ? $row->costoxpallet_usd : '';
-            });
 
             $table->rawColumns(['actions', 'placeholder', 'embalaje', 'material']);
 

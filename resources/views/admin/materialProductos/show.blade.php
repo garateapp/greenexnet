@@ -55,38 +55,6 @@
                             {{ $materialProducto->unidadxpallet }}
                         </td>
                     </tr>
-                    <tr>
-                        <th>
-                            {{ trans('cruds.materialProducto.fields.costoxcajaclp') }}
-                        </th>
-                        <td>
-                            {{ $materialProducto->costoxcajaclp }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>
-                            {{ trans('cruds.materialProducto.fields.costoxpallet_clp') }}
-                        </th>
-                        <td>
-                            {{ $materialProducto->costoxpallet_clp }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>
-                            {{ trans('cruds.materialProducto.fields.costoxcaja_usd') }}
-                        </th>
-                        <td>
-                            {{ $materialProducto->costoxcaja_usd }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>
-                            {{ trans('cruds.materialProducto.fields.costoxpallet_usd') }}
-                        </th>
-                        <td>
-                            {{ $materialProducto->costoxpallet_usd }}
-                        </td>
-                    </tr>
                 </tbody>
             </table>
             <div class="form-group">
