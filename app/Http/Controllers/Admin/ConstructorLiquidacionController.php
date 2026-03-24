@@ -72,7 +72,7 @@ use CsvImportTrait;
 
         $anticipos = Anticipo::where('productor_id', $productor)
         ->where('temporada', $temporada)->get();
-        //->whereIn('especie_id',  [4,5,6])->get();
+        //->whereIn('especie_id',  [4,5,6])->get(); Carozos
         $valorflete=Valorflete::where('productor_id', $productor)
         ->where('temporada', $temporada)->get();
         $prod=Productor::where('id', $productor)->first();
