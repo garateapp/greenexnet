@@ -68,7 +68,7 @@ use CsvImportTrait;
         // Realiza la consulta a la base de datos
         $result = Proceso::where('productor_id', $productor)
         ->where('temporada', $temporada)
-        ->whereIn('especie_id', [4,5,6])->with("especie")->get();
+        ->whereIn('especie_id',$especie)->with("especie")->get();
 
         $anticipos = Anticipo::where('productor_id', $productor)
         ->where('temporada', $temporada)->get();
