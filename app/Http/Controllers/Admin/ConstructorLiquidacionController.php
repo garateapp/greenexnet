@@ -133,7 +133,7 @@ use CsvImportTrait;
         //'chartImages' => $chartImages,
         'logo_path' => public_path('img/cabecera_pdf.png'),
         'footer_path' => public_path('img/footer_pdf.jpg'),
-        'portada'=>public_path('img/portada-cherries2526.png')
+        'portada'=>public_path('img/portada-cherries-2526.png')
     ];
 
     $snappy = new Pdf('/usr/bin/wkhtmltopdf');
@@ -147,7 +147,7 @@ use CsvImportTrait;
         'enable-local-file-access' => true,
         'no-stop-slow-scripts' => true
     ]))->header('Content-Type', 'application/pdf')
-      ->header('Content-Disposition', 'inline; filename="Liquidacion-' .$productor->nombre.'-Carozos2425-'.now()->format('Y-m-d') . '.pdf"');
+      ->header('Content-Disposition', 'inline; filename="Liquidacion-' .$productor->nombre.'-Cherries2526-'.now()->format('Y-m-d') . '.pdf"');
 }
 
 public function exportNormaExcel(Request $request)
