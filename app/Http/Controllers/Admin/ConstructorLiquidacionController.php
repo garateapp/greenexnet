@@ -64,7 +64,11 @@ use CsvImportTrait;
         $temporada = $request->input('temporada');
         $especie = $request->input('especie_id');
 
-
+        Log::info('Input recibido en getProcesos:', [
+            'productor_id' => $productor,
+            'temporada' => $temporada,
+            'especie_id' => $especie,
+        ]);
         // Realiza la consulta a la base de datos
         $result = Proceso::where('productor_id', $productor)
         ->where('temporada', $temporada)
