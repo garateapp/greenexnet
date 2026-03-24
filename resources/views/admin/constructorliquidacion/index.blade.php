@@ -991,7 +991,7 @@
                                         }));
                                     if(sumasPorCategoria['CATII']
                                         .resultado_total > 0){
-                                        $("#trCATII").removeClass('negative').show();
+                                        $("#suma-CATII").removeClass('negative');
                                     }
                                     //Bonif Gasto FNE
                                     let bonificacionFNE = 0;
