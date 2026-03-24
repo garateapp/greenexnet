@@ -872,9 +872,9 @@
                                     $.each(response.result, function(index, item) {
                                         let categoria = item.categoria.replace(" ", "")
                                             .toUpperCase();
-                                        //if (categoria == "SUPERMERCADO") {
-                                        //categoria = 'CAT1';
-                                        //}
+                                        if (item.norma == "FN") {
+                                        categoria = 'CATII';
+                                        }
 
 
                                         // Convertir los valores a números, manejando comas como separador decimal
@@ -989,7 +989,10 @@
                                             minimumFractionDigits: 2,
                                             maximumFractionDigits: 2
                                         }));
-
+                                    if(sumasPorCategoria['CATII']
+                                        .resultado_total > 0){
+                                        $("#trCATII").removeClass('negative').show();
+                                    }
                                     //Bonif Gasto FNE
                                     let bonificacionFNE = 0;
                                     $.each(response.bonificacion, function(index, item) {
