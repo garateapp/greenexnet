@@ -684,6 +684,15 @@
                 $('#temporada').select2();
                 $('#especie_id')
                     .select2();
+                const previewButtonDefaultHtml = $('#btnPreview').html();
+
+                function setPreviewLoadingState(isLoading) {
+                    $('#btnPreview')
+                        .prop('disabled', isLoading)
+                        .html(isLoading ?
+                            '<i class="fas fa-spinner fa-spin mr-1"></i>Cargando...' :
+                            previewButtonDefaultHtml);
+                }
 
                 function activateConstructorTab(targetSelector) {
                     const $targetPane = $(targetSelector);
@@ -758,6 +767,7 @@
                     if (productor_id && temporada && especie_id && productor_id !== "" && temporada !==
                         "" &&
                         especie_id !== "") {
+                        setPreviewLoadingState(true);
                         $.ajax({
                             type: "POST",
                             url: "{{ route('admin.constructorliquidacion.getProcesos') }}",
@@ -2426,6 +2436,9 @@
                                     title: 'Error',
                                     text: 'Ocurrió un error al procesar la solicitud. Por favor, intenta de nuevo.',
                                 });
+                            },
+                            complete: function() {
+                                setPreviewLoadingState(false);
                             }
                         });
                     } else {
