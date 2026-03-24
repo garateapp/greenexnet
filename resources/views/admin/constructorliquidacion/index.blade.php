@@ -88,7 +88,7 @@
                     </div>
                     <div class="form-group">
                         <label for="TC">Valor USD</label>
-                        <input type="text" class="form-control" id="TC" name="TC" value="978.07"
+                        <input type="text" class="form-control" id="TC" name="TC" value="915.15"
                             placeholder="Ingrese el valor del USD" required>
                     </div>
                     <div class="row">
@@ -195,7 +195,7 @@
 
                                                 <!-- Sección Ventas -->
                                                 <tr>
-                                                    <td colspan="5">Total venta exportación temporada 2024-2025
+                                                    <td colspan="5">Total venta exportación temporada 2025-2026
                                                     </td>
                                                     <td>CAT 1</td>
                                                     <td>US$</td>
@@ -203,7 +203,7 @@
                                                 </tr>
 
                                                 <tr style="display: none;" id="trCATII">
-                                                    <td colspan="5">Total venta exportación temporada 2024-2025
+                                                    <td colspan="5">Total venta exportación temporada 2025-2026
                                                     </td>
                                                     <td>CAT 2</td>
                                                     <td>US$</td>
@@ -299,7 +299,7 @@
                                                 <!-- Nota de Débito y Factura -->
                                                 <tr>
                                                     <td colspan="4">&nbsp;</td>
-                                                    <td colspan="2" id="fecha_tipo_cambio">TC 31-07-2025</td>
+                                                    <td colspan="2" id="fecha_tipo_cambio">TC 24-03-2026</td>
                                                     <td colspan="1">$</td>
                                                     <td class="currency" id="TCValor"></td>
                                                 </tr>
@@ -313,7 +313,7 @@
                                                     <td class="currency" id="NDVAlorNeto"></td>
                                                 </tr>
                                                 <tr>
-                                                    <td colspan="5">Temporada 2024-2025</td>
+                                                    <td colspan="5">Temporada 2025-2026</td>
                                                     <td>Iva</td>
                                                     <td>$</td>
                                                     <td class="currency" id="NDVAlorIva"></td>
@@ -335,7 +335,7 @@
                                                     <td class="currency" id="FVAlorNeto"></td>
                                                 </tr>
                                                 <tr>
-                                                    <td colspan="5">Temporada 2024-2025</td>
+                                                    <td colspan="5">Temporada 2025-2026</td>
                                                     <td>Iva</td>
                                                     <td>$</td>
                                                     <td class="currency" id="FVAlorIva"></td>
