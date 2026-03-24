@@ -112,7 +112,7 @@
 
                                     <!-- Pestaña Cuenta Corriente -->
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link " id="CuentaCorriente-tab" data-bs-toggle="tab"
+                                        <button class="nav-link " id="CuentaCorriente-tab" data-toggle="tab" data-bs-toggle="tab"
                                             data-bs-target="#CuentaCorriente" type="button" role="tab"
                                             aria-controls="CuentaCorriente" aria-selected="true">
                                             Cuenta Corriente
@@ -120,41 +120,41 @@
                                     </li>
                                     <!-- Pestaña Balance de Masas -->
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link" id="BceMasa-tab" data-bs-toggle="tab"
+                                        <button class="nav-link" id="BceMasa-tab" data-toggle="tab" data-bs-toggle="tab"
                                             data-bs-target="#BceMasa" type="button" role="tab" aria-controls="BceMasa"
                                             aria-selected="true">
                                             Balance de Masas
                                         </button>
                                     </li>
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link" id="Norma-tab" data-bs-toggle="tab" data-bs-target="#Norma"
+                                        <button class="nav-link" id="Norma-tab" data-toggle="tab" data-bs-toggle="tab" data-bs-target="#Norma"
                                             type="button" role="tab" aria-controls="Norma" aria-selected="true">
                                             Norma
                                         </button>
                                     </li>
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link" id="NormaSemana-tab" data-bs-toggle="tab"
+                                        <button class="nav-link" id="NormaSemana-tab" data-toggle="tab" data-bs-toggle="tab"
                                             data-bs-target="#NormaSemana" type="button" role="tab"
                                             aria-controls="NormaSemana" aria-selected="true">
                                             Norma Con Semana
                                         </button>
                                     </li>
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link" id="FueraNorma-tab" data-bs-toggle="tab"
+                                        <button class="nav-link" id="FueraNorma-tab" data-toggle="tab" data-bs-toggle="tab"
                                             data-bs-target="#FueraNorma" type="button" role="tab"
                                             aria-controls="FueraNorma" aria-selected="true">
                                             Fuera de Norma
                                         </button>
                                     </li>
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link" id="Comercial-tab" data-bs-toggle="tab"
+                                        <button class="nav-link" id="Comercial-tab" data-toggle="tab" data-bs-toggle="tab"
                                             data-bs-target="#Comercial" type="button" role="tab"
                                             aria-controls="Comercial" aria-selected="true">
                                             Comercial
                                         </button>
                                     </li>
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link" id="Graficos-tab" data-bs-toggle="tab"
+                                        <button class="nav-link" id="Graficos-tab" data-toggle="tab" data-bs-toggle="tab"
                                             data-bs-target="#Graficos" type="button" role="tab"
                                             aria-controls="Graficos" aria-selected="true">
                                             Gráficos
@@ -598,8 +598,6 @@
 
                     let processed = 0;
 
-                    // Asegúrate de que todos los tabs estén visibles
-                    $('.tab-pane').addClass('show active');
                     sendData();
                     // chartContainers.each(function() {
                     //     const chartId = $(this).attr('id');
@@ -686,6 +684,31 @@
                 $('#temporada').select2();
                 $('#especie_id')
                     .select2();
+
+                function activateConstructorTab(targetSelector) {
+                    const $targetPane = $(targetSelector);
+
+                    if (!$targetPane.length) {
+                        return;
+                    }
+
+                    $('#CtaCte .nav-link').removeClass('active').attr('aria-selected', 'false');
+                    $('#CtaCtejContent .tab-pane').removeClass('show active');
+
+                    $('#CtaCte .nav-link').filter(function() {
+                        const target = $(this).attr('data-bs-target') || $(this).attr('data-target');
+                        return target === targetSelector;
+                    }).addClass('active').attr('aria-selected', 'true');
+
+                    $targetPane.addClass('show active');
+                }
+
+                $('#CtaCte .nav-link').on('click', function(event) {
+                    event.preventDefault();
+                    activateConstructorTab($(this).attr('data-bs-target') || $(this).attr('data-target'));
+                });
+
+                activateConstructorTab('#CuentaCorriente');
 
                 function resetAllValues() {
                     // Clear table cells in "Cuenta Corriente"

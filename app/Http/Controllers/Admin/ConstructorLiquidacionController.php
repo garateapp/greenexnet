@@ -131,9 +131,9 @@ use CsvImportTrait;
     $data = [
         'tabs' => $tabs,
         //'chartImages' => $chartImages,
-        'logo_path' => public_path('img/cabecera_pdf.jpg'),
+        'logo_path' => public_path('img/cabecera_pdf.png'),
         'footer_path' => public_path('img/footer_pdf.jpg'),
-        'portada'=>public_path('img/portada-carozos2425.jpeg')
+        'portada'=>public_path('img/portada-cherries2526.png')
     ];
 
     $snappy = new Pdf('/usr/bin/wkhtmltopdf');
