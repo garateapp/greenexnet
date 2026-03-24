@@ -202,7 +202,7 @@
                                                     <td class="currency" id="suma-CAT-1"></td>
                                                 </tr>
 
-                                                <tr style="display: none;" id="trCATII">
+                                                <tr id="trCATII">
                                                     <td colspan="5">Total venta exportación temporada 2025-2026
                                                     </td>
                                                     <td>CAT 2</td>
@@ -938,6 +938,10 @@
                                         parseFloat(sumasPorCategoria['CATII'].resultado_total) +
                                         parseFloat(sumasPorCategoria["SUPERMERCADO"]
                                             .resultado_total);
+                                     valorTotalCAT1 = parseFloat(sumasPorCategoria['CAT1']
+                                            .resultado_total) +
+                                        parseFloat(sumasPorCategoria["SUPERMERCADO"]
+                                            .resultado_total);
 
                                     valorNoExportable = parseFloat(sumasPorCategoria['MERMA']
                                             .costo_comercial) +
@@ -974,7 +978,7 @@
                                                 minimumFractionDigits: 2,
                                                 maximumFractionDigits: 2
                                             }));
-                                    $("#suma-CAT-1").text(valorTotal
+                                    $("#suma-CAT-1").text(valorTotalCAT1
                                         .toLocaleString('es-CL', {
                                             minimumFractionDigits: 2,
                                             maximumFractionDigits: 2
