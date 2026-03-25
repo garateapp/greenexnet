@@ -793,7 +793,7 @@
                         }
 
                         let variedad = item.variedad || 'Sin variedad';
-                        let semana = item.eta_week ? item.eta_week.toString() : 'Sin semana';
+                        let semana = item.etd_week ? item.etd_week.toString() : 'Sin semana';
                         let calibre = item.calibre;
                         let color = item.color || '';
                         let totalKilos = parseFloat(item.total_kilos.replace(',', '.')) || 0;
@@ -2452,7 +2452,7 @@
                                     if (item_fn.norma.toUpperCase() === 'FN') {
                                         let variedad_fn = item_fn.variedad;
                                         let etiqueta_fn = item_fn.etiqueta;
-                                        let semana_fn = item_fn.eta_week.toString();
+                                        let semana_fn = item_fn.etd_week.toString();
                                         let calibre_fn = item_fn.calibre;
                                         let color_fn = item_fn.color || '';
                                         let totalKilos_fn = parseFloat(item_fn
