@@ -1602,12 +1602,12 @@
                                     response.multiresiduo.forEach(element => {
                                         multiresiduos += parseFloat(element.valor);
                                     });
-                                    $("#multiresiduos").text(multiresiduos ? multiresiduos : 0)
-                                        .toLocaleString(
+                                    $("#multiresiduos").text(multiresiduos ? multiresiduos.toLocaleString(
                                             'es-CL', {
                                                 minimumFractionDigits: 2,
                                                 maximumFractionDigits: 2
-                                            });
+                                            }) : 0);
+                                        ;
                                     // if(multiresiduos==0){
                                     //     $("#trAnalisisMultiresiduosVirus").hide();
                                     // }
