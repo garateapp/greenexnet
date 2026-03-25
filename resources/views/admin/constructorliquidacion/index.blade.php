@@ -1357,11 +1357,11 @@
                                     });
                                     FacturaValorNeto = sumasPorCategoria['COMERCIAL']
                                         .precio_comercial +
-                                        sumasPorCategoria['PRECALIBRE'].precio_comercial +
-                                        sumasPorCategoria['SOBRECALIBRE'].precio_comercial+
-                                        sumasPorCategoria['DESECHO'].precio_comercial+
-                                        sumasPorCategoria['MERMA'].precio_comercial
-                                        + sumasPorCategoria['COMERCIALHUERTO'].precio_comercial;
+                                        sumasPorCategoria['PRECALIBRE'].total_comercial +
+                                        sumasPorCategoria['SOBRECALIBRE'].total_comercial+
+                                        sumasPorCategoria['DESECHO'].total_comercial+
+                                        sumasPorCategoria['MERMA'].total_comercial
+                                        + sumasPorCategoria['COMERCIALHUERTO'].total_comercial;
 
 
                                     FacturaValorNeto = FacturaValorNeto;// * $("#TC").val();
