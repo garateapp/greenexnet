@@ -1422,7 +1422,7 @@
                                             maximumFractionDigits: 2
                                         }));
                                     if(sumasPorCategoria['CATII']
-                                        .resultado_total > 0){
+                                        .resultado_total >= 0){
                                         $("#suma-CATII").removeClass('negative');
                                     }
                                     //Bonif Gasto FNE
