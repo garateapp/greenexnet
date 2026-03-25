@@ -3389,7 +3389,7 @@
                     <td></td>
                     <td class="number">${formatInteger(totalVariedad.total_kilos.toFixed(0))}</td>
                     <td class="number">$ ${formatInteger(totalVariedad.precio_total.toFixed(0))}</td>
-                    <td class="number">$ ${formatInteger( totalVariedad.total_kilos.toFixed(0)/totalVariedad.total_kilos.toFixed(0))}</td>
+                    <td class="number">$ ${formatInteger( totalVariedad.precio_total.toFixed(0)/totalVariedad.total_kilos.toFixed(0))}</td>
                 </tr>
             `;
                         });
