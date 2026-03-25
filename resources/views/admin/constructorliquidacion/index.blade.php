@@ -3364,7 +3364,7 @@
                         <td style="text-align:center">${categoria}</td>
                         <td class="number">${formatInteger(datosCategoria.total_kilos.toFixed(0))}</td>
                         <td class="number">${formatInteger(datosCategoria.precio_total.toFixed(0))}</td>
-                        <td class="number">${formatInteger(datosCategoria.precio_kilo_sum)}</td>
+                        <td class="number">${formatInteger(datosCategoria.precio_total.toFixed(0)/datosCategoria.total_kilos.toFixed(0))}</td>
                     </tr>
                 `;
 
@@ -3389,7 +3389,7 @@
                     <td></td>
                     <td class="number">${formatInteger(totalVariedad.total_kilos.toFixed(0))}</td>
                     <td class="number">$ ${formatInteger(totalVariedad.precio_total.toFixed(0))}</td>
-                    <td class="number">$ ${formatInteger( totalVariedad.precio_kilo_sum)}</td>
+                    <td class="number">$ ${formatInteger( totalVariedad.total_kilos.toFixed(0)/totalVariedad.total_kilos.toFixed(0))}</td>
                 </tr>
             `;
                         });
@@ -3406,7 +3406,7 @@
                     <td></td>
                     <td class="number">${formatInteger(totalGeneral.total_kilos.toFixed(0))}</td>
                     <td class="number">$ ${formatInteger(totalGeneral.precio_total.toFixed(0))}</td>
-                    <td class="number">$ ${formatInteger(totalGeneral.precio_kilo_sum.toFixed(0))}</td>
+                    <td class="number">$ ${formatInteger(totalGeneral.precio_total.toFixed(0)/totalGeneral.total_kilos.toFixed(0)))}</td>
                 </tr>
             </tbody>
         </table>
