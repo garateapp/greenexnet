@@ -3452,9 +3452,6 @@
                     const avgRnpKilo = calculateAverageRnpKilo(sortedData);
                     const avgRnpKiloArray = sortedData.map(() => avgRnpKilo);
 
-                    const tituloGrafico = etiqueta === 'Todas' ? `${especie} - ${variedad}` :
-                        `${especie} - ${variedad} / ${etiqueta}`;
-
                     const options = {
                         chart: {
                             type: 'line',
@@ -3657,6 +3654,9 @@
                         rnpKilo,
                         avgRnpKiloArray
                     } = extractSeries(dataGroup);
+
+                    const tituloGrafico = etiqueta === 'Todas' ? `${especie} - ${variedad}` :
+                        `${especie} - ${variedad} / ${etiqueta}`;
 
                     const options = {
                         chart: {
