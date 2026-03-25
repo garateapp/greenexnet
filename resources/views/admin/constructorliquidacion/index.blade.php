@@ -2913,8 +2913,8 @@
                                 // Acumular totales por variedad
                                 totalVariedad.total_kilos += datosCategoria.total_kilos;
                                 totalVariedad.precio_total += datosCategoria
-                                    .precio_kilo_sum;
-                                totalVariedad.precio_kilo_sum += precioKilo;
+                                    .precio_total;
+                                totalVariedad.precio_kilo_sum += datosCategoria.precio_kilo_sum;
                                 totalVariedad.precio_kilo_kilos += datosCategoria
                                     .precio_kilo_kilos;
 
@@ -2931,7 +2931,7 @@
                     <td></td>
                     <td class="number">${formatInteger(totalVariedad.total_kilos.toFixed(0))}</td>
                     <td class="number">$ ${formatInteger(totalVariedad.precio_total.toFixed(0))}</td>
-                    <td class="number">$ ${formatInteger(precioKiloVariedad)}</td>
+                    <td class="number">$ ${formatInteger( totalVariedad.precio_kilo_sum)}</td>
                 </tr>
             `;
                         });
