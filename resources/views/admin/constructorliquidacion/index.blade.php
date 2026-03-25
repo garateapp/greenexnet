@@ -1979,7 +1979,7 @@
                                         .norma.toUpperCase() === 'CAT 1') {
                                         let variedad_v2 = item_v2.variedad;
                                         let etiqueta_v2 = item_v2.etiqueta;
-                                        let semana_v2 = item_v2.eta_week.toString();
+                                        let semana_v2 = item_v2.etd_week.toString();
                                         let calibre_v2 = item_v2.calibre;
                                         let color_v2 = item_v2.color || '';
                                         let totalKilos_v2 = parseFloat(item_v2
