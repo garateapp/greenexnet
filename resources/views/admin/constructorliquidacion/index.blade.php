@@ -3406,7 +3406,7 @@
                     <td></td>
                     <td class="number">${formatInteger(totalGeneral.total_kilos.toFixed(0))}</td>
                     <td class="number">$ ${formatInteger(totalGeneral.precio_total.toFixed(0))}</td>
-                    <td class="number">$ ${formatInteger(totalGeneral.precio_total.toFixed(0)/totalGeneral.total_kilos.toFixed(0)))}</td>
+                    <td class="number">$ ${formatInteger(totalGeneral.precio_total.toFixed(0)/totalGeneral.total_kilos.toFixed(0))}</td>
                 </tr>
             </tbody>
         </table>
