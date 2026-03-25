@@ -758,6 +758,438 @@
                     $('#charts').html('');
                 }
 
+                function sortKeysByConfiguredOrder(values, order) {
+                    return values.sort((a, b) => {
+                        let indexA = order.indexOf(a);
+                        let indexB = order.indexOf(b);
+
+                        if (indexA === -1 && indexB === -1) {
+                            return a.localeCompare(b);
+                        }
+                        if (indexA === -1) {
+                            return 1;
+                        }
+                        if (indexB === -1) {
+                            return -1;
+                        }
+
+                        return indexA - indexB;
+                    });
+                }
+
+                function renderWeeklyGroupedTableWithoutEtiqueta(items, config) {
+                    let groupedData = {};
+                    let totalGeneral = {
+                        cajas_equivalentes: 0,
+                        total_kilos: 0,
+                        rnp_total: 0,
+                        rnp_kilo_sum: 0,
+                        rnp_kilo_kilos: 0
+                    };
+
+                    $.each(items, function(_, item) {
+                        if (!config.filter(item)) {
+                            return;
+                        }
+
+                        let variedad = item.variedad || 'Sin variedad';
+                        let semana = item.eta_week ? item.eta_week.toString() : 'Sin semana';
+                        let calibre = item.calibre;
+                        let color = item.color || '';
+                        let totalKilos = parseFloat(item.total_kilos.replace(',', '.')) || 0;
+                        let rnpTotal = parseFloat(item.resultado_total.replace(',', '.')) || 0;
+                        let rnpKilo = parseFloat(item.resultado_kilo.replace(',', '.')) || 0;
+
+                        if (!groupedData[variedad]) {
+                            groupedData[variedad] = {};
+                        }
+                        if (!groupedData[variedad][semana]) {
+                            groupedData[variedad][semana] = {
+                                calibres: {},
+                                total_kilos: 0,
+                                rnp_total: 0,
+                                rnp_kilo_sum: 0,
+                                rnp_kilo_kilos: 0
+                            };
+                        }
+                        if (!groupedData[variedad][semana].calibres[calibre]) {
+                            groupedData[variedad][semana].calibres[calibre] = {
+                                color: color,
+                                total_kilos: 0,
+                                rnp_total: 0,
+                                rnp_kilo: 0
+                            };
+                        }
+
+                        groupedData[variedad][semana].calibres[calibre].total_kilos += totalKilos;
+                        groupedData[variedad][semana].calibres[calibre].rnp_total += rnpTotal;
+                        groupedData[variedad][semana].calibres[calibre].rnp_kilo += rnpKilo;
+                        groupedData[variedad][semana].total_kilos += totalKilos;
+                        groupedData[variedad][semana].rnp_total += rnpTotal;
+                        groupedData[variedad][semana].rnp_kilo_sum += rnpKilo * totalKilos;
+                        groupedData[variedad][semana].rnp_kilo_kilos += totalKilos;
+                    });
+
+                    let curveHeader = config.includeCurve ? '<th>Curva Calibre</th>' : '';
+                    let htmlOutput = `
+            <tr class="section-header">
+                <th>Variedad</th>
+                <th>Semana</th>
+                <th>Serie</th>
+                <th>Color</th>
+                ${curveHeader}
+                <th style="text-align:center;">Cajas</th>
+                <th style="text-align:center;">Kilos Totales</th>
+                <th style="text-align:center;">RNP Total</th>
+                <th style="text-align:center;">RNP Kilo</th>
+            </tr>
+            `;
+
+                    let variedades = Object.keys(groupedData).sort();
+
+                    $.each(variedades, function(_, variedad) {
+                        let totalVariedad = {
+                            cajas_equivalentes: 0,
+                            total_kilos: 0,
+                            rnp_total: 0,
+                            rnp_kilo_sum: 0,
+                            rnp_kilo_kilos: 0
+                        };
+                        let semanas = Object.keys(groupedData[variedad]).sort((a, b) => a - b);
+                        let isFirstVariedadRow = true;
+
+                        $.each(semanas, function(_, semana) {
+                            let datosSemana = groupedData[variedad][semana];
+                            let calibres = sortKeysByConfiguredOrder(Object.keys(datosSemana.calibres),
+                                config.ordenCalibres);
+                            let isFirstSemanaRow = true;
+
+                            $.each(calibres, function(_, calibre) {
+                                let datosCalibre = datosSemana.calibres[calibre];
+                                let cajasEquivalentes = (datosCalibre.total_kilos / config
+                                    .divisorCajaDetalle).toFixed(0);
+                                let rnpClass = datosCalibre.rnp_total < 0 || datosCalibre.rnp_kilo <
+                                    0 ? 'negative' : '';
+                                let variedadCell = isFirstVariedadRow ? `<td>${variedad}</td>` :
+                                    '<td></td>';
+                                let semanaCell = isFirstSemanaRow ? `<td>${semana}</td>` :
+                                    '<td></td>';
+                                let curvaCell = '';
+
+                                if (config.includeCurve) {
+                                    let curvaCalibre = datosSemana.total_kilos ?
+                                        ((datosCalibre.total_kilos / datosSemana.total_kilos) * 100)
+                                        .toFixed(4) : '0.0000';
+                                    curvaCell = `<td class="number">${curvaCalibre} %</td>`;
+                                }
+
+                                htmlOutput += `
+                    <tr>
+                        ${variedadCell}
+                        ${semanaCell}
+                        <td>${calibre}</td>
+                        <td>${datosCalibre.color}</td>
+                        ${curvaCell}
+                        <td class="number" style="text-align:center;">${cajasEquivalentes}</td>
+                        <td class="number">${datosCalibre.total_kilos.toFixed(2)}</td>
+                        <td class="number ${rnpClass}">${datosCalibre.rnp_total.toFixed(2)}</td>
+                        <td class="number ${rnpClass}">${datosCalibre.rnp_kilo.toFixed(4)}</td>
+                    </tr>
+                `;
+
+                                isFirstVariedadRow = false;
+                                isFirstSemanaRow = false;
+                                totalVariedad.cajas_equivalentes += parseFloat(cajasEquivalentes);
+                                totalVariedad.total_kilos += datosCalibre.total_kilos;
+                                totalVariedad.rnp_total += datosCalibre.rnp_total;
+                                totalVariedad.rnp_kilo_sum += datosCalibre.rnp_kilo * datosCalibre
+                                    .total_kilos;
+                                totalVariedad.rnp_kilo_kilos += datosCalibre.total_kilos;
+                            });
+
+                            let rnpKiloSemana = datosSemana.rnp_kilo_kilos ?
+                                (datosSemana.rnp_kilo_sum / datosSemana.rnp_kilo_kilos).toFixed(4) :
+                                '0.0000';
+                            let cajasEquivalentesSemana = (datosSemana.total_kilos / config
+                                .divisorCajaTotal).toFixed(0);
+                            let rnpClassSemana = datosSemana.rnp_total < 0 || parseFloat(
+                                rnpKiloSemana) < 0 ? 'negative' : '';
+                            let curvaTotalCell = config.includeCurve ?
+                                '<td class="number">1.0000</td>' : '';
+
+                            htmlOutput += `
+                <tr class="total-row">
+                    <td></td>
+                    <td>Total Semana ${semana}</td>
+                    <td></td>
+                    <td></td>
+                    ${curvaTotalCell}
+                    <td class="number" style="text-align:center;">${cajasEquivalentesSemana}</td>
+                    <td class="number">${datosSemana.total_kilos.toFixed(2)}</td>
+                    <td class="number ${rnpClassSemana}">${datosSemana.rnp_total.toFixed(2)}</td>
+                    <td class="number ${rnpClassSemana}">${rnpKiloSemana}</td>
+                </tr>
+            `;
+                        });
+
+                        let rnpKiloVariedad = totalVariedad.rnp_kilo_kilos ?
+                            (totalVariedad.rnp_kilo_sum / totalVariedad.rnp_kilo_kilos).toFixed(4) :
+                            '0.0000';
+                        totalVariedad.cajas_equivalentes = (totalVariedad.total_kilos / config
+                            .divisorCajaTotal).toFixed(0);
+                        let rnpClassVariedad = totalVariedad.rnp_total < 0 || parseFloat(
+                            rnpKiloVariedad) < 0 ? 'negative' : '';
+                        let curvaTotalCell = config.includeCurve ? '<td class="number">1.0000</td>' :
+                            '';
+
+                        htmlOutput += `
+        <tr class="total-row">
+            <td>Total ${variedad}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            ${curvaTotalCell}
+            <td class="number" style="text-align:center;">${totalVariedad.cajas_equivalentes}</td>
+            <td class="number">${totalVariedad.total_kilos.toFixed(2)}</td>
+            <td class="number ${rnpClassVariedad}">${totalVariedad.rnp_total.toFixed(2)}</td>
+            <td class="number ${rnpClassVariedad}">${rnpKiloVariedad}</td>
+        </tr>
+    `;
+
+                        totalGeneral.cajas_equivalentes += parseFloat(totalVariedad
+                            .cajas_equivalentes);
+                        totalGeneral.total_kilos += totalVariedad.total_kilos;
+                        totalGeneral.rnp_total += totalVariedad.rnp_total;
+                        totalGeneral.rnp_kilo_sum += totalVariedad.rnp_kilo_sum;
+                        totalGeneral.rnp_kilo_kilos += totalVariedad.rnp_kilo_kilos;
+                    });
+
+                    let rnpKiloGeneral = totalGeneral.rnp_kilo_kilos ?
+                        (totalGeneral.rnp_kilo_sum / totalGeneral.rnp_kilo_kilos).toFixed(4) :
+                        '0.0000';
+                    let rnpClassGeneral = totalGeneral.rnp_total < 0 || parseFloat(rnpKiloGeneral) <
+                        0 ? 'negative' : '';
+                    let curvaTotalCell = config.includeCurve ? '<td class="number">1.0000</td>' : '';
+
+                    htmlOutput += `
+    <tr class="total-row">
+        <td>Total general</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        ${curvaTotalCell}
+        <td class="number" style="text-align:center;">${totalGeneral.cajas_equivalentes.toFixed(0)}</td>
+        <td class="number">${totalGeneral.total_kilos.toFixed(2)}</td>
+        <td class="number ${rnpClassGeneral}">${totalGeneral.rnp_total.toFixed(2)}</td>
+        <td class="number ${rnpClassGeneral}">${rnpKiloGeneral}</td>
+    </tr>
+`;
+
+                    $(config.target).html(htmlOutput);
+                }
+
+                function renderNormaWithoutEtiqueta(response) {
+                    const ordenCalibres = ['7J', '6J', '5J', '4J', '3J', '2J', 'J', 'XL'];
+                    let datosAgrupadosNorma = {};
+                    let totalGeneralNorma = {
+                        cajas: 0,
+                        total_kilos: 0,
+                        rnp_total: 0,
+                        rnp_kilo_sum: 0,
+                        rnp_kilo_kilos: 0
+                    };
+                    let groupedData = [];
+
+                    $.each(response.result, function(_, item) {
+                        if (item.categoria.toUpperCase() !== 'CAT 1' && item.categoria.toUpperCase() !==
+                            'SUPER MERCADO') {
+                            return;
+                        }
+
+                        let variedad = item.variedad || 'Sin variedad';
+                        let calibre = item.calibre;
+                        let especie = item.especie.nombre;
+
+                        switch (especie) {
+                            case 'Plums':
+                                especie = 'Ciruela';
+                                break;
+                            case 'Nectarines':
+                                especie = 'Nectarín';
+                                break;
+                            case 'Peaches':
+                                especie = 'Durazno';
+                                break;
+                        }
+
+                        let totalKilos = parseFloat(item.total_kilos.replace(',', '.')) || 0;
+                        let rnpTotal = parseFloat(item.resultado_total.replace(',', '.')) || 0;
+                        let rnpKilo = parseFloat(item.resultado_kilo.replace(',', '.')) || 0;
+                        let cajas = parseFloat(item.cajas) || 0;
+
+                        if (!datosAgrupadosNorma[especie]) {
+                            datosAgrupadosNorma[especie] = {};
+                        }
+                        if (!datosAgrupadosNorma[especie][variedad]) {
+                            datosAgrupadosNorma[especie][variedad] = {};
+                        }
+                        if (!datosAgrupadosNorma[especie][variedad][calibre]) {
+                            datosAgrupadosNorma[especie][variedad][calibre] = {
+                                total_kilos: 0,
+                                rnp_total: 0,
+                                rnp_kilo: 0,
+                                cajas: 0
+                            };
+                        }
+
+                        datosAgrupadosNorma[especie][variedad][calibre].total_kilos += totalKilos;
+                        datosAgrupadosNorma[especie][variedad][calibre].rnp_total += rnpTotal;
+                        datosAgrupadosNorma[especie][variedad][calibre].rnp_kilo += rnpKilo;
+                        datosAgrupadosNorma[especie][variedad][calibre].cajas += cajas;
+                    });
+
+                    let htmlOutput = `
+        <table>
+            <thead>
+                <tr class="section-header">
+                    <th>Especie</th>
+                    <th>Variedad</th>
+                    <th>Calibre</th>
+                    <th>Curva Calibre</th>
+                    <th>Cajas</th>
+                    <th>Kilos Totales</th>
+                    <th>RNP Total</th>
+                    <th>RNP Kilo</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+                    $.each(Object.keys(datosAgrupadosNorma).sort(), function(_, especie) {
+                        let isFirstEspecieRow = true;
+
+                        $.each(Object.keys(datosAgrupadosNorma[especie]).sort(), function(_, variedad) {
+                            let totalVariedad = {
+                                cajas: 0,
+                                total_kilos: 0,
+                                rnp_total: 0,
+                                rnp_kilo_sum: 0,
+                                rnp_kilo_kilos: 0
+                            };
+                            let isFirstVariedadRow = true;
+                            let calibres = sortKeysByConfiguredOrder(Object.keys(
+                                datosAgrupadosNorma[especie][variedad]), ordenCalibres);
+                            let totalKilosVariedad = calibres.reduce((acumulado, calibre) =>
+                                acumulado + datosAgrupadosNorma[especie][variedad][calibre]
+                                .total_kilos, 0);
+
+                            $.each(calibres, function(_, calibre) {
+                                let datosCalibre = datosAgrupadosNorma[especie][variedad][calibre];
+                                let curvaCalibre = totalKilosVariedad ?
+                                    ((datosCalibre.total_kilos / totalKilosVariedad) * 100).toFixed(
+                                        4) : '0.0000';
+                                let cajasEquivalentes = parseFloat(datosCalibre.cajas);
+                                let rnpClass = datosCalibre.rnp_total < 0 || datosCalibre.rnp_kilo < 0 ?
+                                    'negative' : '';
+                                let especieCell = isFirstEspecieRow ? `<td>${especie}</td>` :
+                                    '<td></td>';
+                                let variedadCell = isFirstVariedadRow ? `<td>${variedad}</td>` :
+                                    '<td></td>';
+
+                                htmlOutput += `
+                        <tr>
+                            ${especieCell}
+                            ${variedadCell}
+                            <td>${calibre}</td>
+                            <td class="number">${formatCurrency(curvaCalibre)} %</td>
+                            <td class="number">${cajasEquivalentes.toLocaleString('es-CL', {
+                                        minimumFractionDigits: 0,
+                                        maximumFractionDigits: 0
+                                    })}</td>
+                            <td class="number">${formatInteger(datosCalibre.total_kilos.toFixed(0))}</td>
+                            <td class="number ${rnpClass}">US$ ${formatCurrency(datosCalibre.rnp_total.toFixed(2))}</td>
+                            <td class="number ${rnpClass}">US$ ${formatCurrency((datosCalibre.rnp_total / datosCalibre.total_kilos).toFixed(4))}</td>
+                        </tr>
+                    `;
+
+                                groupedData.push({
+                                    especie: especie,
+                                    variedad: variedad,
+                                    etiqueta: 'Todas',
+                                    calibre: calibre,
+                                    curva_calibre: curvaCalibre,
+                                    cajas_equivalentes: cajasEquivalentes,
+                                    total_kilos: datosCalibre.total_kilos,
+                                    rnp_total: datosCalibre.rnp_total,
+                                    rnp_kilo: (datosCalibre.rnp_total / datosCalibre.total_kilos)
+                                });
+
+                                isFirstEspecieRow = false;
+                                isFirstVariedadRow = false;
+                                totalVariedad.cajas += cajasEquivalentes;
+                                totalVariedad.total_kilos += datosCalibre.total_kilos;
+                                totalVariedad.rnp_total += datosCalibre.rnp_total;
+                                totalVariedad.rnp_kilo_sum += datosCalibre.rnp_kilo * datosCalibre
+                                    .total_kilos;
+                                totalVariedad.rnp_kilo_kilos += datosCalibre.total_kilos;
+                            });
+
+                            let rnpKiloVariedad = totalVariedad.rnp_kilo_kilos ?
+                                (totalVariedad.rnp_kilo_sum / totalVariedad.rnp_kilo_kilos).toFixed(4) :
+                                '0.0000';
+                            let rnpClassVariedad = totalVariedad.rnp_total < 0 || parseFloat(
+                                rnpKiloVariedad) < 0 ? 'negative' : '';
+
+                            htmlOutput += `
+                <tr class="total-row">
+                    <td></td>
+                    <td>Total ${variedad}</td>
+                    <td></td>
+                    <td class="number">1.0000</td>
+                    <td class="number">${formatInteger(totalVariedad.cajas)}</td>
+                    <td class="number">${formatInteger(totalVariedad.total_kilos.toFixed(0))}</td>
+                    <td class="number ${rnpClassVariedad}">US$ ${formatCurrency(totalVariedad.rnp_total.toFixed(2))}</td>
+                    <td class="number ${rnpClassVariedad}">US$ ${formatCurrency((totalVariedad.rnp_total / totalVariedad.total_kilos).toFixed(4))}</td>
+                </tr>
+            `;
+
+                            totalGeneralNorma.cajas += totalVariedad.cajas;
+                            totalGeneralNorma.total_kilos += totalVariedad.total_kilos;
+                            totalGeneralNorma.rnp_total += totalVariedad.rnp_total;
+                            totalGeneralNorma.rnp_kilo_sum += totalVariedad.rnp_kilo_sum;
+                            totalGeneralNorma.rnp_kilo_kilos += totalVariedad.rnp_kilo_kilos;
+                        });
+                    });
+
+                    let rnpKiloGeneral = totalGeneralNorma.rnp_kilo_kilos ?
+                        (totalGeneralNorma.rnp_kilo_sum / totalGeneralNorma.rnp_kilo_kilos).toFixed(
+                            4) : '0.0000';
+                    let rnpClassGeneral = totalGeneralNorma.rnp_total < 0 || parseFloat(
+                        rnpKiloGeneral) < 0 ? 'negative' : '';
+
+                    htmlOutput += `
+                <tr class="total-row">
+                    <td>Total General</td>
+                    <td></td>
+                    <td></td>
+                    <td class="number">1.0000</td>
+                    <td class="number">${formatInteger(totalGeneralNorma.cajas)}</td>
+                    <td class="number">${formatInteger(totalGeneralNorma.total_kilos.toFixed(0))}</td>
+                    <td class="number ${rnpClassGeneral}">US$ ${formatCurrency(totalGeneralNorma.rnp_total.toFixed(2))}</td>
+                    <td class="number ${rnpClassGeneral}">US$ ${formatCurrency((totalGeneralNorma.rnp_total / totalGeneralNorma.total_kilos).toFixed(4))}</td>
+                </tr>
+            </tbody>
+        </table>
+    `;
+
+                    $('#norma').html(htmlOutput);
+                    const uniqueGroups = getUniqueGroups(groupedData);
+
+                    uniqueGroups.forEach(group => {
+                        generateChart(group.especie, group.variedad, group.etiqueta, groupedData);
+                    });
+                }
+
                 $('#btnPreview').on('click', function() {
                     resetAllValues();
                     var productor_id = $('#productor_id').val();
@@ -1515,6 +1947,18 @@
 
 
                                 //norma con semana
+                                renderWeeklyGroupedTableWithoutEtiqueta(response.result, {
+                                    filter: item => item.norma.toUpperCase() === 'CAT 1',
+                                    includeCurve: true,
+                                    ordenCalibres: ['7J', '6J', '5J', '4J', '3J', '2J', 'J',
+                                        'XL', 'L'
+                                    ],
+                                    divisorCajaDetalle: 5,
+                                    divisorCajaTotal: 9,
+                                    target: '#norma-semana'
+                                });
+
+                                if (false) {
                                 const ordenCalibres_v2 = ['7J', '6J', '5J', '4J', '3J', '2J',
                                     'J',
                                     'XL', 'L'
@@ -1977,9 +2421,20 @@
 
                                 // Insertar el HTML en el contenedor
                                 $('#norma-semana').html(htmlOutput_v2);
+                                }
 
                                 // Fuera de Norma
 
+                                renderWeeklyGroupedTableWithoutEtiqueta(response.result, {
+                                    filter: item => item.norma.toUpperCase() === 'FN',
+                                    includeCurve: false,
+                                    ordenCalibres: ['XL', 'L', 'J', '2J', '3J', '4J'],
+                                    divisorCajaDetalle: 5,
+                                    divisorCajaTotal: 9,
+                                    target: '#fuera-norma'
+                                });
+
+                                if (false) {
                                 const ordenCalibres_fn = ['XL', 'L', 'J', '2J', '3J', '4J'];
 
                                 // Objeto para agrupar por variedad, etiqueta, semana y calibre
@@ -2422,6 +2877,7 @@
 
                                 // Insertar el HTML en el contenedor
                                 $('#fuera-norma').html(htmlOutput_fn);
+                                }
 
 
 
@@ -2459,6 +2915,8 @@
                 let groupedDataChart = [];
 
                 function llenarNorma(response) {
+                    return renderNormaWithoutEtiqueta(response);
+
                     // Definir orden de calibres
                     const ordenCalibres = ['7J', '6J', '5J', '4J', '3J', '2J', 'J', 'XL'];
 
@@ -2835,7 +3293,7 @@
 
                             // Totales generales
                             totalGeneral.total_kilos += totalKilos;
-                            totalGeneral.precio_total += precioTotal * totalKilos;
+                            totalGeneral.precio_total += precioTotal;
                             totalGeneral.precio_kilo_sum += precioKilo;
                             totalGeneral.precio_kilo_kilos += totalKilos;
                         }
@@ -2948,7 +3406,7 @@
                     <td></td>
                     <td class="number">${formatInteger(totalGeneral.total_kilos.toFixed(0))}</td>
                     <td class="number">$ ${formatInteger(totalGeneral.precio_total.toFixed(0))}</td>
-                    <td class="number">$ ${formatInteger(precioKiloGeneral)}</td>
+                    <td class="number">$ ${formatInteger(totalGeneral.precio_kilo_sum.toFixed(0))}</td>
                 </tr>
             </tbody>
         </table>
@@ -2993,6 +3451,9 @@
                     const rnpKilo = sortedData.map(item => item.rnp_kilo);
                     const avgRnpKilo = calculateAverageRnpKilo(sortedData);
                     const avgRnpKiloArray = sortedData.map(() => avgRnpKilo);
+
+                    const tituloGrafico = etiqueta === 'Todas' ? `${especie} - ${variedad}` :
+                        `${especie} - ${variedad} / ${etiqueta}`;
 
                     const options = {
                         chart: {
@@ -3243,7 +3704,7 @@
                             }
                         ],
                         title: {
-                            text: `${especie} - ${variedad} / ${etiqueta}`,
+                            text: tituloGrafico,
                             align: 'center'
                         },
                         stroke: {
