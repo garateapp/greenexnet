@@ -2891,8 +2891,7 @@
                                 let datosCategoria = datosPorVariedad[categoria];
                                 console.log("datosCategoria", datosCategoria);
                                 let precioKilo = datosCategoria.total_kilos ?
-                                    (datosCategoria.precio_kilo_sum / datosCategoria
-                                        .total_kilos).toFixed(2) : '0.00';
+                                    (datosCategoria.precio_kilo_sum / datosCategoria.total_kilos).toFixed(2) : '0.00';
 
                                 let especieCell = i_categoria === 0 && isFirstVariedadRow ?
                                     `<td rowspan="${rowspanEspecie}">${especie}</td>` : '';
@@ -2906,8 +2905,8 @@
                         ${variedadCell}
                         <td style="text-align:center">${categoria}</td>
                         <td class="number">${formatInteger(datosCategoria.total_kilos.toFixed(0))}</td>
-                        <td class="number">${formatInteger(datosCategoria.precio_kilo_sum.toFixed(0))}</td>
-                        <td class="number">${formatInteger(precioKilo)}</td>
+                        <td class="number">${formatInteger(datosCategoria.precio_total.toFixed(0))}</td>
+                        <td class="number">${formatInteger(precio_kilo_sum)}</td>
                     </tr>
                 `;
 
