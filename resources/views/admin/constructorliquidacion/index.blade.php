@@ -1356,7 +1356,7 @@
                                         );
                                     });
                                     FacturaValorNeto = sumasPorCategoria['COMERCIAL']
-                                        .precio_comercial +
+                                        .total_comercial +
                                         sumasPorCategoria['PRECALIBRE'].total_comercial +
                                         sumasPorCategoria['SOBRECALIBRE'].total_comercial+
                                         sumasPorCategoria['DESECHO'].total_comercial+
