@@ -77,8 +77,8 @@ use CsvImportTrait;
         $anticipos = Anticipo::where('productor_id', $productor)
         ->where('temporada', $temporada)->get();
         //->whereIn('especie_id',  [4,5,6])->get(); Carozos
-        $valorflete=Valorflete::where('productor_id', $productor)
-        ->where('temporada', $temporada)->get();
+        $valorflete=Valorflete::where('productor_id', $productor)->get();
+        //->where('temporada', $temporada)->get();
         Log::info('ValorFlete encontrado:', ['valorflete' => $valorflete->toArray()]);
         $prod=Productor::where('id', $productor)->first();
         $envases=valorEnvase::where('productor_id', $productor)
