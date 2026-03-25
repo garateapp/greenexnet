@@ -2906,7 +2906,7 @@
                         <td style="text-align:center">${categoria}</td>
                         <td class="number">${formatInteger(datosCategoria.total_kilos.toFixed(0))}</td>
                         <td class="number">${formatInteger(datosCategoria.precio_total.toFixed(0))}</td>
-                        <td class="number">${formatInteger(precio_kilo_sum)}</td>
+                        <td class="number">${formatInteger(datosCategoria.precio_kilo_sum)}</td>
                     </tr>
                 `;
 
