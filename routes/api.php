@@ -9,6 +9,8 @@ Route::group(['prefix' => 'v1', 'as' => 'api.', 'namespace' => 'Api\V1\Admin'], 
     // Endpoints de sincronizacion Kptura (sin auth)
     Route::get('sync-data', 'KpturaSyncController@syncData')->name('kptura.sync-data');
     Route::post('attendances/bulk', 'KpturaSyncController@storeAttendances')->name('kptura.attendances.bulk');
+    Route::get('public/entidads', 'PublicApiController@entidadesTipoDos')->name('public.entidads.tipo-dos');
+    Route::get('public/attendances/dias-trabajados', 'PublicApiController@diasTrabajados')->name('public.attendances.dias-trabajados');
 });
 Route::group(['prefix' => 'v1', 'as' => 'api.', 'namespace' => 'Api\V1\Admin', 'middleware' => ['auth:sanctum']], function () {
     // Permissions
