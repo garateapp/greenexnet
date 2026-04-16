@@ -1157,7 +1157,7 @@ class ComexController extends Controller
                 //  dd($variedad);
                 $especie=Especy::where('id',$liqCxCabecera->especie_id)->first();
                 $nave = $liqCxCabecera->nave_id ? Nafe::find($liqCxCabecera->nave_id)->nombre : "";
-                Log::info( 'Liquidación:'. $liqCxCabecera->instructivo)
+                Log::info( 'Liquidación:'. $liqCxCabecera->instructivo);
                 $dataComparativa->push(array_merge(
                     [
                         'Embarque' => '',  //A
