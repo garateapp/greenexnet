@@ -1012,7 +1012,7 @@ class ComexController extends Controller
     public function generacomparativaglobal(Request $request)
     {
 
-        $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->whereIn('especie_id',[4,6])->get(); // LiqCxCabecera::find(request('ids'));
+        $liqCxCabeceras = LiqCxCabecera::whereNull('deleted_at')->whereIn('especie_id',[6])->get(); // LiqCxCabecera::find(request('ids'));
 
         $dataComparativa = collect();
         $C_Logisticos = Costo::where('categoria', 'Costo Logístico')->get();
@@ -1157,6 +1157,7 @@ class ComexController extends Controller
                 //  dd($variedad);
                 $especie=Especy::where('id',$liqCxCabecera->especie_id)->first();
                 $nave = $liqCxCabecera->nave_id ? Nafe::find($liqCxCabecera->nave_id)->nombre : "";
+                Log::info( 'Liquidación:'. $liqCxCabecera->instructivo)
                 $dataComparativa->push(array_merge(
                     [
                         'Embarque' => '',  //A
